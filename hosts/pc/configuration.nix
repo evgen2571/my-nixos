@@ -55,6 +55,8 @@
   nixpkgs.config.allowUnfree = true;
 
   environment.systemPackages = with pkgs; [
+    libreoffice-still
+    microfetch
     xwayland-satellite
     xwayland
     wget
@@ -64,8 +66,6 @@
     tree
     youtube-tui
   ];
-
-  services.openssh.enable = true;
 
   nix.settings.experimental-features = [
     "nix-command"
