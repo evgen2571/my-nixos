@@ -2,6 +2,6 @@
 
 {
   home.packages = with pkgs; [
-    ytmdesktop
+    youtube-music
   ];
 }

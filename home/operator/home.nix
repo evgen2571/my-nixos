@@ -5,6 +5,7 @@
   imports = [
     # wm
     ../../modules/wm/noctalia.nix
+	../../modules/wm/screen-recorder.nix
 
     # apps
     ../../modules/apps/zen-browser.nix
@@ -12,7 +13,6 @@
     ../../modules/apps/vesktop.nix
     ../../modules/apps/telegram.nix
     ../../modules/apps/youtube-music.nix
-    ../../modules/apps/game-launchers.nix
 
     # file managers
     ../../modules/file-managers/dolphin.nix
