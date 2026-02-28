@@ -7,6 +7,7 @@
     ripgrep
     fzf
     tmux
+	tmux-sessionizer
     kitty
   ];
 }

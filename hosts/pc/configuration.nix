@@ -3,7 +3,8 @@
 {
   imports = [
     ./hardware-configuration.nix
-    ../../modules/wm/niri.nix
+	../../modules/hardware/nvidia.nix
+    ../../modules/wm/niri
     ../../modules/wm/ly.nix
     ../../modules/coding/fish.nix
     ../../modules/apps/steam.nix
@@ -20,19 +21,10 @@
 
   services.xserver = {
     enable = true;
-    videoDrivers = [ "nvidia" ];
     xkb = {
       layout = "us, ru";
       variant = ",phonetic";
     };
-  };
-
-  hardware.graphics.enable = true;
-  programs.gamescope.enable = true;
-  hardware.nvidia = {
-    modesetting.enable = true;
-    powerManagement.enable = false;
-    open = false;
   };
 
   services.printing.enable = true;
@@ -48,7 +40,7 @@
   users.users.evgen2571 = {
     isNormalUser = true;
     description = "Eugene A";
-    extraGroups = [ "networkmanager" "wheel" "input" ];
+    extraGroups = [ "networkmanager" "wheel" "input" "git" ];
     shell = pkgs.fish;
   };
 

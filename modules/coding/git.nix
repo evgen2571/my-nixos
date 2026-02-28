@@ -3,14 +3,15 @@
 {
   programs.ssh = {
     enable = true;
-	addKeysToAgent = "yes";
+	addKeysToAgent = "yes";           
+	enableDefaultConfig = false;
   };
 
   programs.git = {
     enable = true;
 
 	signing = {
-	  key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILIH4JXLBrYVGWWY8Bds34YNR7rGtsggctHVfNibTDjA evgen.10.02.2008.83@gmail.com";
+	  key = "~/.ssh/id_ed25519";
 	  signByDefault = true;
 	};
 
