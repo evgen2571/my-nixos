@@ -29,12 +29,12 @@
       nixpkgs,
 	  home-manager,
       ...
-    }: {
-      nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
+    }: let
+      mkHost = hostModule: nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
 		specialArgs = {inherit inputs;};
         modules = [
-          ./hosts/pc/configuration.nix
+          hostModule
 		  home-manager.nixosModules.home-manager
 		  {
 		  	home-manager.useGlobalPkgs = true;
@@ -43,6 +43,11 @@
 			home-manager.users.operator = import ./home/operator/home.nix;
 		  }
         ];
+      };
+    in {
+      nixosConfigurations = {
+        nixos-pc = mkHost ./hosts/pc/configuration.nix;
+        nixos-lp = mkHost ./hosts/laptop/configuration.nix;
       };
     };
 
