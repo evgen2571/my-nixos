@@ -6,5 +6,7 @@
 }:
 
 {
+  imports = [ ../xserver.nix ];
+
   programs.niri.enable = true;
 }
