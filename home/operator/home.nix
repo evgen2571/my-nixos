@@ -4,6 +4,7 @@
 
   imports = [
     # wm
+	../../modules/wm/niri/config.nix
     ../../modules/wm/noctalia.nix
 	../../modules/wm/screen-recorder.nix
 
