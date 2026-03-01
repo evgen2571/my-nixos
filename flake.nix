@@ -30,16 +30,17 @@
 	  home-manager,
       ...
     }: let
+      wm = "hyprland";
       mkHost = hostModule: nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
-		specialArgs = {inherit inputs;};
+		specialArgs = {inherit inputs wm;};
         modules = [
           hostModule
 		  home-manager.nixosModules.home-manager
 		  {
 		  	home-manager.useGlobalPkgs = true;
 			home-manager.useUserPackages = true;
-			home-manager.extraSpecialArgs = {inherit inputs;};
+			home-manager.extraSpecialArgs = {inherit inputs wm;};
 			home-manager.users.operator = import ./home/operator/home.nix;
 		  }
         ];
