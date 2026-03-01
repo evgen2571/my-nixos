@@ -1,10 +1,13 @@
-{ ... }: {
+{ lib, wm, ... }: {
   home.username = "evgen2571";
   home.homeDirectory = "/home/evgen2571";
 
   imports = [
     # wm
-	../../modules/wm/niri/config.nix
+    (lib.getAttr wm {
+      hyprland = ../../modules/wm/hyprland/config.nix;
+      niri = ../../modules/wm/niri/config.nix;
+    })
     ../../modules/wm/noctalia.nix
 	../../modules/wm/screen-recorder.nix
 

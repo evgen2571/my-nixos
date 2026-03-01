@@ -1,10 +1,13 @@
-{ pkgs, ... }:
+{ lib, pkgs, wm, ... }:
 
 {
   imports = [
     ./hardware-configuration.nix
 	../../modules/hardware/nvidia.nix
-    ../../modules/wm/niri
+    (lib.getAttr wm {
+      hyprland = ../../modules/wm/hyprland;
+      niri = ../../modules/wm/niri;
+    })
     ../../modules/wm/ly.nix
     ../../modules/coding/fish.nix
     ../../modules/apps/steam.nix
