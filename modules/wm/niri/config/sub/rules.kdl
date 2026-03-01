@@ -1,0 +1,131 @@
+// Layer rules
+layer-rule {
+    match namespace="^quickshell$"
+    place-within-backdrop true
+}
+
+layer-rule {
+  match namespace="^noctalia-overview*"
+  place-within-backdrop true
+}
+
+// Window rules
+window-rule {
+  geometry-corner-radius 10
+
+  clip-to-geometry true
+}
+
+debug {
+  honor-xdg-activation-with-invalid-serial
+}
+
+window-rule {
+    match app-id=r#"^gnome-control-center$"#
+    match app-id=r#"^pavucontrol$"#
+    match app-id=r#"^nm-connection-editor$"#
+    default-column-width { proportion 0.5; }
+    open-floating false
+}
+
+window-rule {
+    match app-id=r#"^gnome-calculator$"#
+    match app-id=r#"^galculator$"#
+    match app-id=r#"^blueman-manager$"#
+    match app-id=r#"^org\.gnome\.Nautilus$"#
+    match app-id=r#"^xdg-desktop-portal$"#
+    open-floating true
+}
+
+// Browser
+window-rule {
+	match app-id="zen-twilight"
+	open-maximized-to-edges true
+	open-on-workspace "browser"
+}
+
+// Terminal
+window-rule {
+    match app-id="kitty"
+    match app-id="foot"
+    draw-border-with-background false
+	opacity 0.9
+}
+
+// Notetaker
+window-rule {
+    match app-id="obsidian"
+    draw-border-with-background false
+	open-maximized-to-edges true
+	open-on-workspace "notes" 
+	opacity 0.98
+}
+
+// Editor
+window-rule {
+	match title="editor"
+	opacity 0.9
+	open-maximized-to-edges true
+	open-on-workspace "code"
+}
+
+// Steam
+window-rule {
+	match app-id="steam"
+	open-maximized true
+	open-on-workspace "gaming"
+}
+
+// Drowpdown Terminal
+window-rule {
+	match title="dropdown-term"
+
+    draw-border-with-background false
+	opacity 0.8
+
+	open-floating true
+	open-focused true
+	default-column-width { proportion 0.5; }
+	default-window-height { proportion 0.3; }
+	default-floating-position x=640 y=10 relative-to="top-left"
+
+	focus-ring {
+		on
+		width 3
+		active-color "#b58bcc"
+	}
+
+	shadow {
+		on
+		spread 4 
+		softness 10
+		color "#695175"
+	}
+}
+
+// Picture-in-Picture
+window-rule {
+    match title="^Picture-in-Picture$"
+    open-floating true
+	default-column-width { proportion 0.30; }
+	default-window-height { proportion 0.305; }
+    default-floating-position x=5 y=5 relative-to="bottom-right"
+}
+
+// File Manager
+window-rule {
+    match app-id=r#"org.quickshell$"#
+	match app-id="org.kde.dolphin"
+    open-floating true
+	open-focused true
+	default-column-width { proportion 0.5; }
+	default-window-height { proportion 0.5; }
+}
+
+// Messangers
+window-rule {
+	match app-id="org.telegram.desktop"
+	match app-id="vesktop"
+	open-maximized true
+	open-on-workspace "chats"
+}

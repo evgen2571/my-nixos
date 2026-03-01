@@ -1,0 +1,7 @@
+// Noctalia Shell
+spawn-at-startup  "noctalia-shell"
+spawn-at-startup  "xwayland-satellite"
+
+// Apps
+spawn-at-startup "zen-twilight"
+spawn-at-startup "obsidian"
