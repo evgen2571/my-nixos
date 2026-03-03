@@ -41,17 +41,21 @@
     ];
   };
 
+  nixpkgs.config.allowUnfree = true;
+  programs.nix-ld.enable = true;
+
   environment.systemPackages = with pkgs; [
-    wget
-    git
-    kitty
-    unzip
-    nixd
-    nil
-    nix
-    nodejs_24
-    rustc
+    libreoffice-still
+    microfetch
     xwayland-satellite
+    xwayland
+	nixd
+	nil
+	nix
+    wget
+    starship
+    nodejs_24
+    tree
   ];
 
   fonts.packages = with pkgs; [

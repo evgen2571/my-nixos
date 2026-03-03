@@ -26,6 +26,7 @@
     ../../modules/coding/ide.nix
     ../../modules/coding/dev-tools.nix
     ../../modules/coding/git.nix
+    ../../modules/coding/vscode.nix
   ];
 
   home.enableNixpkgsReleaseCheck = false;

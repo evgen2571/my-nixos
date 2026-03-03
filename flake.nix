@@ -30,7 +30,7 @@
 	  home-manager,
       ...
     }: let
-      wm = "hyprland";
+      wm = "niri";
       mkHost = hostModule: nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
 		specialArgs = {inherit inputs wm;};

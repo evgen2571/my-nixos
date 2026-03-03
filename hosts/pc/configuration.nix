@@ -4,10 +4,7 @@
   imports = [
     ./hardware-configuration.nix
 	../../modules/hardware/nvidia.nix
-    (lib.getAttr wm {
-      hyprland = ../../modules/wm/hyprland;
-      niri = ../../modules/wm/niri;
-    })
+    ../../modules/wm/niri
     ../../modules/wm/ly.nix
     ../../modules/coding/fish.nix
     ../../modules/apps/steam.nix
@@ -48,6 +45,7 @@
   };
 
   nixpkgs.config.allowUnfree = true;
+  programs.nix-ld.enable = true;
 
   environment.systemPackages = with pkgs; [
     libreoffice-still
@@ -55,11 +53,12 @@
     xwayland-satellite
     xwayland
     wget
+	nixd
+	nil
+	nix
     starship
     nodejs_24
-    codex
     tree
-    youtube-tui
   ];
 
   nix.settings.experimental-features = [
