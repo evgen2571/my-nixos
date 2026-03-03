@@ -8,7 +8,7 @@
       hyprland = ../../modules/wm/hyprland/config.nix;
       niri = ../../modules/wm/niri/config.nix;
     })
-    ../../modules/wm/noctalia.nix
+    ../../modules/wm/noctalia
 	../../modules/wm/screen-recorder.nix
 
     # apps
