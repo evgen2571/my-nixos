@@ -12,5 +12,8 @@
     curl
     zip
     unzip
+	nil
+	nix
+	nixd
   ];
 }

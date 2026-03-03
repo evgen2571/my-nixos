@@ -6,7 +6,7 @@
 	../../modules/hardware/nvidia.nix
     ../../modules/wm/niri
     ../../modules/wm/ly.nix
-    ../../modules/coding/fish.nix
+    ../../modules/coding/fish
     ../../modules/apps/steam.nix
   ];
 
@@ -50,7 +50,6 @@
   environment.systemPackages = with pkgs; [
     libreoffice-still
     microfetch
-    xwayland-satellite
     xwayland
     wget
 	nixd
@@ -59,6 +58,10 @@
     starship
     nodejs_24
     tree
+  ];
+
+  fonts.packages = with pkgs; [
+    nerd-fonts.jetbrains-mono
   ];
 
   nix.settings.experimental-features = [

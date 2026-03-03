@@ -24,6 +24,8 @@
 
     # coding
     ../../modules/coding/ide.nix
+    ../../modules/coding/starship
+    ../../modules/coding/fish/config.nix
     ../../modules/coding/dev-tools.nix
     ../../modules/coding/git.nix
     ../../modules/coding/vscode.nix

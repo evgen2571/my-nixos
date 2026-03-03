@@ -3,12 +3,10 @@
 {
   imports = [
     ./hardware-configuration.nix
-    (lib.getAttr wm {
-      hyprland = ../../modules/wm/hyprland;
-      niri = ../../modules/wm/niri;
-    })
+	../../modules/hardware/nvidia.nix
+    ../../modules/wm/niri
     ../../modules/wm/ly.nix
-    ../../modules/coding/fish.nix
+    ../../modules/coding/fish
     ../../modules/apps/steam.nix
   ];
 
@@ -20,14 +18,21 @@
   networking.networkmanager.enable = true;
 
   time.timeZone = "Europe/Minsk";
+  i18n.defaultLocale = "en_US.UTF-8";
 
-  services.xserver.xkb = {
-    layout = "us, ru";
-    options = "caps:escape";
+  services.xserver = {
+    enable = true;
+    xkb = {
+      layout = "us, ru";
+      variant = ",phonetic";
+    };
   };
 
+  security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
     pulse.enable = true;
   };
 
@@ -35,10 +40,9 @@
 
   users.users.evgen2571 = {
     isNormalUser = true;
-    extraGroups = [ "wheel" ];
-    packages = with pkgs; [
-      tree
-    ];
+    description = "Eugene A";
+    extraGroups = [ "networkmanager" "wheel" "input" "git" ];
+    shell = pkgs.fish;
   };
 
   nixpkgs.config.allowUnfree = true;
@@ -47,7 +51,6 @@
   environment.systemPackages = with pkgs; [
     libreoffice-still
     microfetch
-    xwayland-satellite
     xwayland
 	nixd
 	nil
