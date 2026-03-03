@@ -8,7 +8,7 @@
       hyprland = ../../modules/wm/hyprland/config.nix;
       niri = ../../modules/wm/niri/config.nix;
     })
-    ../../modules/wm/noctalia.nix
+    ../../modules/wm/noctalia
 	../../modules/wm/screen-recorder.nix
 
     # apps
@@ -24,8 +24,11 @@
 
     # coding
     ../../modules/coding/ide.nix
+    ../../modules/coding/starship
+    ../../modules/coding/fish/config.nix
     ../../modules/coding/dev-tools.nix
     ../../modules/coding/git.nix
+    ../../modules/coding/vscode.nix
   ];
 
   home.enableNixpkgsReleaseCheck = false;

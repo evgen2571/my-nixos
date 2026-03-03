@@ -4,12 +4,9 @@
   imports = [
     ./hardware-configuration.nix
 	../../modules/hardware/nvidia.nix
-    (lib.getAttr wm {
-      hyprland = ../../modules/wm/hyprland;
-      niri = ../../modules/wm/niri;
-    })
+    ../../modules/wm/niri
     ../../modules/wm/ly.nix
-    ../../modules/coding/fish.nix
+    ../../modules/coding/fish
     ../../modules/apps/steam.nix
   ];
 
@@ -48,18 +45,23 @@
   };
 
   nixpkgs.config.allowUnfree = true;
+  programs.nix-ld.enable = true;
 
   environment.systemPackages = with pkgs; [
     libreoffice-still
     microfetch
-    xwayland-satellite
     xwayland
     wget
+	nixd
+	nil
+	nix
     starship
     nodejs_24
-    codex
     tree
-    youtube-tui
+  ];
+
+  fonts.packages = with pkgs; [
+    nerd-fonts.jetbrains-mono
   ];
 
   nix.settings.experimental-features = [

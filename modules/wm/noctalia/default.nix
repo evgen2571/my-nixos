@@ -2,6 +2,7 @@
 {
     imports = [
       inputs.noctalia.homeModules.default
+	  ./config.nix
     ];
 
     # configure options
