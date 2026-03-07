@@ -1,13 +1,22 @@
-{ lib, pkgs, wm, ... }:
+{
+  lib,
+  pkgs,
+  wm,
+  ...
+}:
 
 {
   imports = [
     ./hardware-configuration.nix
-	../../modules/hardware/nvidia.nix
+    ../../modules/hardware/nvidia.nix
     ../../modules/wm/niri
+    ../../modules/wm/opentabletdriver.nix
+    ../../modules/wm/gnome
     ../../modules/wm/ly.nix
     ../../modules/coding/fish
     ../../modules/apps/steam.nix
+
+    ../../modules/apps/aagl.nix
   ];
 
   boot.loader.systemd-boot.enable = true;
@@ -40,7 +49,12 @@
   users.users.evgen2571 = {
     isNormalUser = true;
     description = "Eugene A";
-    extraGroups = [ "networkmanager" "wheel" "input" "git" ];
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+      "input"
+      "git"
+    ];
     shell = pkgs.fish;
   };
 
@@ -51,17 +65,27 @@
     libreoffice-still
     microfetch
     xwayland
+    xwayland-satellite
     wget
-	nixd
-	nil
-	nix
+    nixd
+    nil
+    nix
     starship
     nodejs_24
     tree
+    vulkan-tools
   ];
 
+  # Enable a basic set of fonts for good Unicode coverage
+  fonts.enableDefaultPackages = true;
+
+  # Add common font packages
   fonts.packages = with pkgs; [
-    nerd-fonts.jetbrains-mono
+    noto-fonts # Basic emoji and general purpose fonts
+    noto-fonts-cjk-sans # Chinese, Japanese, Korean support
+    noto-fonts-color-emoji
+    liberation_ttf # Free replacements for Arial, Times, Courier
+    dejavu_fonts # Wide Unicode coverage
   ];
 
   nix.settings.experimental-features = [

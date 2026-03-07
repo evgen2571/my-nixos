@@ -12,6 +12,5 @@
   # Enable the browser
   programs.zen-browser.enable = true;
 
-  programs.zen-browser.suppressXdgMigrationWarning = true;
   # programs.zen-browser.policies = { DisableAppUpdate = true; };
 }
