@@ -12,6 +12,7 @@
 	readline.dev
 	lua5_1
 	imagemagick
+	matugen
 
 	python313Packages.pynvim
 	python313Packages.jupyter-client
