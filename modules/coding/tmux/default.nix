@@ -22,6 +22,20 @@
 
     sensibleOnTop = false;
 
+    plugins = with pkgs; [
+      {
+        plugin = tmuxPlugins.minimal-tmux-status;
+        extraConfig = ''
+          set -g @minimal-tmux-status "top"
+          set -g @minimal-tmux-bg "default"
+          set -g @minimal-tmux-justify "absolute-centre"
+          set -g @minimal-tmux-fg "#ffffff"
+          set -g window-status-style 'fg=#4a4a4a'
+        '';
+      }
+      tmuxPlugins.vim-tmux-navigator
+    ];
+
     extraConfig = ''
       # Prefix
       bind C-Space send-prefix
@@ -51,19 +65,7 @@
       # Easy pane splitting
       bind \\ split-window -h
       bind - split-window -v
-
-      # minimal-tmux-status options
-      set -g @minimal-tmux-status "top"
-      set -g @minimal-tmux-bg "default"
-      set -g @minimal-tmux-justify absolute-centre
-      set -g @minimal-tmux-fg "#ffffff"
-      set -g window-status-style 'fg=#4a4a4a'
     '';
-
-    plugins = with pkgs; [
-      tmuxPlugins.minimal-tmux-status
-      tmuxPlugins.vim-tmux-navigator
-    ];
   };
 
   home.packages = with pkgs; [
