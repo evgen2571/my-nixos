@@ -69,10 +69,21 @@ window-rule {
 	open-on-workspace "code"
 }
 
+// File Manager
+window-rule {
+	match title="file-manager"
+	opacity 0.9
+	open-floating true
+
+	default-column-width { proportion 0.5; }
+	default-window-height { proportion 0.3; }
+}
+
+
 // Steam
 window-rule {
 	match app-id="steam"
-	open-maximized true
+	open-maximized-to-edges true
 	open-on-workspace "gaming"
 }
 

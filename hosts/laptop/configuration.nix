@@ -1,9 +1,14 @@
-{ lib, pkgs, wm, ... }:
+{
+  lib,
+  pkgs,
+  wm,
+  ...
+}:
 
 {
   imports = [
     ./hardware-configuration.nix
-	../../modules/hardware/nvidia.nix
+    ../../modules/hardware/nvidia.nix
     ../../modules/wm/niri
     ../../modules/wm/ly.nix
     ../../modules/coding/fish
@@ -41,7 +46,12 @@
   users.users.operator = {
     isNormalUser = true;
     description = "Operator";
-    extraGroups = [ "networkmanager" "wheel" "input" "git" ];
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+      "input"
+      "git"
+    ];
     shell = pkgs.fish;
   };
 
@@ -52,9 +62,9 @@
     libreoffice-still
     microfetch
     xwayland
-	nixd
-	nil
-	nix
+    nixd
+    nil
+    nix
     wget
     starship
     nodejs_24
@@ -64,6 +74,13 @@
   fonts.packages = with pkgs; [
     nerd-fonts.jetbrains-mono
   ];
+
+  nix.settings = {
+    max-jobs = 1;
+    cores = 2;
+    eval-cache = true;
+    substituters = [ "https://cache.nixos.org" ];
+  };
 
   nix.settings.experimental-features = [
     "nix-command"

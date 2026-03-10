@@ -88,6 +88,17 @@
     dejavu_fonts # Wide Unicode coverage
   ];
 
+  nix.settings = {
+    max-jobs = 1;
+    cores = 2;
+    eval-cache = true;
+    substituters = [ "https://cache.nixos.org" ];
+    trusted-public-keys = [
+      "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+    ];
+    fallback = false;
+  };
+
   nix.settings.experimental-features = [
     "nix-command"
     "flakes"
