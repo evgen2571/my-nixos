@@ -8,11 +8,15 @@
 {
   imports = [
     ./hardware-configuration.nix
-    ../../modules/hardware/nvidia.nix
+
     ../../modules/wm/niri
     ../../modules/wm/ly.nix
+
     ../../modules/coding/fish
+
     ../../modules/apps/steam.nix
+
+    ../../modules/ai/ollama.nix
   ];
 
   boot.loader.systemd-boot.enable = true;
