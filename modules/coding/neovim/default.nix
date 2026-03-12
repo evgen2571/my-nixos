@@ -13,6 +13,7 @@
   home.packages = with pkgs; [
     neovim
 
+	matugen
     git
     curl
     unzip
