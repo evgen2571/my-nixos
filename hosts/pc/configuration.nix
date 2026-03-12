@@ -9,13 +9,17 @@
   imports = [
     ./hardware-configuration.nix
     ../../modules/hardware/nvidia.nix
+
     ../../modules/wm/niri
     ../../modules/wm/opentabletdriver.nix
     ../../modules/wm/gnome
     ../../modules/wm/ly.nix
-    ../../modules/coding/fish
-    ../../modules/apps/steam.nix
 
+    ../../modules/coding/fish
+
+    ../../modules/ai/ollama.nix
+
+    ../../modules/apps/steam.nix
     ../../modules/apps/aagl.nix
   ];
 

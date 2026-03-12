@@ -24,7 +24,6 @@
 
     millennium.url = "github:SteamClientHomebrew/Millennium?dir=packages/nix";
   };
-
   outputs =
     inputs@{
       nixpkgs,
