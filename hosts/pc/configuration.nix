@@ -11,11 +11,13 @@
     ../../modules/hardware/nvidia.nix
 
     ../../modules/wm/niri
+    # ../../modules/wm/gnome
+    ../../modules/wm/cinnamon
     ../../modules/wm/opentabletdriver.nix
-    ../../modules/wm/gnome
     ../../modules/wm/ly.nix
 
     ../../modules/coding/fish
+    ../../modules/coding/docker
 
     ../../modules/ai/ollama.nix
 
@@ -58,6 +60,7 @@
       "wheel"
       "input"
       "git"
+      "docker"
     ];
     shell = pkgs.fish;
   };

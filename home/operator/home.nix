@@ -18,6 +18,7 @@
     ../../modules/apps/vesktop.nix
     # ../../modules/apps/telegram.nix
     ../../modules/apps/youtube-music.nix
+    ../../modules/apps/prism-launcher.nix
 
     # file managers
     ../../modules/file-managers/dolphin.nix
