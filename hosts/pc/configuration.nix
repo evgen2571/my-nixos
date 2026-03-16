@@ -21,7 +21,9 @@
 
     ../../modules/ai/ollama.nix
 
+    ../../modules/apps/kde-connect.nix
     ../../modules/apps/steam.nix
+    # ../../modules/apps/lutris.nix
     ../../modules/apps/aagl.nix
   ];
 
