@@ -1,4 +1,5 @@
 {
+  configPaths,
   config,
   pkgs,
   inputs,
@@ -6,5 +7,5 @@
 }:
 
 {
-  xdg.configFile."kitty/kitty.conf".source = ./kitty.conf;
+  xdg.configFile."kitty/kitty.conf".source = configPaths.coding.kittyConf;
 }

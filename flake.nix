@@ -33,11 +33,14 @@
     let
       wm = "niri";
       modulePaths = import ./lib/module-paths.nix { root = ./.; };
+      configPaths = import ./lib/config-paths.nix { root = ./.; };
       mkHost =
         hostModule:
         nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
-          specialArgs = { inherit inputs wm modulePaths; };
+          specialArgs = {
+            inherit inputs wm modulePaths configPaths;
+          };
           modules = [
             hostModule
             home-manager.nixosModules.home-manager
@@ -45,7 +48,9 @@
               home-manager.backupFileExtension = "backup";
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
-              home-manager.extraSpecialArgs = { inherit inputs wm modulePaths; };
+              home-manager.extraSpecialArgs = {
+                inherit inputs wm modulePaths configPaths;
+              };
               home-manager.users.evgen2571 = import ./home/evgen2571/home.nix;
             }
           ];
