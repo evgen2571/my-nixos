@@ -1,37 +1,44 @@
 {
-  lib,
+  modulePaths,
   pkgs,
-  wm,
   ...
 }:
 
 {
   imports = [
     ./hardware-configuration.nix
-    ../../modules/hardware/nvidia.nix
+    modulePaths.hardware.nvidia
 
-    ../../modules/wm/niri
-    # ../../modules/wm/gnome
-    ../../modules/wm/cinnamon
-    ../../modules/wm/opentabletdriver.nix
-    ../../modules/wm/ly.nix
+    modulePaths.wm.niri
+    modulePaths.wm.cinnamon
+    modulePaths.wm.opentabletdriver
+    modulePaths.wm.ly
+    modulePaths.wm.virtualization
 
-    ../../modules/coding/fish
-    ../../modules/coding/docker
+    modulePaths.coding.fish
+    modulePaths.coding.docker
 
-    ../../modules/ai/ollama.nix
+    modulePaths.ai.ollama
 
-    ../../modules/apps/kde-connect.nix
-    ../../modules/apps/steam.nix
-    # ../../modules/apps/lutris.nix
-    ../../modules/apps/aagl.nix
+    modulePaths.fileManagers.thunar
+
+    modulePaths.apps.kdeConnect
+    modulePaths.apps.steam
+    modulePaths.apps.aagl
   ];
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
   networking.hostName = "nixos-pc";
-  networking.networkmanager.enable = true;
+  networking.networkmanager = {
+    enable = true;
+    plugins = with pkgs; [
+      networkmanager-openvpn
+    ];
+  };
+
+  programs.nm-applet.enable = true;
 
   time.timeZone = "UTC";
   i18n.defaultLocale = "en_US.UTF-8";
@@ -49,9 +56,17 @@
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
+    pulse.enable = true;
     alsa.enable = true;
     alsa.support32Bit = true;
-    pulse.enable = true;
+  };
+
+  xdg.portal = {
+    enable = true;
+    extraPortals = with pkgs; [
+      xdg-desktop-portal-gtk
+      xdg-desktop-portal-gnome
+    ];
   };
 
   users.users.operator = {
@@ -63,6 +78,7 @@
       "input"
       "git"
       "docker"
+      "libvirtd"
     ];
     shell = pkgs.fish;
   };

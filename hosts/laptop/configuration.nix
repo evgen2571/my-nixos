@@ -1,7 +1,6 @@
 {
-  lib,
+  modulePaths,
   pkgs,
-  wm,
   ...
 }:
 
@@ -9,14 +8,14 @@
   imports = [
     ./hardware-configuration.nix
 
-    ../../modules/wm/niri
-    ../../modules/wm/ly.nix
+    modulePaths.wm.niri
+    modulePaths.wm.ly
 
-    ../../modules/coding/fish
+    modulePaths.coding.fish
 
-    ../../modules/apps/steam.nix
+    modulePaths.apps.steam
 
-    ../../modules/ai/ollama.nix
+    modulePaths.ai.ollama
   ];
 
   boot.loader.systemd-boot.enable = true;
