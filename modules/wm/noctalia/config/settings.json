@@ -650,8 +650,12 @@
                 "id": "niri"
             },
             {
-                "enabled": true,
+                "enabled": false,
                 "id": "zed"
+            },
+            {
+                "enabled": true,
+                "id": "gtk"
             }
         ],
         "enableUserTheming": true

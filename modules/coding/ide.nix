@@ -7,14 +7,14 @@
     ripgrep
     fzf
     tmux
-	tmux-sessionizer
+    tmux-sessionizer
     kitty
-	readline.dev
-	lua5_1
-	imagemagick
-	matugen
+    readline.dev
+    lua5_1
+    imagemagick
+    matugen
 
-	python313Packages.pynvim
-	python313Packages.jupyter-client
+    python313Packages.pynvim
+    python313Packages.jupyter-client
   ];
 }
