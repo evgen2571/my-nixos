@@ -1,38 +1,38 @@
-{ lib, wm, ... }:
+{ modulePaths, ... }:
 {
   home.username = "evgen2571";
   home.homeDirectory = "/home/evgen2571";
 
   imports = [
-    # wm
-    (lib.getAttr wm {
-      hyprland = ../../modules/wm/hyprland/config.nix;
-      niri = ../../modules/wm/niri/config.nix;
-    })
-    ../../modules/wm/noctalia
-    ../../modules/wm/screen-recorder.nix
+    modulePaths.wm.niriConfig
+    modulePaths.wm.noctalia
+    modulePaths.wm.screenRecorder
 
     # apps
-    ../../modules/apps/zen-browser.nix
-    ../../modules/apps/obsidian.nix
-    ../../modules/apps/vesktop.nix
-    # ../../modules/apps/telegram.nix
-    ../../modules/apps/youtube-music.nix
-    ../../modules/apps/prism-launcher.nix
+    modulePaths.apps.zenBrowser
+    modulePaths.apps.chrome
+    modulePaths.apps.obsidian
+    modulePaths.apps.vesktop
+    modulePaths.apps.telegram
+    modulePaths.apps.youtubeMusic
+    modulePaths.apps.prismLauncher
+    modulePaths.apps.bitwarden
+    modulePaths.apps.osuLazer
+    # modulePaths.apps.obs
 
     # file managers
-    ../../modules/file-managers/dolphin.nix
-    ../../modules/file-managers/yazi.nix
+    # modulePaths.fileManagers.dolphin
+    modulePaths.fileManagers.yazi
 
     # coding
-    ../../modules/coding/kitty
-    ../../modules/coding/neovim
-    ../../modules/coding/tmux
-    ../../modules/coding/starship
-    ../../modules/coding/fish/config.nix
-    ../../modules/coding/dev-tools.nix
-    ../../modules/coding/git.nix
-    ../../modules/coding/vscode.nix
+    modulePaths.coding.kitty
+    modulePaths.coding.neovim
+    modulePaths.coding.tmux
+    modulePaths.coding.starship
+    modulePaths.coding.fishConfig
+    modulePaths.coding.devTools
+    modulePaths.coding.git
+    # modulePaths.coding.vscode
   ];
 
   home.sessionPath = [ "$HOME/.cargo/bin" ];

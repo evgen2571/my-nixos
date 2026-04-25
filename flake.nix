@@ -32,11 +32,12 @@
     }:
     let
       wm = "niri";
+      modulePaths = import ./lib/module-paths.nix { root = ./.; };
       mkHost =
         hostModule:
         nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
-          specialArgs = { inherit inputs wm; };
+          specialArgs = { inherit inputs wm modulePaths; };
           modules = [
             hostModule
             home-manager.nixosModules.home-manager
@@ -44,7 +45,7 @@
               home-manager.backupFileExtension = "backup";
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
-              home-manager.extraSpecialArgs = { inherit inputs wm; };
+              home-manager.extraSpecialArgs = { inherit inputs wm modulePaths; };
               home-manager.users.evgen2571 = import ./home/evgen2571/home.nix;
             }
           ];
