@@ -1,46 +1,30 @@
 { root }:
 {
+  # System-level NixOS modules imported by hosts/*/configuration.nix.
+  system = {
+    common = root + "/modules/system-core/common.nix";
+    user = root + "/modules/system-core/user.nix";
+  };
+
   ai = {
-    codex = root + "/modules/ai/codex.nix";
-    llamaCpp = root + "/modules/ai/llama-cpp.nix";
-    ollama = root + "/modules/ai/ollama.nix";
+    ollama = root + "/modules/system-services/ollama.nix";
   };
 
   apps = {
-    aagl = root + "/modules/apps/aagl.nix";
-    bitwarden = root + "/modules/apps/bitwarden.nix";
-    chrome = root + "/modules/apps/chrome.nix";
-    kdeConnect = root + "/modules/apps/kde-connect.nix";
-    lutris = root + "/modules/apps/lutris.nix";
-    obs = root + "/modules/apps/obs.nix";
-    obsidian = root + "/modules/apps/obsidian.nix";
-    osuLazer = root + "/modules/apps/osu-lazer.nix";
-    prismLauncher = root + "/modules/apps/prism-launcher.nix";
-    steam = root + "/modules/apps/steam.nix";
-    telegram = root + "/modules/apps/telegram.nix";
-    vesktop = root + "/modules/apps/vesktop.nix";
-    youtubeMusic = root + "/modules/apps/youtube-music.nix";
-    zenBrowser = root + "/modules/apps/zen-browser.nix";
+    aagl = root + "/modules/system-apps/aagl.nix";
+    kdeConnect = root + "/modules/system-apps/kde-connect.nix";
+    lutris = root + "/modules/system-apps/lutris.nix";
+    obs = root + "/modules/system-apps/obs.nix";
+    steam = root + "/modules/system-apps/steam.nix";
   };
 
   coding = {
-    devTools = root + "/modules/coding/dev-tools.nix";
-    docker = root + "/modules/coding/docker";
-    fish = root + "/modules/coding/fish";
-    fishConfig = root + "/modules/coding/fish/config.nix";
-    git = root + "/modules/coding/git.nix";
-    kitty = root + "/modules/coding/kitty";
-    neovim = root + "/modules/coding/neovim";
-    starship = root + "/modules/coding/starship";
-    tmux = root + "/modules/coding/tmux";
-    vscode = root + "/modules/coding/vscode.nix";
-    zed = root + "/modules/coding/zed.nix";
+    docker = root + "/modules/system-dev/docker";
+    fish = root + "/modules/system-dev/fish.nix";
   };
 
   fileManagers = {
-    dolphin = root + "/modules/file-managers/dolphin.nix";
-    thunar = root + "/modules/file-managers/thunar.nix";
-    yazi = root + "/modules/file-managers/yazi.nix";
+    thunar = root + "/modules/system-files/thunar.nix";
   };
 
   hardware = {
@@ -49,17 +33,58 @@
   };
 
   wm = {
-    cinnamon = root + "/modules/wm/cinnamon";
-    gnome = root + "/modules/wm/gnome";
-    hyprland = root + "/modules/wm/hyprland";
-    hyprlandConfig = root + "/modules/wm/hyprland/config.nix";
-    ly = root + "/modules/wm/ly.nix";
-    niri = root + "/modules/wm/niri";
-    niriConfig = root + "/modules/wm/niri/config.nix";
-    noctalia = root + "/modules/wm/noctalia";
-    opentabletdriver = root + "/modules/wm/opentabletdriver.nix";
-    screenRecorder = root + "/modules/wm/screen-recorder.nix";
-    virtualization = root + "/modules/wm/virtualization.nix";
-    xserver = root + "/modules/wm/xserver.nix";
+    cinnamon = root + "/modules/desktops/cinnamon";
+    gnome = root + "/modules/desktops/gnome";
+    hyprland = root + "/modules/desktops/hyprland";
+    ly = root + "/modules/desktops/ly.nix";
+    niri = root + "/modules/desktops/niri";
+    opentabletdriver = root + "/modules/desktops/opentabletdriver.nix";
+    virtualization = root + "/modules/system-services/virtualization.nix";
+    xserver = root + "/modules/desktops/xserver.nix";
+  };
+
+  # User-level Home Manager modules imported by home/*/home.nix.
+  user = {
+    ai = {
+      codex = root + "/modules/user-ai/codex.nix";
+      llamaCpp = root + "/modules/user-ai/llama-cpp.nix";
+    };
+
+    apps = {
+      bitwarden = root + "/modules/user-apps/bitwarden.nix";
+      chrome = root + "/modules/user-apps/chrome.nix";
+      obsidian = root + "/modules/user-apps/obsidian.nix";
+      osuLazer = root + "/modules/user-apps/osu-lazer.nix";
+      prismLauncher = root + "/modules/user-apps/prism-launcher.nix";
+      telegram = root + "/modules/user-apps/telegram.nix";
+      vesktop = root + "/modules/user-apps/vesktop.nix";
+      youtubeMusic = root + "/modules/user-apps/youtube-music.nix";
+      zenBrowser = root + "/modules/user-apps/zen-browser.nix";
+    };
+
+    dev = {
+      devTools = root + "/modules/user-dev/dev-tools.nix";
+      fishConfig = root + "/modules/user-dev/fish/config.nix";
+      git = root + "/modules/user-dev/git.nix";
+      ide = root + "/modules/user-dev/ide.nix";
+      kitty = root + "/modules/user-dev/kitty";
+      neovim = root + "/modules/user-dev/neovim";
+      starship = root + "/modules/user-dev/starship";
+      tmux = root + "/modules/user-dev/tmux";
+      vscode = root + "/modules/user-dev/vscode.nix";
+      zed = root + "/modules/user-dev/zed.nix";
+    };
+
+    files = {
+      dolphin = root + "/modules/user-files/dolphin.nix";
+      yazi = root + "/modules/user-files/yazi.nix";
+    };
+
+    desktop = {
+      hyprlandConfig = root + "/modules/user-desktop/hyprland/config.nix";
+      niriConfig = root + "/modules/user-desktop/niri/config.nix";
+      noctalia = root + "/modules/user-desktop/noctalia";
+      screenRecorder = root + "/modules/user-desktop/screen-recorder.nix";
+    };
   };
 }
