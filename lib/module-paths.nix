@@ -10,6 +10,10 @@
     ollama = root + "/modules/system-services/ollama.nix";
   };
 
+  systemServices = {
+    vpnbookWireguardFailover = root + "/modules/system-services/vpnbook-wireguard-failover.nix";
+  };
+
   apps = {
     aagl = root + "/modules/system-apps/aagl.nix";
     kdeConnect = root + "/modules/system-apps/kde-connect.nix";

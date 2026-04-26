@@ -29,12 +29,19 @@ in
       default = pkgs.bash;
       description = "Login shell package for the user.";
     };
+
+    authorizedKeys = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [ ];
+      description = "SSH public keys authorized for this user.";
+    };
   };
 
   config = lib.mkIf cfg.enable {
     users.users.${cfg.name} = {
       isNormalUser = true;
       inherit (cfg) description extraGroups shell;
+      openssh.authorizedKeys.keys = cfg.authorizedKeys;
     };
   };
 }
