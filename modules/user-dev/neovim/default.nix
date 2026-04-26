@@ -5,44 +5,51 @@
   ...
 }:
 
+let
+  cfg = config.my.user.dev.neovim;
+in
 {
   imports = [
     ./config.nix
   ];
 
-  home.packages = with pkgs; [
-    neovim
+  options.my.user.dev.neovim.enable = lib.mkEnableOption "Neovim";
 
-	matugen
-    git
-    curl
-    unzip
-    gzip
-    xz
+  config = lib.mkIf cfg.enable {
+    home.packages = with pkgs; [
+      neovim
 
-    ripgrep
-    fd
-    gnutar
-    gcc
-    gnumake
-    pkg-config
-    luarocks
+      matugen
+      git
+      curl
+      unzip
+      gzip
+      xz
 
-    wl-clipboard
-    xclip
+      ripgrep
+      fd
+      gnutar
+      gcc
+      gnumake
+      pkg-config
+      luarocks
 
-    nodejs
-    python3
-    lua-language-server
-    stylua
-    tree-sitter
+      wl-clipboard
+      xclip
 
-    jq
-    fzf
-  ];
+      nodejs
+      python3
+      lua-language-server
+      stylua
+      tree-sitter
 
-  home.sessionVariables = {
-    EDITOR = "nvim";
-    VISUAL = "nvim";
+      jq
+      fzf
+    ];
+
+    home.sessionVariables = {
+      EDITOR = "nvim";
+      VISUAL = "nvim";
+    };
   };
 }

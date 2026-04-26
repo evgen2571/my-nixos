@@ -1,7 +1,16 @@
-{ pkgs, ... }:
+{ config, lib,  pkgs, ... }:
 
+let
+  cfg = config.my.user.apps.vesktop;
+in
 {
-  home.packages = with pkgs; [
-    vesktop
-  ];
+  options.my.user.apps.vesktop.enable = lib.mkEnableOption "Vesktop";
+
+  config = lib.mkIf cfg.enable (
+    {
+      home.packages = with pkgs; [
+        vesktop
+      ];
+    }
+  );
 }

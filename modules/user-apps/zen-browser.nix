@@ -1,5 +1,8 @@
 { config, pkgs, inputs, lib, ... }:
 
+let
+  cfg = config.my.user.apps.zenBrowser;
+in
 {
   imports = [
     # Options:
@@ -9,8 +12,9 @@
     inputs.zen-browser.homeModules.twilight
   ];
 
-  # Enable the browser
-  programs.zen-browser.enable = true;
+  options.my.user.apps.zenBrowser.enable = lib.mkEnableOption "Zen Browser";
 
-  # programs.zen-browser.policies = { DisableAppUpdate = true; };
+  config = lib.mkIf cfg.enable {
+    programs.zen-browser.enable = true;
+  };
 }

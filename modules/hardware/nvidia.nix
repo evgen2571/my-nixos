@@ -1,21 +1,30 @@
-{ config, pkgs, ... }:
+{ lib,  config, pkgs, ... }:
 
+let
+  cfg = config.my.hardware.nvidia;
+in
 {
-  services.xserver.videoDrivers = [ "nvidia" ];
+  options.my.hardware.nvidia.enable = lib.mkEnableOption "NVIDIA graphics support";
 
-  hardware.graphics = {
-    enable = true;
-    enable32Bit = true;
-  };
+  config = lib.mkIf cfg.enable (
+    {
+      services.xserver.videoDrivers = [ "nvidia" ];
 
-  hardware.nvidia = {
-    modesetting.enable = true;
-    powerManagement.enable = false;
-    open = false;
-    package = config.boot.kernelPackages.nvidiaPackages.stable;
-  };
+      hardware.graphics = {
+        enable = true;
+        enable32Bit = true;
+      };
 
-  boot.kernelParams = [ "nvidia-drm.modeset=1" ];
+      hardware.nvidia = {
+        modesetting.enable = true;
+        powerManagement.enable = false;
+        open = false;
+        package = config.boot.kernelPackages.nvidiaPackages.stable;
+      };
 
-  programs.xwayland.enable = true;
+      boot.kernelParams = [ "nvidia-drm.modeset=1" ];
+
+      programs.xwayland.enable = true;
+    }
+  );
 }

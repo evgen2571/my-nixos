@@ -1,6 +1,11 @@
 { root }:
 {
   # System-level NixOS modules imported by hosts/*/configuration.nix.
+  system = {
+    common = root + "/modules/system-core/common.nix";
+    user = root + "/modules/system-core/user.nix";
+  };
+
   ai = {
     ollama = root + "/modules/system-services/ollama.nix";
   };

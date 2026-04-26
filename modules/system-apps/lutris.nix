@@ -1,11 +1,21 @@
-{ config, pkgs, ... }:
+{ lib,  config, pkgs, ... }:
+
+let
+  cfg = config.my.system.apps.lutris;
+in
 {
-  environment.systemPackages = with pkgs; [
-    (lutris.override {
-      extraPkgs = pkgs: [
-        wineWowPackages.stagingFull
-        winetricks
+  options.my.system.apps.lutris.enable = lib.mkEnableOption "Lutris";
+
+  config = lib.mkIf cfg.enable (
+    {
+      environment.systemPackages = with pkgs; [
+        (lutris.override {
+          extraPkgs = pkgs: [
+            wineWowPackages.stagingFull
+            winetricks
+          ];
+        })
       ];
-    })
-  ];
+    }
+  );
 }

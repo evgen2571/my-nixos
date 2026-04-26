@@ -1,13 +1,22 @@
-{
+{ config, lib,
   configPaths,
   pkgs,
   ...
 }:
 
+let
+  cfg = config.my.user.dev.starship;
+in
 {
-  home.packages = with pkgs; [
-    starship
-  ];
+  options.my.user.dev.starship.enable = lib.mkEnableOption "Starship prompt";
 
-  xdg.configFile."starship.toml".source = configPaths.coding.starshipToml;
+  config = lib.mkIf cfg.enable (
+    {
+      home.packages = with pkgs; [
+        starship
+      ];
+
+      xdg.configFile."starship.toml".source = configPaths.coding.starshipToml;
+    }
+  );
 }

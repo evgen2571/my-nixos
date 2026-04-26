@@ -1,6 +1,8 @@
 # configuration.nix
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 let
+  cfg = config.my.system.apps.aagl;
+
   # aagl = import (builtins.fetchTarball "https://github.com/ezKEa/aagl-gtk-on-nix/archive/main.tar.gz");
   # Or, if you follow Nixpkgs release 25.11:
   aagl = import (
@@ -15,11 +17,10 @@ in
     aagl.module
   ];
 
-  nix.settings = aagl.nixConfig; # Set up Cachix
-  programs.anime-game-launcher.enable = true;
-  # programs.anime-games-launcher.enable = true;
-  # programs.honkers-railway-launcher.enable = true;
-  # programs.honkers-launcher.enable = true;
-  # programs.wavey-launcher.enable = true;
-  # programs.sleepy-launcher.enable = true;
+  options.my.system.apps.aagl.enable = lib.mkEnableOption "Anime Game Launcher";
+
+  config = lib.mkIf cfg.enable {
+    nix.settings = aagl.nixConfig; # Set up Cachix
+    programs.anime-game-launcher.enable = true;
+  };
 }

@@ -1,15 +1,24 @@
-{ config, pkgs, ... }:
+{ lib,  config, pkgs, ... }:
 
+let
+  cfg = config.my.system.services.virtualization;
+in
 {
-  virtualisation.libvirtd = {
-    enable = true;
-    qemu.vhostUserPackages = with pkgs; [ virtiofsd ];
-  };
+  options.my.system.services.virtualization.enable = lib.mkEnableOption "Libvirt virtualization tooling";
 
-  programs.virt-manager.enable = true;
-  services.tailscale.enable = true;
+  config = lib.mkIf cfg.enable (
+    {
+      virtualisation.libvirtd = {
+        enable = true;
+        qemu.vhostUserPackages = with pkgs; [ virtiofsd ];
+      };
 
-  environment.systemPackages = with pkgs; [
-    virtiofsd
-  ];
+      programs.virt-manager.enable = true;
+      services.tailscale.enable = true;
+
+      environment.systemPackages = with pkgs; [
+        virtiofsd
+      ];
+    }
+  );
 }

@@ -1,8 +1,17 @@
-{
+{ lib,
   config,
   ...
 }:
 
+let
+  cfg = config.my.system.dev.docker;
+in
 {
-  virtualisation.docker.enable = true;
+  options.my.system.dev.docker.enable = lib.mkEnableOption "Docker";
+
+  config = lib.mkIf cfg.enable (
+    {
+      virtualisation.docker.enable = true;
+    }
+  );
 }

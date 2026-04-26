@@ -1,12 +1,21 @@
 {
   config,
+  lib,
   pkgs,
   inputs,
   ...
 }:
 
+let
+  cfg = config.my.desktop.niri;
+in
 {
-  imports = [ ../xserver.nix ];
+  options.my.desktop.niri.enable = lib.mkEnableOption "Niri desktop session";
 
-  programs.niri.enable = true;
+  config = lib.mkIf cfg.enable {
+    services.xserver.enable = true;
+    programs.xwayland.enable = true;
+
+    programs.niri.enable = true;
+  };
 }

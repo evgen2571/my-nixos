@@ -1,11 +1,17 @@
 {
   configPaths,
   config,
+  lib,
   pkgs,
   inputs,
   ...
 }:
 
+let
+  cfg = config.my.user.dev.kitty;
+in
 {
-  xdg.configFile."kitty/kitty.conf".source = configPaths.coding.kittyConf;
+  config = lib.mkIf cfg.enable {
+    xdg.configFile."kitty/kitty.conf".source = configPaths.coding.kittyConf;
+  };
 }
