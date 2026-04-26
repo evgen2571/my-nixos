@@ -1,15 +1,15 @@
 { root }:
 {
   coding = {
-    fishConfigDir = root + "/configs/coding/fish/config";
-    kittyConf = root + "/configs/coding/kitty/kitty.conf";
-    neovimConfigDir = root + "/configs/coding/neovim/config";
-    starshipToml = root + "/configs/coding/starship/starship.toml";
+    fishConfigDir = root + "/config/fish";
+    kittyConf = root + "/config/kitty/kitty.conf";
+    neovimConfigDir = root + "/config/neovim";
+    starshipToml = root + "/config/starship/starship.toml";
   };
 
   wm = {
-    hyprlandConfigDir = root + "/configs/wm/hyprland/config";
-    niriConfigDir = root + "/configs/wm/niri/config";
-    noctaliaConfigDir = root + "/configs/wm/noctalia/config";
+    hyprlandConfigDir = root + "/config/hyprland";
+    niriConfigDir = root + "/config/niri";
+    noctaliaConfigDir = root + "/config/noctalia";
   };
 }
