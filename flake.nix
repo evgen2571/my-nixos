@@ -9,6 +9,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    hermes-agent = {
+      url = "github:NousResearch/hermes-agent";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     zen-browser = {
       url = "github:0xc000022070/zen-browser-flake";
       inputs = {
@@ -28,6 +33,7 @@
     inputs@{
       nixpkgs,
       home-manager,
+      hermes-agent,
       ...
     }:
     let
@@ -43,6 +49,7 @@
           };
           modules = [
             hostModule
+            hermes-agent.nixosModules.default
             home-manager.nixosModules.home-manager
             {
               home-manager.backupFileExtension = "backup";
@@ -60,6 +67,7 @@
       nixosConfigurations = {
         nixos-pc = mkHost ./hosts/pc/configuration.nix;
         nixos-lp = mkHost ./hosts/laptop/configuration.nix;
+        nixos-server = mkHost ./hosts/server/configuration.nix;
       };
     };
 
