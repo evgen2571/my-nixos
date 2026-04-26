@@ -1,30 +1,9 @@
-{
-  modulePaths,
-  pkgs,
-  ...
-}:
+{ pkgs, ... }:
 
 {
   imports = [
     ./hardware-configuration.nix
-    modulePaths.hardware.nvidia
-
-    modulePaths.wm.niri
-    modulePaths.wm.cinnamon
-    modulePaths.wm.opentabletdriver
-    modulePaths.wm.ly
-    modulePaths.wm.virtualization
-
-    modulePaths.coding.fish
-    modulePaths.coding.docker
-
-    modulePaths.ai.ollama
-
-    modulePaths.fileManagers.thunar
-
-    modulePaths.apps.kdeConnect
-    modulePaths.apps.steam
-    modulePaths.apps.aagl
+    ./profile.nix
   ];
 
   boot.loader.systemd-boot.enable = true;
@@ -101,16 +80,13 @@
     vulkan-tools
   ];
 
-  # Enable a basic set of fonts for good Unicode coverage
   fonts.enableDefaultPackages = true;
-
-  # Add common font packages
   fonts.packages = with pkgs; [
-    noto-fonts # Basic emoji and general purpose fonts
-    noto-fonts-cjk-sans # Chinese, Japanese, Korean support
+    noto-fonts
+    noto-fonts-cjk-sans
     noto-fonts-color-emoji
-    liberation_ttf # Free replacements for Arial, Times, Courier
-    dejavu_fonts # Wide Unicode coverage
+    liberation_ttf
+    dejavu_fonts
   ];
 
   nix.settings = {

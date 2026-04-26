@@ -1,10 +1,9 @@
-{ config, pkgs, ... }:
+{ inputs, pkgs, ... }:
 
 let
-  unstable = import <nixos-unstable> {
-    config = {
-      allowUnfree = true;
-    };
+  unstable = import inputs.nixpkgs-unstable {
+    system = pkgs.system;
+    config.allowUnfree = true;
   };
 in
 {

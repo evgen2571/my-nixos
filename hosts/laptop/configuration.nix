@@ -1,21 +1,9 @@
-{
-  modulePaths,
-  pkgs,
-  ...
-}:
+{ pkgs, ... }:
 
 {
   imports = [
     ./hardware-configuration.nix
-
-    modulePaths.wm.niri
-    modulePaths.wm.ly
-
-    modulePaths.coding.fish
-
-    modulePaths.apps.steam
-
-    modulePaths.ai.ollama
+    ./profile.nix
   ];
 
   boot.loader.systemd-boot.enable = true;
