@@ -1,4 +1,5 @@
-{ lib,
+{
+  lib,
   configPaths,
   config,
   pkgs,
@@ -12,9 +13,7 @@ in
 {
   options.my.user.dev.fishConfig.enable = lib.mkEnableOption "Fish user configuration";
 
-  config = lib.mkIf cfg.enable (
-    {
-      xdg.configFile."fish".source = configPaths.coding.fishConfigDir;
-    }
-  );
+  config = lib.mkIf cfg.enable ({
+    xdg.configFile."fish".source = configPaths.coding.fishConfigDir;
+  });
 }

@@ -31,7 +31,8 @@
   my = {
     desktop = {
       niri.enable = true;
-      cinnamon.enable = true;
+      hyprland.enable = false;
+      cinnamon.enable = false;
       ly.enable = true;
       opentabletdriver.enable = true;
     };
@@ -68,8 +69,10 @@
       modulePaths.user.ai.codex
       modulePaths.user.ai.llamaCpp
 
+      modulePaths.user.apps.anki
       modulePaths.user.apps.bitwarden
       modulePaths.user.apps.chrome
+      modulePaths.user.apps.notion
       modulePaths.user.apps.obsidian
       modulePaths.user.apps.osuLazer
       modulePaths.user.apps.prismLauncher
@@ -78,6 +81,7 @@
       modulePaths.user.apps.youtubeMusic
       modulePaths.user.apps.zenBrowser
 
+      modulePaths.user.desktop.end4HyprlandDots
       modulePaths.user.desktop.hyprlandConfig
       modulePaths.user.desktop.niriConfig
       modulePaths.user.desktop.noctalia
@@ -93,6 +97,7 @@
       modulePaths.user.dev.tmux
       modulePaths.user.dev.vscode
       modulePaths.user.dev.zed
+      modulePaths.user.dev.zoxide
 
       modulePaths.user.files.dolphin
       modulePaths.user.files.yazi
@@ -100,10 +105,12 @@
 
     my.user = {
       apps = {
+        anki.enable = true;
         bitwarden.enable = true;
-        chrome.enable = true;
+        chrome.enable = false;
+        notion.enable = true;
         obsidian.enable = true;
-        osuLazer.enable = true;
+        osuLazer.enable = false;
         prismLauncher.enable = true;
         telegram.enable = true;
         vesktop.enable = true;
@@ -112,7 +119,12 @@
       };
 
       desktop = {
-        niriConfig.enable = true;
+        end4HyprlandDots.enable = false;
+        hyprlandConfig.enable = false;
+        niriConfig = {
+          enable = true;
+          workspacesFile = "workspaces-pc.kdl";
+        };
         noctalia.enable = true;
         screenRecorder.enable = true;
       };
@@ -125,6 +137,7 @@
         neovim.enable = true;
         starship.enable = true;
         tmux.enable = true;
+        zoxide.enable = true;
       };
 
       files = {

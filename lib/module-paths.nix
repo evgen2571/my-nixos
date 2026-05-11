@@ -3,6 +3,7 @@
   # System-level NixOS modules imported by hosts/*/configuration.nix.
   system = {
     common = root + "/modules/system-core/common.nix";
+    server = root + "/modules/system-core/server.nix";
     user = root + "/modules/system-core/user.nix";
   };
 
@@ -55,8 +56,10 @@
     };
 
     apps = {
+      anki = root + "/modules/user-apps/anki.nix";
       bitwarden = root + "/modules/user-apps/bitwarden.nix";
       chrome = root + "/modules/user-apps/chrome.nix";
+      notion = root + "/modules/user-apps/notion.nix";
       obsidian = root + "/modules/user-apps/obsidian.nix";
       osuLazer = root + "/modules/user-apps/osu-lazer.nix";
       prismLauncher = root + "/modules/user-apps/prism-launcher.nix";
@@ -77,6 +80,7 @@
       tmux = root + "/modules/user-dev/tmux";
       vscode = root + "/modules/user-dev/vscode.nix";
       zed = root + "/modules/user-dev/zed.nix";
+      zoxide = root + "/modules/user-dev/zoxide.nix";
     };
 
     files = {
@@ -85,6 +89,7 @@
     };
 
     desktop = {
+      end4HyprlandDots = root + "/modules/user-desktop/hyprland/end4-dots.nix";
       hyprlandConfig = root + "/modules/user-desktop/hyprland/config.nix";
       niriConfig = root + "/modules/user-desktop/niri/config.nix";
       noctalia = root + "/modules/user-desktop/noctalia";
