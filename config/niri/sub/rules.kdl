@@ -61,6 +61,27 @@ window-rule {
 	opacity 0.98
 }
 
+// Anki
+window-rule {
+    match app-id=r#"^(anki|net\.ankiweb\.Anki)$"#
+    draw-border-with-background false
+	open-maximized-to-edges true
+	open-on-workspace "anki"
+	opacity 0.98
+}
+
+// Anki add-note dialog
+window-rule {
+    match app-id=r#"^(anki|net\.ankiweb\.Anki)$"#
+    match title=r#"^(Add|Add Note|Add Cards|Добавить).*$"#
+	open-floating true
+	open-maximized-to-edges false
+	open-focused true
+	default-column-width { proportion 0.55; }
+	default-window-height { proportion 0.75; }
+	open-on-workspace "anki"
+}
+
 // Editor
 window-rule {
 	match title="editor"

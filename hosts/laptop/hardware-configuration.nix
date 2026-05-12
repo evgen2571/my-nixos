@@ -18,8 +18,13 @@
       fsType = "ext4";
     };
 
+  fileSystems."/home/operator/drive" =
+    { device = "/dev/disk/by-label/MY-NIXOS-LAPTOP-DRIVE-REPLACE-ME";
+      fsType = "ext4";
+    };
+
   fileSystems."/boot" =
-    { device = "/dev/disk/by-label/MY-NIXOS-HISTORICAL-3135CCCB-REPLACE-ME";
+    { device = "/dev/disk/by-label/MY-NIXOS-LAPTOP-BOOT-REPLACE-ME";
       fsType = "vfat";
       options = [ "fmask=0022" "dmask=0022" ];
     };

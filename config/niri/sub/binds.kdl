@@ -9,6 +9,8 @@ binds {
 	Mod+Shift+E repeat=false hotkey-overlay-title="GUI File Manager" { spawn "thunar"; }
 	Mod+C repeat=false hotkey-overlay-title="Editor" { spawn "kitty" "-T" "editor" "tms"; }
 	Mod+O repeat=false hotkey-overlay-title="Notetaker" { spawn "obsidian"; }
+    Mod+A repeat=false hotkey-overlay-title="Anki" { spawn "anki"; }
+    Mod+Shift+A repeat=false hotkey-overlay-title="Anki Add Note" { spawn "anki"; }
 
 	// Noctalia
     Mod+Comma 			{ spawn-sh "noctalia-shell ipc call settings toggle"; }
@@ -18,10 +20,6 @@ binds {
     Mod+P 				{ spawn-sh "noctalia-shell ipc call sessionMenu toggle"; }
     Mod+Alt+L 			{ spawn-sh "noctalia-shell ipc call sessionMenu lockAndSuspend"; }
     Ctrl+Shift+Escape   { spawn-sh "noctalia-shell ipc call systemMonitor toggle"; }
-
-	// Noctalia Plugins
-    Mod+Shift+T			{ spawn-sh "noctalia-shell ipc call plugin openSettings pomodoro"; }
-    Mod+T 				{ spawn-sh "noctalia-shell ipc call plugin togglePanel pomodoro"; }
 
 	// Volume
     XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "noctalia-shell ipc call volume increase 3"; }
@@ -41,8 +39,8 @@ binds {
 
     // Window Management    
 	Mod+Q repeat=false { close-window; }
-    Mod+A { maximize-column; }
-    Mod+Z { maximize-window-to-edges; }
+	Mod+Z { maximize-window-to-edges; }
+    Mod+Shift+Z { maximize-column; }
     Mod+Alt+Space { toggle-window-floating; }
     Mod+Shift+V { switch-focus-between-floating-and-tiling; }
     Mod+W { toggle-column-tabbed-display; }

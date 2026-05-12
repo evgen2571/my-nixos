@@ -5,7 +5,7 @@
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     home-manager = {
-      url = "github:nix-community/home-manager";
+      url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -26,8 +26,6 @@
       url = "github:noctalia-dev/noctalia-shell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    millennium.url = "github:SteamClientHomebrew/Millennium?dir=packages/nix";
   };
   outputs =
     inputs@{
@@ -45,7 +43,12 @@
         nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
           specialArgs = {
-            inherit inputs wm modulePaths configPaths;
+            inherit
+              inputs
+              wm
+              modulePaths
+              configPaths
+              ;
           };
           modules = [
             hostModule
@@ -56,7 +59,12 @@
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
               home-manager.extraSpecialArgs = {
-                inherit inputs wm modulePaths configPaths;
+                inherit
+                  inputs
+                  wm
+                  modulePaths
+                  configPaths
+                  ;
               };
               home-manager.users.operator = import ./home/operator/home.nix;
             }

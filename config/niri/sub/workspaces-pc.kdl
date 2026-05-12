@@ -1,0 +1,23 @@
+workspace "browser" {
+	open-on-output "DP-1"
+}
+
+workspace "chats" {
+	open-on-output "DP-1"
+}
+
+workspace "anki" {
+	open-on-output "DP-1"
+}
+
+workspace "notes" {
+	open-on-output "HDMI-A-1"
+}
+
+workspace "code" {
+	open-on-output "HDMI-A-1"
+}
+
+workspace "gaming" {
+	open-on-output "HDMI-A-1"
+}

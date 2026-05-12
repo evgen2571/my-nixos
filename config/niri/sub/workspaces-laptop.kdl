@@ -1,0 +1,23 @@
+workspace "browser" {
+	open-on-output "eDP-1"
+}
+
+workspace "code" {
+	open-on-output "eDP-1"
+}
+
+workspace "notes" {
+	open-on-output "eDP-1"
+}
+
+workspace "anki" {
+	open-on-output "eDP-1"
+}
+
+workspace "gaming" {
+	open-on-output "eDP-1"
+}
+
+workspace "chats" {
+	open-on-output "eDP-1"
+}

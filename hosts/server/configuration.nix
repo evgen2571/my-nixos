@@ -4,7 +4,7 @@
   imports = [
     ./hardware-configuration.nix
     ./profile.nix
-    modulePaths.system.common
+    modulePaths.system.server
     modulePaths.system.user
   ];
 
@@ -13,13 +13,9 @@
   my.system.user = {
     enable = true;
     name = "operator";
-    description = "Operator";
-    shell = pkgs.fish;
     extraGroups = [
       "networkmanager"
       "wheel"
-      "input"
-      "git"
     ];
     authorizedKeys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA example"
@@ -46,10 +42,9 @@
   };
 
   environment.systemPackages = with pkgs; [
-    git
-    vim
-    wget
     curl
+    vim
+    git
     tailscale
     wireguard-tools
   ];

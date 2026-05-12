@@ -3,7 +3,7 @@
   coding = {
     fishConfigDir = root + "/config/fish";
     kittyConf = root + "/config/kitty/kitty.conf";
-    neovimConfigDir = root + "/config/neovim";
+    neovimConfigDir = root + "/config/nvim";
     starshipToml = root + "/config/starship/starship.toml";
   };
 
