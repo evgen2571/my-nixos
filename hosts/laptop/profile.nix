@@ -98,6 +98,7 @@
       modulePaths.user.dev.vscode
       modulePaths.user.dev.zed
       modulePaths.user.dev.zoxide
+      modulePaths.user.dev.github
 
       modulePaths.user.files.dolphin
       modulePaths.user.files.yazi
@@ -138,6 +139,7 @@
         starship.enable = true;
         tmux.enable = true;
         zoxide.enable = true;
+        github.enable = true;
       };
 
       files = {
