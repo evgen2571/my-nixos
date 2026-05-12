@@ -79,6 +79,7 @@
       starship = root + "/modules/user-dev/starship";
       tmux = root + "/modules/user-dev/tmux";
       vscode = root + "/modules/user-dev/vscode.nix";
+	  github = root + "/modules/user-dev/github.nix";
       zed = root + "/modules/user-dev/zed.nix";
       zoxide = root + "/modules/user-dev/zoxide.nix";
     };
