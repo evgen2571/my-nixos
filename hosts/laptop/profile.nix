@@ -9,6 +9,9 @@
     modulePaths.wm.ly
     modulePaths.wm.opentabletdriver
     modulePaths.wm.xserver
+	modulePaths.wm.virtualization
+
+	modulePaths.systemServices.tailscale
 
     modulePaths.hardware.nvidia
     modulePaths.hardware.screenRecorder
@@ -25,7 +28,6 @@
     modulePaths.fileManagers.thunar
 
     modulePaths.ai.ollama
-    modulePaths.wm.virtualization
   ];
 
   my = {
@@ -60,6 +62,7 @@
       services = {
         ollama.enable = true;
         virtualization.enable = false;
+		tailscale.enable = true;
       };
     };
   };

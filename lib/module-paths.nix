@@ -12,6 +12,7 @@
   };
 
   systemServices = {
+  	tailscale = root + "/modules/system-services/tailscale.nix";
     vpnbookWireguardFailover = root + "/modules/system-services/vpnbook-wireguard-failover.nix";
   };
 
