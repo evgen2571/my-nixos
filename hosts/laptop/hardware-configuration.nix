@@ -18,8 +18,13 @@
       fsType = "ext4";
     };
 
+  fileSystems."/home/evgen2571/drive" =
+    { device = "/dev/disk/by-uuid/d1038ac0-6fd0-4d1e-b6bf-c1dee40e8bec";
+      fsType = "ext4";
+    };
+
   fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/E133-22FB";
+    { device = "/dev/disk/by-uuid/A8E4-6894";
       fsType = "vfat";
       options = [ "fmask=0022" "dmask=0022" ];
     };
