@@ -24,6 +24,7 @@
 
   services.fprintd.enable = true;
   security.pam.services.ly.fprintAuth = true;
+  security.pam.services.sudo.fprintAuth = true;
 
   my.system.user = {
     enable = true;

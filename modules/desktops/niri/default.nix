@@ -16,6 +16,13 @@ in
     services.xserver.enable = true;
     programs.xwayland.enable = true;
 
+    security.polkit.enable = true;
+    services.gnome.gnome-keyring.enable = true;
+
+    environment.systemPackages = with pkgs; [
+      polkit_gnome
+    ];
+
     programs.niri.enable = true;
   };
 }
