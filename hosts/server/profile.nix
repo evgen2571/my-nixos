@@ -1,17 +1,8 @@
-{ modulePaths, ... }:
+{ ... }:
 
 {
-  imports = [
-    modulePaths.systemServices.vpnbookWireguardFailover
-  ];
 
-  home-manager.users.operator = {
-    imports = [
-      modulePaths.user.dev.git
-    ];
-
-    my.user.dev.git.enable = true;
-  };
+  home-manager.users.operator.my.user.dev.git.enable = true;
 
   services.hermes-agent = {
     enable = true;

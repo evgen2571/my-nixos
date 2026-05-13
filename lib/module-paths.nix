@@ -12,6 +12,8 @@
   };
 
   systemServices = {
+  	tailscale = root + "/modules/system-services/tailscale.nix";
+  	blueman = root + "/modules/system-services/blueman.nix";
     vpnbookWireguardFailover = root + "/modules/system-services/vpnbook-wireguard-failover.nix";
   };
 
@@ -33,6 +35,7 @@
   };
 
   hardware = {
+    bluetooth = root + "/modules/hardware/bluetooth.nix";
     nvidia = root + "/modules/hardware/nvidia.nix";
     screenRecorder = root + "/modules/hardware/screen-recorder.nix";
   };

@@ -38,6 +38,7 @@
       wm = "niri";
       modulePaths = import ./lib/module-paths.nix { root = ./.; };
       configPaths = import ./lib/config-paths.nix { root = ./.; };
+      profileImports = import ./lib/profile-imports.nix { inherit modulePaths; };
       mkHost =
         hostModule:
         nixpkgs.lib.nixosSystem {
@@ -54,6 +55,9 @@
             hostModule
             hermes-agent.nixosModules.default
             home-manager.nixosModules.home-manager
+          ]
+          ++ profileImports.systemModules
+          ++ [
             {
               home-manager.backupFileExtension = "backup";
               home-manager.useGlobalPkgs = true;
@@ -66,6 +70,7 @@
                   configPaths
                   ;
               };
+              home-manager.sharedModules = profileImports.homeModules;
               home-manager.users.operator = import ./home/operator/home.nix;
             }
           ];
