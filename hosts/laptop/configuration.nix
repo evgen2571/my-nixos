@@ -22,6 +22,9 @@
     ];
   };
 
+  services.fprintd.enable = true;
+  security.pam.services.ly.fprintAuth = true;
+
   my.system.user = {
     enable = true;
     name = "evgen2571";
