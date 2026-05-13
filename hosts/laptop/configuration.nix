@@ -22,6 +22,10 @@
     ];
   };
 
+  services.fprintd.enable = true;
+  security.pam.services.ly.fprintAuth = true;
+  security.pam.services.sudo.fprintAuth = false;
+
   my.system.user = {
     enable = true;
     name = "operator";

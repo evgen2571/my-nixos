@@ -60,7 +60,7 @@
       hyprlandConfig.enable = false;
       niriConfig = {
         enable = true;
-        workspacesFile = "workspaces-pc.kdl";
+        workspacesFile = "workspaces-laptop.kdl";
       };
       noctalia.enable = true;
       screenRecorder.enable = false;
