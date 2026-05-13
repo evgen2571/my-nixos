@@ -13,6 +13,7 @@
 
   systemServices = {
   	tailscale = root + "/modules/system-services/tailscale.nix";
+  	bluetooth = root + "/modules/system-services/bluetooth.nix";
     vpnbookWireguardFailover = root + "/modules/system-services/vpnbook-wireguard-failover.nix";
   };
 

@@ -12,6 +12,7 @@
 	modulePaths.wm.virtualization
 
 	modulePaths.systemServices.tailscale
+	modulePaths.systemServices.bluetooth
 
     modulePaths.hardware.nvidia
     modulePaths.hardware.screenRecorder
@@ -63,6 +64,7 @@
         ollama.enable = true;
         virtualization.enable = false;
 		tailscale.enable = true;
+		bluetooth.enable = true;
       };
     };
   };
