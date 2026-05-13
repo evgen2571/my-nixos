@@ -70,18 +70,13 @@ in
           bind G new-window -n "lazygit" ${pkgs.lazygit}/bin/lazygit
 
           # Easy pane splitting
-          bind \\ split-window -h
+          bind \ split-window -h
           bind - split-window -v
         '';
       };
 
       home.packages = with pkgs; [
         tmux
-        git
-        bash
-        fish
-        tmux-sessionizer
-        lazygit
       ];
     }
   );

@@ -65,15 +65,7 @@
     };
 
     dev = {
-      devTools.enable = true;
-      fishConfig.enable = true;
-      git.enable = true;
-      kitty.enable = true;
-      neovim.enable = true;
-      starship.enable = true;
-      tmux.enable = true;
-      zoxide.enable = true;
-      github.enable = true;
+      workstation.enable = true;
     };
 
     files = {

@@ -16,7 +16,7 @@ in
         starship
       ];
 
-      xdg.configFile."starship.toml".source = configPaths.coding.starshipToml;
+      xdg.configFile."starship.toml".source = configPaths.dev.starship.configFile;
     }
   );
 }

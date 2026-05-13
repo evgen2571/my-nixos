@@ -1,10 +1,10 @@
 { root }:
 {
-  coding = {
-    fishConfigDir = root + "/config/fish";
-    kittyConf = root + "/config/kitty/kitty.conf";
-    neovimConfigDir = root + "/config/nvim";
-    starshipToml = root + "/config/starship/starship.toml";
+  dev = {
+    fish.configDir = root + "/config/fish";
+    kitty.configFile = root + "/config/kitty/kitty.conf";
+    neovim.configDir = root + "/config/nvim";
+    starship.configFile = root + "/config/starship/starship.toml";
   };
 
   wm = {

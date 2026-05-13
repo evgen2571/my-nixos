@@ -12,8 +12,8 @@
   };
 
   systemServices = {
-  	tailscale = root + "/modules/system-services/tailscale.nix";
-  	blueman = root + "/modules/system-services/blueman.nix";
+    tailscale = root + "/modules/system-services/tailscale.nix";
+    blueman = root + "/modules/system-services/blueman.nix";
     vpnbookWireguardFailover = root + "/modules/system-services/vpnbook-wireguard-failover.nix";
   };
 
@@ -51,7 +51,7 @@
     xserver = root + "/modules/desktops/xserver.nix";
   };
 
-  # User-level Home Manager modules imported by home/*/home.nix.
+  # User-level Home Manager modules imported by flake.nix through profile-imports.nix.
   user = {
     ai = {
       codex = root + "/modules/user-ai/codex.nix";
@@ -73,16 +73,17 @@
     };
 
     dev = {
-      devTools = root + "/modules/user-dev/dev-tools.nix";
-      fishConfig = root + "/modules/user-dev/fish/config.nix";
+      fish = root + "/modules/user-dev/fish";
       git = root + "/modules/user-dev/git.nix";
-      ide = root + "/modules/user-dev/ide.nix";
+      github = root + "/modules/user-dev/github.nix";
       kitty = root + "/modules/user-dev/kitty";
       neovim = root + "/modules/user-dev/neovim";
       starship = root + "/modules/user-dev/starship";
+      terminalWorkflow = root + "/modules/user-dev/bundles/terminal-workflow.nix";
       tmux = root + "/modules/user-dev/tmux";
+      toolchains = root + "/modules/user-dev/bundles/toolchains.nix";
       vscode = root + "/modules/user-dev/vscode.nix";
-	  github = root + "/modules/user-dev/github.nix";
+      workstation = root + "/modules/user-dev/bundles/workstation.nix";
       zed = root + "/modules/user-dev/zed.nix";
       zoxide = root + "/modules/user-dev/zoxide.nix";
     };

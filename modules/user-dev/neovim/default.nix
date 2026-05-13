@@ -18,33 +18,20 @@ in
   config = lib.mkIf cfg.enable {
     home.packages = with pkgs; [
       neovim
-
-      matugen
       git
       curl
       unzip
       gzip
       xz
-
-      ripgrep
-      fd
-      gnutar
-      gcc
-      gnumake
-      pkg-config
-      luarocks
-
       wl-clipboard
       xclip
-
       nodejs
-      python3
+      python313Packages.pynvim
+      python313Packages.jupyter-client
       lua-language-server
       stylua
       tree-sitter
-
-      jq
-      fzf
+      matugen
     ];
 
     home.sessionVariables = {
