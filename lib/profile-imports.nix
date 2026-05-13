@@ -54,10 +54,13 @@
     modulePaths.user.desktop.noctalia
     modulePaths.user.desktop.screenRecorder
 
-    modulePaths.user.dev.devTools
-    modulePaths.user.dev.fishConfig
+    # Developer bundles define composition; leaf modules define tool-specific seams.
+    modulePaths.user.dev.workstation
+    modulePaths.user.dev.toolchains
+    modulePaths.user.dev.terminalWorkflow
+    modulePaths.user.dev.fish
     modulePaths.user.dev.git
-    modulePaths.user.dev.ide
+    modulePaths.user.dev.github
     modulePaths.user.dev.kitty
     modulePaths.user.dev.neovim
     modulePaths.user.dev.starship
@@ -65,7 +68,6 @@
     modulePaths.user.dev.vscode
     modulePaths.user.dev.zed
     modulePaths.user.dev.zoxide
-    modulePaths.user.dev.github
 
     modulePaths.user.files.dolphin
     modulePaths.user.files.yazi

@@ -2,8 +2,6 @@
   configPaths,
   config,
   lib,
-  pkgs,
-  inputs,
   ...
 }:
 
@@ -12,6 +10,6 @@ let
 in
 {
   config = lib.mkIf cfg.enable {
-    xdg.configFile."kitty/kitty.conf".source = configPaths.coding.kittyConf;
+    xdg.configFile."kitty/kitty.conf".source = configPaths.dev.kitty.configFile;
   };
 }
