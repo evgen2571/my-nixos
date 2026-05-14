@@ -39,6 +39,7 @@ let
     modulePaths.user.apps.bitwarden
     modulePaths.user.apps.chrome
     modulePaths.user.apps.notion
+    modulePaths.user.apps.mpv
     modulePaths.user.apps.obsidian
     modulePaths.user.apps.osuLazer
     modulePaths.user.apps.prismLauncher
@@ -58,6 +59,7 @@ let
     modulePaths.user.dev.workstation
     modulePaths.user.dev.toolchains
     modulePaths.user.dev.terminalWorkflow
+    modulePaths.user.dev.ffmpeg
     modulePaths.user.dev.fish
     modulePaths.user.dev.git
     modulePaths.user.dev.github

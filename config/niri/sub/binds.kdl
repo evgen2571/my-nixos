@@ -6,7 +6,7 @@ binds {
     Mod+Shift+Return repeat=false hotkey-overlay-title="Dropdown Terminal" { spawn "kitty" "-T" "dropdown-term"; }
 	Mod+F repeat=false hotkey-overlay-title="Browser" { spawn "zen-twilight"; }
 	Mod+E repeat=false hotkey-overlay-title="TUI File Manager" { spawn "kitty" "-T" "file-manager" "yazi"; }
-	Mod+Shift+E repeat=false hotkey-overlay-title="GUI File Manager" { spawn "thunar"; }
+	Mod+Shift+E repeat=false hotkey-overlay-title="GUI File Manager" { spawn "dolphin"; }
 	Mod+C repeat=false hotkey-overlay-title="Editor" { spawn "kitty" "-T" "editor" "tms"; }
 	Mod+O repeat=false hotkey-overlay-title="Notetaker" { spawn "obsidian"; }
     Mod+A repeat=false hotkey-overlay-title="Anki" { spawn "anki"; }
