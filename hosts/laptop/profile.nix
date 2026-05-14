@@ -46,6 +46,7 @@
       bitwarden.enable = true;
       chrome.enable = false;
       notion.enable = false;
+      mpv.enable = true;
       obsidian.enable = true;
       osuLazer.enable = false;
       prismLauncher.enable = false;
@@ -68,6 +69,7 @@
     };
 
     dev = {
+      ffmpeg.enable = true;
       workstation.enable = true;
     };
 

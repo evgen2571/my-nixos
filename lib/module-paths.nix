@@ -63,6 +63,7 @@
       bitwarden = root + "/modules/user-apps/bitwarden.nix";
       chrome = root + "/modules/user-apps/chrome.nix";
       notion = root + "/modules/user-apps/notion.nix";
+      mpv = root + "/modules/user-apps/mpv.nix";
       obsidian = root + "/modules/user-apps/obsidian.nix";
       osuLazer = root + "/modules/user-apps/osu-lazer.nix";
       prismLauncher = root + "/modules/user-apps/prism-launcher.nix";
@@ -74,6 +75,7 @@
     };
 
     dev = {
+      ffmpeg = root + "/modules/user-dev/ffmpeg.nix";
       fish = root + "/modules/user-dev/fish";
       git = root + "/modules/user-dev/git.nix";
       github = root + "/modules/user-dev/github.nix";

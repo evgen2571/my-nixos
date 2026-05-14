@@ -7,6 +7,9 @@
         }
     ],
     "states": {
+        "network-manager-vpn": {
+            "enabled": true
+        },
         "screen-recorder": {
             "enabled": true,
             "sourceUrl": "https://github.com/noctalia-dev/noctalia-plugins"

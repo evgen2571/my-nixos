@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   cfg = config.my.user.apps.vesktop;
@@ -25,7 +30,6 @@ in
         "InstantMessaging"
         "Chat"
       ];
-      startupWMClass = "Vesktop";
     };
   };
 }
