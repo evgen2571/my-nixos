@@ -1,6 +1,6 @@
 { modulePaths }:
-{
-  systemModules = [
+let
+  desktopSystemModules = [
     modulePaths.wm.niri
     modulePaths.wm.cinnamon
     modulePaths.wm.gnome
@@ -12,7 +12,6 @@
 
     modulePaths.systemServices.tailscale
     modulePaths.systemServices.blueman
-    modulePaths.systemServices.vpnbookWireguardFailover
 
     modulePaths.hardware.bluetooth
     modulePaths.hardware.nvidia
@@ -32,7 +31,7 @@
     modulePaths.ai.ollama
   ];
 
-  homeModules = [
+  desktopHomeModules = [
     modulePaths.user.ai.codex
     modulePaths.user.ai.llamaCpp
 
@@ -72,4 +71,20 @@
     modulePaths.user.files.dolphin
     modulePaths.user.files.yazi
   ];
+in
+{
+  desktop = {
+    systemModules = desktopSystemModules;
+    homeModules = desktopHomeModules;
+  };
+
+  server = {
+    systemModules = [
+      modulePaths.systemServices.vpnbookWireguardFailover
+    ];
+
+    homeModules = [
+      modulePaths.user.dev.git
+    ];
+  };
 }
