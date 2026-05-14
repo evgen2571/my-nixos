@@ -66,6 +66,7 @@
       obsidian = root + "/modules/user-apps/obsidian.nix";
       osuLazer = root + "/modules/user-apps/osu-lazer.nix";
       prismLauncher = root + "/modules/user-apps/prism-launcher.nix";
+      slack = root + "/modules/user-apps/slack.nix";
       telegram = root + "/modules/user-apps/telegram.nix";
       vesktop = root + "/modules/user-apps/vesktop.nix";
       youtubeMusic = root + "/modules/user-apps/youtube-music.nix";

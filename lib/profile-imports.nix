@@ -42,6 +42,7 @@ let
     modulePaths.user.apps.obsidian
     modulePaths.user.apps.osuLazer
     modulePaths.user.apps.prismLauncher
+    modulePaths.user.apps.slack
     modulePaths.user.apps.telegram
     modulePaths.user.apps.vesktop
     modulePaths.user.apps.youtubeMusic

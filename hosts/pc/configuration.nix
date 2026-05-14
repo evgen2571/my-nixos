@@ -10,10 +10,6 @@
 
   networking.hostName = "nixos-pc";
 
-  networking.networkmanager.plugins = with pkgs; [
-    networkmanager-openvpn
-  ];
-
   programs.nm-applet.enable = true;
   services.printing.enable = true;
 

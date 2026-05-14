@@ -49,6 +49,7 @@
       obsidian.enable = true;
       osuLazer.enable = false;
       prismLauncher.enable = false;
+      slack.enable = true;
       telegram.enable = true;
       vesktop.enable = true;
       youtubeMusic.enable = true;
