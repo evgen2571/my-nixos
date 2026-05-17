@@ -56,6 +56,7 @@
     ai = {
       codex = root + "/modules/user-ai/codex.nix";
       llamaCpp = root + "/modules/user-ai/llama-cpp.nix";
+      opencode = root + "/modules/user-ai/opencode.nix";
     };
 
     apps = {

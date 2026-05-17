@@ -11,6 +11,7 @@
     };
 
     hardware = {
+      bluetooth.enable = true;
       nvidia.enable = true;
     };
 
@@ -34,11 +35,16 @@
         ollama.enable = true;
         virtualization.enable = true;
         tailscale.enable = true;
+        blueman.enable = true;
       };
     };
   };
 
   home-manager.users.evgen2571.my.user = {
+    ai = {
+      opencode.enable = true;
+    };
+
     apps = {
       anki.enable = true;
       bitwarden.enable = true;

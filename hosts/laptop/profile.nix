@@ -41,6 +41,10 @@
   };
 
   home-manager.users.evgen2571.my.user = {
+    ai = {
+      opencode.enable = true;
+    };
+
     apps = {
       anki.enable = true;
       bitwarden.enable = true;
