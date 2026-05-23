@@ -70,8 +70,8 @@ in
           bind G new-window -n "lazygit" ${pkgs.lazygit}/bin/lazygit
 
           # Easy pane splitting
-          bind \ split-window -h
-          bind - split-window -v
+          bind-key \\ split-window -h
+          bind-key - split-window -v
         '';
       };
 

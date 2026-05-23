@@ -21,7 +21,7 @@ in
     xdg.desktopEntries.vesktop = {
       name = "Vesktop";
       genericName = "Discord client";
-      exec = "env NIXOS_OZONE_WL=1 ${lib.getExe pkgs.vesktop} --enable-features=WebRTCPipeWireCapturer";
+      exec = "env NIXOS_OZONE_WL=1 ${lib.getExe pkgs.vesktop} --ozone-platform-hint=auto --enable-features=WebRTCPipeWireCapturer";
       terminal = false;
       type = "Application";
       icon = "vesktop";

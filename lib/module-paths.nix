@@ -56,11 +56,13 @@
     ai = {
       codex = root + "/modules/user-ai/codex.nix";
       llamaCpp = root + "/modules/user-ai/llama-cpp.nix";
+      opencode = root + "/modules/user-ai/opencode.nix";
     };
 
     apps = {
       anki = root + "/modules/user-apps/anki.nix";
       bitwarden = root + "/modules/user-apps/bitwarden.nix";
+      bruno = root + "/modules/user-apps/bruno.nix";
       chrome = root + "/modules/user-apps/chrome.nix";
       notion = root + "/modules/user-apps/notion.nix";
       mpv = root + "/modules/user-apps/mpv.nix";

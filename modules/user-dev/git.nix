@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   cfg = config.my.user.dev.git;
@@ -35,8 +40,27 @@ in
   config = lib.mkIf cfg.enable {
     programs.ssh = {
       enable = true;
-      matchBlocks."*".addKeysToAgent = "yes";
       enableDefaultConfig = false;
+
+      matchBlocks = {
+        "*" = {
+          addKeysToAgent = "yes";
+        };
+
+        "hermes-space" = {
+          hostname = "192.0.2.14";
+          user = "agent";
+          identityFile = "~/.ssh/hermes_server";
+          identitiesOnly = true;
+        };
+
+        "server-lp" = {
+          hostname = "192.0.2.14";
+          user = "server";
+          identityFile = "~/.ssh/hermes_server";
+          identitiesOnly = true;
+        };
+      };
     };
 
     programs.git = {
@@ -46,12 +70,13 @@ in
         init.defaultBranch = "main";
       }
       // lib.optionalAttrs (cfg.userName != null || cfg.userEmail != null) {
-        user = lib.optionalAttrs (cfg.userName != null) {
-          name = cfg.userName;
-        }
-        // lib.optionalAttrs (cfg.userEmail != null) {
-          email = cfg.userEmail;
-        };
+        user =
+          lib.optionalAttrs (cfg.userName != null) {
+            name = cfg.userName;
+          }
+          // lib.optionalAttrs (cfg.userEmail != null) {
+            email = cfg.userEmail;
+          };
       };
     }
     // lib.optionalAttrs (cfg.signingKey != null) {

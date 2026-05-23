@@ -34,9 +34,11 @@ let
   desktopHomeModules = [
     modulePaths.user.ai.codex
     modulePaths.user.ai.llamaCpp
+    modulePaths.user.ai.opencode
 
     modulePaths.user.apps.anki
     modulePaths.user.apps.bitwarden
+    modulePaths.user.apps.bruno
     modulePaths.user.apps.chrome
     modulePaths.user.apps.notion
     modulePaths.user.apps.mpv

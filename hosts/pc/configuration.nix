@@ -12,16 +12,44 @@
 
   programs.nm-applet.enable = true;
   services.printing.enable = true;
+  security.rtkit.enable = true;
 
   xdg.portal = {
     enable = true;
+
     extraPortals = with pkgs; [
-      xdg-desktop-portal-gtk
       xdg-desktop-portal-gnome
+      xdg-desktop-portal-gtk
     ];
 
     config = {
-      common.default = [ "gnome" ];
+      common = {
+        default = [
+          "gnome"
+          "gtk"
+        ];
+
+        "org.freedesktop.impl.portal.Access" = [ "gtk" ];
+        "org.freedesktop.impl.portal.FileChooser" = [ "gtk" ];
+        "org.freedesktop.impl.portal.Notification" = [ "gtk" ];
+        "org.freedesktop.impl.portal.ScreenCast" = [ "gnome" ];
+        "org.freedesktop.impl.portal.Screenshot" = [ "gnome" ];
+        "org.freedesktop.impl.portal.Secret" = [ "gnome-keyring" ];
+      };
+
+      niri = {
+        default = [
+          "gnome"
+          "gtk"
+        ];
+
+        "org.freedesktop.impl.portal.Access" = [ "gtk" ];
+        "org.freedesktop.impl.portal.FileChooser" = [ "gtk" ];
+        "org.freedesktop.impl.portal.Notification" = [ "gtk" ];
+        "org.freedesktop.impl.portal.ScreenCast" = [ "gnome" ];
+        "org.freedesktop.impl.portal.Screenshot" = [ "gnome" ];
+        "org.freedesktop.impl.portal.Secret" = [ "gnome-keyring" ];
+      };
     };
   };
 
