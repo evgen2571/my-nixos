@@ -38,6 +38,7 @@ let
 
     modulePaths.user.apps.anki
     modulePaths.user.apps.bitwarden
+    modulePaths.user.apps.bruno
     modulePaths.user.apps.chrome
     modulePaths.user.apps.notion
     modulePaths.user.apps.mpv
