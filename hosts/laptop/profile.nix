@@ -43,6 +43,7 @@
   home-manager.users.evgen2571.my.user = {
     ai = {
       opencode.enable = true;
+      codex.enable = false;
     };
 
     apps = {
