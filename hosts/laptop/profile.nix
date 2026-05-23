@@ -49,6 +49,7 @@
     apps = {
       anki.enable = true;
       bitwarden.enable = true;
+      bruno.enable = true;
       chrome.enable = false;
       notion.enable = false;
       mpv.enable = true;
