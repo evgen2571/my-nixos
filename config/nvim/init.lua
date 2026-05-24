@@ -751,7 +751,25 @@ require("lazy").setup({
 			local servers = {
 				pyright = {},
 				-- gopls = {},
-				-- rust_analyzer = {},
+				rust_analyzer = {
+					cmd = { "rust-analyzer" },
+					settings = {
+						["rust-analyzer"] = {
+							cargo = {
+								allTargets = true,
+								buildScripts = { enable = true },
+								features = "all",
+							},
+							check = {
+								allTargets = true,
+								command = "clippy",
+								features = "all",
+							},
+							checkOnSave = true,
+							procMacro = { enable = true },
+						},
+					},
+				},
 				-- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
 				--
 				-- Some languages (like typescript) have entire language plugins that can be useful:
@@ -781,30 +799,6 @@ require("lazy").setup({
 				},
 			}
 
-			require("blink-cmp").setup({
-				keymap = {
-					-- Manually invoke minuet completion.
-					["<A-y>"] = require("minuet").make_blink_map(),
-				},
-				sources = {
-					-- Enable minuet for autocomplete
-					default = { "lsp", "path", "buffer", "snippets", "minuet" },
-					-- For manual completion only, remove 'minuet' from default
-					providers = {
-						minuet = {
-							name = "minuet",
-							module = "minuet.blink",
-							async = true,
-							-- Should match minuet.config.request_timeout * 1000,
-							-- since minuet.config.request_timeout is in seconds
-							timeout_ms = 3000,
-							score_offset = 50, -- Gives minuet higher priority among suggestions
-						},
-					},
-				},
-				-- Recommended to avoid unnecessary request
-				completion = { trigger = { prefetch_on_insert = false } },
-			})
 
 			-- Ensure the servers and tools above are installed
 			--
@@ -877,6 +871,7 @@ require("lazy").setup({
 			end,
 			formatters_by_ft = {
 				lua = { "stylua" },
+				rust = { "rustfmt" },
 				cpp = { "clang_format" },
 				c = { "clang_format" },
 				-- Conform can also run multiple formatters sequentially
@@ -947,7 +942,7 @@ require("lazy").setup({
 			},
 
 			sources = {
-				default = { "lsp", "path", "snippets", "lazydev" },
+				default = { "lsp", "path", "buffer", "snippets", "lazydev" },
 				providers = {
 					lazydev = { module = "lazydev.integrations.blink", score_offset = 100 },
 				},

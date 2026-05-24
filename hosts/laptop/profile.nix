@@ -77,6 +77,12 @@
     dev = {
       ffmpeg.enable = true;
       workstation.enable = true;
+
+      languages = {
+        cpp.enable = true;
+        python.enable = true;
+        rust.enable = true;
+      };
     };
 
     files = {
