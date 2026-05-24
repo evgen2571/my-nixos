@@ -25,10 +25,11 @@ map("n", "N", "Nzzzv", { desc = "Previous search result centered" })
 map("n", "<A-\\>", "<cmd>vsplit<CR><C-l>", { noremap = true, silent = true, desc = "Vertical split" })
 map("n", "<A-x>", "<cmd>q<CR>", { noremap = true, silent = true, desc = "Close window" })
 -- Window resize with Alt+h/j/k/l
-map("n", "<A-h>", "<cmd>vertical resize -5<CR>", { desc = "Decrease window width" })
-map("n", "<A-l>", "<cmd>vertical resize +5<CR>", { desc = "Increase window width" })
-map("n", "<A-k>", "<cmd>resize -5<CR>", { desc = "Decrease window height" })
-map("n", "<A-j>", "<cmd>resize +5<CR>", { desc = "Increase window height" })
+map("n", "<A-l>", "<cmd>vertical resize -5<CR>", { desc = "Decrease window width" })
+map("n", "<A-h>", "<cmd>vertical resize +5<CR>", { desc = "Increase window width" })
+map("n", "<A-j>", "<cmd>resize -5<CR>", { desc = "Decrease window height" })
+map("n", "<A-k>", "<cmd>resize +5<CR>", { desc = "Increase window height" })
 
 -- Terminal
 map("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
+
