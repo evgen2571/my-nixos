@@ -1,12 +1,17 @@
 return {
 	"milanglacier/minuet-ai.nvim",
+	lazy = false,
 	config = function()
 		require("minuet").setup({
 			virtualtext = {
-				auto_trigger_ft = {},
+				-- Enable automatic virtual-text suggestions for every filetype.
+				-- Use auto_trigger_ignore_ft below if a filetype is too noisy.
+				auto_trigger_ft = { "*" },
+				auto_trigger_ignore_ft = {},
+				show_on_completion_menu = false,
 				keymap = {
 					-- accept whole completion
-					accept = "<A-A>",
+					accept = "<C-y>",
 					-- accept one line
 					accept_line = "<A-a>",
 					-- accept n lines (prompts for number)
