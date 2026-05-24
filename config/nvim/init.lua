@@ -134,7 +134,6 @@ require("lazy").setup({
 
 			spec = {
 				{ "<leader>c", group = "Code" },
-				{ "<leader>cm", group = "CMake" },
 				{ "<leader>cr", group = "Rust" },
 				{ "<leader>d", group = "Debug / diagnostics" },
 				{ "<leader>g", group = "Git" },
@@ -512,10 +511,15 @@ require("lazy").setup({
 				},
 			}
 
-			local lspconfig = require("lspconfig")
 			for server_name, server in pairs(servers) do
 				server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
-				lspconfig[server_name].setup(server)
+
+				if vim.fn.has("nvim-0.11") == 1 then
+					vim.lsp.config(server_name, server)
+					vim.lsp.enable(server_name)
+				else
+					require("lspconfig")[server_name].setup(server)
+				end
 			end
 		end,
 	},
