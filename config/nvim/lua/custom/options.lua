@@ -8,10 +8,25 @@ o.mouse = "a"
 o.showmode = false
 o.signcolumn = "yes"
 o.termguicolors = true
+o.laststatus = 3
+o.showtabline = 1
+o.pumblend = 10
+o.winblend = 5
 o.list = true
 opt.listchars = { tab = "│ ", trail = "·", nbsp = "␣" }
-o.cursorline = false
+opt.fillchars = {
+	eob = " ",
+	fold = " ",
+	foldopen = "▾",
+	foldsep = " ",
+	foldclose = "▸",
+	diff = "╱",
+}
+o.cursorline = true
+o.cursorlineopt = "number,line"
 o.scrolloff = 10
+o.sidescrolloff = 8
+o.smoothscroll = true
 
 -- Editing
 o.breakindent = true

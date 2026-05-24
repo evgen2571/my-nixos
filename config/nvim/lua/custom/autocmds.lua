@@ -43,3 +43,21 @@ autocmd("Colorscheme", {
 		end
 	end,
 })
+
+local focus_group = augroup("custom-window-focus", { clear = true })
+autocmd({ "BufEnter", "WinEnter" }, {
+	group = focus_group,
+	desc = "Emphasize the active window",
+	callback = function()
+		vim.wo.cursorline = true
+		vim.wo.colorcolumn = ""
+	end,
+})
+
+autocmd("WinLeave", {
+	group = focus_group,
+	desc = "De-emphasize inactive windows",
+	callback = function()
+		vim.wo.cursorline = false
+	end,
+})
