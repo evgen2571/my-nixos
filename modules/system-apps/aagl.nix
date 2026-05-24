@@ -8,7 +8,7 @@ let
   aagl = import (
     builtins.fetchTarball {
       url = "https://github.com/ezKEa/aagl-gtk-on-nix/archive/release-25.11.tar.gz";
-      sha256 = "09j214f9ad8vqw11bfjm8g0bvalyymnk9imwr2nz42d8fpiv8zf2";
+      sha256 = "0790jqa5anb3ggflw5is9d4rpr2ra6w10yglhwqps1j49ac7d67m";
     }
   );
 in

@@ -42,24 +42,24 @@
 
   home-manager.users.evgen2571.my.user = {
     ai = {
-      opencode.enable = true;
+      opencode.enable = false;
       codex.enable = false;
     };
 
     apps = {
       anki.enable = true;
-      bitwarden.enable = true;
-      bruno.enable = true;
+      bitwarden.enable = false;
+      bruno.enable = false;
       chrome.enable = false;
       notion.enable = false;
       mpv.enable = true;
-      obsidian.enable = true;
+      obsidian.enable = false;
       osuLazer.enable = false;
       prismLauncher.enable = false;
-      slack.enable = true;
+      slack.enable = false;
       telegram.enable = true;
-      vesktop.enable = true;
-      youtubeMusic.enable = true;
+      vesktop.enable = false;
+      youtubeMusic.enable = false;
       zenBrowser.enable = true;
     };
 

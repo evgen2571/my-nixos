@@ -17,8 +17,8 @@
 
     system = {
       apps = {
-        aagl.enable = true;
-        kdeConnect.enable = true;
+        aagl.enable = false;
+        kdeConnect.enable = false;
         steam.enable = true;
       };
 
@@ -33,7 +33,7 @@
 
       services = {
         ollama.enable = true;
-        virtualization.enable = true;
+        virtualization.enable = false;
         tailscale.enable = true;
         blueman.enable = true;
       };
@@ -42,24 +42,24 @@
 
   home-manager.users.evgen2571.my.user = {
     ai = {
-      opencode.enable = true;
+      opencode.enable = false;
       codex.enable = false;
     };
 
     apps = {
       anki.enable = true;
-      bitwarden.enable = true;
-      bruno.enable = true;
+      bitwarden.enable = false;
+      bruno.enable = false;
       chrome.enable = false;
-      notion.enable = true;
+      notion.enable = false;
       mpv.enable = true;
-      obsidian.enable = true;
+      obsidian.enable = false;
       osuLazer.enable = false;
-      prismLauncher.enable = true;
-      slack.enable = true;
+      prismLauncher.enable = false;
+      slack.enable = false;
       telegram.enable = true;
-      vesktop.enable = true;
-      youtubeMusic.enable = true;
+      vesktop.enable = false;
+      youtubeMusic.enable = false;
       zenBrowser.enable = true;
     };
 
@@ -71,7 +71,7 @@
         workspacesFile = "workspaces-pc.kdl";
       };
       noctalia.enable = true;
-      screenRecorder.enable = true;
+      screenRecorder.enable = false;
     };
 
     dev = {
