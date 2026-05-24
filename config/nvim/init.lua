@@ -740,7 +740,6 @@ require("lazy").setup({
 				--  the list of additional_vim_regex_highlighting and disabled languages for indent.
 				additional_vim_regex_highlighting = { "ruby" },
 			},
-			indent = { enable = true, disable = { "ruby" } },
 		},
 		-- There are additional nvim-treesitter modules that you can use to interact
 		-- with nvim-treesitter. You should go explore a few and see what interests you:
@@ -760,7 +759,6 @@ require("lazy").setup({
 	--  Uncomment any of the lines below to enable them (you will need to restart nvim).
 	--
 	require("kickstart.plugins.debug"),
-	require("kickstart.plugins.indent_line"),
 	-- require("kickstart.plugins.lint"),
 	require("kickstart.plugins.autopairs"),
 	-- require 'kickstart.plugins.neo-tree',

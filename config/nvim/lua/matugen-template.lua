@@ -22,6 +22,18 @@ function M.setup()
 		base0E = "{{colors.secondary_fixed_dim.default.hex}}", -- Keywords, Storage
 		base0F = "{{colors.error_container.default.hex}}", -- Deprecated, Embedded Tags
 	})
+
+	-- mini.indentscope — active indent line
+	vim.api.nvim_set_hl(0, "MiniIndentscopeSymbol", {
+		fg = "{{colors.primary.default.hex}}",
+		nocombine = true,
+	})
+
+	-- mini.indentscope — off-shiftwidth indent line
+	vim.api.nvim_set_hl(0, "MiniIndentscopeSymbolOff", {
+		fg = "{{colors.outline.default.hex}}",
+		nocombine = true,
+	})
 end
 
 -- Register a signal handler for SIGUSR1 (matugen updates)
