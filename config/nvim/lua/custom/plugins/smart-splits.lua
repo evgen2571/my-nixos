@@ -1,25 +1,19 @@
 return {
 	"mrjones2014/smart-splits.nvim",
-	config = function()
-		require("smart-splits").setup({})
-		-- recommended mappings
-		-- resizing splits
-		-- these keymaps will also accept a range,
-		-- for example `10<A-h>` will `resize_left` by `(10 * config.default_amount)`
-		vim.keymap.set("n", "<leader>rh", require("smart-splits").resize_left)
-		vim.keymap.set("n", "<leader>rj", require("smart-splits").resize_down)
-		vim.keymap.set("n", "<leader>rk", require("smart-splits").resize_up)
-		vim.keymap.set("n", "<leader>rl", require("smart-splits").resize_right)
-		-- moving between splits
-		vim.keymap.set("n", "<C-h>", require("smart-splits").move_cursor_left)
-		vim.keymap.set("n", "<C-j>", require("smart-splits").move_cursor_down)
-		vim.keymap.set("n", "<C-k>", require("smart-splits").move_cursor_up)
-		vim.keymap.set("n", "<C-l>", require("smart-splits").move_cursor_right)
-		vim.keymap.set("n", "<C-\\>", require("smart-splits").move_cursor_previous)
-		-- swapping buffers between windows
-		vim.keymap.set("n", "<leader><leader>h", require("smart-splits").swap_buf_left)
-		vim.keymap.set("n", "<leader><leader>j", require("smart-splits").swap_buf_down)
-		vim.keymap.set("n", "<leader><leader>k", require("smart-splits").swap_buf_up)
-		vim.keymap.set("n", "<leader><leader>l", require("smart-splits").swap_buf_right)
-	end,
+	opts = {},
+	keys = {
+		{ "<leader>rh", function() require("smart-splits").resize_left() end, desc = "Resize split left" },
+		{ "<leader>rj", function() require("smart-splits").resize_down() end, desc = "Resize split down" },
+		{ "<leader>rk", function() require("smart-splits").resize_up() end, desc = "Resize split up" },
+		{ "<leader>rl", function() require("smart-splits").resize_right() end, desc = "Resize split right" },
+		{ "<C-h>", function() require("smart-splits").move_cursor_left() end, desc = "Focus left split" },
+		{ "<C-j>", function() require("smart-splits").move_cursor_down() end, desc = "Focus lower split" },
+		{ "<C-k>", function() require("smart-splits").move_cursor_up() end, desc = "Focus upper split" },
+		{ "<C-l>", function() require("smart-splits").move_cursor_right() end, desc = "Focus right split" },
+		{ "<C-\\>", function() require("smart-splits").move_cursor_previous() end, desc = "Focus previous split" },
+		{ "<leader><leader>h", function() require("smart-splits").swap_buf_left() end, desc = "Swap buffer left" },
+		{ "<leader><leader>j", function() require("smart-splits").swap_buf_down() end, desc = "Swap buffer down" },
+		{ "<leader><leader>k", function() require("smart-splits").swap_buf_up() end, desc = "Swap buffer up" },
+		{ "<leader><leader>l", function() require("smart-splits").swap_buf_right() end, desc = "Swap buffer right" },
+	},
 }

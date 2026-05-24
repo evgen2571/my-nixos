@@ -19,6 +19,7 @@ in
       ruff
       black
       mypy
+      python3Packages.debugpy
     ];
   };
 }
