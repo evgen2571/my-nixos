@@ -84,6 +84,11 @@
       kitty = root + "/modules/user-dev/kitty";
       neovim = root + "/modules/user-dev/neovim";
       starship = root + "/modules/user-dev/starship";
+      languages = {
+        cpp = root + "/modules/user-dev/languages/cpp.nix";
+        python = root + "/modules/user-dev/languages/python.nix";
+        rust = root + "/modules/user-dev/languages/rust.nix";
+      };
       terminalWorkflow = root + "/modules/user-dev/bundles/terminal-workflow.nix";
       tmux = root + "/modules/user-dev/tmux";
       toolchains = root + "/modules/user-dev/bundles/toolchains.nix";

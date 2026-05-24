@@ -18,6 +18,10 @@ if status is-interactive
     if command -q tms
         COMPLETE=fish tms | source
     end
+
+    if command -q direnv
+        direnv hook fish | source
+    end
 end
 
 set -gx COLORTERM truecolor
