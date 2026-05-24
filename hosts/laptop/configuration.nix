@@ -70,6 +70,13 @@
     ];
   };
 
+  swapDevices = [
+    {
+      device = "/swapfile";
+      size = 16384;
+    }
+  ];
+
   fonts.packages = with pkgs; [
     nerd-fonts.jetbrains-mono
   ];
