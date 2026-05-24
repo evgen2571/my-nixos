@@ -1,42 +1,30 @@
 return {
 	{
 		"Civitasv/cmake-tools.nvim",
+		keys = {
+			{ "<leader>cb", "<cmd>CMakeBuild<CR>", desc = "CMake: build" },
+			{ "<leader>cg", "<cmd>CMakeGenerateAndRefreshLSP<CR>", desc = "CMake: generate + refresh LSP" },
+			{ "<leader>cr", "<cmd>CMakeRun<CR>", desc = "CMake: run" },
+			{ "<leader>cs", "<cmd>CMakeSelectBuildTarget<CR>", desc = "CMake: select build target" },
+		},
 		config = function()
-			local function cmake_generate_and_refresh_lsp()
+			vim.api.nvim_create_user_command("CMakeGenerateAndRefreshLSP", function()
 				vim.cmd("CMakeGenerate")
 				vim.cmd("LspRestart clangd")
-			end
-
-			vim.api.nvim_create_user_command("CMakeGenerateAndRefreshLSP", cmake_generate_and_refresh_lsp, {})
+			end, {})
 
 			require("cmake-tools").setup({
-				cmake_command = "cmake", -- this is used to specify cmake command path
-				ctest_command = "ctest", -- this is used to specify ctest command path
+				cmake_command = "cmake",
+				ctest_command = "ctest",
 				cmake_use_preset = true,
-				cmake_regenerate_on_save = true, -- auto generate when save CMakeLists.txt
-				cmake_generate_options = { "-DCMAKE_EXPORT_COMPILE_COMMANDS=1" }, -- this will be passed when invoke `CMakeGenerate`
-				cmake_build_options = {}, -- this will be passed when invoke `CMakeBuild`
-				-- support macro expansion:
-				--       ${kit}
-				--       ${kitGenerator}
-				--       ${variant:xx}
-				cmake_build_directory = function()
-					return "bin/${variant:buildType}"
-				end, -- this is used to specify generate directory for cmake, allows macro expansion, can be a string or a function returning the string, relative to cwd.
+				cmake_regenerate_on_save = true,
+				cmake_generate_options = { "-DCMAKE_EXPORT_COMPILE_COMMANDS=1" },
+				cmake_build_directory = "bin/${variant:buildType}",
 				cmake_compile_commands_options = {
-					action = "soft_link", -- available options: soft_link, copy, lsp, none
-					-- soft_link: this will automatically make a soft link from compile commands file to target
-					-- copy:      this will automatically copy compile commands file to target
-					-- lsp:       this will automatically set compile commands file location using lsp
-					-- none:      this will make this option ignored
-					target = vim.loop.cwd(), -- path to directory, this is used only if action == "soft_link" or action == "copy"
+					action = "soft_link",
+					target = vim.loop.cwd(),
 				},
-				cmake_kits_path = nil, -- this is used to specify global cmake kits path, see CMakeKits for detailed usage
-				cmake_variants_message = {
-					short = { show = true }, -- whether to show short message
-					long = { show = true, max_length = 40 }, -- whether to show long message
-				},
-				cmake_dap_configuration = { -- debug settings for cmake
+				cmake_dap_configuration = {
 					name = "cpp",
 					type = "codelldb",
 					request = "launch",
@@ -44,121 +32,37 @@ return {
 					runInTerminal = true,
 					console = "integratedTerminal",
 				},
-				cmake_executor = { -- executor to use
-					name = "quickfix", -- name of the executor
-					opts = {}, -- the options the executor will get, possible values depend on the executor type. See `default_opts` for possible values.
-					default_opts = { -- a list of default and possible values for executors
+				cmake_executor = {
+					name = "quickfix",
+					default_opts = {
 						quickfix = {
-							show = "always", -- "always", "only_on_error"
-							position = "belowright", -- "vertical", "horizontal", "leftabove", "aboveleft", "rightbelow", "belowright", "topleft", "botright", use `:h vertical` for example to see help on them
+							show = "always",
+							position = "belowright",
 							size = 10,
-							encoding = "utf-8", -- if encoding is not "utf-8", it will be converted to "utf-8" using `vim.fn.iconv`
-							auto_close_when_success = true, -- typically, you can use it with the "always" option; it will auto-close the quickfix buffer if the execution is successful.
+							auto_close_when_success = true,
 						},
-						toggleterm = {
-							direction = "float", -- 'vertical' | 'horizontal' | 'tab' | 'float'
-							close_on_exit = false, -- whether close the terminal when exit
-							auto_scroll = true, -- whether auto scroll to the bottom
-							singleton = true, -- single instance, autocloses the opened one, if present
-						},
-						overseer = {
-							new_task_opts = {
-								strategy = {
-									"toggleterm",
-									direction = "horizontal",
-									auto_scroll = true,
-									quit_on_exit = "success",
-								},
-							}, -- options to pass into the `overseer.new_task` command
-							on_new_task = function(task)
-								require("overseer").open({ enter = false, direction = "right" })
-							end, -- a function that gets overseer.Task when it is created, before calling `task:start`
-						},
-						terminal = {
-							name = "Main Terminal",
-							prefix_name = "[CMakeTools]: ", -- This must be included and must be unique, otherwise the terminals will not work. Do not use a simple spacebar " ", or any generic name
-							split_direction = "horizontal", -- "horizontal", "vertical"
-							split_size = 11,
-
-							-- Window handling
-							single_terminal_per_instance = true, -- Single viewport, multiple windows
-							single_terminal_per_tab = true, -- Single viewport per tab
-							keep_terminal_static_location = true, -- Static location of the viewport if avialable
-							auto_resize = true, -- Resize the terminal if it already exists
-
-							-- Running Tasks
-							start_insert = false, -- If you want to enter terminal with :startinsert upon using :CMakeRun
-							focus = false, -- Focus on terminal when cmake task is launched.
-							do_not_add_newline = false, -- Do not hit enter on the command inserted when using :CMakeRun, allowing a chance to review or modify the command before hitting enter.
-						}, -- terminal executor uses the values in cmake_terminal
 					},
 				},
-				cmake_runner = { -- runner to use
-					name = "terminal", -- name of the runner
-					opts = {}, -- the options the runner will get, possible values depend on the runner type. See `default_opts` for possible values.
-					default_opts = { -- a list of default and possible values for runners
-						quickfix = {
-							show = "always", -- "always", "only_on_error"
-							position = "belowright", -- "bottom", "top"
-							size = 10,
-							encoding = "utf-8",
-							auto_close_when_success = true, -- typically, you can use it with the "always" option; it will auto-close the quickfix buffer if the execution is successful.
-						},
-						toggleterm = {
-							direction = "float", -- 'vertical' | 'horizontal' | 'tab' | 'float'
-							close_on_exit = false, -- whether close the terminal when exit
-							auto_scroll = true, -- whether auto scroll to the bottom
-							singleton = true, -- single instance, autocloses the opened one, if present
-						},
-						overseer = {
-							new_task_opts = {
-								strategy = {
-									"toggleterm",
-									direction = "horizontal",
-									autos_croll = true,
-									quit_on_exit = "success",
-								},
-							}, -- options to pass into the `overseer.new_task` command
-							on_new_task = function(task) end, -- a function that gets overseer.Task when it is created, before calling `task:start`
-						},
+				cmake_runner = {
+					name = "terminal",
+					default_opts = {
 						terminal = {
 							name = "Main Terminal",
-							prefix_name = "[CMakeTools]: ", -- This must be included and must be unique, otherwise the terminals will not work. Do not use a simple spacebar " ", or any generic name
-							split_direction = "horizontal", -- "horizontal", "vertical"
+							prefix_name = "[CMakeTools]: ",
+							split_direction = "horizontal",
 							split_size = 11,
-
-							-- Window handling
-							single_terminal_per_instance = true, -- Single viewport, multiple windows
-							single_terminal_per_tab = true, -- Single viewport per tab
-							keep_terminal_static_location = true, -- Static location of the viewport if avialable
-							auto_resize = true, -- Resize the terminal if it already exists
-
-							-- Running Tasks
-							start_insert = false, -- If you want to enter terminal with :startinsert upon using :CMakeRun
-							focus = false, -- Focus on terminal when cmake task is launched.
-							do_not_add_newline = false, -- Do not hit enter on the command inserted when using :CMakeRun, allowing a chance to review or modify the command before hitting enter.
+							start_insert = false,
+							focus = false,
 						},
 					},
 				},
 				cmake_notifications = {
 					runner = { enabled = true },
 					executor = { enabled = true },
-					spinner = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" }, -- icons used for progress display
-					refresh_rate_ms = 100, -- how often to iterate icons
 				},
-				cmake_virtual_text_support = true, -- Show the target related to current file using virtual text (at right corner)
-				cmake_use_scratch_buffer = false, -- A buffer that shows what cmake-tools has done
+				cmake_virtual_text_support = true,
+				cmake_use_scratch_buffer = false,
 			})
-
-			vim.keymap.set("n", "<leader>cb", ":CMakeBuild<CR>", { desc = "[C]Make [B]uild", silent = true })
-			vim.keymap.set(
-				"n",
-				"<leader>cg",
-				":CMakeGenerateAndRefreshLSP<CR>",
-				{ desc = "[C]Make [G]enerate", silent = true }
-			)
-			vim.keymap.set("n", "<leader>cr", ":CMakeRun<CR>", { desc = "[C]Make [R]un", silent = true })
-			vim.keymap.set("n", "<leader>cs", ":CMakeSelectBuildTarget<CR>", { desc = "[C]Make [S]elect Build Target" })
 		end,
 	},
 }
