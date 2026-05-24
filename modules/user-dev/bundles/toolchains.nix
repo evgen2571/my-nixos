@@ -17,6 +17,12 @@ in
       nil
       nix
       nixd
+      nixfmt-rfc-style
+      statix
+      deadnix
+      stylua
+      shellcheck
+      shfmt
       luarocks
       direnv
       nix-direnv

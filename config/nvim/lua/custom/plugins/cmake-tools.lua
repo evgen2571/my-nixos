@@ -2,10 +2,10 @@ return {
 	{
 		"Civitasv/cmake-tools.nvim",
 		keys = {
-			{ "<leader>cb", "<cmd>CMakeBuild<CR>", desc = "CMake: build" },
-			{ "<leader>cg", "<cmd>CMakeGenerateAndRefreshLSP<CR>", desc = "CMake: generate + refresh LSP" },
-			{ "<leader>cr", "<cmd>CMakeRun<CR>", desc = "CMake: run" },
-			{ "<leader>cs", "<cmd>CMakeSelectBuildTarget<CR>", desc = "CMake: select build target" },
+			{ "<leader>cmb", "<cmd>CMakeBuild<CR>", desc = "CMake: build" },
+			{ "<leader>cmg", "<cmd>CMakeGenerateAndRefreshLSP<CR>", desc = "CMake: generate + refresh LSP" },
+			{ "<leader>cmr", "<cmd>CMakeRun<CR>", desc = "CMake: run" },
+			{ "<leader>cms", "<cmd>CMakeSelectBuildTarget<CR>", desc = "CMake: select build target" },
 		},
 		config = function()
 			vim.api.nvim_create_user_command("CMakeGenerateAndRefreshLSP", function()

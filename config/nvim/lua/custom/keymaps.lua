@@ -4,7 +4,9 @@ local opts = { noremap = true, silent = true }
 
 -- Search / diagnostics
 map("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear search highlight" })
-map("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Diagnostics: location list" })
+map("n", "<leader>dq", vim.diagnostic.setloclist, { desc = "Diagnostics: location list" })
+map("n", "<leader>df", vim.diagnostic.open_float, { desc = "Diagnostics: floating message" })
+map("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Diagnostics: location list" }) -- Backward-compatible alias.
 
 -- Editing ergonomics
 map("n", "J", "mzJ`z", { desc = "Join line without moving cursor" })

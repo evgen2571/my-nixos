@@ -133,13 +133,17 @@ require("lazy").setup({
 			},
 
 			spec = {
-				{ "<leader>c", group = "Code / CMake" },
-				{ "<leader>d", group = "Diff / Debug" },
+				{ "<leader>c", group = "Code" },
+				{ "<leader>cm", group = "CMake" },
+				{ "<leader>cr", group = "Rust" },
+				{ "<leader>d", group = "Debug / diagnostics" },
 				{ "<leader>g", group = "Git" },
+				{ "<leader>gc", group = "Git conflicts" },
 				{ "<leader>h", group = "Git hunk", mode = { "n", "v" } },
+				{ "<leader>m", group = "Marks / Harpoon" },
 				{ "<leader>r", group = "Resize split" },
 				{ "<leader>s", group = "Search" },
-				{ "<leader>t", group = "Toggle / Tools" },
+				{ "<leader>t", group = "Toggle / tools" },
 			},
 		},
 	},
@@ -476,26 +480,9 @@ require("lazy").setup({
 			--        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
 			local servers = {
 				pyright = {},
-				-- gopls = {},
-				rust_analyzer = {
-					cmd = { "rust-analyzer" },
-					settings = {
-						["rust-analyzer"] = {
-							cargo = {
-								allTargets = true,
-								buildScripts = { enable = true },
-								features = "all",
-							},
-							check = {
-								allTargets = true,
-								command = "clippy",
-								features = "all",
-							},
-							checkOnSave = true,
-							procMacro = { enable = true },
-						},
-					},
-				},
+				ruff = {},
+				nixd = {},
+				-- Rust is managed by rustaceanvim in custom/plugins/rust.lua.
 				-- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
 				--
 				-- Some languages (like typescript) have entire language plugins that can be useful:
@@ -566,13 +553,12 @@ require("lazy").setup({
 			formatters_by_ft = {
 				lua = { "stylua" },
 				rust = { "rustfmt" },
+				python = { "ruff_format", "black", stop_after_first = true },
+				nix = { "nixfmt", "alejandra", stop_after_first = true },
+				sh = { "shfmt" },
+				bash = { "shfmt" },
 				cpp = { "clang_format" },
 				c = { "clang_format" },
-				-- Conform can also run multiple formatters sequentially
-				-- python = { "isort", "black" },
-				--
-				-- You can use 'stop_after_first' to run the first available formatter from the list
-				-- javascript = { "prettierd", "prettier", stop_after_first = true },
 			},
 			formatters = {
 				clang_format = {
