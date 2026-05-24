@@ -34,6 +34,30 @@ function M.setup()
 		fg = "{{colors.outline.default.hex}}",
 		nocombine = true,
 	})
+
+	-- Harpoon tabline / buffer line
+	vim.api.nvim_set_hl(0, "HarpoonInactive", {
+		bg = "NONE",
+		fg = "{{colors.on_surface_variant.default.hex}}",
+	})
+	vim.api.nvim_set_hl(0, "HarpoonActive", {
+		bg = "NONE",
+		fg = "{{colors.on_surface.default.hex}}",
+		bold = true,
+	})
+	vim.api.nvim_set_hl(0, "HarpoonNumberActive", {
+		bg = "NONE",
+		fg = "{{colors.primary.default.hex}}",
+		bold = true,
+	})
+	vim.api.nvim_set_hl(0, "HarpoonNumberInactive", {
+		bg = "NONE",
+		fg = "{{colors.primary.default.hex}}",
+	})
+	vim.api.nvim_set_hl(0, "TabLineFill", {
+		bg = "NONE",
+		fg = "{{colors.on_surface.default.hex}}",
+	})
 end
 
 -- Register a signal handler for SIGUSR1 (matugen updates)

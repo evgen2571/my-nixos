@@ -14,14 +14,15 @@ in
       };
     in
     {
+      environment.systemPackages = [ unstable.ollama ];
+
       services.ollama = {
         enable = true;
         package = unstable.ollama;
 
-        # preload models, see https://ollama.com/library
+        # Preload local code-completion model for minuet-ai.nvim.
         loadModels = [
           "qwen2.5-coder:1.5b"
-          "gemma4:e4b"
         ];
       };
     }
