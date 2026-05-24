@@ -12,7 +12,7 @@ map("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Diagnostics: location
 map("n", "J", "mzJ`z", { desc = "Join line without moving cursor" })
 map("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move selection down" })
 map("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move selection up" })
-map("x", "<leader>p", [["_dP]], { desc = "Paste without replacing register" })
+map("x", "<leader>p", [[\"_dP]], { desc = "Paste without replacing register" })
 map("i", "<C-c>", "<Esc>", opts)
 
 -- Keep cursor centered for common jumps.
@@ -24,5 +24,11 @@ map("n", "N", "Nzzzv", { desc = "Previous search result centered" })
 -- Windows / splits
 map("n", "<A-\\>", "<cmd>vsplit<CR><C-l>", { noremap = true, silent = true, desc = "Vertical split" })
 map("n", "<A-x>", "<cmd>q<CR>", { noremap = true, silent = true, desc = "Close window" })
+-- Window resize with Alt+h/j/k/l
+map("n", "<A-h>", "<cmd>vertical resize -5<CR>", { desc = "Decrease window width" })
+map("n", "<A-l>", "<cmd>vertical resize +5<CR>", { desc = "Increase window width" })
+map("n", "<A-k>", "<cmd>resize -5<CR>", { desc = "Decrease window height" })
+map("n", "<A-j>", "<cmd>resize +5<CR>", { desc = "Increase window height" })
+
 -- Terminal
 map("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
