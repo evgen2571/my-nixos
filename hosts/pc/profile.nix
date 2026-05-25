@@ -49,17 +49,17 @@
     apps = {
       anki.enable = true;
       bitwarden.enable = false;
-      bruno.enable = false;
+      bruno.enable = true;
       chrome.enable = false;
       notion.enable = false;
       mpv.enable = true;
-      obsidian.enable = false;
+      obsidian.enable = true;
       osuLazer.enable = false;
       prismLauncher.enable = false;
       slack.enable = false;
       telegram.enable = true;
-      vesktop.enable = false;
-      youtubeMusic.enable = false;
+      vesktop.enable = true;
+      youtubeMusic.enable = true;
       zenBrowser.enable = true;
     };
 
