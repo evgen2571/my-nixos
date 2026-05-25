@@ -1,5 +1,4 @@
 {
-  configPaths,
   config,
   lib,
   ...
@@ -10,6 +9,6 @@ let
 in
 {
   config = lib.mkIf cfg.enable {
-    xdg.configFile."fish".source = configPaths.dev.fish.configDir;
+    xdg.configFile."fish".source = cfg.configDir;
   };
 }
