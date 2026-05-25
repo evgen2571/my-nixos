@@ -1,5 +1,4 @@
 {
-  configPaths,
   config,
   lib,
   ...
@@ -10,6 +9,6 @@ let
 in
 {
   config = lib.mkIf cfg.enable {
-    xdg.configFile."kitty/kitty.conf".source = configPaths.dev.kitty.configFile;
+    xdg.configFile."kitty/kitty.conf".source = cfg.configFile;
   };
 }

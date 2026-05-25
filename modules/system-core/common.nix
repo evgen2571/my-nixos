@@ -2,6 +2,7 @@
 
 {
   boot.loader.systemd-boot.enable = true;
+  boot.loader.systemd-boot.configurationLimit = 10;
   boot.loader.efi.canTouchEfiVariables = true;
 
   networking.networkmanager.enable = true;
@@ -32,6 +33,12 @@
   nixpkgs.config.allowUnfree = true;
   programs.nix-ld.enable = true;
 
+  zramSwap = {
+    enable = true;
+    algorithm = "zstd";
+    memoryPercent = 100;
+  };
+
   environment.systemPackages = with pkgs; [
     libreoffice-still
     microfetch
@@ -49,10 +56,25 @@
     max-jobs = 1;
     cores = 2;
     eval-cache = true;
+    min-free = 5368709120;
+    max-free = 10737418240;
+    keep-outputs = false;
+    keep-derivations = false;
     substituters = [ "https://cache.nixos.org" ];
     experimental-features = [
       "nix-command"
       "flakes"
     ];
+  };
+
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 7d";
+  };
+
+  nix.optimise = {
+    automatic = true;
+    dates = [ "03:45" ];
   };
 }

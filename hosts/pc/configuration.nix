@@ -68,6 +68,13 @@
     ];
   };
 
+  swapDevices = [
+    {
+      device = "/swapfile";
+      size = 16384;
+    }
+  ];
+
   environment.systemPackages = with pkgs; [
     xwayland-satellite
     vulkan-tools
