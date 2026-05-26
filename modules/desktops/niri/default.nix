@@ -20,7 +20,14 @@ in
     services.gnome.gnome-keyring.enable = true;
 
     environment.systemPackages = with pkgs; [
+      brightnessctl
+      playerctl
       polkit_gnome
+      wireplumber
+    ];
+
+    services.udev.packages = with pkgs; [
+      brightnessctl
     ];
 
     programs.niri.enable = true;

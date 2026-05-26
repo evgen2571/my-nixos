@@ -5,159 +5,224 @@ layer-rule {
 }
 
 layer-rule {
-  match namespace="^noctalia-overview*"
-  place-within-backdrop true
+    match namespace="^noctalia-overview.*$"
+    place-within-backdrop true
 }
 
-// Window rules
+// Global window defaults
 window-rule {
-  geometry-corner-radius 10
-
-  clip-to-geometry true
+    geometry-corner-radius 10
+    clip-to-geometry true
 }
 
 debug {
-  honor-xdg-activation-with-invalid-serial
+    honor-xdg-activation-with-invalid-serial
 }
 
+// Small settings/control dialogs should stay close to the current workflow.
 window-rule {
-    match app-id=r#"^gnome-control-center$"#
-    match app-id=r#"^pavucontrol$"#
-    match app-id=r#"^nm-connection-editor$"#
-    default-column-width { proportion 0.5; }
-    open-floating false
-}
-
-window-rule {
-    match app-id=r#"^gnome-calculator$"#
-    match app-id=r#"^galculator$"#
-    match app-id=r#"^blueman-manager$"#
-    match app-id=r#"^org\.gnome\.Nautilus$"#
-    match app-id=r#"^xdg-desktop-portal$"#
+    match app-id=r#"^(gnome-control-center|pavucontrol|nm-connection-editor|blueman-manager|org\.gnome\.Calculator|gnome-calculator|galculator)$"#
     open-floating true
+    open-focused true
+    default-column-width { proportion 0.45; }
+    default-window-height { proportion 0.55; }
+}
+
+// Desktop portals and authentication prompts.
+window-rule {
+    match app-id=r#"^(xdg-desktop-portal|org\.freedesktop\.impl\.portal\.desktop\..*)$"#
+    match title=r#"^(Open|Save|Choose|Authenticate|Authentication Required|Password Required).*$"#
+    open-floating true
+    open-focused true
+    default-column-width { proportion 0.50; }
+    default-window-height { proportion 0.60; }
 }
 
 // Browser
 window-rule {
-	match app-id="zen-twilight"
-	open-maximized-to-edges true
-	open-on-workspace "browser"
+    match app-id=r#"^(zen-twilight|zen|firefox|google-chrome|chromium-browser|chromium)$"#
+    open-maximized-to-edges true
+    open-on-workspace "browser"
 }
 
-// Terminal
+// Terminal baseline
 window-rule {
-    match app-id="kitty"
-    match app-id="foot"
+    match app-id=r#"^(kitty|foot)$"#
     draw-border-with-background false
-	opacity 0.9
+    opacity 0.92
 }
 
-// Notetaker
+// Editor terminal
 window-rule {
-    match app-id="obsidian"
-    draw-border-with-background false
-	open-maximized-to-edges true
-	open-on-workspace "notes" 
-	opacity 0.98
+    match title="editor"
+    opacity 0.94
+    open-maximized-to-edges true
+    open-on-workspace "code"
 }
 
-// Anki
+// GUI editors, if enabled later.
+window-rule {
+    match app-id=r#"^(code|Code|codium|VSCodium|dev\.zed\.Zed|zed)$"#
+    open-maximized-to-edges true
+    open-on-workspace "code"
+}
+
+// Dropdown terminal
+window-rule {
+    match title="dropdown-term"
+    draw-border-with-background false
+    opacity 0.88
+    open-floating true
+    open-focused true
+    default-column-width { proportion 0.55; }
+    default-window-height { proportion 0.35; }
+    default-floating-position x=20 y=10 relative-to="top-left"
+
+    focus-ring {
+        on
+        width 3
+        active-color "#b58bcc"
+    }
+
+    shadow {
+        on
+        spread 4
+        softness 10
+        color "#695175"
+    }
+}
+
+// TUI file manager opened inside Kitty.
+window-rule {
+    match title="file-manager"
+    opacity 0.94
+    open-floating true
+    open-focused true
+    default-column-width { proportion 0.60; }
+    default-window-height { proportion 0.60; }
+}
+
+// GUI file managers
+window-rule {
+    match app-id=r#"^(org\.kde\.dolphin|org\.gnome\.Nautilus|thunar|Thunar)$"#
+    open-floating true
+    open-focused true
+    default-column-width { proportion 0.62; }
+    default-window-height { proportion 0.70; }
+}
+
+// Notes
+window-rule {
+    match app-id=r#"^(obsidian|md\.obsidian\.Obsidian)$"#
+    draw-border-with-background false
+    open-maximized-to-edges true
+    open-on-workspace "notes"
+    opacity 0.98
+}
+
+// Anki main window
 window-rule {
     match app-id=r#"^(anki|net\.ankiweb\.Anki)$"#
     draw-border-with-background false
-	open-maximized-to-edges true
-	open-on-workspace "anki"
-	opacity 0.98
+    open-maximized-to-edges true
+    open-on-workspace "anki"
+    opacity 0.98
 }
 
-// Anki add-note dialog
+// Anki modal dialogs: add cards, sync, preferences, browser dialogs.
 window-rule {
     match app-id=r#"^(anki|net\.ankiweb\.Anki)$"#
-    match title=r#"^(Add|Add Note|Add Cards|Добавить).*$"#
-	open-floating true
-	open-maximized-to-edges false
-	open-focused true
-	default-column-width { proportion 0.55; }
-	default-window-height { proportion 0.75; }
-	open-on-workspace "anki"
-}
-
-// Editor
-window-rule {
-	match title="editor"
-	opacity 0.9
-	open-maximized-to-edges true
-	open-on-workspace "code"
-}
-
-// File Manager
-window-rule {
-	match title="file-manager"
-	opacity 0.9
-	open-floating true
-
-	default-column-width { proportion 0.5; }
-	default-window-height { proportion 0.3; }
-}
-
-
-// Steam
-window-rule {
-	match app-id="steam"
-	open-maximized-to-edges true
-	open-on-workspace "gaming"
-}
-
-// Drowpdown Terminal
-window-rule {
-	match title="dropdown-term"
-
-    draw-border-with-background false
-	opacity 0.8
-
-	open-floating true
-	open-focused true
-	default-column-width { proportion 0.5; }
-	default-window-height { proportion 0.3; }
-	default-floating-position x=640 y=10 relative-to="top-left"
-
-	focus-ring {
-		on
-		width 3
-		active-color "#b58bcc"
-	}
-
-	shadow {
-		on
-		spread 4 
-		softness 10
-		color "#695175"
-	}
-}
-
-// Picture-in-Picture
-window-rule {
-    match title="^Picture-in-Picture$"
+    match title=r#"^(Add|Add Note|Add Cards|Browse|Preferences|Sync|Добавить|Обзор|Настройки).*$"#
     open-floating true
-	default-column-width { proportion 0.30; }
-	default-window-height { proportion 0.305; }
-    default-floating-position x=5 y=5 relative-to="bottom-right"
+    open-maximized-to-edges false
+    open-focused true
+    default-column-width { proportion 0.58; }
+    default-window-height { proportion 0.78; }
+    open-on-workspace "anki"
 }
 
-// File Manager
+// API client
 window-rule {
-    match app-id=r#"org.quickshell$"#
-	match app-id="org.kde.dolphin"
+    match app-id=r#"^(bruno|Bruno|com\.usebruno\.Bruno)$"#
+    open-maximized-to-edges true
+    open-on-workspace "code"
+}
+
+// Password manager
+window-rule {
+    match app-id=r#"^(Bitwarden|bitwarden|com\.bitwarden\.desktop)$"#
     open-floating true
-	open-focused true
-	default-column-width { proportion 0.5; }
-	default-window-height { proportion 0.5; }
+    open-focused true
+    default-column-width { proportion 0.40; }
+    default-window-height { proportion 0.70; }
 }
 
-// Messangers
+// Messengers
 window-rule {
-	match app-id="org.telegram.desktop"
-	match app-id="vesktop"
-	open-maximized true
-	open-on-workspace "chats"
+    match app-id=r#"^(org\.telegram\.desktop|telegram-desktop|vesktop|Vesktop|discord|Discord|Slack|slack)$"#
+    open-maximized-to-edges true
+    open-on-workspace "chats"
+}
+
+// Music players
+window-rule {
+    match app-id=r#"^(youtube-music|YouTube Music|com\.github\.th_ch\.youtube_music)$"#
+    open-on-workspace "chats"
+    default-column-width { proportion 0.42; }
+}
+
+// Video players
+window-rule {
+    match app-id=r#"^(mpv|io\.mpv\.Mpv)$"#
+    open-floating true
+    open-focused true
+    default-column-width { proportion 0.70; }
+    default-window-height { proportion 0.70; }
+}
+
+// Picture-in-picture windows from browsers/video apps.
+window-rule {
+    match title=r#"^(Picture-in-Picture|Picture in picture)$"#
+    open-floating true
+    open-focused false
+    default-column-width { proportion 0.30; }
+    default-window-height { proportion 0.30; }
+    default-floating-position x=12 y=12 relative-to="bottom-right"
+}
+
+// Gaming launchers and games.
+window-rule {
+    match app-id=r#"^(steam|steamwebhelper|net\.lutris\.Lutris|lutris|org\.prismlauncher\.PrismLauncher|PrismLauncher|sh\.ppy\.osu|osu!)$"#
+    open-maximized-to-edges true
+    open-on-workspace "gaming"
+}
+
+// Gamescope and actual game windows should take the whole output when they appear.
+window-rule {
+    match app-id=r#"^(gamescope|cs2|Minecraft|minecraft|osu!)$"#
+    open-fullscreen true
+    open-on-workspace "gaming"
+}
+
+// Recording/streaming tools, if enabled later.
+window-rule {
+    match app-id=r#"^(com\.obsproject\.Studio|obs)$"#
+    open-maximized-to-edges true
+    open-on-workspace "gaming"
+}
+
+// Noctalia/quickshell auxiliary windows.
+window-rule {
+    match app-id=r#"^(org\.quickshell|quickshell)$"#
+    open-floating true
+    open-focused true
+    default-column-width { proportion 0.50; }
+    default-window-height { proportion 0.50; }
+}
+
+// Virtual machines, if the virtualization module is enabled later.
+window-rule {
+    match app-id=r#"^(virt-manager|virt-viewer|remote-viewer)$"#
+    open-maximized-to-edges true
+    open-on-workspace "code"
 }
