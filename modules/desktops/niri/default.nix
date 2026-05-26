@@ -30,6 +30,12 @@ in
       brightnessctl
     ];
 
-    programs.niri.enable = true;
+    programs.niri = {
+      enable = true;
+      # Niri's upstream/NixOS portal setup already wires GNOME for screencast
+      # and GTK as the fallback. Keep GTK for file pickers so we do not depend
+      # on Nautilus just to use xdg-desktop-portal-gnome.
+      useNautilus = false;
+    };
   };
 }
