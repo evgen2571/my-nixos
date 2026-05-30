@@ -22,6 +22,7 @@ let
     modulePaths.apps.lutris
     modulePaths.apps.obs
     modulePaths.apps.steam
+    modulePaths.apps.vesktop
 
     modulePaths.coding.docker
     modulePaths.coding.fish
@@ -47,7 +48,6 @@ let
     modulePaths.user.apps.prismLauncher
     modulePaths.user.apps.slack
     modulePaths.user.apps.telegram
-    modulePaths.user.apps.vesktop
     modulePaths.user.apps.youtubeMusic
     modulePaths.user.apps.zenBrowser
 

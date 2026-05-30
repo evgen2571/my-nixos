@@ -4,7 +4,7 @@
   my = {
     desktop = {
       niri.enable = true;
-      hyprland.enable = false;
+      hyprland.enable = true;
       cinnamon.enable = false;
       ly.enable = true;
       opentabletdriver.enable = true;
@@ -20,6 +20,8 @@
         aagl.enable = false;
         kdeConnect.enable = false;
         steam.enable = true;
+        obs.enable = true;
+        vesktop.enable = true;
       };
 
       dev = {
@@ -58,14 +60,13 @@
       prismLauncher.enable = false;
       slack.enable = false;
       telegram.enable = true;
-      vesktop.enable = true;
       youtubeMusic.enable = true;
       zenBrowser.enable = true;
     };
 
     desktop = {
       end4HyprlandDots.enable = false;
-      hyprlandConfig.enable = false;
+      hyprlandConfig.enable = true;
       niriConfig = {
         enable = true;
         workspacesFile = "workspaces-pc.kdl";

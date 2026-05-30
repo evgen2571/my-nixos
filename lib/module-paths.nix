@@ -23,6 +23,7 @@
     lutris = root + "/modules/system-apps/lutris.nix";
     obs = root + "/modules/system-apps/obs.nix";
     steam = root + "/modules/system-apps/steam.nix";
+    vesktop = root + "/modules/system-apps/vesktop.nix";
   };
 
   coding = {
@@ -71,7 +72,6 @@
       prismLauncher = root + "/modules/user-apps/prism-launcher.nix";
       slack = root + "/modules/user-apps/slack.nix";
       telegram = root + "/modules/user-apps/telegram.nix";
-      vesktop = root + "/modules/user-apps/vesktop.nix";
       youtubeMusic = root + "/modules/user-apps/youtube-music.nix";
       zenBrowser = root + "/modules/user-apps/zen-browser.nix";
     };
