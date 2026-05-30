@@ -7,7 +7,7 @@
 }:
 
 let
-  cfg = config.my.apps.vesktop;
+  cfg = config.my.system.apps.vesktop;
 
   unstable = import inputs.nixpkgs-unstable {
     system = pkgs.system;
@@ -58,7 +58,7 @@ let
   '';
 in
 {
-  options.my.apps.vesktop.enable = lib.mkEnableOption "Vesktop";
+  options.my.system.apps.vesktop.enable = lib.mkEnableOption "Vesktop";
 
   config = lib.mkIf cfg.enable {
     environment.sessionVariables = {
