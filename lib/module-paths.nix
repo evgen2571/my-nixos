@@ -81,6 +81,7 @@
       fish = root + "/modules/user-dev/fish";
       git = root + "/modules/user-dev/git.nix";
       github = root + "/modules/user-dev/github.nix";
+      ssh = root + "/modules/user-dev/ssh.nix";
       kitty = root + "/modules/user-dev/kitty";
       neovim = root + "/modules/user-dev/neovim";
       starship = root + "/modules/user-dev/starship";

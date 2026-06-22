@@ -65,6 +65,7 @@ let
     modulePaths.user.dev.fish
     modulePaths.user.dev.git
     modulePaths.user.dev.github
+    modulePaths.user.dev.ssh
     modulePaths.user.dev.languages.cpp
     modulePaths.user.dev.languages.python
     modulePaths.user.dev.languages.rust
@@ -93,6 +94,7 @@ in
 
     homeModules = [
       modulePaths.user.dev.git
+      modulePaths.user.dev.ssh
     ];
   };
 }
