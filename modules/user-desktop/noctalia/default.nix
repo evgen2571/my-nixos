@@ -12,8 +12,9 @@ in
   options.my.user.desktop.noctalia.enable = lib.mkEnableOption "Noctalia shell";
 
   config = lib.mkIf cfg.enable {
-    programs.noctalia-shell = {
+    programs.noctalia = {
       enable = true;
+      systemd.enable = true;
     };
   };
 }
