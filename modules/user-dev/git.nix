@@ -10,7 +10,7 @@ let
 in
 {
   options.my.user.dev.git = {
-    enable = lib.mkEnableOption "Git and SSH user configuration";
+    enable = lib.mkEnableOption "Git user configuration";
 
     userName = lib.mkOption {
       type = lib.types.nullOr lib.types.str;
@@ -38,31 +38,6 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    programs.ssh = {
-      enable = true;
-      enableDefaultConfig = false;
-
-      matchBlocks = {
-        "*" = {
-          addKeysToAgent = "yes";
-        };
-
-        "hermes-space" = {
-          hostname = "192.0.2.14";
-          user = "agent";
-          identityFile = "~/.ssh/hermes_server";
-          identitiesOnly = true;
-        };
-
-        "server-lp" = {
-          hostname = "192.0.2.14";
-          user = "server";
-          identityFile = "~/.ssh/hermes_server";
-          identitiesOnly = true;
-        };
-      };
-    };
-
     programs.git = {
       enable = true;
 
