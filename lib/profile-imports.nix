@@ -12,6 +12,7 @@ let
 
     modulePaths.systemServices.tailscale
     modulePaths.systemServices.blueman
+    modulePaths.systemServices.syncthing
 
     modulePaths.hardware.bluetooth
     modulePaths.hardware.nvidia
