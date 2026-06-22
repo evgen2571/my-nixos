@@ -18,7 +18,7 @@
     system = {
       apps = {
         aagl.enable = false;
-        kdeConnect.enable = false;
+        kdeConnect.enable = true;
         steam.enable = true;
         obs.enable = true;
         vesktop.enable = true;

@@ -1,5 +1,7 @@
-{ lib,
+{
+  lib,
   config,
+  pkgs,
   ...
 }:
 
@@ -9,9 +11,10 @@ in
 {
   options.my.system.dev.docker.enable = lib.mkEnableOption "Docker";
 
-  config = lib.mkIf cfg.enable (
-    {
-      virtualisation.docker.enable = true;
-    }
-  );
+  config = lib.mkIf cfg.enable {
+    virtualisation.docker = {
+      enable = true;
+      package = pkgs.docker_29;
+    };
+  };
 }
