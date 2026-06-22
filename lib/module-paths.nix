@@ -14,6 +14,7 @@
   systemServices = {
     tailscale = root + "/modules/system-services/tailscale.nix";
     blueman = root + "/modules/system-services/blueman.nix";
+    syncthing = root + "/modules/system-services/syncthing.nix";
     vpnbookWireguardFailover = root + "/modules/system-services/vpnbook-wireguard-failover.nix";
   };
 
@@ -81,6 +82,7 @@
       fish = root + "/modules/user-dev/fish";
       git = root + "/modules/user-dev/git.nix";
       github = root + "/modules/user-dev/github.nix";
+      ssh = root + "/modules/user-dev/ssh.nix";
       kitty = root + "/modules/user-dev/kitty";
       neovim = root + "/modules/user-dev/neovim";
       starship = root + "/modules/user-dev/starship";
