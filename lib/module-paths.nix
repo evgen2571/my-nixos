@@ -14,6 +14,7 @@
   systemServices = {
     tailscale = root + "/modules/system-services/tailscale.nix";
     blueman = root + "/modules/system-services/blueman.nix";
+    syncthing = root + "/modules/system-services/syncthing.nix";
     vpnbookWireguardFailover = root + "/modules/system-services/vpnbook-wireguard-failover.nix";
   };
 

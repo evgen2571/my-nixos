@@ -38,6 +38,7 @@
         virtualization.enable = false;
         tailscale.enable = true;
         blueman.enable = true;
+        syncthing.enable = true;
       };
     };
   };
