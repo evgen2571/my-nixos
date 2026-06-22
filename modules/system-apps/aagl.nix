@@ -1,5 +1,10 @@
 # configuration.nix
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 let
   cfg = config.my.system.apps.aagl;
 
@@ -8,7 +13,7 @@ let
   aagl = import (
     builtins.fetchTarball {
       url = "https://github.com/ezKEa/aagl-gtk-on-nix/archive/release-25.11.tar.gz";
-      sha256 = "0790jqa5anb3ggflw5is9d4rpr2ra6w10yglhwqps1j49ac7d67m";
+      sha256 = "1a5517yvd4024ahm46zg9gl6mpvjy67wcy5pzcwbgbzrwg2fyvx8";
     }
   );
 in
