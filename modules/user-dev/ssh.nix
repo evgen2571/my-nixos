@@ -1,6 +1,10 @@
-{ ... }:
+{ pkgs, ... }:
 
 {
+  home.packages = [
+    pkgs.sshfs
+  ];
+
   programs.ssh = {
     enable = true;
     enableDefaultConfig = false;

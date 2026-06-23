@@ -11,8 +11,16 @@ return {
 		"nvim-telescope/telescope.nvim",
 		"nvim-lua/plenary.nvim",
 	},
-	opts = {},
-	config = function()
+	opts = {
+		connections = {
+			ssh_configs = {
+				vim.fn.expand("$HOME") .. "/.ssh/config",
+				"/etc/ssh/ssh_config",
+			},
+		},
+	},
+	config = function(_, opts)
+		require("remote-sshfs").setup(opts)
 		pcall(require("telescope").load_extension, "remote-sshfs")
 
 		local api = require("remote-sshfs.api")
