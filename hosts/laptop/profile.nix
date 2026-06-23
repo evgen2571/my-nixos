@@ -20,6 +20,7 @@
         aagl.enable = false;
         kdeConnect.enable = false;
         steam.enable = true;
+        vesktop.enable = true;
       };
 
       dev = {
@@ -58,7 +59,6 @@
       prismLauncher.enable = false;
       slack.enable = false;
       telegram.enable = true;
-      vesktop.enable = true;
       youtubeMusic.enable = true;
       zenBrowser.enable = true;
     };

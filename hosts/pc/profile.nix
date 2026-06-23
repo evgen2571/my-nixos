@@ -4,7 +4,10 @@
   my = {
     desktop = {
       niri.enable = true;
-      hyprland.enable = true;
+      # Keep only the active Niri desktop enabled here. Enabling Hyprland at the
+      # same time also installs its portal backend on this host, which can race
+      # with Niri/GNOME portals and break WebRTC screen sharing globally.
+      hyprland.enable = false;
       cinnamon.enable = false;
       ly.enable = true;
       opentabletdriver.enable = true;
@@ -67,7 +70,7 @@
 
     desktop = {
       end4HyprlandDots.enable = false;
-      hyprlandConfig.enable = true;
+      hyprlandConfig.enable = false;
       niriConfig = {
         enable = true;
         workspacesFile = "workspaces-pc.kdl";
