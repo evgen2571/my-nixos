@@ -52,6 +52,18 @@
     tree
   ];
 
+  fonts.enableDefaultPackages = true;
+  fonts.packages = with pkgs; [
+    noto-fonts
+    noto-fonts-cjk-sans
+    noto-fonts-color-emoji
+    liberation_ttf
+    dejavu_fonts
+    nerd-fonts.jetbrains-mono
+    nerd-fonts.hurmit
+    nerd-fonts.symbols-only
+  ];
+
   nix.settings = {
     max-jobs = 1;
     cores = 2;

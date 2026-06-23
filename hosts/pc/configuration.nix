@@ -41,15 +41,6 @@
     vulkan-tools
   ];
 
-  fonts.enableDefaultPackages = true;
-  fonts.packages = with pkgs; [
-    noto-fonts
-    noto-fonts-cjk-sans
-    noto-fonts-color-emoji
-    liberation_ttf
-    dejavu_fonts
-  ];
-
   nix.settings = {
     trusted-public-keys = [
       "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
