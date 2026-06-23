@@ -16,14 +16,15 @@ binds {
     Mod+Shift+T repeat=false hotkey-overlay-title="Telegram" { spawn "telegram-desktop"; }
     Mod+Shift+D repeat=false hotkey-overlay-title="Vesktop" { spawn "vesktop"; }
 
-    // Noctalia
-    Mod+Comma { spawn-sh "noctalia-shell ipc call settings toggle"; }
-    Mod+Space { spawn "noctalia-shell" "ipc" "call" "launcher" "toggle"; }
-    Mod+V { spawn "noctalia-shell" "ipc" "call" "launcher" "clipboard"; }
-    Mod+Y { spawn-sh "noctalia-shell ipc call wallpaper toggle"; }
-    Mod+P { spawn-sh "noctalia-shell ipc call sessionMenu toggle"; }
-    Mod+Alt+L { spawn-sh "noctalia-shell ipc call sessionMenu lockAndSuspend"; }
-    Ctrl+Shift+Escape { spawn-sh "noctalia-shell ipc call systemMonitor toggle"; }
+    // Noctalia v5 IPC
+    Mod+Comma { spawn "noctalia" "msg" "settings-toggle"; }
+    Mod+Space { spawn "noctalia" "msg" "panel-toggle" "launcher"; }
+    Mod+S { spawn "noctalia" "msg" "panel-toggle" "control-center"; }
+    Mod+V { spawn "noctalia" "msg" "panel-toggle" "clipboard"; }
+    Mod+Y { spawn "noctalia" "msg" "panel-toggle" "wallpaper"; }
+    Mod+P { spawn "noctalia" "msg" "panel-toggle" "session"; }
+    Mod+Alt+L { spawn "noctalia" "msg" "session" "lock-and-suspend"; }
+    Ctrl+Shift+Escape { spawn "noctalia" "msg" "panel-toggle" "control-center" "system"; }
 
     // System controls. Use direct Wayland-friendly tools instead of shell IPC so keys keep
     // working even when Noctalia is still starting or its IPC changes.

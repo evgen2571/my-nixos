@@ -1,5 +1,5 @@
-// Noctalia Shell
-spawn-at-startup  "noctalia-shell"
+// Noctalia v5
+spawn-at-startup  "noctalia"
 spawn-at-startup  "xwayland-satellite"
 spawn-at-startup  "/run/current-system/sw/libexec/polkit-gnome-authentication-agent-1"
 

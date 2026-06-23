@@ -1,6 +1,10 @@
-{ ... }:
+{ pkgs, ... }:
 
 {
+  home.packages = [
+    pkgs.sshfs
+  ];
+
   programs.ssh = {
     enable = true;
     enableDefaultConfig = false;
@@ -10,7 +14,7 @@
         addKeysToAgent = "yes";
       };
 
-      github.com = {
+      "github.com" = {
         hostname = "github.com";
         user = "git";
         identityFile = "~/.ssh/id_ed25519_github";
