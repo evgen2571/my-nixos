@@ -30,7 +30,17 @@ in
     ./config.nix
   ];
 
-  options.my.user.desktop.noctalia.enable = lib.mkEnableOption "Noctalia shell";
+  options.my.user.desktop.noctalia = {
+    enable = lib.mkEnableOption "Noctalia shell";
+
+    configFile = lib.mkOption {
+      type = lib.types.path;
+      default = configPaths.wm.noctaliaConfigDir + "/config.toml";
+      description = "Noctalia v5 TOML config to install as ~/.config/noctalia/config.toml.";
+    };
+
+    legacyConfig.enable = lib.mkEnableOption "legacy Noctalia v4 JSON/plugins/template config installation";
+  };
 
   config = lib.mkIf cfg.enable {
     programs.noctalia = {
