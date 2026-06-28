@@ -57,6 +57,85 @@ Rule of thumb:
 - `modules/` = reusable logic.
 - `config/` = raw dotfiles copied/linked by modules.
 
+## Adding a new module
+
+1. Pick the scope.
+   - Use a NixOS/system module when it configures system services, hardware, desktop sessions, users, drivers, or system packages.
+   - Use a Home Manager/user module when it configures user apps, dotfiles, shells, editor config, or `home.packages`.
+
+2. Put the module in the matching folder.
+   - System examples: `modules/system-services/`, `modules/system-apps/`, `modules/hardware/`, `modules/desktops/`.
+   - User examples: `modules/user-apps/`, `modules/user-dev/`, `modules/user-desktop/`, `modules/user-files/`.
+   - Prefer copying the shape of the closest sibling module.
+
+3. Give it a small enable option.
+
+   System module pattern:
+
+   ```nix
+   { config, lib, pkgs, ... }:
+   let
+     cfg = config.my.system.services.example;
+   in
+   {
+     options.my.system.services.example.enable = lib.mkEnableOption "Example service";
+
+     config = lib.mkIf cfg.enable {
+       environment.systemPackages = with pkgs; [ example ];
+     };
+   }
+   ```
+
+   Home Manager module pattern:
+
+   ```nix
+   { config, lib, pkgs, ... }:
+   let
+     cfg = config.my.user.apps.example;
+   in
+   {
+     options.my.user.apps.example.enable = lib.mkEnableOption "Example app";
+
+     config = lib.mkIf cfg.enable {
+       home.packages = with pkgs; [ example ];
+     };
+   }
+   ```
+
+4. Add one catalog entry in `lib/module-catalog.nix`.
+   - `attrPath` keeps the old `modulePaths.*` shape for compatibility.
+   - `scope` is `system` for NixOS modules and `home` for Home Manager modules.
+   - `category` is a simple grouping such as `app`, `service`, `desktop`, `hardware`, `development`, `files`, `ai`, or `core`.
+   - `profiles` controls which shared profile imports it. Use `[ "desktop" ]`, `[ "server" ]`, `[ "desktop" "server" ]`, or `[ ]` for host-base modules imported directly by `hosts/*/configuration.nix`.
+   - The final string should say what the module means, not just repeat the filename.
+
+   Example entries:
+
+   ```nix
+   (systemModule [ "systemServices" "example" ] "/modules/system-services/example.nix" "service" [ "desktop" ] "Example system service.")
+   (homeModule [ "user" "apps" "example" ] "/modules/user-apps/example.nix" "app" [ "desktop" ] "Example desktop app.")
+   ```
+
+5. Enable it per host in `hosts/<host>/profile.nix`.
+   - System modules usually toggle `my.system.*` or another system option namespace.
+   - User modules should usually go through the primary-user adapter:
+
+   ```nix
+   my.primaryUser.home.settings.my.user.apps.example.enable = true;
+   ```
+
+6. Verify before rebuilding.
+
+   ```bash
+   nix fmt
+   git diff --check
+   nixos-rebuild build --flake .#nixos-pc
+   ```
+
+   Use the target host name for host-specific changes, for example `.#nixos-lp` or `.#nixos-server`.
+
+Do not add new imports directly to `lib/profile-imports.nix`; it is derived from the catalog. Keep `lib/module-paths.nix` as a compatibility view unless the whole repo is intentionally migrated away from `modulePaths`.
+
 ## Common commands
 
 ```bash
