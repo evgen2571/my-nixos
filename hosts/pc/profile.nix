@@ -39,7 +39,7 @@
     };
   };
 
-  home-manager.users.operator.my.user = {
+  my.primaryUser.home.settings.my.user = {
     ai = {
       opencode.enable = false;
       codex.enable = false;

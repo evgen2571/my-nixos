@@ -41,7 +41,6 @@ let
             home-manager.useUserPackages = true;
             home-manager.extraSpecialArgs = sharedSpecialArgs;
             home-manager.sharedModules = profile.homeModules;
-            home-manager.users.operator = import ../home/operator/home.nix;
           }
         ];
       }

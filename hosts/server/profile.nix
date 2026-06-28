@@ -2,7 +2,7 @@
 
 {
 
-  home-manager.users.operator.my.user.dev.git.enable = true;
+  my.primaryUser.home.settings.my.user.dev.git.enable = true;
 
   services.hermes-agent = {
     enable = true;

@@ -10,7 +10,7 @@
 
   networking.hostName = "nixos-server";
 
-  my.system.user = {
+  my.primaryUser = {
     enable = true;
     name = "operator";
     extraGroups = [
@@ -20,6 +20,11 @@
     authorizedKeys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA example"
     ];
+
+    git = {
+      userEmail = "150374952+evgen2571@users.noreply.github.com";
+      signingKey = "~/.ssh/id_ed25519.pub";
+    };
   };
 
   services.openssh = {

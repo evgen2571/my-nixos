@@ -7,7 +7,6 @@
 let
   cfg = config.my.desktop;
   active = cfg.active;
-  desktopUser = "operator";
 
   niriWorkspacesFile =
     if config.networking.hostName == "nixos-lp" then
@@ -65,7 +64,7 @@ in
       };
       my.system.dev.fish.enable = lib.mkDefault true;
 
-      home-manager.users.${desktopUser}.my.user.desktop = {
+      my.primaryUser.home.settings.my.user.desktop = {
         niriConfig = {
           enable = lib.mkDefault true;
           workspacesFile = lib.mkDefault niriWorkspacesFile;
@@ -85,7 +84,7 @@ in
       };
       my.system.dev.fish.enable = lib.mkDefault true;
 
-      home-manager.users.${desktopUser}.my.user.desktop = {
+      my.primaryUser.home.settings.my.user.desktop = {
         niriConfig.enable = lib.mkDefault false;
         hyprlandConfig.enable = lib.mkDefault true;
         end4HyprlandDots.enable = lib.mkDefault false;
