@@ -1,6 +1,5 @@
 {
   config,
-  configPaths,
   pkgs,
   lib,
   ...
@@ -17,10 +16,10 @@ in
   options.my.user.dev.kitty = {
     enable = lib.mkEnableOption "Kitty terminal";
 
-    configFile = lib.mkOption {
-      type = lib.types.path;
-      default = configPaths.dev.kitty.configFile;
-      description = "Kitty config file to symlink into ~/.config/kitty/kitty.conf.";
+    fontSize = lib.mkOption {
+      type = lib.types.str;
+      default = "17.0";
+      description = "Kitty terminal font size in points.";
     };
   };
 

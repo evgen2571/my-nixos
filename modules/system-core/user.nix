@@ -50,9 +50,9 @@ in
       };
 
       settings = lib.mkOption {
-        type = lib.types.attrs;
+        type = lib.types.deferredModule;
         default = { };
-        description = "Host-specific Home Manager settings for the primary user.";
+        description = "Host-specific Home Manager module fragment for the primary user.";
       };
     };
 

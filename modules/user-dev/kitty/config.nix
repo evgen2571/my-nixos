@@ -1,5 +1,6 @@
 {
   config,
+  configPaths,
   lib,
   ...
 }:
@@ -9,6 +10,8 @@ let
 in
 {
   config = lib.mkIf cfg.enable {
-    xdg.configFile."kitty/kitty.conf".source = cfg.configFile;
+    xdg.configFile = configPaths.dotfileAdapters.kitty {
+      inherit (cfg) fontSize;
+    };
   };
 }

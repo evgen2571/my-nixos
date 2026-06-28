@@ -8,13 +8,13 @@ let
   cfg = config.my.desktop;
   active = cfg.active;
 
-  niriWorkspacesFile =
+  niriWorkspaceProfile =
     if config.networking.hostName == "nixos-lp" then
-      "workspaces-laptop.kdl"
+      "laptop"
     else if config.networking.hostName == "nixos-pc" then
-      "workspaces-pc.kdl"
+      "pc"
     else
-      "workspaces.kdl";
+      "default";
 in
 {
   options.my.desktop.active = lib.mkOption {
@@ -67,7 +67,7 @@ in
       my.primaryUser.home.settings.my.user.desktop = {
         niriConfig = {
           enable = lib.mkDefault true;
-          workspacesFile = lib.mkDefault niriWorkspacesFile;
+          workspaceProfile = lib.mkDefault niriWorkspaceProfile;
         };
         hyprlandConfig.enable = lib.mkDefault false;
         end4HyprlandDots.enable = lib.mkDefault false;
