@@ -66,9 +66,7 @@
     dev = {
       ffmpeg.enable = true;
       workstation.enable = true;
-      fish.configDir = ../../config/fish-laptop;
-      kitty.configFile = ../../config/kitty/kitty-laptop.conf;
-      starship.configFile = ../../config/starship/starship-laptop.toml;
+      kitty.fontSize = "13.0";
 
       languages = {
         cpp.enable = true;
