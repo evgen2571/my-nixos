@@ -1,8 +1,9 @@
 { inputs, withSystem, ... }:
 let
-  modulePaths = import ../lib/module-paths.nix { root = ../.; };
+  moduleCatalog = import ../lib/module-catalog.nix { root = ../.; };
+  modulePaths = moduleCatalog.paths;
   configPaths = import ../lib/config-paths.nix { root = ../.; };
-  profileImports = import ../lib/profile-imports.nix { inherit modulePaths; };
+  profileImports = import ../lib/profile-imports.nix { inherit moduleCatalog; };
   mkHost =
     {
       hostModule,
@@ -19,6 +20,7 @@ let
             inputs
             inputs'
             self'
+            moduleCatalog
             modulePaths
             configPaths
             ;
