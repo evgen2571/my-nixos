@@ -14,7 +14,7 @@
   services.printing.enable = true;
   security.rtkit.enable = true;
 
-  my.system.user = {
+  my.primaryUser = {
     enable = true;
     name = "evgen2571";
     description = "Eugene A";
@@ -27,6 +27,11 @@
       "docker"
       "libvirtd"
     ];
+
+    git = {
+      userEmail = "evgen.10.02.2008.83@gmail.com";
+      signingKey = "~/.ssh/id_ed25519.pub";
+    };
   };
 
   swapDevices = [

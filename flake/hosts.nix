@@ -41,7 +41,6 @@ let
             home-manager.useUserPackages = true;
             home-manager.extraSpecialArgs = sharedSpecialArgs;
             home-manager.sharedModules = profile.homeModules;
-            home-manager.users.evgen2571 = import ../home/evgen2571/home.nix;
           }
         ];
       }

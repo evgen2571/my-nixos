@@ -39,7 +39,7 @@
     };
   };
 
-  home-manager.users.evgen2571.my.user = {
+  my.primaryUser.home.settings.my.user = {
     ai = {
       opencode.enable = false;
       codex.enable = false;

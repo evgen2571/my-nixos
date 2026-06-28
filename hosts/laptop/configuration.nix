@@ -18,7 +18,7 @@
   security.pam.services.ly.fprintAuth = true;
   security.pam.services.sudo.fprintAuth = false;
 
-  my.system.user = {
+  my.primaryUser = {
     enable = true;
     name = "evgen2571";
     description = "Eugene A";
@@ -29,6 +29,11 @@
       "input"
       "git"
     ];
+
+    git = {
+      userEmail = "evgen.10.02.2008.83@gmail.com";
+      signingKey = "~/.ssh/id_ed25519.pub";
+    };
   };
 
   swapDevices = [
