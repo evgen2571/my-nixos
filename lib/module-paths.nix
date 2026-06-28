@@ -43,6 +43,7 @@
   };
 
   wm = {
+    role = root + "/modules/desktops/role.nix";
     cinnamon = root + "/modules/desktops/cinnamon";
     gnome = root + "/modules/desktops/gnome";
     hyprland = root + "/modules/desktops/hyprland";

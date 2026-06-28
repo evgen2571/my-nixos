@@ -1,6 +1,5 @@
 { inputs, withSystem, ... }:
 let
-  wm = "niri";
   modulePaths = import ../lib/module-paths.nix { root = ../.; };
   configPaths = import ../lib/config-paths.nix { root = ../.; };
   profileImports = import ../lib/profile-imports.nix { inherit modulePaths; };
@@ -20,7 +19,6 @@ let
             inputs
             inputs'
             self'
-            wm
             modulePaths
             configPaths
             ;

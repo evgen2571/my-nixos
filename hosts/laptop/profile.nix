@@ -3,10 +3,7 @@
 {
   my = {
     desktop = {
-      niri.enable = true;
-      hyprland.enable = false;
-      cinnamon.enable = false;
-      ly.enable = true;
+      active = "niri";
       opentabletdriver.enable = false;
     };
 
@@ -20,11 +17,11 @@
         aagl.enable = false;
         kdeConnect.enable = false;
         steam.enable = true;
+        vesktop.enable = true;
       };
 
       dev = {
         docker.enable = true;
-        fish.enable = true;
       };
 
       files = {
@@ -58,19 +55,11 @@
       prismLauncher.enable = false;
       slack.enable = false;
       telegram.enable = true;
-      vesktop.enable = true;
       youtubeMusic.enable = true;
       zenBrowser.enable = true;
     };
 
     desktop = {
-      end4HyprlandDots.enable = false;
-      hyprlandConfig.enable = false;
-      niriConfig = {
-        enable = true;
-        workspacesFile = "workspaces-laptop.kdl";
-      };
-      noctalia.enable = true;
       screenRecorder.enable = false;
     };
 
