@@ -11,7 +11,12 @@ let
 
   unstable = import inputs.nixpkgs-unstable {
     system = pkgs.system;
-    config.allowUnfree = true;
+    config = {
+      allowUnfree = true;
+      permittedInsecurePackages = [
+        "electron-39.8.10"
+      ];
+    };
   };
 
   vesktop = pkgs.writeShellScriptBin "vesktop" ''
