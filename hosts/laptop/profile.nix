@@ -3,10 +3,7 @@
 {
   my = {
     desktop = {
-      niri.enable = true;
-      hyprland.enable = false;
-      cinnamon.enable = false;
-      ly.enable = true;
+      active = "niri";
       opentabletdriver.enable = false;
     };
 
@@ -25,7 +22,6 @@
 
       dev = {
         docker.enable = true;
-        fish.enable = true;
       };
 
       files = {
@@ -64,13 +60,6 @@
     };
 
     desktop = {
-      end4HyprlandDots.enable = false;
-      hyprlandConfig.enable = false;
-      niriConfig = {
-        enable = true;
-        workspacesFile = "workspaces-laptop.kdl";
-      };
-      noctalia.enable = true;
       screenRecorder.enable = false;
     };
 

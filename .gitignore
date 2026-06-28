@@ -1,2 +1,3 @@
 flake.lock
 .clang-format
+.codegraph

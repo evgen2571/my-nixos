@@ -1,6 +1,7 @@
 { modulePaths }:
 let
   desktopSystemModules = [
+    modulePaths.wm.role
     modulePaths.wm.niri
     modulePaths.wm.cinnamon
     modulePaths.wm.gnome
