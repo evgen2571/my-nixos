@@ -1,136 +1,117 @@
 { root }:
 let
   inherit (builtins)
-    attrNames
+    concatLists
     elem
     filter
-    foldl'
-    head
-    isAttrs
-    isList
-    listToAttrs
     map
-    tail
+    pathExists
     ;
 
   discovery = import ./module-discovery.nix { inherit root; };
 
-  recursiveUpdate =
-    lhs: rhs:
-    lhs
-    // listToAttrs (
-      map (
-        name:
-        let
-          lhsValue = lhs.${name} or null;
-          rhsValue = rhs.${name};
-        in
-        {
-          inherit name;
-          value =
-            if isAttrs lhsValue && isAttrs rhsValue then
-              recursiveUpdate lhsValue rhsValue
-            else
-              rhsValue;
-        }
-      ) (attrNames rhs)
-    );
-
-  setAttrPath =
-    attrPath: value:
-    if attrPath == [ ] then
-      value
-    else
-      {
-        ${head attrPath} = setAttrPath (tail attrPath) value;
-      };
-
-  module =
-    attrPath: path: scope: category: profiles: description:
+  profileRoots = [
     {
-      inherit
-        attrPath
-        path
-        scope
-        category
-        profiles
-        description
-        ;
-      discovered = false;
-    };
-
-  systemModule = attrPath: relPath: category: profiles: description:
-    module attrPath (root + relPath) "system" category profiles description;
-
-  hostBaseEntries = [
-    # Host-base modules are imported directly by hosts/*/configuration.nix.
-    (systemModule [ "system" "common" ] "/modules/system-core/common.nix" "core" [ ] "Shared desktop NixOS baseline.")
-    (systemModule [ "system" "server" ] "/modules/system-core/server.nix" "core" [ ] "Shared server NixOS baseline.")
-    (systemModule [ "system" "user" ] "/modules/system-core/user.nix" "core" [ ] "Primary-user and Home Manager wiring.")
+      scope = "system";
+      relPath = "/modules/desktops";
+      profiles = [ "desktop" ];
+      first = [ "/modules/desktops/role.nix" ];
+    }
+    {
+      scope = "system";
+      relPath = "/modules/system-services";
+      profiles = [
+        "desktop"
+        "server"
+      ];
+    }
+    {
+      scope = "system";
+      relPath = "/modules/hardware";
+      profiles = [ "desktop" ];
+    }
+    {
+      scope = "system";
+      relPath = "/modules/system-apps";
+      profiles = [ "desktop" ];
+    }
+    {
+      scope = "system";
+      relPath = "/modules/system-dev";
+      profiles = [ "desktop" ];
+    }
+    {
+      scope = "system";
+      relPath = "/modules/system-files";
+      profiles = [ "desktop" ];
+    }
+    {
+      scope = "home";
+      relPath = "/modules/user-ai";
+      profiles = [ "desktop" ];
+    }
+    {
+      scope = "home";
+      relPath = "/modules/user-apps";
+      profiles = [ "desktop" ];
+    }
+    {
+      scope = "home";
+      relPath = "/modules/user-desktop";
+      profiles = [ "desktop" ];
+    }
+    {
+      scope = "home";
+      relPath = "/modules/user-dev";
+      profiles = [
+        "desktop"
+        "server"
+      ];
+    }
+    {
+      scope = "home";
+      relPath = "/modules/user-files";
+      profiles = [ "desktop" ];
+    }
   ];
 
-  # Import/discover modules by hierarchy, but keep activation explicit: modules
-  # still need per-host/profile enable options to affect the generated system.
-  discoveredEntries =
-    discovery.systemRoot "/modules/desktops" "desktop" [ "desktop" ] [
-      "/modules/desktops/role.nix"
-    ]
-    ++ discovery.systemRoot "/modules/system-services" "service" [
-      "desktop"
-      "server"
-    ] [ ]
-    ++ discovery.systemRoot "/modules/hardware" "hardware" [ "desktop" ] [ ]
-    ++ discovery.systemRoot "/modules/system-apps" "app" [ "desktop" ] [ ]
-    ++ discovery.systemRoot "/modules/system-dev" "development" [ "desktop" ] [ ]
-    ++ discovery.systemRoot "/modules/system-files" "files" [ "desktop" ] [ ]
-    ++ discovery.homeRoot "/modules/user-ai" "ai" [ "desktop" ] [ ]
-    ++ discovery.homeRoot "/modules/user-apps" "app" [ "desktop" ] [ ]
-    ++ discovery.homeRoot "/modules/user-desktop" "desktop" [ "desktop" ] [ ]
-    ++ discovery.homeRoot "/modules/user-dev" "development" [
-      "desktop"
-      "server"
-    ] [ ]
-    ++ discovery.homeRoot "/modules/user-files" "files" [ "desktop" ] [ ];
+  preferredPaths = rootDef:
+    filter pathExists (map (relPath: root + relPath) (rootDef.first or [ ]));
 
-  entries = hostBaseEntries ++ discoveredEntries;
+  orderedDiscoveredPaths = rootDef:
+    let
+      first = preferredPaths rootDef;
+      discovered = discovery.modulesUnder rootDef.relPath;
+    in
+    first ++ filter (path: !(elem path first)) discovered;
 
-  entryForProfile = profile: scope: entry:
-    entry.scope == scope && elem profile entry.profiles;
+  modulesForRoot = rootDef:
+    map (path: {
+      inherit path;
+      inherit (rootDef) scope profiles relPath;
+    }) (orderedDiscoveredPaths rootDef);
 
-  entriesFor = profile: scope:
-    filter (entryForProfile profile scope) entries;
+  modules = concatLists (map modulesForRoot profileRoots);
+
+  moduleMatches = profile: scope: module:
+    module.scope == scope && elem profile module.profiles;
 
   pathsFor = profile: scope:
-    map (entry: entry.path) (entriesFor profile scope);
+    map (module: module.path) (filter (moduleMatches profile scope) modules);
 
-  profileImports = profile: {
-    systemModules = pathsFor profile "system";
-    homeModules = pathsFor profile "home";
+  profile = name: {
+    systemModules = pathsFor name "system";
+    homeModules = pathsFor name "home";
   };
-
-  hasAttrPath = entry: isList entry.attrPath;
-
-  paths = foldl' (
-    acc: entry:
-    if hasAttrPath entry then
-      recursiveUpdate acc (setAttrPath entry.attrPath entry.path)
-    else
-      acc
-  ) { } entries;
 in
 {
   inherit
-    discoveredEntries
-    entries
-    entriesFor
-    hostBaseEntries
-    paths
-    pathsFor
-    profileImports
+    modules
+    profileRoots
     ;
 
   profiles = {
-    desktop = profileImports "desktop";
-    server = profileImports "server";
+    desktop = profile "desktop";
+    server = profile "server";
   };
 }

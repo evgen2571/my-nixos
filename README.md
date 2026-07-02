@@ -17,10 +17,8 @@ hosts/<name>/profile.nix  what that machine enables
 
 home/evgen2571/home.nix   base Home Manager user config
 
-lib/module-catalog.nix    discovered module catalog and profile import sets
 lib/module-discovery.nix  recursive module discovery helper
-lib/module-paths.nix      compatibility view of catalog paths
-lib/profile-imports.nix   profile imports derived from the module catalog
+lib/module-catalog.nix    profile import sets built from discovered module roots
 lib/config-paths.nix      paths for copied config files
 
 modules/system-*          NixOS modules
@@ -40,15 +38,14 @@ Start here:
 
 - `flake/hosts.nix` — see all machines and profiles.
 - `hosts/pc/profile.nix` — see what the main PC enables.
-- `lib/module-catalog.nix` — see which module roots each profile discovers/imports.
-- `lib/profile-imports.nix` — profile import views generated from the catalog.
+- `lib/module-catalog.nix` — see which discovered module roots each profile imports.
 
 For a new app/tool:
 
 1. Add a small module under the right `modules/user-*` or `modules/system-*` folder.
 2. Enable it in `hosts/<host>/profile.nix`.
 
-`lib/module-discovery.nix` scans the module hierarchy for importable modules, and `lib/profile-imports.nix` is derived from the discovered catalog. New modules should not need separate path/import bookkeeping.
+`lib/module-discovery.nix` only scans the module hierarchy for importable modules. `lib/module-catalog.nix` groups those discovered modules into profile import sets. New modules should not need separate path/import bookkeeping.
 
 Rule of thumb:
 
@@ -102,7 +99,7 @@ Rule of thumb:
    }
    ```
 
-4. Let discovery import it through the matching profile root.
+4. Let the catalog import it through the matching discovered profile root.
    - `modules/desktops`, `modules/hardware`, `modules/system-apps`, `modules/system-dev`, and `modules/system-files` are discovered for desktop NixOS hosts.
    - `modules/system-services` is discovered for both desktop and server NixOS hosts.
    - `modules/user-ai`, `modules/user-apps`, `modules/user-desktop`, and `modules/user-files` are discovered for desktop Home Manager profiles.
@@ -127,7 +124,7 @@ Rule of thumb:
 
    Use the target host name for host-specific changes, for example `.#nixos-lp` or `.#nixos-server`.
 
-Do not add new imports directly to `lib/profile-imports.nix`; it is derived from the discovered catalog. Keep `lib/module-paths.nix` as a compatibility view for the host-base `modulePaths.system.*` imports unless the whole repo is intentionally migrated away from `modulePaths`.
+Do not add per-module imports manually. Discovery makes modules available by scanning the configured roots, and `lib/module-catalog.nix` decides which profile imports each root. Add or change catalog roots only when a whole folder should become available to a different profile.
 
 ## Common commands
 
@@ -149,7 +146,7 @@ nixos-rebuild build --flake .#nixos-server
 
 - Keep modules boring and easy to delete.
 - Prefer one module per tool/service.
-- Put modules under the discovered `modules/*` roots; keep profile imports as catalog-derived views.
+- Put modules under the discovered `modules/*` roots; keep profile imports catalog-derived.
 - If a module has an `enable` option, the host should toggle it from `profile.nix`.
 - Do not hide host-specific choices inside reusable modules.
 - When adding a new module root or changing which profiles should discover a root, update `lib/module-catalog.nix` and keep the root grouping easy to read.
