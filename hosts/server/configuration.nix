@@ -23,7 +23,7 @@
 
     git = {
       userEmail = "evgen.10.02.2008.83@gmail.com";
-      signingKey = "~/.ssh/id_ed25519.pub";
+      signingKey = "~/.ssh/id_ed25519_github.pub";
     };
   };
 
