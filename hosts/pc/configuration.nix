@@ -1,11 +1,11 @@
-{ modulePaths, pkgs, ... }:
+{ pkgs, ... }:
 
 {
   imports = [
     ./hardware-configuration.nix
     ./profile.nix
-    modulePaths.system.common
-    modulePaths.system.user
+    ../../modules/system-core/common.nix
+    ../../modules/system-core/user.nix
   ];
 
   networking.hostName = "nixos-pc";

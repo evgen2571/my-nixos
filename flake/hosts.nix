@@ -1,9 +1,7 @@
 { inputs, withSystem, ... }:
 let
-  moduleCatalog = import ../lib/module-catalog.nix { root = ../.; };
-  modulePaths = moduleCatalog.paths;
+  moduleProfiles = (import ../lib/module-catalog.nix { root = ../.; }).profiles;
   configPaths = import ../lib/config-paths.nix { root = ../.; };
-  profileImports = import ../lib/profile-imports.nix { inherit moduleCatalog; };
   mkHost =
     {
       hostModule,
@@ -20,8 +18,6 @@ let
             inputs
             inputs'
             self'
-            moduleCatalog
-            modulePaths
             configPaths
             ;
         }
@@ -52,17 +48,17 @@ in
   flake.nixosConfigurations = {
     nixos-pc = mkHost {
       hostModule = ../hosts/pc/configuration.nix;
-      profile = profileImports.desktop;
+      profile = moduleProfiles.desktop;
     };
 
     nixos-lp = mkHost {
       hostModule = ../hosts/laptop/configuration.nix;
-      profile = profileImports.desktop;
+      profile = moduleProfiles.desktop;
     };
 
     nixos-server = mkHost {
       hostModule = ../hosts/server/configuration.nix;
-      profile = profileImports.server;
+      profile = moduleProfiles.server;
       extraModules = [ inputs.hermes-agent.nixosModules.default ];
     };
   };

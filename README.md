@@ -17,9 +17,8 @@ hosts/<name>/profile.nix  what that machine enables
 
 home/operator/home.nix   base Home Manager user config
 
-lib/module-catalog.nix    source of truth for module paths, scope, category, and profile availability
-lib/module-paths.nix      compatibility view of catalog paths
-lib/profile-imports.nix   profile imports derived from the module catalog
+lib/module-discovery.nix  recursive module discovery helper
+lib/module-catalog.nix    profile import sets built from discovered module roots
 lib/config-paths.nix      paths for copied config files
 
 modules/system-*          NixOS modules
@@ -39,16 +38,14 @@ Start here:
 
 - `flake/hosts.nix` — see all machines and profiles.
 - `hosts/pc/profile.nix` — see what the main PC enables.
-- `lib/module-catalog.nix` — find the module catalog entry: path, scope, category, and profiles.
-- `lib/profile-imports.nix` — profile import views generated from the catalog.
+- `lib/module-catalog.nix` — see which discovered module roots each profile imports.
 
 For a new app/tool:
 
 1. Add a small module under the right `modules/user-*` or `modules/system-*` folder.
-2. Add one entry to `lib/module-catalog.nix` with its path, scope, category, profiles, and short meaning.
-3. Enable it in `hosts/<host>/profile.nix`.
+2. Enable it in `hosts/<host>/profile.nix`.
 
-`lib/module-paths.nix` and `lib/profile-imports.nix` are generated views over the catalog, so new modules should not need separate path/import bookkeeping.
+`lib/module-discovery.nix` only scans the module hierarchy for importable modules. `lib/module-catalog.nix` groups those discovered modules into profile import sets. New modules should not need separate path/import bookkeeping.
 
 Rule of thumb:
 
@@ -102,19 +99,12 @@ Rule of thumb:
    }
    ```
 
-4. Add one catalog entry in `lib/module-catalog.nix`.
-   - `attrPath` keeps the old `modulePaths.*` shape for compatibility.
-   - `scope` is `system` for NixOS modules and `home` for Home Manager modules.
-   - `category` is a simple grouping such as `app`, `service`, `desktop`, `hardware`, `development`, `files`, `ai`, or `core`.
-   - `profiles` controls which shared profile imports it. Use `[ "desktop" ]`, `[ "server" ]`, `[ "desktop" "server" ]`, or `[ ]` for host-base modules imported directly by `hosts/*/configuration.nix`.
-   - The final string should say what the module means, not just repeat the filename.
-
-   Example entries:
-
-   ```nix
-   (systemModule [ "systemServices" "example" ] "/modules/system-services/example.nix" "service" [ "desktop" ] "Example system service.")
-   (homeModule [ "user" "apps" "example" ] "/modules/user-apps/example.nix" "app" [ "desktop" ] "Example desktop app.")
-   ```
+4. Let the catalog import it through the matching discovered profile root.
+   - `modules/desktops`, `modules/hardware`, `modules/system-apps`, `modules/system-dev`, and `modules/system-files` are discovered for desktop NixOS hosts.
+   - `modules/system-services` is discovered for both desktop and server NixOS hosts.
+   - `modules/user-ai`, `modules/user-apps`, `modules/user-desktop`, and `modules/user-files` are discovered for desktop Home Manager profiles.
+   - `modules/user-dev` is discovered for both desktop and server Home Manager profiles.
+   - A directory with `default.nix` is treated as one module; otherwise `.nix` files below the root are discovered recursively.
 
 5. Enable it per host in `hosts/<host>/profile.nix`.
    - System modules usually toggle `my.system.*` or another system option namespace.
@@ -134,7 +124,7 @@ Rule of thumb:
 
    Use the target host name for host-specific changes, for example `.#nixos-lp` or `.#nixos-server`.
 
-Do not add new imports directly to `lib/profile-imports.nix`; it is derived from the catalog. Keep `lib/module-paths.nix` as a compatibility view unless the whole repo is intentionally migrated away from `modulePaths`.
+Do not add per-module imports manually. Discovery makes modules available by scanning the configured roots, and `lib/module-catalog.nix` decides which profile imports each root. Add or change catalog roots only when a whole folder should become available to a different profile.
 
 ## Common commands
 
@@ -156,9 +146,9 @@ nixos-rebuild build --flake .#nixos-server
 
 - Keep modules boring and easy to delete.
 - Prefer one module per tool/service.
-- Put module path/scope/category/profile metadata in `module-catalog.nix`; keep profile imports as catalog-derived views.
+- Put modules under the discovered `modules/*` roots; keep profile imports catalog-derived.
 - If a module has an `enable` option, the host should toggle it from `profile.nix`.
 - Do not hide host-specific choices inside reusable modules.
-- When adding a catalog entry, keep entries grouped by scope/category and set `profiles` only for profiles that should import it.
+- When adding a new module root or changing which profiles should discover a root, update `lib/module-catalog.nix` and keep the root grouping easy to read.
 - For Neovim plugins, look in `config/nvim/lua/custom/plugins/` first.
 - For Telescope/keymap behavior, check `config/nvim/lua/kickstart/plugins/telescope.lua`.

@@ -1,2 +1,0 @@
-{ moduleCatalog }:
-moduleCatalog.profiles
