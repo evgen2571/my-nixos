@@ -15,7 +15,6 @@ let
       scope = "system";
       relPath = "/modules/desktops";
       profiles = [ "desktop" ];
-      first = [ "/modules/desktops/role.nix" ];
     }
     {
       scope = "system";
