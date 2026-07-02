@@ -4,6 +4,7 @@
   my = {
     desktop = {
       active = "niri";
+      gnome.enable = true;
       opentabletdriver.enable = true;
     };
 

@@ -30,7 +30,12 @@
     wireplumber.enable = true;
   };
 
-  nixpkgs.config.allowUnfree = true;
+  nixpkgs.config = {
+    allowUnfree = true;
+    permittedInsecurePackages = [
+      "electron-39.8.10"
+    ];
+  };
   programs.nix-ld.enable = true;
 
   zramSwap = {

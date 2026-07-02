@@ -30,7 +30,7 @@
 
     git = {
       userEmail = "150374952+evgen2571@users.noreply.github.com";
-      signingKey = "~/.ssh/id_ed25519.pub";
+      signingKey = "~/.ssh/id_ed25519_github.pub";
     };
   };
 
