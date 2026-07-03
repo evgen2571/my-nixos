@@ -40,7 +40,7 @@ window-rule {
 
 // Browser
 window-rule {
-    match app-id=r#"^(zen-twilight|zen|firefox|google-chrome|chromium-browser|chromium)$"#
+    match app-id=r#"^(zen-beta|zen|firefox|google-chrome|chromium-browser|chromium)$"#
     open-maximized-to-edges true
     open-on-workspace "browser"
 }
