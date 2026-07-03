@@ -4,5 +4,5 @@ spawn-at-startup  "xwayland-satellite"
 spawn-at-startup  "/run/current-system/sw/libexec/polkit-gnome-authentication-agent-1"
 
 // Apps
-spawn-at-startup "zen-twilight"
+spawn-at-startup "zen-beta"
 spawn-at-startup "obsidian"
