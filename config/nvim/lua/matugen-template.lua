@@ -58,6 +58,25 @@ function M.setup()
 		bg = "NONE",
 		fg = "{{colors.on_surface.default.hex}}",
 	})
+
+	-- render-markdown.nvim uses these groups for fenced code blocks.
+	-- Keep code block backgrounds neutral even when the generated palette has
+	-- a saturated diagnostic/error color.
+	vim.api.nvim_set_hl(0, "RenderMarkdownCode", {
+		bg = "{{colors.surface_container.default.hex}}",
+	})
+	vim.api.nvim_set_hl(0, "RenderMarkdownCodeInfo", {
+		fg = "{{colors.primary.default.hex}}",
+		bg = "{{colors.surface_container.default.hex}}",
+	})
+	vim.api.nvim_set_hl(0, "RenderMarkdownCodeBorder", {
+		fg = "{{colors.surface_container_highest.default.hex}}",
+		bg = "{{colors.surface_container.default.hex}}",
+	})
+	vim.api.nvim_set_hl(0, "RenderMarkdownCodeInline", {
+		fg = "{{colors.on_surface.default.hex}}",
+		bg = "{{colors.surface_container_high.default.hex}}",
+	})
 end
 
 -- Register a signal handler for SIGUSR1 (matugen updates)
