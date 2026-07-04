@@ -14,6 +14,7 @@
     hardware = {
       bluetooth.enable = true;
       nvidia.enable = true;
+      screenRecorder.enable = true;
     };
 
     system = {
@@ -74,7 +75,7 @@
       hyprlandConfig.enable = false;
       end4HyprlandDots.enable = false;
       noctalia.enable = true;
-      screenRecorder.enable = false;
+      screenRecorder.enable = true;
     };
 
     dev = {

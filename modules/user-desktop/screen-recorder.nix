@@ -1,16 +1,30 @@
-{ config, lib,  pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   cfg = config.my.user.desktop.screenRecorder;
 in
 {
-  options.my.user.desktop.screenRecorder.enable = lib.mkEnableOption "GPU screen recorder";
+  options.my.user.desktop.screenRecorder.enable = lib.mkEnableOption "screen recording tools";
 
-  config = lib.mkIf cfg.enable (
-    {
-      home.packages = with pkgs; [
-        gpu-screen-recorder
-      ];
-    }
-  );
+  config = lib.mkIf cfg.enable {
+    home.packages = with pkgs; [
+      # Low-overhead GPU recording, plus a tray/GUI frontend.
+      gpu-screen-recorder
+      gpu-screen-recorder-gtk
+
+      # Wayland fallback tools and quick capture helpers.
+      wf-recorder
+      grim
+      slurp
+
+      # PipeWire audio routing/inspection helpers for recording setups.
+      pavucontrol
+      qpwgraph
+    ];
+  };
 }

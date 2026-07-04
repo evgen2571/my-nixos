@@ -13,12 +13,14 @@
     hardware = {
       bluetooth.enable = true;
       nvidia.enable = false;
+      screenRecorder.enable = true;
     };
 
     system = {
       apps = {
         aagl.enable = false;
         kdeConnect.enable = false;
+        obs.enable = true;
         steam.enable = true;
         vesktop.enable = true;
       };
@@ -71,7 +73,7 @@
       hyprlandConfig.enable = false;
       end4HyprlandDots.enable = false;
       noctalia.enable = true;
-      screenRecorder.enable = false;
+      screenRecorder.enable = true;
     };
 
     dev = {
