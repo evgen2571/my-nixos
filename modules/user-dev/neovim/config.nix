@@ -11,6 +11,7 @@ in
 {
   config = lib.mkIf cfg.enable {
     xdg.configFile."nvim/init.lua".source = configPaths.dev.neovim.configDir + "/init.lua";
+    xdg.configFile."nvim/lazy-lock.json".source = configPaths.dev.neovim.configDir + "/lazy-lock.json";
     xdg.configFile."nvim/lua/matugen-template.lua".source =
       configPaths.dev.neovim.configDir + "/lua/matugen-template.lua";
 
