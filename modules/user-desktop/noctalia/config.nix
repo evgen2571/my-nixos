@@ -13,6 +13,9 @@ in
   config = lib.mkIf cfg.enable {
     programs.noctalia.settings = cfg.configFile;
 
+    xdg.configFile."noctalia/user-templates.toml".source =
+      configPaths.wm.noctaliaConfigDir + "/user-templates.toml";
+
     # Legacy Noctalia v4 config installer, kept for rollback/reference.
     # Enable with:
     #   my.user.desktop.noctalia.legacyConfig.enable = true;

@@ -545,7 +545,7 @@ wallpaper_scheme = "m3-content"
 
     [theme.templates]
     builtin_ids = [ "cava", "gtk3", "gtk4", "kitty", "niri", "qt" ]
-    community_ids = [ "neovim", "obsidian", "telegram", "yazi" ]
+    community_ids = [ "obsidian", "telegram", "yazi" ]
     enable_builtin_templates = true
     enable_community_templates = true
 
