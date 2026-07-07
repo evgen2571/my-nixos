@@ -7,6 +7,7 @@
       hyprland.enable = false;
       cinnamon.enable = false;
       ly.enable = true;
+      gnome.enable = true;
       opentabletdriver.enable = false;
     };
 
@@ -39,6 +40,7 @@
         virtualization.enable = false;
         tailscale.enable = true;
         blueman.enable = true;
+        syncthing.enable = true;
       };
     };
   };
@@ -58,7 +60,7 @@
       mpv.enable = true;
       obsidian.enable = true;
       osuLazer.enable = false;
-      prismLauncher.enable = false;
+      prismLauncher.enable = true;
       slack.enable = false;
       telegram.enable = true;
       youtubeMusic.enable = true;

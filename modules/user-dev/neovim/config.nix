@@ -7,15 +7,20 @@
 
 let
   cfg = config.my.user.dev.neovim;
+  nvimConfig = configPaths.dev.neovim.configDir;
 in
 {
   config = lib.mkIf cfg.enable {
-    xdg.configFile."nvim/init.lua".source = configPaths.dev.neovim.configDir + "/init.lua";
-    xdg.configFile."nvim/lazy-lock.json".source = configPaths.dev.neovim.configDir + "/lazy-lock.json";
-    xdg.configFile."nvim/lua/matugen-template.lua".source =
-      configPaths.dev.neovim.configDir + "/lua/matugen-template.lua";
+    xdg.configFile."nvim/init.lua".source =
+      nvimConfig + "/init.lua";
 
-    xdg.configFile."nvim/lua/custom".source = configPaths.dev.neovim.configDir + "/lua/custom";
-    xdg.configFile."nvim/lua/kickstart".source = configPaths.dev.neovim.configDir + "/lua/kickstart";
+    xdg.configFile."nvim/lua/matugen-template.lua".source =
+      nvimConfig + "/lua/matugen-template.lua";
+
+    xdg.configFile."nvim/lua/custom".source =
+      nvimConfig + "/lua/custom";
+
+    xdg.configFile."nvim/lua/kickstart".source =
+      nvimConfig + "/lua/kickstart";
   };
 }
