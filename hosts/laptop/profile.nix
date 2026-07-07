@@ -7,18 +7,21 @@
       hyprland.enable = false;
       cinnamon.enable = false;
       ly.enable = true;
+      gnome.enable = true;
       opentabletdriver.enable = false;
     };
 
     hardware = {
       bluetooth.enable = true;
       nvidia.enable = false;
+      screenRecorder.enable = true;
     };
 
     system = {
       apps = {
         aagl.enable = false;
         kdeConnect.enable = false;
+        obs.enable = true;
         steam.enable = true;
         vesktop.enable = true;
       };
@@ -37,6 +40,7 @@
         virtualization.enable = false;
         tailscale.enable = true;
         blueman.enable = true;
+        syncthing.enable = true;
       };
     };
   };
@@ -56,7 +60,7 @@
       mpv.enable = true;
       obsidian.enable = true;
       osuLazer.enable = false;
-      prismLauncher.enable = false;
+      prismLauncher.enable = true;
       slack.enable = false;
       telegram.enable = true;
       youtubeMusic.enable = true;
@@ -71,7 +75,7 @@
       hyprlandConfig.enable = false;
       end4HyprlandDots.enable = false;
       noctalia.enable = true;
-      screenRecorder.enable = false;
+      screenRecorder.enable = true;
     };
 
     dev = {

@@ -12,8 +12,9 @@ in
       enable = true;
       user = primaryUser;
       group = "users";
+      dataDir = "/home/${primaryUser}";
       configDir = "/home/${primaryUser}/.config/syncthing";
-      dataDir = "/home/${primaryUser}/.local/state/syncthing";
+      databaseDir = "/home/${primaryUser}/.local/state/syncthing";
       openDefaultPorts = true;
     };
   };
