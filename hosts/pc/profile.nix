@@ -41,6 +41,7 @@
         tailscale.enable = true;
         blueman.enable = true;
         syncthing.enable = true;
+        sunshine.enable = true;
       };
     };
   };
