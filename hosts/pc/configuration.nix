@@ -14,6 +14,8 @@
   services.printing.enable = true;
   security.rtkit.enable = true;
 
+  hardware.uinput.enable = true;
+
   my.primaryUser = {
     enable = true;
     name = "evgen2571";
@@ -26,6 +28,7 @@
       "git"
       "docker"
       "libvirtd"
+      "uinput"
     ];
 
     git = {
