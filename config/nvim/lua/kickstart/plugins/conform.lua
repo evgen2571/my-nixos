@@ -35,6 +35,7 @@ return {
         bash = { 'shfmt' },
         cpp = { 'clang_format' },
         c = { 'clang_format' },
+        gdscript = { 'gdformat' },
       },
       formatters = {
         clang_format = {

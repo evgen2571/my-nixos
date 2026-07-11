@@ -20,15 +20,19 @@ let
     };
   };
 
-  vesktop = pkgs.writeShellScriptBin "vesktop" ''
-    export NIXOS_OZONE_WL=1
-    export ELECTRON_OZONE_PLATFORM_HINT=wayland
-
-    exec ${lib.getExe unstable.vesktop} \
-      --ozone-platform=wayland \
-      --enable-features=UseOzonePlatform,WebRTCPipeWireCapturer,WaylandWindowDecorations \
-      "$@"
-  '';
+  vesktop = pkgs.symlinkJoin {
+    name = "vesktop-wayland";
+    paths = [ unstable.vesktop ];
+    nativeBuildInputs = [ pkgs.makeWrapper ];
+    postBuild = ''
+      wrapProgram $out/bin/vesktop \
+        --set NIXOS_OZONE_WL 1 \
+        --set ELECTRON_OZONE_PLATFORM_HINT wayland \
+        --add-flags "--ozone-platform=wayland" \
+        --add-flags "--enable-features=UseOzonePlatform,WebRTCPipeWireCapturer,WaylandWindowDecorations"
+    '';
+    meta.mainProgram = "vesktop";
+  };
 in
 {
   options.my.system.apps.vesktop.enable = lib.mkEnableOption "Vesktop";

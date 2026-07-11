@@ -9,6 +9,7 @@ return {
         'cmake',
         'cpp',
         'diff',
+        'gdscript',
         'html',
         'lua',
         'luadoc',
