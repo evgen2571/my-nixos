@@ -112,17 +112,10 @@ return {
         clangd = {
           cmd = { 'clangd', '--header-insertion=never', '--compile-commands-dir=.' },
         },
-        godot = {
-          cmd = {
-            'godot4',
-            '--headless',
-            '--editor',
-            '--path',
-            vim.fn.getcwd(),
-            '--lsp',
-            '--listen',
-            '127.0.0.1:6005',
-          },
+        -- Godot exposes its LSP from the running editor over TCP on port 6005.
+        -- Do not start a second headless Godot process here: nvim-lspconfig's
+        -- gdscript config connects to the editor and starts no stdio process.
+        gdscript = {
           filetypes = { 'gdscript' },
         },
         lua_ls = {
