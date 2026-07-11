@@ -112,6 +112,19 @@ return {
         clangd = {
           cmd = { 'clangd', '--header-insertion=never', '--compile-commands-dir=.' },
         },
+        godot = {
+          cmd = {
+            'godot4',
+            '--headless',
+            '--editor',
+            '--path',
+            vim.fn.getcwd(),
+            '--lsp',
+            '--listen',
+            '127.0.0.1:6005',
+          },
+          filetypes = { 'gdscript' },
+        },
         lua_ls = {
           settings = {
             Lua = {

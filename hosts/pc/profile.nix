@@ -85,6 +85,7 @@
 
       languages = {
         cpp.enable = true;
+        godot.enable = true;
         python.enable = true;
         rust.enable = true;
       };
