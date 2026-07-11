@@ -7,7 +7,8 @@
       hyprland.enable = false;
       cinnamon.enable = false;
       ly.enable = true;
-      gnome.enable = true;
+      # Niri is the active session; keep the portal backend unambiguous.
+      gnome.enable = false;
       opentabletdriver.enable = false;
     };
 

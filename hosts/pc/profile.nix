@@ -7,7 +7,9 @@
       hyprland.enable = false;
       cinnamon.enable = false;
       ly.enable = true;
-      gnome.enable = true;
+      # Niri is the active session; avoid installing a second desktop stack
+      # that can add competing portal backends.
+      gnome.enable = false;
       opentabletdriver.enable = true;
     };
 
