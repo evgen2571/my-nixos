@@ -1,31 +1,17 @@
 # configuration.nix
-{
-  config,
-  pkgs,
-  lib,
-  ...
-}:
+{ config, inputs, lib, ... }:
 let
   cfg = config.my.system.apps.aagl;
-
-  # aagl = import (builtins.fetchTarball "https://github.com/ezKEa/aagl-gtk-on-nix/archive/main.tar.gz");
-  # Or, if you follow Nixpkgs release 25.11:
-  aagl = import (
-    builtins.fetchTarball {
-      url = "https://github.com/ezKEa/aagl-gtk-on-nix/archive/release-25.11.tar.gz";
-      sha256 = "1a5517yvd4024ahm46zg9gl6mpvjy67wcy5pzcwbgbzrwg2fyvx8";
-    }
-  );
 in
 {
   imports = [
-    aagl.module
+    inputs.aagl.nixosModules.default
   ];
 
   options.my.system.apps.aagl.enable = lib.mkEnableOption "Anime Game Launcher";
 
   config = lib.mkIf cfg.enable {
-    nix.settings = aagl.nixConfig; # Set up Cachix
+    nix.settings = inputs.aagl.nixConfig; # Set up Cachix
     programs.anime-game-launcher.enable = true;
   };
 }
