@@ -7,7 +7,8 @@ binds {
     Mod+F repeat=false hotkey-overlay-title="Browser" { spawn "zen-beta"; }
     Mod+E repeat=false hotkey-overlay-title="TUI File Manager" { spawn "kitty" "-T" "file-manager" "yazi"; }
     Mod+Shift+E repeat=false hotkey-overlay-title="GUI File Manager" { spawn "dolphin"; }
-    Mod+C repeat=false hotkey-overlay-title="Project session" { spawn "kitty" "-T" "project-session" "tmux-dev-session"; }
+    // Maximize the temporary Kitty UI for sesh's project picker.
+    Mod+C repeat=false hotkey-overlay-title="Project session" { spawn "kitty" "--title" "project-session" "sesh" "picker" "-i"; }
     Mod+O repeat=false hotkey-overlay-title="Notetaker" { spawn "obsidian"; }
     Mod+A repeat=false hotkey-overlay-title="Anki" { spawn "anki"; }
     Mod+B repeat=false hotkey-overlay-title="API Client" { spawn "bruno"; }

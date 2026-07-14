@@ -15,8 +15,8 @@ if status is-interactive
         echo -en "\e]133;A\e\\"
     end
 
-    if command -q tms
-        COMPLETE=fish tms | source
+    if command -q sesh
+        sesh completion fish | source
     end
 
     if command -q direnv

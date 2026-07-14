@@ -1,5 +1,6 @@
 {
   config,
+  inputs,
   pkgs,
   lib,
   ...
@@ -8,105 +9,33 @@
 let
   cfg = config.my.user.dev.tmux;
 
-  devSession = pkgs.writeShellApplication {
-    name = "tmux-dev-session";
-    runtimeInputs = with pkgs; [
-      coreutils
-      fd
-      fzf
-      neovim
-      openssh
-      tmux
-    ];
+  unstable = import inputs.nixpkgs-unstable {
+    system = pkgs.system;
+    config = {
+      allowUnfree = true;
+    };
+  };
+
+  sesh = unstable.sesh;
+
+  seshRemoteWindow = pkgs.writeShellApplication {
+    name = "sesh-remote-window";
+    runtimeInputs = [ pkgs.openssh ];
     text = ''
-      set -euo pipefail
-
-      project_root="${cfg.devSession.projectRoot}"
-      remote_host="${cfg.devSession.remoteHost}"
-      remote_project_root="${cfg.devSession.remoteProjectRoot}"
-      remote_command="${cfg.devSession.remoteCommand}"
-
-      project_dir="''${1:-}"
-      if [[ -z "$project_dir" ]]; then
-        project_dir="$({ fd --type d --max-depth 1 --hidden --exclude .git . "$project_root" || true; } | fzf --prompt='Project > ' --height=100% --reverse)"
-      fi
-
-      [[ -n "$project_dir" ]] || exit 0
-      [[ -d "$project_dir" ]] || { printf 'Project directory does not exist: %s\\n' "$project_dir" >&2; exit 1; }
-
-      project_name="$(basename "$project_dir")"
-      session_name="''${project_name//[^a-zA-Z0-9_.-]/-}"
-      remote_target="$remote_project_root/$project_name"
-
-      switch_or_attach() {
-        if [[ -n "''${TMUX:-}" ]]; then
-          tmux switch-client -t "$session_name"
-        else
-          tmux attach-session -t "$session_name"
-        fi
-      }
-
-      if tmux has-session -t "$session_name" 2>/dev/null; then
-        switch_or_attach
-        exit 0
-      fi
-
-      # Window 1: editor. When nvim exits, leave a shell in the window.
-      tmux new-session -d \
-        -s "$session_name" \
-        -n editor \
-        -c "$project_dir" \
-        "nvim; exec \"''${SHELL:-bash}\""
-
-      # Window 2: clean project terminal.
-      tmux new-window \
-        -t "$session_name" \
-        -n shell \
-        -c "$project_dir"
-
-      # Window 3: remote agent terminal in the matching project directory.
-      tmux new-window \
-        -t "$session_name" \
-        -n agent \
-        -c "$project_dir" \
-        "ssh -t \"$remote_host\" \"cd $remote_target && exec $remote_command\""
-
-      tmux select-window -t "$session_name:editor"
-      switch_or_attach
+      project_dir="$(basename -- "$PWD")"
+      printf -v remote_command 'cd %q && exec hermes' "dev/$project_dir"
+      exec ssh -tt agent@hermes-host "$remote_command"
     '';
   };
+
+  seshConfig =
+    builtins.replaceStrings [ "@SESH_REMOTE_WINDOW@" ] [ "${seshRemoteWindow}/bin/sesh-remote-window" ]
+      (builtins.readFile ../../../config/sesh/sesh.toml);
 in
 {
   options.my.user.dev.tmux = {
     enable = lib.mkEnableOption "tmux";
 
-    devSession = {
-      enable = lib.mkOption {
-        type = lib.types.bool;
-        default = true;
-        description = "Enable the project session launcher with editor, shell, and remote agent windows.";
-      };
-      projectRoot = lib.mkOption {
-        type = lib.types.str;
-        default = "${config.home.homeDirectory}/dev";
-        description = "Directory containing project directories shown by the project picker.";
-      };
-      remoteHost = lib.mkOption {
-        type = lib.types.str;
-        default = "agent";
-        description = "SSH host used by the agent window.";
-      };
-      remoteProjectRoot = lib.mkOption {
-        type = lib.types.str;
-        default = "${config.home.homeDirectory}/dev";
-        description = "Project root on the SSH host. Use an absolute path when the SSH host has a different home directory.";
-      };
-      remoteCommand = lib.mkOption {
-        type = lib.types.str;
-        default = "hermes";
-        description = "Interactive command started in the remote agent window.";
-      };
-    };
   };
 
   config = lib.mkIf cfg.enable ({
@@ -156,13 +85,12 @@ in
         bind r source-file ~/.config/tmux/tmux.conf \; display "Config reloaded!"
         bind b set-option status
 
-        # Project session launcher / tms session controls
-        ${lib.optionalString cfg.devSession.enable ''
-          bind -n C-o display-popup -E "${devSession}/bin/tmux-dev-session"
-        ''}
-        bind C-j display-popup -E "${pkgs.tmux-sessionizer}/bin/tms switch"
-        bind C-w display-popup -E "${pkgs.tmux-sessionizer}/bin/tms windows"
-        bind C-r command-prompt -p "Rename active session to: " "run-shell '${pkgs.tmux-sessionizer}/bin/tms rename %%1'"
+        # Use tmux's default popup geometry. The popup exits after sesh
+        # attaches to or creates the selected session.
+        bind -n C-o display-popup -E "${sesh}/bin/sesh picker -i"
+        bind C-j display-popup -E "${sesh}/bin/sesh picker -i"
+        bind C-w display-popup -E "${sesh}/bin/sesh window"
+        bind C-r command-prompt -p "Rename active session to: " "rename-session %%1"
 
         # Utilities
         bind E show-environment -g
@@ -174,11 +102,11 @@ in
       '';
     };
 
-    home.packages =
-      with pkgs;
-      [
-        tmux
-      ]
-      ++ lib.optional cfg.devSession.enable devSession;
+    home.packages = with pkgs; [
+      sesh
+      tmux
+    ];
+
+    xdg.configFile."sesh/sesh.toml".text = seshConfig;
   });
 }
