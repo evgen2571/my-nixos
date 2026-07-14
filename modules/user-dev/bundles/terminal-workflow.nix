@@ -12,7 +12,6 @@ in
       fd
       fzf
       jq
-      tmux-sessionizer
     ];
   };
 }

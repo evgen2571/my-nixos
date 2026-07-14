@@ -211,6 +211,12 @@ window-rule {
     open-on-workspace "gaming"
 }
 
+// Maximized temporary Kitty UI for sesh's project picker.
+window-rule {
+    match app-id=r#"^kitty$"# title=r#"^project-session$"#
+    open-maximized-to-edges true
+}
+
 // Noctalia/quickshell auxiliary windows.
 window-rule {
     match app-id=r#"^(org\.quickshell|quickshell)$"#

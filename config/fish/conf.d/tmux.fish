@@ -140,7 +140,11 @@ function _fish_tmux_plugin_run
             set -a tmux_cmd -f $fish_tmux_config
         end
 
-        if test -n "$session_name"
+        # Let sesh create new sessions so its configured default windows are
+        # applied. Explicit tmux commands above still bypass this wrapper.
+        if command -q sesh
+            sesh connect "$PWD"
+        else if test -n "$session_name"
             $tmux_cmd new-session -s $session_name
         else
             $tmux_cmd new-session
