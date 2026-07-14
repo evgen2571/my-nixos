@@ -21,10 +21,10 @@
         identitiesOnly = true;
       };
 
-      "hermes-space" = {
-        hostname = "100.89.6.98";
+      "agent" = {
+        hostname = "100.126.39.112";
         user = "agent";
-        identityFile = "~/.ssh/hermes_server";
+        identityFile = "~/.ssh/hermes_host";
         identitiesOnly = true;
       };
 
