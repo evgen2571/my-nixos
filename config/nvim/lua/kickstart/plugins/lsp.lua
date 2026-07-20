@@ -105,6 +105,7 @@ return {
       }
 
       local capabilities = require('blink.cmp').get_lsp_capabilities()
+      local lspconfig_util = require 'lspconfig.util'
       local servers = {
         pyright = {},
         ruff = {},
@@ -117,6 +118,44 @@ return {
         -- gdscript config connects to the editor and starts no stdio process.
         gdscript = {
           filetypes = { 'gdscript' },
+        },
+        omnisharp = {
+          filetypes = { 'cs' },
+          single_file_support = false,
+          -- Unity generates several .csproj files. Prefer the solution, then
+          -- fall back to a project file when the solution is not present yet.
+          root_dir = function(bufnr, on_dir)
+            local path = vim.api.nvim_buf_get_name(bufnr)
+            local root = lspconfig_util.root_pattern('*.slnx')(path)
+              or lspconfig_util.root_pattern('*.sln')(path)
+              or lspconfig_util.root_pattern('*.csproj')(path)
+              or lspconfig_util.root_pattern('omnisharp.json', 'function.json')(path)
+              or vim.fs.root(path, { 'Assets', 'Packages', 'ProjectSettings' })
+
+            if root then
+              on_dir(root)
+            end
+          end,
+          settings = {
+            FormattingOptions = {
+              -- Unity's generated projects contain editor-specific settings;
+              -- let OmniSharp use the generated project model directly.
+              EnableEditorConfigSupport = false,
+              OrganizeImports = true,
+            },
+            -- Loading on demand commonly leaves UnityEngine and package
+            -- assemblies unavailable to completion until another file opens.
+            MsBuild = {
+              LoadProjectsOnDemand = false,
+            },
+            RoslynExtensionsOptions = {
+              EnableAnalyzersSupport = true,
+              EnableImportCompletion = true,
+            },
+            Sdk = {
+              IncludePrereleases = true,
+            },
+          },
         },
         lua_ls = {
           settings = {

@@ -1,0 +1,8 @@
+[Windows]
+# Niri-like sloppy focus: hovering a normal window makes it active without
+# raising it. A zero delay keeps keyboard focus aligned with the cursor.
+FocusPolicy=FocusFollowsMouse
+DelayFocusInterval=0
+AutoRaise=false
+NextFocusPrefersMouse=true
+SeparateScreenFocus=true

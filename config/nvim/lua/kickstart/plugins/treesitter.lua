@@ -8,6 +8,7 @@ return {
         'c',
         'cmake',
         'cpp',
+        'c_sharp',
         'diff',
         'gdscript',
         'html',

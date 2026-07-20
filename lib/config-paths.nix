@@ -19,6 +19,7 @@ let
 
     wm = {
       hyprlandConfigDir = root + "/config/hyprland";
+      kdeplasmaConfigDir = root + "/config/kdeplasma";
       niriConfigDir = root + "/config/niri";
       noctaliaConfigDir = root + "/config/noctalia";
     };
@@ -135,6 +136,23 @@ let
         {
           target = "hypr/sub/startup.conf";
           source = configDir + "/sub/startup.conf";
+        }
+      ];
+
+      kdeplasma = {
+        configDir ? wm.kdeplasmaConfigDir,
+      }: mkXdgSourceSet [
+        {
+          target = "kcminputrc";
+          source = configDir + "/kcminputrc";
+        }
+        {
+          target = "kwinrc";
+          source = configDir + "/kwinrc";
+        }
+        {
+          target = "kxkbrc";
+          source = configDir + "/kxkbrc";
         }
       ];
     };
