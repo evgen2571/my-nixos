@@ -14,6 +14,7 @@ in
       kdePackages.kio-fuse
       kdePackages.kio-extras
       kdePackages.dolphin
+      kdePackages.ark
       ];
     }
   );

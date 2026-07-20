@@ -26,6 +26,7 @@
         steam.enable = true;
         obs.enable = true;
         vesktop.enable = true;
+        zenlessZoneZero.enable = true;
       };
 
       dev = {
@@ -64,6 +65,7 @@
       obsidian.enable = true;
       osuLazer.enable = false;
       prismLauncher.enable = false;
+      qimgv.enable = true;
       slack.enable = false;
       telegram.enable = true;
       youtubeMusic.enable = true;
@@ -90,6 +92,7 @@
         godot.enable = true;
         python.enable = true;
         rust.enable = true;
+        unity.enable = true;
       };
     };
 
