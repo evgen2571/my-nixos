@@ -67,6 +67,21 @@ window-rule {
     open-on-workspace "code"
 }
 
+// Project session picker: the second workspace on the PC's HDMI-A-1 output,
+// and the second workspace on the laptop's eDP-1 output.
+window-rule {
+    match app-id=r#"^kitty$"# title=r#"^project-session$"#
+    open-maximized-to-edges true
+    open-on-workspace "code"
+}
+
+// Godot: the third workspace on HDMI-A-1 (PC) and the third laptop workspace.
+window-rule {
+    match app-id=r#"^(Godot|godot)$"#
+    open-maximized-to-edges true
+    open-on-workspace "gaming"
+}
+
 // Dropdown terminal
 window-rule {
     match title="dropdown-term"
@@ -209,12 +224,6 @@ window-rule {
     match app-id=r#"^(com\.obsproject\.Studio|obs)$"#
     open-maximized-to-edges true
     open-on-workspace "gaming"
-}
-
-// Maximized temporary Kitty UI for sesh's project picker.
-window-rule {
-    match app-id=r#"^kitty$"# title=r#"^project-session$"#
-    open-maximized-to-edges true
 }
 
 // Noctalia/quickshell auxiliary windows.

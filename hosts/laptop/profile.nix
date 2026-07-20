@@ -62,6 +62,7 @@
       obsidian.enable = true;
       osuLazer.enable = false;
       prismLauncher.enable = true;
+      qimgv.enable = true;
       slack.enable = false;
       telegram.enable = true;
       youtubeMusic.enable = true;
