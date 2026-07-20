@@ -9,6 +9,8 @@ in
   config = lib.mkIf cfg.enable {
     home.packages = [
       pkgs.unityhub
+      # Supplies the OmniSharp executable used by Neovim's C# LSP client.
+      pkgs.omnisharp-roslyn
     ];
   };
 }
