@@ -120,22 +120,17 @@ return {
           filetypes = { 'gdscript' },
         },
         omnisharp = {
-          -- Prefer Unity's generated solution/project files. vim.fs.root
-          -- treats marker strings literally, so it cannot resolve '*.sln' or
-          -- '*.csproj'; nvim-lspconfig's root_pattern handles those globs.
+          filetypes = { 'cs' },
+          single_file_support = false,
+          -- Unity generates several .csproj files. Prefer the solution, then
+          -- fall back to a project file when the solution is not present yet.
           root_dir = function(bufnr, on_dir)
             local path = vim.api.nvim_buf_get_name(bufnr)
             local root = lspconfig_util.root_pattern('*.slnx')(path)
               or lspconfig_util.root_pattern('*.sln')(path)
               or lspconfig_util.root_pattern('*.csproj')(path)
               or lspconfig_util.root_pattern('omnisharp.json', 'function.json')(path)
-
-            -- Unity may not generate its solution until the editor first opens
-            -- the project. Its standard top-level directories still give
-            -- OmniSharp a reliable workspace boundary in that short window.
-            if not root then
-              root = vim.fs.root(path, { 'Assets', 'Packages', 'ProjectSettings' })
-            end
+              or vim.fs.root(path, { 'Assets', 'Packages', 'ProjectSettings' })
 
             if root then
               on_dir(root)
@@ -143,17 +138,22 @@ return {
           end,
           settings = {
             FormattingOptions = {
-              EnableEditorConfigSupport = true,
+              -- Unity's generated projects contain editor-specific settings;
+              -- let OmniSharp use the generated project model directly.
+              EnableEditorConfigSupport = false,
               OrganizeImports = true,
             },
-            -- Unity projects have many assembly projects. Loading all of them
-            -- is essential for UnityEngine and cross-assembly suggestions.
+            -- Loading on demand commonly leaves UnityEngine and package
+            -- assemblies unavailable to completion until another file opens.
             MsBuild = {
               LoadProjectsOnDemand = false,
             },
             RoslynExtensionsOptions = {
               EnableAnalyzersSupport = true,
               EnableImportCompletion = true,
+            },
+            Sdk = {
+              IncludePrereleases = true,
             },
           },
         },
