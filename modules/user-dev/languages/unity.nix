@@ -21,6 +21,8 @@ in
       unstable.unityhub
       # Supplies the OmniSharp executable used by Neovim's C# LSP client.
       pkgs.omnisharp-roslyn
+      # OmniSharp uses the SDK to load Unity-generated C# projects.
+      pkgs.dotnet-sdk
     ];
   };
 }

@@ -119,7 +119,21 @@ return {
           filetypes = { 'gdscript' },
         },
         omnisharp = {
-          cmd = { 'OmniSharp' },
+          -- Keep nvim-lspconfig's default command: it adds the required
+          -- language-server protocol arguments to OmniSharp.
+          root_dir = function(bufnr, on_dir)
+            local path = vim.api.nvim_buf_get_name(bufnr)
+            local root = vim.fs.root(path, { '*.slnx', '*.sln', '*.csproj', 'omnisharp.json', 'function.json' })
+
+            -- Unity does not always generate a solution before the first C# file
+            -- is opened. Its project directories are still a reliable workspace
+            -- boundary, so attach OmniSharp there as a fallback.
+            if not root then
+              root = vim.fs.root(path, { 'Assets', 'Packages', 'ProjectSettings' })
+            end
+
+            on_dir(root)
+          end,
           enable_editorconfig_support = true,
           enable_import_completion = true,
           organize_imports_on_format = true,

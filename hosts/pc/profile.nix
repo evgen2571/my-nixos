@@ -5,10 +5,10 @@
     desktop = {
       niri.enable = true;
       hyprland.enable = false;
+      kdeplasma.enable = true;
       cinnamon.enable = false;
       ly.enable = true;
-      # Niri is the active session; avoid installing a second desktop stack
-      # that can add competing portal backends.
+      # Niri and Plasma are available as separate sessions through Ly.
       gnome.enable = false;
       opentabletdriver.enable = true;
     };
@@ -77,6 +77,7 @@
         enable = true;
         workspaceProfile = "pc";
       };
+      # Hyprland is not installed on this host, so do not deploy its dotfiles.
       hyprlandConfig.enable = false;
       end4HyprlandDots.enable = false;
       noctalia.enable = true;
