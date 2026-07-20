@@ -1,0 +1,7 @@
+[Layout]
+DisplayNames=,
+LayoutList=us,ru
+Options=grp:alt_shift_toggle,caps:swapescape
+ResetOldOptions=true
+Use=true
+VariantList=,phonetic

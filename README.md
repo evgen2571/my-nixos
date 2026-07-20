@@ -142,6 +142,9 @@ nixos-rebuild build --flake .#nixos-lp
 nixos-rebuild build --flake .#nixos-server
 ```
 
+See [the KDE Plasma workflow guide](docs/kde-plasma.md) for the Niri-like focus,
+keyboard timing, tiling, and Unity/Neovim setup.
+
 ## Small notes for future me
 
 - Keep modules boring and easy to delete.

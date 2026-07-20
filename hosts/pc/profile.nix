@@ -73,6 +73,7 @@
     };
 
     desktop = {
+      kdeplasmaConfig.enable = true;
       niriConfig = {
         enable = true;
         workspaceProfile = "pc";

@@ -105,6 +105,7 @@ return {
       }
 
       local capabilities = require('blink.cmp').get_lsp_capabilities()
+      local lspconfig_util = require 'lspconfig.util'
       local servers = {
         pyright = {},
         ruff = {},
@@ -119,25 +120,42 @@ return {
           filetypes = { 'gdscript' },
         },
         omnisharp = {
-          -- Keep nvim-lspconfig's default command: it adds the required
-          -- language-server protocol arguments to OmniSharp.
+          -- Prefer Unity's generated solution/project files. vim.fs.root
+          -- treats marker strings literally, so it cannot resolve '*.sln' or
+          -- '*.csproj'; nvim-lspconfig's root_pattern handles those globs.
           root_dir = function(bufnr, on_dir)
             local path = vim.api.nvim_buf_get_name(bufnr)
-            local root = vim.fs.root(path, { '*.slnx', '*.sln', '*.csproj', 'omnisharp.json', 'function.json' })
+            local root = lspconfig_util.root_pattern('*.slnx')(path)
+              or lspconfig_util.root_pattern('*.sln')(path)
+              or lspconfig_util.root_pattern('*.csproj')(path)
+              or lspconfig_util.root_pattern('omnisharp.json', 'function.json')(path)
 
-            -- Unity does not always generate a solution before the first C# file
-            -- is opened. Its project directories are still a reliable workspace
-            -- boundary, so attach OmniSharp there as a fallback.
+            -- Unity may not generate its solution until the editor first opens
+            -- the project. Its standard top-level directories still give
+            -- OmniSharp a reliable workspace boundary in that short window.
             if not root then
               root = vim.fs.root(path, { 'Assets', 'Packages', 'ProjectSettings' })
             end
 
-            on_dir(root)
+            if root then
+              on_dir(root)
+            end
           end,
-          enable_editorconfig_support = true,
-          enable_import_completion = true,
-          organize_imports_on_format = true,
-          enable_roslyn_analyzers = true,
+          settings = {
+            FormattingOptions = {
+              EnableEditorConfigSupport = true,
+              OrganizeImports = true,
+            },
+            -- Unity projects have many assembly projects. Loading all of them
+            -- is essential for UnityEngine and cross-assembly suggestions.
+            MsBuild = {
+              LoadProjectsOnDemand = false,
+            },
+            RoslynExtensionsOptions = {
+              EnableAnalyzersSupport = true,
+              EnableImportCompletion = true,
+            },
+          },
         },
         lua_ls = {
           settings = {
