@@ -1,5 +1,6 @@
 {
   config,
+  inputs,
   lib,
   pkgs,
   ...
@@ -7,14 +8,18 @@
 
 let
   cfg = config.my.user.dev.languages.godot;
+  unstable = import inputs.nixpkgs-unstable {
+    system = pkgs.system;
+    config.allowUnfree = true;
+  };
 in
 {
   options.my.user.dev.languages.godot.enable = lib.mkEnableOption "Godot game development";
 
   config = lib.mkIf cfg.enable {
-    home.packages = with pkgs; [
-      godot_4
-      gdtoolkit_4
+    home.packages = [
+      unstable.godot_4
+      pkgs.gdtoolkit_4
     ];
   };
 }
