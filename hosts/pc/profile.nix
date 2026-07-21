@@ -75,7 +75,6 @@
 
     desktop = {
       kdeplasmaConfig.enable = true;
-      lanMouse.enable = true;
       niriConfig = {
         enable = true;
         workspaceProfile = "pc";

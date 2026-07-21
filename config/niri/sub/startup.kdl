@@ -1,6 +1,7 @@
 // Noctalia v5
 spawn-at-startup  "noctalia"
 spawn-at-startup  "xwayland-satellite"
+spawn-at-startup "lan-mouse" "daemon"
 spawn-at-startup  "/run/current-system/sw/libexec/polkit-gnome-authentication-agent-1"
 
 // Apps

@@ -71,7 +71,6 @@
     };
 
     desktop = {
-      lanMouse.enable = true;
       niriConfig = {
         enable = true;
         workspaceProfile = "laptop";
