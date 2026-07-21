@@ -39,6 +39,7 @@
       };
 
       services = {
+        lanMouse.enable = true;
         ollama.enable = true;
         virtualization.enable = false;
         tailscale.enable = true;
@@ -74,6 +75,7 @@
 
     desktop = {
       kdeplasmaConfig.enable = true;
+      lanMouse.enable = true;
       niriConfig = {
         enable = true;
         workspaceProfile = "pc";
