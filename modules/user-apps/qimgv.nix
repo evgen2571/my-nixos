@@ -10,5 +10,12 @@ in
     home.packages = [
       pkgs.qimgv
     ];
+
+    xdg.mimeApps = {
+      enable = true;
+      defaultApplications = {
+        "image/*" = [ "qimgv.desktop" ];
+      };
+    };
   };
 }
