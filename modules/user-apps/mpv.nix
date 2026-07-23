@@ -15,5 +15,12 @@ in
     home.packages = with pkgs; [
       mpv
     ];
+
+    xdg.mimeApps = {
+      enable = true;
+      defaultApplications = {
+        "video/*" = [ "mpv.desktop" ];
+      };
+    };
   });
 }

@@ -11,16 +11,12 @@ let
 in
 {
   config = lib.mkIf cfg.enable {
-    xdg.configFile."nvim/init.lua".source =
-      nvimConfig + "/init.lua";
-
-    xdg.configFile."nvim/lua/matugen-template.lua".source =
-      nvimConfig + "/lua/matugen-template.lua";
-
-    xdg.configFile."nvim/lua/custom".source =
-      nvimConfig + "/lua/custom";
-
-    xdg.configFile."nvim/lua/kickstart".source =
-      nvimConfig + "/lua/kickstart";
+    # Copy Neovim's configuration instead of linking it to the Nix store.
+    # This keeps the live ~/.config/nvim tree writable while still allowing
+    # Home Manager to refresh it on activation.
+    xdg.configFile."nvim" = {
+      source = nvimConfig;
+      recursive = true;
+    };
   };
 }
