@@ -106,6 +106,23 @@ return {
 
       local capabilities = require('blink.cmp').get_lsp_capabilities()
       local lspconfig_util = require 'lspconfig.util'
+
+      local function unity_root(path)
+        path = vim.fs.dirname(path)
+        while path and path ~= '' do
+          if vim.fn.isdirectory(path .. '/Assets') == 1
+            and vim.fn.isdirectory(path .. '/Packages') == 1
+            and vim.fn.isdirectory(path .. '/ProjectSettings') == 1 then
+            return path
+          end
+          local parent = vim.fs.dirname(path)
+          if parent == path then
+            break
+          end
+          path = parent
+        end
+      end
+
       local servers = {
         pyright = {},
         ruff = {},
@@ -130,7 +147,7 @@ return {
               or lspconfig_util.root_pattern('*.sln')(path)
               or lspconfig_util.root_pattern('*.csproj')(path)
               or lspconfig_util.root_pattern('omnisharp.json', 'function.json')(path)
-              or vim.fs.root(path, { 'Assets', 'Packages', 'ProjectSettings' })
+              or unity_root(path)
 
             if root then
               on_dir(root)

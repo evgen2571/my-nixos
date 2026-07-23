@@ -37,6 +37,7 @@
       };
 
       services = {
+        lanMouse.enable = true;
         ollama.enable = true;
         virtualization.enable = false;
         tailscale.enable = true;
