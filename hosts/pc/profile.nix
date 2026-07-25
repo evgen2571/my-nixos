@@ -5,7 +5,7 @@
     desktop = {
       niri.enable = true;
       hyprland.enable = false;
-      kdeplasma.enable = true;
+      kdeplasma.enable = false;
       cinnamon.enable = false;
       ly.enable = true;
       # Niri and Plasma are available as separate sessions through Ly.
@@ -21,12 +21,12 @@
 
     system = {
       apps = {
-        aagl.enable = true;
-        kdeConnect.enable = true;
+        aagl.enable = false;
+        kdeConnect.enable = false;
         steam.enable = true;
         obs.enable = true;
         vesktop.enable = true;
-        zenlessZoneZero.enable = true;
+        zenlessZoneZero.enable = false;
       };
 
       dev = {
@@ -45,7 +45,7 @@
         tailscale.enable = true;
         blueman.enable = true;
         syncthing.enable = true;
-        sunshine.enable = true;
+        sunshine.enable = false;
       };
     };
   };
@@ -59,13 +59,13 @@
     apps = {
       anki.enable = true;
       bitwarden.enable = false;
-      bruno.enable = true;
+      bruno.enable = false;
       chrome.enable = false;
       notion.enable = false;
       mpv.enable = true;
       obsidian.enable = true;
       osuLazer.enable = false;
-      prismLauncher.enable = true;
+      prismLauncher.enable = false;
       qimgv.enable = true;
       slack.enable = false;
       telegram.enable = true;
@@ -74,7 +74,7 @@
     };
 
     desktop = {
-      kdeplasmaConfig.enable = true;
+      kdeplasmaConfig.enable = false;
       niriConfig = {
         enable = true;
         workspaceProfile = "pc";
@@ -92,10 +92,10 @@
 
       languages = {
         cpp.enable = true;
-        godot.enable = true;
+        godot.enable = false;
         python.enable = true;
         rust.enable = true;
-        unity.enable = true;
+        unity.enable = false;
       };
     };
 
