@@ -26,9 +26,15 @@ in
     #   install -D -m 644 config/noctalia/user-templates.toml "$HOME/.config/noctalia/user-templates.toml"
     home.activation.installLegacyNoctaliaConfig = lib.mkIf cfg.legacyConfig.enable (
       config.lib.dag.entryAfter [ "writeBoundary" ] ''
-        install -D -m 644 ${configPaths.wm.noctaliaConfigDir + "/v4/settings.json"} "$HOME/${configDir}/settings.json"
-        install -D -m 644 ${configPaths.wm.noctaliaConfigDir + "/v4/plugins.json"} "$HOME/${configDir}/plugins.json"
-        install -D -m 644 ${configPaths.wm.noctaliaConfigDir + "/v4/user-templates.toml"} "$HOME/${configDir}/user-templates.toml"
+        install -D -m 644 ${
+          configPaths.wm.noctaliaConfigDir + "/v4/settings.json"
+        } "$HOME/${configDir}/settings.json"
+        install -D -m 644 ${
+          configPaths.wm.noctaliaConfigDir + "/v4/plugins.json"
+        } "$HOME/${configDir}/plugins.json"
+        install -D -m 644 ${
+          configPaths.wm.noctaliaConfigDir + "/v4/user-templates.toml"
+        } "$HOME/${configDir}/user-templates.toml"
       ''
     );
   };

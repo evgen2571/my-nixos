@@ -1,3 +1,34 @@
-flake.lock
+# Nix build outputs
+result
+result-*
+
+# Local environments
+.direnv/
+
+# Unencrypted environment files
+.env
+.env.*
+*.env
+*.env.*
+!.env.example
+!*.env.example
+
+# Private local data
+local.nix
+local/
+private/
+secrets/
+
+# Private age identity files
+*.agekey
+age.key
+
+# Temporary editor files
+*.swp
+*.swo
+*~
+*.bak
+*.tmp
+
 .clang-format
 .codegraph

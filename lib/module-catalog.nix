@@ -18,6 +18,11 @@ let
     }
     {
       scope = "system";
+      relPath = "/modules/server";
+      profiles = [ "server" ];
+    }
+    {
+      scope = "system";
       relPath = "/modules/system-services";
       profiles = [
         "desktop"
@@ -74,17 +79,18 @@ let
     }
   ];
 
-  preferredPaths = rootDef:
-    filter pathExists (map (relPath: root + relPath) (rootDef.first or [ ]));
+  preferredPaths = rootDef: filter pathExists (map (relPath: root + relPath) (rootDef.first or [ ]));
 
-  orderedDiscoveredPaths = rootDef:
+  orderedDiscoveredPaths =
+    rootDef:
     let
       first = preferredPaths rootDef;
       discovered = discovery.modulesUnder rootDef.relPath;
     in
     first ++ filter (path: !(elem path first)) discovered;
 
-  modulesForRoot = rootDef:
+  modulesForRoot =
+    rootDef:
     map (path: {
       inherit path;
       inherit (rootDef) scope profiles relPath;
@@ -92,11 +98,11 @@ let
 
   modules = concatLists (map modulesForRoot profileRoots);
 
-  moduleMatches = profile: scope: module:
+  moduleMatches =
+    profile: scope: module:
     module.scope == scope && elem profile module.profiles;
 
-  pathsFor = profile: scope:
-    map (module: module.path) (filter (moduleMatches profile scope) modules);
+  pathsFor = profile: scope: map (module: module.path) (filter (moduleMatches profile scope) modules);
 
   profile = name: {
     systemModules = pathsFor name "system";

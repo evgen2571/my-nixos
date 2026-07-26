@@ -1,5 +1,11 @@
 # configuration.nix
-{ config, inputs, lib, pkgs, ... }:
+{
+  config,
+  inputs,
+  lib,
+  pkgs,
+  ...
+}:
 let
   cfg = config.my.system.apps.aagl;
 in
@@ -19,13 +25,14 @@ in
       # Unicode fonts there as well; otherwise CJK and less common glyphs
       # can be rendered as empty squares by the launcher/game.
       package = pkgs.anime-game-launcher.override {
-        extraPkgs = _pkgs: with _pkgs; [
-          fontconfig
-          noto-fonts-cjk-sans
-          noto-fonts-cjk-serif
-          noto-fonts-color-emoji
-          unifont
-        ];
+        extraPkgs =
+          _pkgs: with _pkgs; [
+            fontconfig
+            noto-fonts-cjk-sans
+            noto-fonts-cjk-serif
+            noto-fonts-color-emoji
+            unifont
+          ];
       };
     };
   };

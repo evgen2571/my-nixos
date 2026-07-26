@@ -11,7 +11,8 @@ let
 
   isNixFile = name: match ".*\\.nix" name != null;
 
-  scanDir = dir:
+  scanDir =
+    dir:
     let
       entries = readDir dir;
     in
@@ -34,7 +35,8 @@ let
         ) (attrNames entries)
       );
 
-  modulesUnder = relPath:
+  modulesUnder =
+    relPath:
     let
       dir = root + relPath;
     in
