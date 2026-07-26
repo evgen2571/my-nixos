@@ -33,5 +33,5 @@
 
   # Set to the NixOS release used for this server's initial installation.
   # Do not change during normal NixOS upgrades.
-  system.stateVersion = "25.11";
+  system.stateVersion = "26.05";
 }

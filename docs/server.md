@@ -20,7 +20,8 @@ actual server hardware or administrator provisioned secrets:
 - User passwords — set interactively or via a hash, never committed
 - Hermes agent environment — `/var/lib/hermes/env`
 - WireGuard VPNBook configs — `/etc/wireguard/vpnbook/`
-- Tailscale auth key — provisioned interactively via `tailscale up`
+- Tailscale enrollment — run `sudo tailscale up` interactively, or provision
+  an authentication key separately outside Git.
 
 ## 3. SSH authorized keys
 
@@ -179,7 +180,21 @@ inherit the group.
 ## 9. Tailscale and firewall
 
 - `tailscale0` is **not** globally trusted
-- Individual services open only the specific ports they need on `tailscale0`
+- The shared Tailscale module exposes `my.system.services.tailscale.openFirewall`
+  (default `false`) which opens the UDP transport port on the general host firewall
+- Only the server enables `openFirewall`:
+
+  ```nix
+  my.system.services.tailscale = {
+    enable = true;
+    openFirewall = true;
+  };
+  ```
+
+- PC and laptop retain the default `false`
+- This opens Tailscale's UDP transport port through the general host firewall
+- This does **not** globally trust `tailscale0`
+- Application services must still open the specific ports they need on `tailscale0`
 - SSH starts with `openOnLan = true` for bootstrap access
 - After confirming that OpenSSH works through the server's Tailscale IP, the administrator may set:
 

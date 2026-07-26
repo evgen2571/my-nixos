@@ -1,19 +1,22 @@
-# This file must be replaced on the real server before the host can build.
+# This file is an intentional placeholder.
 #
-# Generate it on the target machine with:
+# On the target server, generate the hardware configuration with:
 #
-#   sudo nixos-generate-config --show-hardware-config > hosts/server/hardware-configuration.nix
+#   sudo nixos-generate-config --show-hardware-config
 #
-# Review the generated output carefully before replacing this placeholder.
-# The generated file will contain filesystem declarations, bootloader settings,
-# CPU/memory/disk configuration specific to the server hardware.
+# Replace this file with the generated Nix module.
 #
-# Do not copy hardware configuration from nixos-pc or nixos-laptop — the
-# server likely has different disks, boot mode, and hardware topology.
+# The generated file contains detected hardware, kernel-module, filesystem,
+# swap, and platform declarations specific to the target server.
 #
-# After replacing, run a non-activating build:
+# Do not copy hardware configuration from the PC or laptop.
 #
-#   nix build .#nixosConfigurations.nixos-server.config.system.build.toplevel
+# Bootloader policy is configured separately in:
+#
+#   modules/system-core/server.nix
+#
+# The current server bootloader policy assumes UEFI firmware and systemd-boot.
+# Verify that this is appropriate for the target server before activation.
 { lib, ... }:
 
 {

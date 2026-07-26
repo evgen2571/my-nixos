@@ -40,7 +40,10 @@
       syncthing.enable = false;
     };
 
-    system.services.tailscale.enable = true;
+    system.services.tailscale = {
+      enable = true;
+      openFirewall = true;
+    };
   };
 
   my.primaryUser.home.settings.my.user.dev.git.enable = true;
