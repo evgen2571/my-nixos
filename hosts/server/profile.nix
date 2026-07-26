@@ -8,7 +8,7 @@
       ssh = {
         enable = true;
         port = 22;
-        openOnLan = true;
+        openOnLan = false;
       };
 
       storage = {

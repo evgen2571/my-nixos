@@ -12,13 +12,14 @@
 
   my.primaryUser = {
     enable = true;
-    name = "evgen2571";
+    name = "server";
     extraGroups = [
       "networkmanager"
       "wheel"
     ];
     authorizedKeyFiles = [
       ../../keys/evgen2571-pc.pub
+      ../../keys/evgen2571-lp.pub
     ];
 
     git = {

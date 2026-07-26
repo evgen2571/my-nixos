@@ -9,7 +9,12 @@
 - PC (`nixos-pc`) and laptop (`nixos-lp`) remain in the same repository and
   are unaffected by server module imports
 
-## 2. Human-only values
+## 2. Fixed identity
+
+- Hostname: `nixos-server`
+- Username: `server`
+
+## 3. Human-only values
 
 These values must **not** be guessed or invented. They require access to the
 actual server hardware or administrator provisioned secrets:
@@ -23,21 +28,40 @@ actual server hardware or administrator provisioned secrets:
 - Tailscale enrollment — run `sudo tailscale up` interactively, or provision
   an authentication key separately outside Git.
 
-## 3. SSH authorized keys
+## 4. SSH through Tailscale
+
+The server uses ordinary OpenSSH over its Tailscale address.
+
+The separate Tailscale SSH feature is not enabled.
+
+Tailscale provides the private network path.
+OpenSSH performs public-key authentication.
+
+## 5. SSH authorized keys
 
 Public keys live in `keys/`:
 
 ```text
 keys/
 ├── README.md
-└── evgen2571-pc.pub
+├── evgen2571-pc.pub   (main PC)
+└── evgen2571-lp.pub   (laptop)
 ```
+
+- `evgen2571-pc.pub` belongs to the main PC.
+- `evgen2571-lp.pub` belongs to the laptop.
+- Only public keys are committed. Private keys remain on their respective
+  devices.
+- Both keys authenticate as user `server`.
+- To revoke one device, remove only its public-key path from
+  `authorizedKeyFiles`.
 
 They are declared in `hosts/server/configuration.nix`:
 
 ```nix
 my.primaryUser.authorizedKeyFiles = [
   ../../keys/evgen2571-pc.pub
+  ../../keys/evgen2571-lp.pub
 ];
 ```
 
@@ -61,7 +85,7 @@ my.primaryUser.authorizedKeyFiles = [
 > `evgen2571-pc`) may reveal a device name or email address. Choose
 > appropriately.
 
-## 4. Hardware configuration
+## 6. Hardware configuration
 
 Generate the real file on the target machine:
 
@@ -105,7 +129,7 @@ After replacement, verify with a non-activating build:
 nix build .#nixosConfigurations.nixos-server.config.system.build.toplevel
 ```
 
-## 5. Storage disk
+## 7. Storage disk
 
 Find the storage disk:
 
@@ -138,21 +162,21 @@ to write synchronized data to the root filesystem, which is dangerous.
 
 Set `my.server.storage.device` first, then enable Syncthing.
 
-## 6. Server paths
+## 8. Server paths
 
 | Path | Owner | Permissions | Purpose |
 |------|-------|-------------|---------|
-| `/srv/compose` | evgen2571:server-data | 0750 | Docker Compose project files |
-| `/srv/appdata` | evgen2571:server-data | 2770 | Persistent app state |
+| `/srv/compose` | server:server-data | 0750 | Docker Compose project files |
+| `/srv/appdata` | server:server-data | 2770 | Persistent app state |
 | `/srv/storage` | root:server-data | 2770 | Mount point for data disk |
-| `/srv/shared` | evgen2571:server-data | 2770 | Shared data between services |
-| `/srv/backups` | evgen2571:server-data | 2770 | Backup destination |
+| `/srv/shared` | server:server-data | 2770 | Shared data between services |
+| `/srv/backups` | server:server-data | 2770 | Backup destination |
 | `/srv/secrets` | root:root | 0700 | Runtime secrets (provisioned externally) |
 
 The `2` prefix in `2770` sets the SGID bit so newly created subdirectories
 inherit the group.
 
-## 7. Docker
+## 9. Docker
 
 - Enabled via `my.server.dockerHost.enable`
 - Compose projects belong in `/srv/compose`
@@ -166,7 +190,7 @@ inherit the group.
 > **WARNING:** Membership in the `docker` group is effectively equivalent to
 > root-level control of the server. Only add trusted users.
 
-## 8. Syncthing
+## 10. Syncthing
 
 - Initially disabled — enable only after `my.server.storage.device` is set
 - State directory: `/srv/appdata/syncthing/`
@@ -177,7 +201,7 @@ inherit the group.
 - No folders are created declaratively by default; configure them through the
   GUI or REST API
 
-## 9. Tailscale and firewall
+## 11. Tailscale and firewall
 
 - `tailscale0` is **not** globally trusted
 - The shared Tailscale module exposes `my.system.services.tailscale.openFirewall`
@@ -195,17 +219,54 @@ inherit the group.
 - This opens Tailscale's UDP transport port through the general host firewall
 - This does **not** globally trust `tailscale0`
 - Application services must still open the specific ports they need on `tailscale0`
-- SSH starts with `openOnLan = true` for bootstrap access
-- After confirming that OpenSSH works through the server's Tailscale IP, the administrator may set:
-
-  ```nix
-  my.server.ssh.openOnLan = false;
-  ```
-
-- Keep one SSH session open while testing this change
+- SSH port 22 is allowed on `tailscale0` but not on any general firewall interface
+- The server uses `openOnLan = false` to restrict SSH to the Tailscale network
 - Upstream router firewall rules still apply regardless of these settings
 
-## 10. Runtime secrets
+## 12. Manual first-boot Tailscale enrollment
+
+After installing NixOS on the server, the following steps must be performed
+from the local/provider console:
+
+1. Boot the installed NixOS server.
+2. Open the local/provider console.
+3. Log in using the available local/root console method.
+4. Run `sudo tailscale up`.
+5. `tailscale up` prints an authentication URL. Open that URL in a browser
+   and approve the new machine `nixos-server`.
+6. Run `tailscale status` to confirm the machine is connected.
+7. Run `tailscale ip -4` to obtain the server's Tailscale IPv4 address.
+8. From the main PC, test connectivity:
+   ```bash
+   tailscale ping SERVER_TAILSCALE_IP
+   ssh server@SERVER_TAILSCALE_IP
+   ```
+9. From the laptop, test connectivity:
+   ```bash
+   tailscale ping SERVER_TAILSCALE_IP
+   ssh server@SERVER_TAILSCALE_IP
+   ```
+10. Keep the local/provider console open until both SSH connections succeed.
+
+Do not configure a Tailscale authentication key. The enrollment is manual.
+
+Do not expect SSH to be available before Tailscale enrollment.
+
+### Optional SSH client alias
+
+```sshconfig
+Host nixos-server
+  HostName SERVER_TAILSCALE_IP
+  User server
+  IdentityFile ~/.ssh/id_ed25519
+  IdentitiesOnly yes
+```
+
+Replace `SERVER_TAILSCALE_IP` with the actual address from step 7. Adjust
+`IdentityFile` to match the private key path on that particular client
+machine.
+
+## 13. Runtime secrets
 
 The following paths contain secrets provisioned separately and are **not**
 committed to Git:
@@ -219,7 +280,7 @@ committed to Git:
 These must be created manually on the server. Service failures are expected
 when required runtime secrets are absent.
 
-## 11. Safe build procedure
+## 14. Safe build procedure
 
 ```bash
 nix fmt
@@ -246,7 +307,7 @@ sudo nixos-rebuild test --flake .#nixos-server
 sudo nixos-rebuild switch --flake .#nixos-server
 ```
 
-## 12. Verification after activation
+## 15. Verification after activation
 
 ```bash
 systemctl --failed
@@ -265,7 +326,7 @@ When Syncthing is enabled:
 systemctl status syncthing
 ```
 
-## 13. Rollback
+## 16. Rollback
 
 ```bash
 sudo nixos-rebuild switch --rollback
