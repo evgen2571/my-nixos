@@ -2,6 +2,7 @@
   configPaths,
   config,
   lib,
+  pkgs,
   ...
 }:
 
@@ -11,12 +12,18 @@ let
 in
 {
   config = lib.mkIf cfg.enable {
-    # Copy Neovim's configuration instead of linking it to the Nix store.
-    # This keeps the live ~/.config/nvim tree writable while still allowing
-    # Home Manager to refresh it on activation.
-    xdg.configFile."nvim" = {
-      source = nvimConfig;
-      recursive = true;
-    };
+    # Home Manager's xdg.configFile always creates store links, including when
+    # recursive is enabled. Install a real writable copy during activation.
+    home.activation.installNeovimConfig = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+      set -eu
+
+      source_dir="${nvimConfig}"
+      target_dir="$HOME/.config/nvim"
+      mkdir -p "$target_dir"
+
+      # Remove the read-only links created by the previous configuration.
+      find "$target_dir" -type l -lname '/nix/store/*' -delete
+      ${pkgs.rsync}/bin/rsync -a --delete "$source_dir"/ "$target_dir"/
+    '';
   };
 }
