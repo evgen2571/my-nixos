@@ -24,7 +24,7 @@
         backupsRoot = "/srv/backups";
         secretsRoot = "/srv/secrets";
 
-        device = null;
+        device = "/dev/disk/by-uuid/ff9ba794-22fe-4906-a516-a3b438200259";
         fsType = "ext4";
 
         mountOptions = [
@@ -47,27 +47,4 @@
   };
 
   my.primaryUser.home.settings.my.user.dev.git.enable = true;
-
-  services.hermes-agent = {
-    enable = true;
-    addToSystemPackages = false;
-    environmentFiles = [ "/var/lib/hermes/env" ];
-
-    settings = {
-      model.default = "openai/gpt-5.4";
-      toolsets = [ "all" ];
-      terminal = {
-        backend = "local";
-        timeout = 180;
-      };
-    };
-  };
-
-  my.system.services.vpnbookWireguardFailover = {
-    enable = true;
-    configDir = "/etc/wireguard/vpnbook";
-    stateDir = "/var/lib/vpnbook-wireguard";
-    interfaceName = "vpnbook0";
-    checkInterval = "1min";
-  };
 }
