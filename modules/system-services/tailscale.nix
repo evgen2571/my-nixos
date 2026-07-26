@@ -12,6 +12,9 @@ in
   options.my.system.services.tailscale.enable = lib.mkEnableOption "Tailscale";
 
   config = lib.mkIf cfg.enable ({
-    services.tailscale.enable = true;
+    services.tailscale = {
+      enable = true;
+      openFirewall = true;
+    };
   });
 }

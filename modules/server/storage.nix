@@ -80,16 +80,29 @@ in
 
   config = lib.mkIf cfg.enable {
     assertions = lib.optional (cfg.device != null) {
-      assertion = lib.hasPrefix "/dev/disk/by-" cfg.device;
+      assertion = lib.any (
+        prefix:
+        lib.hasPrefix prefix cfg.device
+        && cfg.device != prefix
+      ) [
+        "/dev/disk/by-uuid/"
+        "/dev/disk/by-label/"
+        "/dev/disk/by-id/"
+      ];
       message = ''
-        my.server.storage.device must use a stable path under /dev/disk/by-uuid/,
-        /dev/disk/by-label/, or /dev/disk/by-id/.
+        my.server.storage.device must use a stable path under one of:
+
+          /dev/disk/by-uuid/
+          /dev/disk/by-label/
+          /dev/disk/by-id/
 
         Current value: ${cfg.device}
 
-        Use one of these to find the correct path:
+        Find stable identifiers with:
           lsblk -f
           sudo blkid
+
+        Do not use unstable names such as /dev/sda1 or /dev/sdb1.
       '';
     };
 
@@ -103,12 +116,12 @@ in
     ];
 
     systemd.tmpfiles.rules = [
-      "d ${cfg.composeRoot} ${primaryUser} ${cfg.dataGroup} 0750 - -"
-      "d ${cfg.appDataRoot} ${primaryUser} ${cfg.dataGroup} 2770 - -"
-      "d ${cfg.storageRoot} root ${cfg.dataGroup} 2770 - -"
-      "d ${cfg.sharedRoot} ${primaryUser} ${cfg.dataGroup} 2770 - -"
-      "d ${cfg.backupsRoot} ${primaryUser} ${cfg.dataGroup} 2770 - -"
-      "d ${cfg.secretsRoot} root root 0700 - -"
+      "d ${cfg.composeRoot} 0750 ${primaryUser} ${cfg.dataGroup} - -"
+      "d ${cfg.appDataRoot} 2770 ${primaryUser} ${cfg.dataGroup} - -"
+      "d ${cfg.storageRoot} 2770 root ${cfg.dataGroup} - -"
+      "d ${cfg.sharedRoot} 2770 ${primaryUser} ${cfg.dataGroup} - -"
+      "d ${cfg.backupsRoot} 2770 ${primaryUser} ${cfg.dataGroup} - -"
+      "d ${cfg.secretsRoot} 0700 root root - -"
     ];
 
     fileSystems = lib.mkIf (cfg.device != null) {

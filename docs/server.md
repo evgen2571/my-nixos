@@ -62,7 +62,7 @@ my.primaryUser.authorizedKeyFiles = [
 
 ## 4. Hardware configuration
 
-Generate the real file on the target server:
+Generate the real file on the target machine:
 
 ```bash
 sudo nixos-generate-config --show-hardware-config \
@@ -71,7 +71,31 @@ sudo nixos-generate-config --show-hardware-config \
 
 Replace the existing placeholder at `hosts/server/hardware-configuration.nix`.
 
-Review bootloader and filesystem declarations carefully. Do **not** copy
+The generated file will produce a `hardware-configuration.nix` appropriate for
+the target hardware. However, it does **not** automatically validate or change
+the bootloader policy, because bootloader settings are defined separately in
+`modules/system-core/server.nix`.
+
+### Boot mode and bootloader
+
+The current server profile enables systemd-boot and assumes UEFI firmware:
+
+```nix
+boot.loader.systemd-boot.enable = true;
+boot.loader.efi.canTouchEfiVariables = true;
+```
+
+Before installation, verify that the target server boots in UEFI mode and that
+systemd-boot is appropriate.
+
+Replacing `hosts/server/hardware-configuration.nix` does not automatically
+validate the bootloader policy because bootloader settings are defined in the
+server system module.
+
+For legacy BIOS systems, unusual firmware, encrypted boot layouts, or another
+bootloader, review and change the bootloader configuration before activation.
+
+Review the generated filesystem declarations carefully. Do **not** copy
 hardware config from the PC or laptop machines.
 
 After replacement, verify with a non-activating build:
@@ -117,11 +141,11 @@ Set `my.server.storage.device` first, then enable Syncthing.
 
 | Path | Owner | Permissions | Purpose |
 |------|-------|-------------|---------|
-| `/srv/compose` | admin:server-data | 0750 | Docker Compose project files |
-| `/srv/appdata` | admin:server-data | 2770 | Persistent app state |
+| `/srv/compose` | evgen2571:server-data | 0750 | Docker Compose project files |
+| `/srv/appdata` | evgen2571:server-data | 2770 | Persistent app state |
 | `/srv/storage` | root:server-data | 2770 | Mount point for data disk |
-| `/srv/shared` | admin:server-data | 2770 | Shared data between services |
-| `/srv/backups` | admin:server-data | 2770 | Backup destination |
+| `/srv/shared` | evgen2571:server-data | 2770 | Shared data between services |
+| `/srv/backups` | evgen2571:server-data | 2770 | Backup destination |
 | `/srv/secrets` | root:root | 0700 | Runtime secrets (provisioned externally) |
 
 The `2` prefix in `2770` sets the SGID bit so newly created subdirectories
@@ -157,7 +181,7 @@ inherit the group.
 - `tailscale0` is **not** globally trusted
 - Individual services open only the specific ports they need on `tailscale0`
 - SSH starts with `openOnLan = true` for bootstrap access
-- After confirming Tailscale SSH works, the administrator may set:
+- After confirming that OpenSSH works through the server's Tailscale IP, the administrator may set:
 
   ```nix
   my.server.ssh.openOnLan = false;

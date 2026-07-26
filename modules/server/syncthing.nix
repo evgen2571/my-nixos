@@ -31,9 +31,9 @@ in
     };
 
     systemd.tmpfiles.rules = [
-      "d ${storage.appDataRoot}/syncthing syncthing ${storage.dataGroup} 2770 - -"
-      "d ${storage.appDataRoot}/syncthing/config syncthing ${storage.dataGroup} 2770 - -"
-      "d ${storage.appDataRoot}/syncthing/database syncthing ${storage.dataGroup} 2770 - -"
+      "d ${storage.appDataRoot}/syncthing 2770 syncthing ${storage.dataGroup} - -"
+      "d ${storage.appDataRoot}/syncthing/config 2770 syncthing ${storage.dataGroup} - -"
+      "d ${storage.appDataRoot}/syncthing/database 2770 syncthing ${storage.dataGroup} - -"
     ];
 
     services.syncthing = {
@@ -50,7 +50,8 @@ in
 
       openDefaultPorts = false;
 
-      settings.folders = { };
+      overrideDevices = false;
+      overrideFolders = false;
     };
 
     systemd.services.syncthing = {
