@@ -11,14 +11,12 @@ in
 {
   options.my.desktop.opentabletdriver.enable = lib.mkEnableOption "OpenTabletDriver support";
 
-  config = lib.mkIf cfg.enable (
-    {
-      # Enable OpenTabletDriver
-      hardware.opentabletdriver.enable = true;
+  config = lib.mkIf cfg.enable ({
+    # Enable OpenTabletDriver
+    hardware.opentabletdriver.enable = true;
 
-      # Required by OpenTabletDriver
-      hardware.uinput.enable = true;
-      boot.kernelModules = [ "uinput" ];
-    }
-  );
+    # Required by OpenTabletDriver
+    hardware.uinput.enable = true;
+    boot.kernelModules = [ "uinput" ];
+  });
 }

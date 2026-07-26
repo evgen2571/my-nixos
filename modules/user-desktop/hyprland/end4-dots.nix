@@ -9,9 +9,11 @@ let
   cfg = config.my.user.desktop.end4HyprlandDots;
 
   optionalPackage = name: lib.optional (builtins.hasAttr name pkgs) (builtins.getAttr name pkgs);
-  optionalKdePackage = name:
-    lib.optional (builtins.hasAttr "kdePackages" pkgs && builtins.hasAttr name pkgs.kdePackages)
-      (builtins.getAttr name pkgs.kdePackages);
+  optionalKdePackage =
+    name:
+    lib.optional (builtins.hasAttr "kdePackages" pkgs && builtins.hasAttr name pkgs.kdePackages) (
+      builtins.getAttr name pkgs.kdePackages
+    );
 
   runtimePackages =
     with pkgs;

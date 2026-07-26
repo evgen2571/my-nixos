@@ -25,136 +25,146 @@ let
     };
 
     dotfileAdapters = {
-      fish = {
-        configDir ? dev.fish.configDir,
-      }: {
-        "fish".source = configDir;
-      };
-
-      kitty = {
-        source ? dev.kitty.configFile,
-        fontSize ? "17.0",
-      }:
-      {
-        "kitty/kitty.conf" =
-          if fontSize == "17.0" then
-            { inherit source; }
-          else
-            {
-              text = (readFile source) + ''
-
-                # Host adapter override
-                font_size        ${fontSize}
-              '';
-            };
-      };
-
-      starship = {
-        configFile ? dev.starship.configFile,
-      }: {
-        "starship.toml".source = configFile;
-      };
-
-      niri = {
-        configDir ? wm.niriConfigDir,
-        workspaceProfile ? "default",
-      }:
-      let
-        workspaceFiles = {
-          default = "workspaces.kdl";
-          pc = "workspaces-pc.kdl";
-          laptop = "workspaces-laptop.kdl";
+      fish =
+        {
+          configDir ? dev.fish.configDir,
+        }:
+        {
+          "fish".source = configDir;
         };
-        workspacesFile = workspaceFiles.${workspaceProfile};
-      in
-      mkXdgSourceSet [
-        {
-          target = "niri/config.kdl";
-          source = configDir + "/config.kdl";
-        }
-        {
-          target = "niri/sub/outputs.kdl";
-          source = configDir + "/sub/outputs.kdl";
-        }
-        {
-          target = "niri/sub/workspaces.kdl";
-          source = configDir + "/sub/${workspacesFile}";
-        }
-        {
-          target = "niri/sub/rules.kdl";
-          source = configDir + "/sub/rules.kdl";
-        }
-        {
-          target = "niri/sub/binds.kdl";
-          source = configDir + "/sub/binds.kdl";
-        }
-        {
-          target = "niri/sub/layout.kdl";
-          source = configDir + "/sub/layout.kdl";
-        }
-        {
-          target = "niri/sub/input.kdl";
-          source = configDir + "/sub/input.kdl";
-        }
-        {
-          target = "niri/sub/startup.kdl";
-          source = configDir + "/sub/startup.kdl";
-        }
-      ];
 
-      hyprland = {
-        configDir ? wm.hyprlandConfigDir,
-      }: mkXdgSourceSet [
+      kitty =
         {
-          target = "hypr/hyprland.conf";
-          source = configDir + "/hyprland.conf";
-        }
+          source ? dev.kitty.configFile,
+          fontSize ? "17.0",
+        }:
         {
-          target = "hypr/sub/outputs.conf";
-          source = configDir + "/sub/outputs.conf";
-        }
-        {
-          target = "hypr/sub/workspaces.conf";
-          source = configDir + "/sub/workspaces.conf";
-        }
-        {
-          target = "hypr/sub/rules.conf";
-          source = configDir + "/sub/rules.conf";
-        }
-        {
-          target = "hypr/sub/binds.conf";
-          source = configDir + "/sub/binds.conf";
-        }
-        {
-          target = "hypr/sub/layout.conf";
-          source = configDir + "/sub/layout.conf";
-        }
-        {
-          target = "hypr/sub/input.conf";
-          source = configDir + "/sub/input.conf";
-        }
-        {
-          target = "hypr/sub/startup.conf";
-          source = configDir + "/sub/startup.conf";
-        }
-      ];
+          "kitty/kitty.conf" =
+            if fontSize == "17.0" then
+              { inherit source; }
+            else
+              {
+                text = (readFile source) + ''
 
-      kdeplasma = {
-        configDir ? wm.kdeplasmaConfigDir,
-      }: mkXdgSourceSet [
+                  # Host adapter override
+                  font_size        ${fontSize}
+                '';
+              };
+        };
+
+      starship =
         {
-          target = "kcminputrc";
-          source = configDir + "/kcminputrc";
-        }
+          configFile ? dev.starship.configFile,
+        }:
         {
-          target = "kwinrc";
-          source = configDir + "/kwinrc";
-        }
+          "starship.toml".source = configFile;
+        };
+
+      niri =
         {
-          target = "kxkbrc";
-          source = configDir + "/kxkbrc";
-        }
-      ];
+          configDir ? wm.niriConfigDir,
+          workspaceProfile ? "default",
+        }:
+        let
+          workspaceFiles = {
+            default = "workspaces.kdl";
+            pc = "workspaces-pc.kdl";
+            laptop = "workspaces-laptop.kdl";
+          };
+          workspacesFile = workspaceFiles.${workspaceProfile};
+        in
+        mkXdgSourceSet [
+          {
+            target = "niri/config.kdl";
+            source = configDir + "/config.kdl";
+          }
+          {
+            target = "niri/sub/outputs.kdl";
+            source = configDir + "/sub/outputs.kdl";
+          }
+          {
+            target = "niri/sub/workspaces.kdl";
+            source = configDir + "/sub/${workspacesFile}";
+          }
+          {
+            target = "niri/sub/rules.kdl";
+            source = configDir + "/sub/rules.kdl";
+          }
+          {
+            target = "niri/sub/binds.kdl";
+            source = configDir + "/sub/binds.kdl";
+          }
+          {
+            target = "niri/sub/layout.kdl";
+            source = configDir + "/sub/layout.kdl";
+          }
+          {
+            target = "niri/sub/input.kdl";
+            source = configDir + "/sub/input.kdl";
+          }
+          {
+            target = "niri/sub/startup.kdl";
+            source = configDir + "/sub/startup.kdl";
+          }
+        ];
+
+      hyprland =
+        {
+          configDir ? wm.hyprlandConfigDir,
+        }:
+        mkXdgSourceSet [
+          {
+            target = "hypr/hyprland.conf";
+            source = configDir + "/hyprland.conf";
+          }
+          {
+            target = "hypr/sub/outputs.conf";
+            source = configDir + "/sub/outputs.conf";
+          }
+          {
+            target = "hypr/sub/workspaces.conf";
+            source = configDir + "/sub/workspaces.conf";
+          }
+          {
+            target = "hypr/sub/rules.conf";
+            source = configDir + "/sub/rules.conf";
+          }
+          {
+            target = "hypr/sub/binds.conf";
+            source = configDir + "/sub/binds.conf";
+          }
+          {
+            target = "hypr/sub/layout.conf";
+            source = configDir + "/sub/layout.conf";
+          }
+          {
+            target = "hypr/sub/input.conf";
+            source = configDir + "/sub/input.conf";
+          }
+          {
+            target = "hypr/sub/startup.conf";
+            source = configDir + "/sub/startup.conf";
+          }
+        ];
+
+      kdeplasma =
+        {
+          configDir ? wm.kdeplasmaConfigDir,
+        }:
+        mkXdgSourceSet [
+          {
+            target = "kcminputrc";
+            source = configDir + "/kcminputrc";
+          }
+          {
+            target = "kwinrc";
+            source = configDir + "/kwinrc";
+          }
+          {
+            target = "kxkbrc";
+            source = configDir + "/kxkbrc";
+          }
+        ];
     };
   };
 in

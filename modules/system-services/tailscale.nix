@@ -1,4 +1,9 @@
-{ lib,  config, pkgs, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
 
 let
   cfg = config.my.system.services.tailscale;
@@ -6,9 +11,10 @@ in
 {
   options.my.system.services.tailscale.enable = lib.mkEnableOption "Tailscale";
 
-  config = lib.mkIf cfg.enable (
-    {
-      services.tailscale.enable = true;
-    }
-  );
+  config = lib.mkIf cfg.enable ({
+    services.tailscale = {
+      enable = true;
+      openFirewall = true;
+    };
+  });
 }

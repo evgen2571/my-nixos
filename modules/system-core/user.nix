@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   cfg = config.my.primaryUser;
@@ -34,6 +39,12 @@ in
       type = lib.types.listOf lib.types.str;
       default = [ ];
       description = "SSH public keys authorized for the primary user.";
+    };
+
+    authorizedKeyFiles = lib.mkOption {
+      type = lib.types.listOf lib.types.path;
+      default = [ ];
+      description = "Files containing SSH public keys authorized for the primary user.";
     };
 
     home = {
@@ -82,27 +93,32 @@ in
     users.users.${cfg.name} = {
       isNormalUser = true;
       inherit (cfg) description extraGroups shell;
-      openssh.authorizedKeys.keys = cfg.authorizedKeys;
+      openssh.authorizedKeys = {
+        keys = cfg.authorizedKeys;
+        keyFiles = cfg.authorizedKeyFiles;
+      };
     };
 
-    home-manager.users.${cfg.name} = lib.mkIf cfg.home.enable (lib.mkMerge [
-      {
-        imports = [ cfg.home.module ];
+    home-manager.users.${cfg.name} = lib.mkIf cfg.home.enable (
+      lib.mkMerge [
+        {
+          imports = [ cfg.home.module ];
 
-        home.username = cfg.name;
-        home.homeDirectory = "/home/${cfg.name}";
+          home.username = cfg.name;
+          home.homeDirectory = "/home/${cfg.name}";
 
-        my.user.dev.git = lib.mkMerge [
-          {
-            userName = cfg.git.userName;
-            userEmail = cfg.git.userEmail;
-          }
-          (lib.mkIf (cfg.git.signingKey != null) {
-            signingKey = cfg.git.signingKey;
-          })
-        ];
-      }
-      cfg.home.settings
-    ]);
+          my.user.dev.git = lib.mkMerge [
+            {
+              userName = cfg.git.userName;
+              userEmail = cfg.git.userEmail;
+            }
+            (lib.mkIf (cfg.git.signingKey != null) {
+              signingKey = cfg.git.signingKey;
+            })
+          ];
+        }
+        cfg.home.settings
+      ]
+    );
   };
 }

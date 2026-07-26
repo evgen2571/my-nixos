@@ -17,8 +17,8 @@
       "networkmanager"
       "wheel"
     ];
-    authorizedKeys = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA example"
+    authorizedKeyFiles = [
+      ../../keys/operator-pc.pub
     ];
 
     git = {
@@ -27,32 +27,11 @@
     };
   };
 
-  services.openssh = {
-    enable = true;
-    settings = {
-      PasswordAuthentication = false;
-      PermitRootLogin = "no";
-    };
-  };
-
   services.tailscale = {
-    enable = true;
     useRoutingFeatures = "client";
   };
 
-  networking.firewall = {
-    allowedTCPPorts = [ 22 ];
-    allowedUDPPorts = [ 41641 ];
-    trustedInterfaces = [ "tailscale0" ];
-  };
-
-  environment.systemPackages = with pkgs; [
-    curl
-    vim
-    git
-    tailscale
-    wireguard-tools
-  ];
-
+  # Set to the NixOS release used for this server's initial installation.
+  # Do not change during normal NixOS upgrades.
   system.stateVersion = "25.11";
 }
