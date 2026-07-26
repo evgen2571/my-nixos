@@ -59,7 +59,6 @@ in
     nixos-server = mkHost {
       hostModule = ../hosts/server/configuration.nix;
       profile = moduleProfiles.server;
-      extraModules = [ inputs.hermes-agent.nixosModules.default ];
     };
   };
 }

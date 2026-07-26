@@ -12,13 +12,14 @@
 
   my.primaryUser = {
     enable = true;
-    name = "operator";
+    name = "server";
     extraGroups = [
       "networkmanager"
       "wheel"
     ];
     authorizedKeyFiles = [
       ../../keys/operator-pc.pub
+      ../../keys/operator-lp.pub
     ];
 
     git = {
@@ -29,6 +30,12 @@
 
   services.tailscale = {
     useRoutingFeatures = "client";
+  };
+
+  services.logind.settings.Login = {
+    HandleLidSwitch = "ignore";
+    HandleLidSwitchExternalPower = "ignore";
+    HandleLidSwitchDockerd = "ignore";
   };
 
   # Set to the NixOS release used for this server's initial installation.
