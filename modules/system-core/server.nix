@@ -27,12 +27,20 @@
 
   nix.gc = {
     automatic = true;
-    dates = "weekly";
+    dates = "Sun 12:00";
+    persistent = false;
+    randomizedDelaySec = "15min";
     options = "--delete-older-than 7d";
   };
 
-  nix.optimise = {
-    automatic = true;
-    dates = [ "03:45" ];
+  # A daily full-store optimisation is unnecessary on this small server and
+  # can cause long, noisy disk activity. Run `sudo nix-store --optimise`
+  # manually after unusually large upgrades if required.
+  nix.optimise.automatic = false;
+
+  systemd.services.nix-gc.serviceConfig = {
+    Nice = 19;
+    CPUSchedulingPolicy = "idle";
+    IOSchedulingClass = "idle";
   };
 }
