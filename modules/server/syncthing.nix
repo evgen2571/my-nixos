@@ -58,9 +58,23 @@ in
       unitConfig.RequiresMountsFor = [
         storage.storageRoot
       ];
-    };
 
-    systemd.services.syncthing.serviceConfig.UMask = "0002";
+      environment.GOMAXPROCS = "1";
+
+      serviceConfig = {
+        UMask = "0002";
+
+        # CPUQuota=100% means at most one full logical CPU.
+        CPUQuota = "100%";
+        CPUWeight = 10;
+        IOWeight = 10;
+
+        # MemoryHigh throttles first; MemoryMax is the final safety rail.
+        MemoryHigh = "40%";
+        MemoryMax = "50%";
+        TasksMax = 256;
+      };
+    };
 
     networking.firewall.interfaces.tailscale0 = {
       allowedTCPPorts = [

@@ -41,6 +41,7 @@ in
       usbutils
       vim
       wget
+      kitty.terminfo
     ];
 
     security.sudo.wheelNeedsPassword = true;
