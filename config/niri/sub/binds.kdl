@@ -7,6 +7,8 @@ binds {
     Mod+F repeat=false hotkey-overlay-title="Browser" { spawn "zen-beta"; }
     Mod+E repeat=false hotkey-overlay-title="TUI File Manager" { spawn "kitty" "-T" "file-manager" "yazi"; }
     Mod+Shift+E repeat=false hotkey-overlay-title="GUI File Manager" { spawn "dolphin"; }
+    Mod+X repeat=false hotkey-overlay-title="Voice Dictation" { spawn "voxtype" "record" "toggle"; }
+
     // Maximize the temporary Kitty UI for sesh's project picker.
     Mod+C repeat=false hotkey-overlay-title="Project session" { spawn "kitty" "--title" "project-session" "sesh" "picker" "-i"; }
     Mod+O repeat=false hotkey-overlay-title="Notetaker" { spawn "obsidian"; }
@@ -83,7 +85,6 @@ binds {
     Mod+Ctrl+Right { focus-monitor-right; }
     Mod+Ctrl+H { focus-monitor-left; }
     Mod+Ctrl+L { focus-monitor-right; }
-    Mod+X { focus-monitor-next; }
 
     // Move to monitor
     Mod+Shift+Ctrl+Left { move-column-to-monitor-left; }
