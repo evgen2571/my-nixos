@@ -30,7 +30,17 @@ let
           configDir ? dev.fish.configDir,
         }:
         {
-          "fish".source = configDir;
+          "fish/config.fish".source = configDir + "/config.fish";
+
+          "fish/conf.d" = {
+            source = configDir + "/conf.d";
+            recursive = true;
+          };
+
+          "fish/functions" = {
+            source = configDir + "/functions";
+            recursive = true;
+          };
         };
 
       kitty =
