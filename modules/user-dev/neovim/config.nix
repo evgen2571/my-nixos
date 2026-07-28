@@ -12,18 +12,31 @@ let
 in
 {
   config = lib.mkIf cfg.enable {
-    # Home Manager's xdg.configFile always creates store links, including when
-    # recursive is enabled. Install a real writable copy during activation.
     home.activation.installNeovimConfig = config.lib.dag.entryAfter [ "writeBoundary" ] ''
       set -eu
 
       source_dir="${nvimConfig}"
       target_dir="$HOME/.config/nvim"
+
+      # Remove an old whole-directory Home Manager symlink.
+      if [ -L "$target_dir" ]; then
+        rm "$target_dir"
+      fi
+
       mkdir -p "$target_dir"
 
-      # Remove the read-only links created by the previous configuration.
-      find "$target_dir" -type l -lname '/nix/store/*' -delete
-      ${pkgs.rsync}/bin/rsync -a --delete "$source_dir"/ "$target_dir"/
+      # Copy declarative configuration, but preserve Matugen's generated file.
+      ${pkgs.rsync}/bin/rsync \
+        -a \
+        --delete \
+        --exclude='/lua/matugen.lua' \
+        --chmod=u+rwX \
+        "$source_dir"/ \
+        "$target_dir"/
+
+      # Existing files that rsync did not transfer may still have old
+      # read-only Nix-store permissions.
+      chmod -R u+rwX "$target_dir"
     '';
   };
 }
