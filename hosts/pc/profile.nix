@@ -70,6 +70,7 @@
       slack.enable = false;
       telegram.enable = true;
       youtubeMusic.enable = true;
+      voxtype.enable = true;
       zenBrowser.enable = true;
     };
 

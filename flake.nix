@@ -29,6 +29,11 @@
       url = "github:noctalia-dev/noctalia-shell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    voxtype = {
+      url = "github:peteonrails/voxtype/v0.7.5";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
