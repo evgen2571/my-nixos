@@ -25,6 +25,7 @@
         obs.enable = true;
         steam.enable = true;
         vesktop.enable = true;
+        waydroid.enable = true;
       };
 
       dev = {
@@ -55,7 +56,7 @@
 
     apps = {
       anki.enable = true;
-      bitwarden.enable = true;
+      bitwarden.enable = false;
       bruno.enable = true;
       chrome.enable = false;
       notion.enable = false;
