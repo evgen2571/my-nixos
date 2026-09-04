@@ -93,6 +93,7 @@
 
       languages = {
         cpp.enable = true;
+        java.enable = true;
         godot.enable = false;
         python.enable = true;
         rust.enable = true;
