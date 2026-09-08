@@ -52,7 +52,7 @@ widget_order = [ "desktop-widget-0000000000000001", "desktop-widget-000000000000
     enabled = true
     output = "DP-1"
     rotation = 0.0
-    type = "noctalia/timer:timer"
+    type = "noctalia/timer:desktop"
 
         [desktop_widgets.widget.desktop-widget-0000000000000003.settings]
         background = false

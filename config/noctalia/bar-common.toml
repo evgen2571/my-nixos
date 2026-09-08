@@ -35,10 +35,3 @@ order = [ "default" ]
     start = [ "launcher", "wallpaper", "media" ]
     thickness = 23
     widget_spacing = 6
-
-        [bar.default.dead_zone]
-        command = ""
-        middle_command = ""
-        right_command = ""
-        scroll_down_command = ""
-        scroll_up_command = ""

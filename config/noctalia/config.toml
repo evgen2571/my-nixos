@@ -199,21 +199,23 @@ scale = 1.0
     wifi = true
 
 [plugins]
+auto_update = false
 enabled = [ "noctalia/example", "noctalia/bongocat", "noctalia/timer" ]
 
     [[plugins.source]]
-    auto_update = false
     enabled = true
     kind = "git"
     location = "https://github.com/noctalia-dev/official-plugins"
     name = "official"
 
     [[plugins.source]]
-    auto_update = false
     enabled = true
     kind = "git"
     location = "https://github.com/noctalia-dev/community-plugins"
     name = "community"
+
+[accessibility]
+ui_scale = 1.0
 
 [shell]
 app_icon_colorize = false
@@ -228,7 +230,6 @@ date_format = "%I, %M %p"
 disable_mipmaps = false
 font_family = "Hurmit Nerd Font"
 launch_apps_as_systemd_services = false
-middle_click_opens_widget_settings = true
 niri_overview_type_to_launch_enabled = true
 offline_mode = false
 password_style = "default"
@@ -240,7 +241,6 @@ shared_gl_context = true
 show_location = true
 telemetry_enabled = false
 time_format = "{:%H:%M}"
-ui_scale = 1.0
 
     [shell.animation]
     enabled = true
@@ -254,13 +254,7 @@ ui_scale = 1.0
     clipboard_placement = "attached"
     control_center_placement = "attached"
     floating_offset = 4
-    launcher_app_grid = false
-    launcher_categories = true
-    launcher_compact = false
     launcher_placement = "attached"
-    launcher_session_search = true
-    launcher_show_icons = true
-    launcher_sort_by_usage = true
     open_near_click_clipboard = true
     open_near_click_control_center = true
     open_near_click_launcher = true
@@ -347,8 +341,6 @@ cpu_temp_critical_threshold = 85.0
 cpu_temp_sensor_path = ""
 cpu_usage_activity_threshold = 50.0
 cpu_usage_critical_threshold = 90.0
-disk_pct_activity_threshold = 80.0
-disk_pct_critical_threshold = 95.0
 disk_poll_seconds = 10.0
 enabled = true
 gpu_poll_seconds = 0.0
