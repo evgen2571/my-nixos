@@ -57,7 +57,7 @@
     apps = {
       anki.enable = true;
       bitwarden.enable = false;
-      bruno.enable = true;
+      bruno.enable = false;
       chrome.enable = false;
       notion.enable = false;
       mpv.enable = true;
@@ -68,6 +68,7 @@
       slack.enable = false;
       telegram.enable = true;
       youtubeMusic.enable = true;
+      voxtype.enable = true;
       zenBrowser.enable = true;
     };
 
@@ -89,6 +90,7 @@
 
       languages = {
         cpp.enable = true;
+        java.enable = true;
         python.enable = true;
         rust.enable = true;
       };

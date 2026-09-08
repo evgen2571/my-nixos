@@ -36,6 +36,7 @@ return {
         cpp = { 'clang_format' },
         c = { 'clang_format' },
         gdscript = { 'gdformat' },
+        java = { 'google-java-format' },
       },
       formatters = {
         clang_format = {
