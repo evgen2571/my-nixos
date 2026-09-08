@@ -12,6 +12,7 @@ return {
         'diff',
         'gdscript',
         'html',
+        'java',
         'lua',
         'luadoc',
         'markdown',

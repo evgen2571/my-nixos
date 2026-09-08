@@ -24,6 +24,7 @@ in
 
     home.sessionVariables = {
       JAVA_HOME = "${pkgs.jdk21}";
+      JDTLS_HOME = "${pkgs.jdt-language-server}/share/java/jdtls";
     };
   };
 }
