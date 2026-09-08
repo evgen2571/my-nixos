@@ -13,8 +13,16 @@ in
   config = lib.mkIf cfg.enable {
     programs.noctalia.settings = cfg.configFile;
 
-    xdg.configFile."noctalia/user-templates.toml".source =
-      configPaths.wm.noctaliaConfigDir + "/user-templates.toml";
+    xdg.configFile = {
+      "noctalia/bar-common.toml".source = configPaths.wm.noctaliaConfigDir + "/bar-common.toml";
+      "noctalia/bar.toml".source = configPaths.wm.noctaliaConfigDir + "/bar-${cfg.profile}.toml";
+      "noctalia/user-templates.toml".source =
+        configPaths.wm.noctaliaConfigDir + "/user-templates.toml";
+      "noctalia/widgets-common.toml".source =
+        configPaths.wm.noctaliaConfigDir + "/widgets-common.toml";
+      "noctalia/widgets.toml".source =
+        configPaths.wm.noctaliaConfigDir + "/widgets-${cfg.profile}.toml";
+    };
 
     # Legacy Noctalia v4 config installer, kept for rollback/reference.
     # Enable with:
