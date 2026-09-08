@@ -39,6 +39,11 @@ in
       description = "Noctalia v5 TOML config to install as ~/.config/noctalia/config.toml.";
     };
 
+    profile = lib.mkOption {
+      type = lib.types.enum [ "laptop" "pc" ];
+      description = "Host-specific Noctalia bar and widget configuration.";
+    };
+
     legacyConfig.enable = lib.mkEnableOption "legacy Noctalia v4 JSON/plugins/template config installation";
   };
 

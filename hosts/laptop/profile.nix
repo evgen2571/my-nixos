@@ -79,7 +79,10 @@
       };
       hyprlandConfig.enable = false;
       end4HyprlandDots.enable = false;
-      noctalia.enable = true;
+      noctalia = {
+        enable = true;
+        profile = "laptop";
+      };
       screenRecorder.enable = true;
     };
 

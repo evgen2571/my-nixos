@@ -83,7 +83,10 @@
       # Hyprland is not installed on this host, so do not deploy its dotfiles.
       hyprlandConfig.enable = false;
       end4HyprlandDots.enable = false;
-      noctalia.enable = true;
+      noctalia = {
+        enable = true;
+        profile = "pc";
+      };
       screenRecorder.enable = true;
     };
 
