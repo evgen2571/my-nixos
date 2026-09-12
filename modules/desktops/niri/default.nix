@@ -20,19 +20,6 @@ in
 
     services.gnome.gnome-keyring.enable = true;
 
-    services.pipewire = {
-      enable = lib.mkDefault true;
-      alsa.enable = lib.mkDefault true;
-      alsa.support32Bit = lib.mkDefault true;
-      pulse.enable = lib.mkDefault true;
-      wireplumber.enable = lib.mkDefault true;
-    };
-
-    environment.sessionVariables = {
-      NIXOS_OZONE_WL = "1";
-      ELECTRON_OZONE_PLATFORM_HINT = "wayland";
-    };
-
     environment.systemPackages = with pkgs; [
       brightnessctl
       playerctl
@@ -45,6 +32,34 @@ in
       xdg-desktop-portal-gnome
       xdg-desktop-portal-gtk
     ];
+
+    systemd.user.services.polkit-gnome-authentication-agent-1 = {
+      description = "Polkit GNOME Authentication Agent";
+
+      wantedBy = [ "graphical-session.target" ];
+      wants = [ "graphical-session.target" ];
+      after = [ "graphical-session.target" ];
+
+      serviceConfig = {
+        Type = "simple";
+        ExecStart = "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1";
+        Restart = "on-failure";
+        RestartSec = 1;
+      };
+    };
+
+    services.pipewire = {
+      enable = lib.mkDefault true;
+      alsa.enable = lib.mkDefault true;
+      alsa.support32Bit = lib.mkDefault true;
+      pulse.enable = lib.mkDefault true;
+      wireplumber.enable = lib.mkDefault true;
+    };
+
+    environment.sessionVariables = {
+      NIXOS_OZONE_WL = "1";
+      ELECTRON_OZONE_PLATFORM_HINT = "wayland";
+    };
 
     services.udev.packages = with pkgs; [
       brightnessctl

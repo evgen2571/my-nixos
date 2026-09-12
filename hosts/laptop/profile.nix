@@ -8,7 +8,7 @@
       cinnamon.enable = false;
       ly.enable = true;
       # Niri is the active session; keep the portal backend unambiguous.
-      gnome.enable = false;
+      gnome.enable = true;
       opentabletdriver.enable = false;
     };
 
@@ -40,7 +40,7 @@
       services = {
         lanMouse.enable = true;
         ollama.enable = true;
-        virtualization.enable = false;
+        virtualization.enable = true;
         tailscale.enable = true;
         blueman.enable = true;
         syncthing.enable = true;

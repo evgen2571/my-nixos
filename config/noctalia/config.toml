@@ -371,9 +371,14 @@ wallpaper_scheme = "m3-content"
 
     [theme.templates]
     builtin_ids = [ "cava", "gtk3", "gtk4", "kitty", "niri", "qt" ]
-    community_ids = [ "obsidian", "telegram", "yazi" ]
+    community_ids = [ "pear-desktop", "telegram", "libreoffice", "neovim", "obsidian", "lazygit", "yazi" ]
     enable_builtin_templates = true
     enable_community_templates = true
+
+        [theme.templates.user.nvim-base16]
+        input_path = "~/.config/nvim/lua/matugen-template.lua"
+        output_path = "~/.config/nvim/lua/matugen.lua"
+        post_hook = "pkill -SIGUSR1 nvim"
 
 [wallpaper]
 directory = "/home/evgen2571/drive/Wallpapers"
