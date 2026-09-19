@@ -1,36 +1,51 @@
-# BOOTSTRAP REQUIRED: this active configuration is intentionally unusable.
-# Do not create secret files until every placeholder in the commented template
-# below has been replaced with a real public age recipient and the template has
-# been uncommented. See docs/sops.md for the complete bootstrap procedure.
-keys: []
+keys:
+  - &admin age1vetj2qje0u9ez5k0vydf2yltj4z3ayhz3xnsmf3kl3e57wx5y5wsurnguy
+  - &pc age1ky2ddeweqwtvgvc9022vkwvp2yrrkurjhhu4dyqxhjhw6j9xncps6xt3x9
+  - &laptop age1ye84m0a04a6u5v4cuctrtgcqa5czcwvr7q0qf6st6shy4qrs73fspxaa2w
+  - &server age19m24yd5je2ett9dghjdd268x0edjx5n077hjf3z094cshs745sqste3cq3
 
-creation_rules: []
+creation_rules:
+  # Bootstrap identities.
+  # These are deliberately decryptable ONLY by the admin identity.
+  - path_regex: secrets/bootstrap/pc\.yaml$
+    key_groups:
+      - age:
+          - *admin
 
-# keys:
-#   - &admin age1ADMIN_RECIPIENT
-#   - &pc age1PC_HOST_RECIPIENT
-#   - &laptop age1LAPTOP_HOST_RECIPIENT
-#   - &server age1SERVER_HOST_RECIPIENT
-#
-# creation_rules:
-#   - path_regex: secrets/common\.yaml$
-#     key_groups:
-#       - age:
-#           - *admin
-#           # Add only the hosts that consume secrets from common.yaml.
-#           - *pc
-#   - path_regex: secrets/hosts/pc\.yaml$
-#     key_groups:
-#       - age:
-#           - *admin
-#           - *pc
-#   - path_regex: secrets/hosts/laptop\.yaml$
-#     key_groups:
-#       - age:
-#           - *admin
-#           - *laptop
-#   - path_regex: secrets/hosts/server\.yaml$
-#     key_groups:
-#       - age:
-#           - *admin
-#           - *server
+  - path_regex: secrets/bootstrap/laptop\.yaml$
+    key_groups:
+      - age:
+          - *admin
+
+  - path_regex: secrets/bootstrap/server\.yaml$
+    key_groups:
+      - age:
+          - *admin
+
+  # Host-specific secrets.
+  - path_regex: secrets/hosts/pc\.yaml$
+    key_groups:
+      - age:
+          - *admin
+          - *pc
+
+  - path_regex: secrets/hosts/laptop\.yaml$
+    key_groups:
+      - age:
+          - *admin
+          - *laptop
+
+  - path_regex: secrets/hosts/server\.yaml$
+    key_groups:
+      - age:
+          - *admin
+          - *server
+
+  # Add this only when you actually have shared secrets.
+  - path_regex: secrets/common\.yaml$
+    key_groups:
+      - age:
+          - *admin
+          - *pc
+          - *laptop
+          - *server

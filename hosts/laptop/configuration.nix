@@ -4,6 +4,7 @@
   imports = [
     ./hardware-configuration.nix
     ./profile.nix
+    ./secrets.nix
     ../../modules/system-core/common.nix
     ../../modules/system-core/user.nix
   ];
@@ -33,7 +34,7 @@
 
     git = {
       userEmail = "evgen.10.02.2008.83@gmail.com";
-      signingKey = "~/.ssh/id_ed25519_github.pub";
+      signingKey = "~/.ssh/id_ed25519_github";
     };
   };
 
