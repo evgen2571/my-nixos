@@ -53,7 +53,7 @@ in
     secretsRoot = lib.mkOption {
       type = lib.types.str;
       default = "/srv/secrets";
-      description = "Root directory for runtime secrets (provisioned separately).";
+      description = "Runtime secret interface for services that require a directory.";
     };
 
     device = lib.mkOption {

@@ -21,6 +21,12 @@ private/
 # Private age identity files
 *.agekey
 age.key
+.sops-age-key.txt
+
+# Decrypted secret working copies and SOPS/editor artifacts
+*.decrypted.yaml
+*.dec.yaml
+.sops.*.tmp
 
 # Temporary editor files
 *.swp

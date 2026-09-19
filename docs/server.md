@@ -22,7 +22,7 @@ actual server hardware or administrator provisioned secrets:
 - Real `hardware-configuration.nix` — generated on the target machine
 - Storage disk UUID / stable device path — read from `lsblk -f` / `sudo blkid`
 - Private SSH keys — generated on the client, only the `.pub` file goes in Git
-- User passwords — set interactively or via a hash, never committed
+- User passwords — set interactively or stored as a SOPS-encrypted hash
 - Hermes agent environment — `/var/lib/hermes/env`
 - WireGuard VPNBook configs — `/etc/wireguard/vpnbook/`
 - Tailscale enrollment — run `sudo tailscale up` interactively, or provision
@@ -171,7 +171,7 @@ Set `my.server.storage.device` first, then enable Syncthing.
 | `/srv/storage` | root:server-data | 2770 | Mount point for data disk |
 | `/srv/shared` | server:server-data | 2770 | Shared data between services |
 | `/srv/backups` | server:server-data | 2770 | Backup destination |
-| `/srv/secrets` | root:root | 0700 | Runtime secrets (provisioned externally) |
+| `/srv/secrets` | root:root | 0700 | Optional runtime interface for services that require a secrets directory |
 
 The `2` prefix in `2770` sets the SGID bit so newly created subdirectories
 inherit the group.
@@ -181,8 +181,10 @@ inherit the group.
 - Enabled via `my.server.dockerHost.enable`
 - Compose projects belong in `/srv/compose`
 - Persistent application state belongs in `/srv/appdata`
-- Secrets must **never** go in Git — use `/srv/secrets` or an external
-  secret manager
+- Plaintext secrets and private age keys must **never** go in Git. Encrypted
+  SOPS files are intended to be committed; expose their decrypted runtime paths
+  directly to services where possible. Use `/srv/secrets` only when a service
+  specifically requires a directory-based runtime interface.
 - Docker logs are size-limited (10 MB per file, 5 files max)
 - Automatic pruning runs weekly, retaining images younger than 7 days
 - `live-restore` is enabled so containers keep running during daemon restarts
@@ -268,17 +270,23 @@ machine.
 
 ## 13. Runtime secrets
 
-The following paths contain secrets provisioned separately and are **not**
-committed to Git:
+Plaintext secrets and private age identities are never committed. SOPS-encrypted
+files under `secrets/` and their public age recipients are intended to be
+committed; sops-nix decrypts declared secrets into protected runtime paths.
+See [the SOPS workflow](sops.md) for host key bootstrap, editing, declaration,
+and rotation.
+
+Some existing services still use separately provisioned runtime interfaces:
 
 | Path | Contents |
 |------|----------|
 | `/var/lib/hermes/env` | Hermes agent environment variables |
 | `/etc/wireguard/vpnbook/` | VPNBook WireGuard `.conf` files |
-| `/srv/secrets/` | Application-level secrets |
+| `/srv/secrets/` | Optional directory for applications that cannot consume a sops-nix runtime path directly |
 
-These must be created manually on the server. Service failures are expected
-when required runtime secrets are absent.
+These paths are not encrypted repository files. Populate them manually or from
+a declared sops-nix secret according to the consuming service. Service failures
+are expected when required runtime secrets are absent.
 
 ## 14. Safe build procedure
 
