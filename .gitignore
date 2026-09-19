@@ -17,7 +17,6 @@ result-*
 local.nix
 local/
 private/
-secrets/
 
 # Private age identity files
 *.agekey

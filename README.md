@@ -147,6 +147,9 @@ For the NixOS server, see [Server setup and operations](docs/server.md).
 See [the KDE Plasma workflow guide](docs/kde-plasma.md) for the Niri-like focus,
 keyboard timing, tiling, and Unity/Neovim setup.
 
+See [the sops secrets guide](docs/sops.md) for recipient setup, encrypted
+secret files, recipient rotation, and rebuilds.
+
 ## Small notes for future me
 
 - Keep modules boring and easy to delete.

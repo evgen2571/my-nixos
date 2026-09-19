@@ -1,0 +1,6 @@
+# Add real age recipients and creation rules before creating files under
+# secrets/. The admin recipient belongs in every rule. Host rules get only the
+# corresponding host. See docs/sops.md for the complete template.
+keys: []
+
+creation_rules: []
