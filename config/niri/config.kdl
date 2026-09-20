@@ -76,7 +76,7 @@ recent-windows {
 
 include "sub/outputs.kdl"
 include "sub/workspaces.kdl"
-include "sub/rules.kdl"
+include "sub/rules/common.kdl"
 include "sub/binds.kdl"
 include "sub/layout.kdl"
 include "sub/input.kdl"
