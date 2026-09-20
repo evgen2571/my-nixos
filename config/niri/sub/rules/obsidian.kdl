@@ -1,0 +1,158 @@
+// ============================================================================
+// Obsidian
+// ============================================================================
+
+
+// --------------------------------------------------------------------------
+// Base: EVERY Obsidian window
+// --------------------------------------------------------------------------
+//
+// Important:
+// Do NOT put open-on-workspace here.
+// Otherwise every dialog gets forced back to "notes".
+//
+
+window-rule {
+    match app-id=r#"^md\.obsidian\.Obsidian$"#
+
+    draw-border-with-background false
+    opacity 1.0
+
+    // Override automatic Electron floating;
+    // specific dialogs opt back into floating below.
+    open-floating false
+}
+
+
+// --------------------------------------------------------------------------
+// Main Obsidian window
+// --------------------------------------------------------------------------
+//
+// ONLY the main editor/vault window is tied to "notes".
+//
+// Initial launch:
+//     -> opens on "notes"
+//
+// If you later move it to another workspace:
+//     -> it stays there
+//
+// Dialogs opened from it:
+//     -> open on that current workspace
+//
+
+window-rule {
+    match app-id=r#"^md\.obsidian\.Obsidian$"#
+
+    exclude title=r#"^(Settings|Community themes|Community plugins|Properties|About|Open vault|Manage vaults)"#
+
+    open-on-workspace "notes"
+
+    open-floating false
+    open-maximized-to-edges true
+}
+
+
+// ============================================================================
+// LEVEL 1
+// Opened from main window -> LEFT
+//
+// No open-on-workspace here.
+// ============================================================================
+
+
+// Settings
+window-rule {
+    match app-id=r#"^md\.obsidian\.Obsidian$"# title=r#"^Settings - "#
+
+    open-floating true
+    open-maximized-to-edges false
+    open-focused true
+
+    default-column-width { fixed 1120; }
+    default-window-height { fixed 1050; }
+
+    default-floating-position x=70 y=90 relative-to="top-left"
+}
+
+
+// Properties
+window-rule {
+    match app-id=r#"^md\.obsidian\.Obsidian$"# title=r#"^Properties"#
+
+    open-floating true
+    open-maximized-to-edges false
+    open-focused true
+
+    default-column-width { fixed 800; }
+    default-window-height { fixed 800; }
+
+    default-floating-position x=70 y=140 relative-to="top-left"
+}
+
+
+// Vault manager
+window-rule {
+    match app-id=r#"^md\.obsidian\.Obsidian$"# title=r#"^(Open vault|Manage vaults)"#
+
+    open-floating true
+    open-maximized-to-edges false
+    open-focused true
+
+    default-column-width { fixed 950; }
+    default-window-height { fixed 760; }
+
+    default-floating-position x=70 y=170 relative-to="top-left"
+}
+
+
+// About
+window-rule {
+    match app-id=r#"^md\.obsidian\.Obsidian$"# title=r#"^About"#
+
+    open-floating true
+    open-maximized-to-edges false
+    open-focused true
+
+    default-column-width { fixed 720; }
+    default-window-height { fixed 560; }
+
+    default-floating-position x=70 y=220 relative-to="top-left"
+}
+
+
+// ============================================================================
+// LEVEL 2
+// Opened from level-1 windows -> RIGHT
+//
+// Again: no open-on-workspace.
+// ============================================================================
+
+
+// Community Themes
+window-rule {
+    match app-id=r#"^md\.obsidian\.Obsidian$"# title=r#"^Community themes - "#
+
+    open-floating true
+    open-maximized-to-edges false
+    open-focused true
+
+    default-column-width { fixed 1120; }
+    default-window-height { fixed 1050; }
+
+    default-floating-position x=70 y=90 relative-to="top-right"
+}
+
+
+// Community Plugins
+window-rule {
+    match app-id=r#"^md\.obsidian\.Obsidian$"# title=r#"^Community plugins - "#
+
+    open-floating true
+    open-maximized-to-edges false
+    open-focused true
+
+    default-column-width { fixed 1120; }
+    default-window-height { fixed 1050; }
+
+    default-floating-position x=70 y=90 relative-to="top-right"
+}

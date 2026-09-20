@@ -97,8 +97,12 @@ let
             source = configDir + "/sub/${workspacesFile}";
           }
           {
-            target = "niri/sub/rules.kdl";
-            source = configDir + "/sub/rules.kdl";
+            target = "niri/sub/rules/common.kdl";
+            source = configDir + "/sub/rules/common.kdl";
+          }
+          {
+            target = "niri/sub/rules/obsidian.kdl";
+            source = configDir + "/sub/rules/obsidian.kdl";
           }
           {
             target = "niri/sub/binds.kdl";
