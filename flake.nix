@@ -39,6 +39,10 @@
       url = "github:peteonrails/voxtype/v0.7.5";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    llm-agents = {
+      url = "github:numtide/llm-agents.nix";
+    };
   };
 
   outputs =
