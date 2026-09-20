@@ -52,8 +52,8 @@
 
   my.primaryUser.home.settings.my.user = {
     ai = {
-      opencode.enable = false;
-      codex.enable = false;
+      opencode.enable = true;
+      codex.enable = true;
     };
 
     apps = {
@@ -93,6 +93,8 @@
     dev = {
       ffmpeg.enable = true;
       workstation.enable = true;
+
+      bb.enable = true;
 
       languages = {
         cpp.enable = true;
