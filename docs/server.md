@@ -13,6 +13,7 @@
 
 - Hostname: `nixos-server`
 - Username: `server`
+- The server is kept online; there is no scheduled suspend timer in the server configuration.
 
 ## 3. Human-only values
 
@@ -44,12 +45,15 @@ Public keys live in `keys/`:
 ```text
 keys/
 ├── README.md
-├── operator-pc.pub   (main PC)
-└── operator-lp.pub   (laptop)
+├── users/
+│   └── operator/
+│       ├── pc.pub       (main PC)
+│       └── laptop.pub   (laptop)
+└── hosts/               (reserved for SSH host identity/trust public keys)
 ```
 
-- `operator-pc.pub` belongs to the main PC.
-- `operator-lp.pub` belongs to the laptop.
+- `users/operator/pc.pub` belongs to the main PC.
+- `users/operator/laptop.pub` belongs to the laptop.
 - Only public keys are committed. Private keys remain on their respective
   devices.
 - Both keys authenticate as user `server`.
@@ -60,14 +64,14 @@ They are declared in `hosts/server/configuration.nix`:
 
 ```nix
 my.primaryUser.authorizedKeyFiles = [
-  ../../keys/operator-pc.pub
-  ../../keys/operator-lp.pub
+  ../../keys/users/operator/pc.pub
+  ../../keys/users/operator/laptop.pub
 ];
 ```
 
 ### Adding a key
 
-1. Copy only the `.pub` file into `keys/` with a descriptive name.
+1. Copy only the `.pub` file into `keys/users/<user>/` with a descriptive name.
 2. Add its relative path to `authorizedKeyFiles`.
 3. Run formatting and a build.
 4. Keep the current SSH session open.
@@ -254,19 +258,23 @@ Do not configure a Tailscale authentication key. The enrollment is manual.
 
 Do not expect SSH to be available before Tailscale enrollment.
 
-### Optional SSH client alias
+### Declarative SSH client alias
 
-```sshconfig
-Host nixos-server
-  HostName SERVER_TAILSCALE_IP
-  User server
-  IdentityFile ~/.ssh/id_ed25519
-  IdentitiesOnly yes
+PC and laptop configure the same alias through Home Manager:
+
+```bash
+ssh server
 ```
 
-Replace `SERVER_TAILSCALE_IP` with the actual address from step 7. Adjust
-`IdentityFile` to match the private key path on that particular client
-machine.
+The alias resolves `nixos-server` through Tailscale MagicDNS and selects a
+different private key on each client:
+
+- PC: `~/.ssh/id_ed25519_nixos_pc`
+- laptop: `~/.ssh/id_ed25519_nixos_lp`
+
+This avoids hard-coding a Tailscale `100.x` address in the SSH configuration.
+The separate Tailscale SSH feature is still not required; OpenSSH performs the
+authentication.
 
 ## 13. Runtime secrets
 

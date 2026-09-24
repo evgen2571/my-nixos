@@ -1,38 +1,80 @@
-{ pkgs, ... }:
-
 {
-  home.packages = [
-    pkgs.sshfs
-  ];
+  config,
+  lib,
+  pkgs,
+  osConfig,
+  ...
+}:
 
-  programs.ssh = {
-    enable = true;
-    enableDefaultConfig = false;
+let
+  cfg = config.my.user.dev.ssh;
 
-    matchBlocks = {
-      "*" = {
-        addKeysToAgent = "yes";
-      };
+  agentIdentity =
+    if osConfig.networking.hostName == "nixos-pc" then
+      "~/.ssh/id_ed25519_nixos_pc"
+    else if osConfig.networking.hostName == "nixos-lp" then
+      "~/.ssh/id_ed25519_nixos_lp"
+    else
+      null;
+in
+{
+  options.my.user.dev.ssh = {
+    serverHost = lib.mkOption {
+      type = lib.types.str;
+      default = "nixos-server";
+      description = ''
+        Tailscale MagicDNS hostname used for the home server.
+      '';
+    };
 
-      "github.com" = {
-        hostname = "github.com";
-        user = "git";
-        identityFile = "~/.ssh/id_ed25519_github";
-        identitiesOnly = true;
-      };
+    serverIdentityFile = lib.mkOption {
+      type = lib.types.nullOr lib.types.str;
+      default = null;
+      description = ''
+        Private key used to authenticate to the home server.
+        Set this per client host so `ssh server` always selects the correct key.
+      '';
+    };
+  };
 
-      "agent" = {
-        hostname = "192.0.2.13";
-        user = "agent";
-        identityFile = "~/.ssh/hermes_host";
-        identitiesOnly = true;
-      };
+  config = {
+    home.packages = [
+      pkgs.sshfs
+    ];
 
-      "server-lp" = {
-        hostname = "192.0.2.14";
-        user = "server";
-        identityFile = "~/.ssh/hermes_server";
-        identitiesOnly = true;
+    programs.ssh = {
+      enable = true;
+      enableDefaultConfig = false;
+
+      settings = {
+        "*" = {
+          AddKeysToAgent = "yes";
+          ServerAliveInterval = 30;
+          ServerAliveCountMax = 3;
+        };
+
+        "github.com" = {
+          HostName = "github.com";
+          User = "git";
+          IdentityFile = "~/.ssh/id_ed25519_github";
+          IdentitiesOnly = true;
+        };
+
+        "agent" = {
+          HostName = "192.0.2.13";
+          User = "agent";
+          IdentityFile = agentIdentity;
+          IdentitiesOnly = true;
+        };
+
+        "server" = {
+          HostName = cfg.serverHost;
+          User = "server";
+          IdentitiesOnly = true;
+        }
+        // lib.optionalAttrs (cfg.serverIdentityFile != null) {
+          IdentityFile = cfg.serverIdentityFile;
+        };
       };
     };
   };

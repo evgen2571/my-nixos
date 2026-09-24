@@ -9,6 +9,12 @@
     ../../modules/system-core/user.nix
   ];
 
+  # This machine uses a separate EFI System Partition and XBOOTLDR partition.
+  boot.loader = {
+    efi.efiSysMountPoint = "/efi";
+    systemd-boot.xbootldrMountPoint = "/boot";
+  };
+
   networking.hostName = "nixos-pc";
 
   programs.nm-applet.enable = true;

@@ -11,6 +11,9 @@
 
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
+  # This machine has a single EFI System Partition mounted at /boot.
+  boot.loader.efi.efiSysMountPoint = "/boot";
+
   networking.hostName = "nixos-lp";
 
   services.libinput.enable = true;
