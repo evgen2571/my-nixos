@@ -1,7 +1,21 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  osConfig,
+  ...
+}:
 
 let
   cfg = config.my.user.dev.ssh;
+
+  agentIdentity =
+    if osConfig.networking.hostName == "nixos-pc" then
+      "~/.ssh/id_ed25519_nixos_pc"
+    else if osConfig.networking.hostName == "nixos-lp" then
+      "~/.ssh/id_ed25519_nixos_lp"
+    else
+      null;
 in
 {
   options.my.user.dev.ssh = {
@@ -49,7 +63,7 @@ in
         "agent" = {
           HostName = "100.126.39.112";
           User = "agent";
-          IdentityFile = "~/.ssh/hermes_host";
+          IdentityFile = agentIdentity;
           IdentitiesOnly = true;
         };
 
