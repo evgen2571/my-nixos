@@ -61,6 +61,7 @@
       bitwarden.enable = false;
       bruno.enable = false;
       chrome.enable = false;
+      krita.enable = true;
       notion.enable = false;
       mpv.enable = true;
       obsidian.enable = true;
