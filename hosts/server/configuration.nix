@@ -18,13 +18,13 @@
       "wheel"
     ];
     authorizedKeyFiles = [
-      ../../keys/evgen2571-pc.pub
-      ../../keys/evgen2571-lp.pub
+      ../../keys/users/evgen2571/pc.pub
+      ../../keys/users/evgen2571/laptop.pub
     ];
 
     git = {
       userEmail = "evgen.10.02.2008.83@gmail.com";
-      signingKey = "~/.ssh/id_ed25519_github.pub";
+      signingKey = "~/.ssh/id_ed25519_github";
     };
   };
 

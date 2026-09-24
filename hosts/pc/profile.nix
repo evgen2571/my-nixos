@@ -93,6 +93,7 @@
     dev = {
       ffmpeg.enable = true;
       workstation.enable = true;
+      ssh.serverIdentityFile = "~/.ssh/id_ed25519_nixos_pc";
 
       bb.enable = true;
 
