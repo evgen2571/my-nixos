@@ -5,13 +5,9 @@
     systemd-boot = {
       enable = true;
       configurationLimit = 10;
-      xbootldrMountPoint = "/boot";
     };
 
-    efi = {
-      canTouchEfiVariables = true;
-      efiSysMountPoint = "/efi";
-    };
+    efi.canTouchEfiVariables = true;
   };
 
   networking.networkmanager.enable = true;
