@@ -105,6 +105,14 @@ let
             source = configDir + "/sub/rules/obsidian.kdl";
           }
           {
+            target = "niri/sub/rules/apps.kdl";
+            source = configDir + "/sub/rules/apps.kdl";
+          }
+          {
+            target = "niri/scripts/focus-or-launch";
+            source = configDir + "/scripts/focus-or-launch";
+          }
+          {
             target = "niri/sub/binds.kdl";
             source = configDir + "/sub/binds.kdl";
           }

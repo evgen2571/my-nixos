@@ -10,7 +10,7 @@ let
   cfg = config.my.user.dev.tmux;
 
   unstable = import inputs.nixpkgs-unstable {
-    system = pkgs.system;
+    system = pkgs.stdenv.hostPlatform.system;
     config = {
       allowUnfree = true;
     };

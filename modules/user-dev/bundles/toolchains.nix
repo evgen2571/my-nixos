@@ -17,7 +17,7 @@ in
       nil
       nix
       nixd
-      nixfmt-rfc-style
+      nixfmt
       statix
       deadnix
       stylua

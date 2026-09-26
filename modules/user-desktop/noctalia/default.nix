@@ -48,6 +48,11 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    home.activation.pruneStaleNoctaliaSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      ${pkgs.python3}/bin/python3 ${configPaths.wm.noctaliaConfigDir}/prune-stale-settings.py \
+        "$HOME/.local/state/noctalia/settings.toml"
+    '';
+
     programs.noctalia = {
       enable = true;
       package = noctaliaShellPackage;

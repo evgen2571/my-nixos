@@ -3,21 +3,21 @@ binds {
 
     // Apps
     Mod+Return repeat=false hotkey-overlay-title="Terminal" { spawn "kitty"; }
-    Mod+Shift+Return repeat=false hotkey-overlay-title="Dropdown Terminal" { spawn "kitty" "-T" "dropdown-term"; }
-    Mod+F repeat=false hotkey-overlay-title="Browser" { spawn "zen-beta"; }
+    Mod+Shift+Return repeat=false hotkey-overlay-title="Dropdown Terminal" { spawn-sh "$HOME/.config/niri/scripts/focus-or-launch '^kitty$' --title '^dropdown-term$' --toggle -- kitty -T dropdown-term"; }
+    Mod+F repeat=false hotkey-overlay-title="Browser" { spawn-sh "$HOME/.config/niri/scripts/focus-or-launch '^(zen-beta|zen)$' -- zen-beta"; }
     Mod+E repeat=false hotkey-overlay-title="TUI File Manager" { spawn "kitty" "-T" "file-manager" "yazi"; }
-    Mod+Shift+E repeat=false hotkey-overlay-title="GUI File Manager" { spawn "dolphin"; }
+    Mod+Shift+E repeat=false hotkey-overlay-title="GUI File Manager" { spawn-sh "$HOME/.config/niri/scripts/focus-or-launch '^org\\.kde\\.dolphin$' -- dolphin"; }
     Mod+X repeat=false hotkey-overlay-title="Voice Dictation" { spawn "voxtype" "record" "toggle"; }
 
     // Maximize the temporary Kitty UI for sesh's project picker.
     Mod+C repeat=false hotkey-overlay-title="Project session" { spawn "kitty" "--title" "project-session" "sesh" "picker" "-i"; }
-    Mod+O repeat=false hotkey-overlay-title="Notetaker" { spawn "obsidian"; }
+    Mod+O repeat=false hotkey-overlay-title="Notetaker" { spawn-sh "$HOME/.config/niri/scripts/focus-or-launch '^md\\.obsidian\\.Obsidian$' -- obsidian"; }
     Mod+A repeat=false hotkey-overlay-title="Anki" { spawn "anki"; }
     Mod+B repeat=false hotkey-overlay-title="API Client" { spawn "bruno"; }
-    Mod+M repeat=false hotkey-overlay-title="Music" { spawn "youtube-music"; }
+    Mod+M repeat=false hotkey-overlay-title="Music" { spawn-sh "$HOME/.config/niri/scripts/focus-or-launch '^(pear-desktop|Pear Desktop|youtube-music|YouTube Music|com\\.github\\.th_ch\\.youtube_music)$' --toggle -- pear-desktop"; }
     Mod+Shift+B repeat=false hotkey-overlay-title="Bitwarden" { spawn "bitwarden"; }
-    Mod+Shift+T repeat=false hotkey-overlay-title="Telegram" { spawn "telegram-desktop"; }
-    Mod+Shift+D repeat=false hotkey-overlay-title="Vesktop" { spawn "vesktop"; }
+    Mod+T repeat=false hotkey-overlay-title="Telegram" { spawn-sh "$HOME/.config/niri/scripts/focus-or-launch '^(org\\.telegram\\.desktop|telegram-desktop)$' -- telegram-desktop"; }
+    Mod+D repeat=false hotkey-overlay-title="Vesktop" { spawn-sh "$HOME/.config/niri/scripts/focus-or-launch '^(vesktop|Vesktop)$' -- vesktop"; }
 
     // Noctalia v5 IPC
     Mod+Comma { spawn "noctalia" "msg" "settings-toggle"; }

@@ -6,6 +6,10 @@ workspace "chats" {
 	open-on-output "DP-1"
 }
 
+workspace "music" {
+	open-on-output "DP-1"
+}
+
 workspace "notes" {
 	open-on-output "HDMI-A-1"
 }

@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Usage: focus-or-launch APP_ID_REGEX [--toggle] -- COMMAND [ARGS...]
+pattern=$1
+shift
+title_pattern='.*'
+if [[ ${1:-} == --title ]]; then
+    title_pattern=$2
+    shift 2
+fi
+toggle=false
+if [[ ${1:-} == --toggle ]]; then
+    toggle=true
+    shift
+fi
+[[ ${1:-} == -- ]] || exit 2
+shift
+
+windows=$(niri msg --json windows)
+id=$(jq -r --arg pattern "$pattern" --arg title "$title_pattern" '[.[] | select(((.app_id // "") | test($pattern)) and ((.title // "") | test($title)))] | (map(select(.is_focused)) + .)[0].id // empty' <<< "$windows")
+if [[ -n $id ]]; then
+    if [[ $toggle == true ]] && jq -e --argjson id "$id" '.[] | select(.id == $id and .is_focused)' <<< "$windows" >/dev/null; then
+        niri msg action close-window --id "$id"
+    else
+        niri msg action focus-window --id "$id"
+    fi
+else
+    "$@" &
+fi

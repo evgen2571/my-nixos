@@ -1,0 +1,72 @@
+// Zen: keep normal browser windows on the browser workspace.
+window-rule {
+    match app-id=r#"^(zen-beta|zen|firefox|google-chrome|chromium-browser|chromium)$"#
+    exclude title=r#"^(Picture-in-Picture|Picture in picture)$"#
+    open-maximized-to-edges true
+    open-on-workspace "browser"
+}
+
+// Dolphin is a convenient floating file browser. Dialogs stay with their parent.
+window-rule {
+    match app-id=r#"^(org\.kde\.dolphin|org\.gnome\.Nautilus|thunar|Thunar)$"#
+    open-floating true
+    open-focused true
+    default-column-width { proportion 0.62; }
+    default-window-height { proportion 0.70; }
+}
+
+// Telegram and Vesktop share the second DP-1 workspace on the PC.
+window-rule {
+    match app-id=r#"^(org\.telegram\.desktop|telegram-desktop|vesktop|Vesktop|discord|Discord|Slack|slack)$"#
+    open-maximized-to-edges true
+    open-on-workspace "chats"
+}
+
+// Pear opens as a large floating panel on the active monitor and workspace.
+window-rule {
+    match app-id=r#"^(pear-desktop|Pear Desktop|youtube-music|YouTube Music|com\.github\.th_ch\.youtube_music)$"#
+    open-floating true
+    open-maximized-to-edges false
+    open-focused true
+    default-column-width { proportion 0.90; }
+    default-window-height { proportion 0.88; }
+    default-floating-position x=0 y=12 relative-to="top"
+}
+
+// Steam's main UI belongs on gaming; its small utility windows float.
+window-rule {
+    match app-id=r#"^(steam|steamwebhelper)$"#
+    open-maximized-to-edges true
+    open-on-workspace "gaming"
+}
+window-rule {
+    match app-id=r#"^(steam|steamwebhelper)$"# title=r#"^(Steam Settings|Friends List|Chat|Properties|Downloads)$"#
+    open-maximized-to-edges false
+    open-floating true
+    open-focused true
+    default-column-width { proportion 0.48; }
+    default-window-height { proportion 0.65; }
+}
+
+// A dropdown is a small centered window at the top of the current workspace.
+window-rule {
+    match app-id=r#"^kitty$"# title="dropdown-term"
+    draw-border-with-background false
+    opacity 0.88
+    open-floating true
+    open-focused true
+    default-column-width { proportion 0.70; }
+    default-window-height { proportion 0.42; }
+    default-floating-position x=0 y=12 relative-to="top"
+    focus-ring {
+        on
+        width 3
+        active-color "#b58bcc"
+    }
+    shadow {
+        on
+        spread 4
+        softness 10
+        color "#695175"
+    }
+}

@@ -17,6 +17,8 @@ in
       kdePackages.kio
       kdePackages.kio-fuse
       kdePackages.kio-extras
+      kdePackages.plasma-integration
+      kdePackages.breeze
       kdePackages.dolphin
       kdePackages.ark
     ];

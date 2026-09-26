@@ -9,7 +9,7 @@
           git
           nil
           nixd
-          nixfmt-rfc-style
+          nixfmt
           statix
         ];
       };

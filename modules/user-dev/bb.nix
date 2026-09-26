@@ -14,7 +14,7 @@ in
 
   config = lib.mkIf cfg.enable {
     home.packages = [
-      inputs.llm-agents.packages.${pkgs.system}.bb-app
+      inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.bb-app
     ];
   };
 }

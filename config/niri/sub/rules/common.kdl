@@ -1,4 +1,5 @@
 include "obsidian.kdl"
+include "apps.kdl"
 
 // Layer rules
 layer-rule {
@@ -40,12 +41,6 @@ window-rule {
     default-window-height { proportion 0.60; }
 }
 
-// Browser
-window-rule {
-    match app-id=r#"^(zen-beta|zen|firefox|google-chrome|chromium-browser|chromium)$"#
-    open-maximized-to-edges true
-    open-on-workspace "browser"
-}
 
 // Terminal baseline
 window-rule {
@@ -84,30 +79,6 @@ window-rule {
     open-on-workspace "gaming"
 }
 
-// Dropdown terminal
-window-rule {
-    match title="dropdown-term"
-    draw-border-with-background false
-    opacity 0.88
-    open-floating true
-    open-focused true
-    default-column-width { proportion 0.55; }
-    default-window-height { proportion 0.35; }
-    default-floating-position x=20 y=10 relative-to="top-left"
-
-    focus-ring {
-        on
-        width 3
-        active-color "#b58bcc"
-    }
-
-    shadow {
-        on
-        spread 4
-        softness 10
-        color "#695175"
-    }
-}
 
 // TUI file manager opened inside Kitty.
 window-rule {
@@ -119,14 +90,6 @@ window-rule {
     default-window-height { proportion 0.60; }
 }
 
-// GUI file managers
-window-rule {
-    match app-id=r#"^(org\.kde\.dolphin|org\.gnome\.Nautilus|thunar|Thunar)$"#
-    open-floating true
-    open-focused true
-    default-column-width { proportion 0.62; }
-    default-window-height { proportion 0.70; }
-}
 
 // ---------------------------------------------------------------------------
 // Other application-specific rules
@@ -169,19 +132,7 @@ window-rule {
     default-window-height { proportion 0.70; }
 }
 
-// Messengers
-window-rule {
-    match app-id=r#"^(org\.telegram\.desktop|telegram-desktop|vesktop|Vesktop|discord|Discord|Slack|slack)$"#
-    open-maximized-to-edges true
-    open-on-workspace "chats"
-}
 
-// Music players
-window-rule {
-    match app-id=r#"^(youtube-music|YouTube Music|com\.github\.th_ch\.youtube_music)$"#
-    open-on-workspace "chats"
-    default-column-width { proportion 0.42; }
-}
 
 // Video players
 window-rule {
@@ -204,7 +155,7 @@ window-rule {
 
 // Gaming launchers and games.
 window-rule {
-    match app-id=r#"^(steam|steamwebhelper|net\.lutris\.Lutris|lutris|org\.prismlauncher\.PrismLauncher|PrismLauncher|sh\.ppy\.osu|osu!)$"#
+    match app-id=r#"^(net\.lutris\.Lutris|lutris|org\.prismlauncher\.PrismLauncher|PrismLauncher|sh\.ppy\.osu|osu!)$"#
     open-maximized-to-edges true
     open-on-workspace "gaming"
 }

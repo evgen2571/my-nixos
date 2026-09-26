@@ -15,7 +15,7 @@ in
   config = lib.mkIf cfg.enable (
     let
       unstable = import inputs.nixpkgs-unstable {
-        system = pkgs.system;
+        system = pkgs.stdenv.hostPlatform.system;
         config.allowUnfree = true;
       };
     in

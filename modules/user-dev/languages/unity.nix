@@ -9,7 +9,7 @@
 let
   cfg = config.my.user.dev.languages.unity;
   unstable = import inputs.nixpkgs-unstable {
-    system = pkgs.system;
+    system = pkgs.stdenv.hostPlatform.system;
     config.allowUnfree = true;
   };
 in
