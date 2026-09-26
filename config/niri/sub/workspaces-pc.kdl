@@ -2,11 +2,15 @@ workspace "browser" {
 	open-on-output "DP-1"
 }
 
-workspace "anki" {
+workspace "chats" {
 	open-on-output "DP-1"
 }
 
-workspace "chats" {
+workspace "music" {
+	open-on-output "DP-1"
+}
+
+workspace "anki" {
 	open-on-output "DP-1"
 }
 

@@ -12,6 +12,11 @@ in
   options.my.desktop.niri.enable = lib.mkEnableOption "Niri desktop session";
 
   config = lib.mkIf cfg.enable {
+    qt = {
+      enable = true;
+      platformTheme = "kde";
+    };
+
     services.xserver.enable = true;
     programs.xwayland.enable = true;
 

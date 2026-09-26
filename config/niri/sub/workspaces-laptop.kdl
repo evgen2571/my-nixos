@@ -21,3 +21,7 @@ workspace "gaming" {
 workspace "chats" {
 	open-on-output "eDP-1"
 }
+
+workspace "music" {
+	open-on-output "eDP-1"
+}

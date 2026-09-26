@@ -83,4 +83,3 @@ include "sub/input.kdl"
 include "sub/startup.kdl"
 
 include "./noctalia.kdl"
-
