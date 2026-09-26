@@ -24,8 +24,9 @@ window-rule {
 
 // Pear opens as a large floating panel on the active monitor and workspace.
 window-rule {
-    match app-id=r#"^(pear-desktop|Pear Desktop)$"#
+    match app-id=r#"^(pear-desktop|Pear Desktop|youtube-music|YouTube Music|com\.github\.th_ch\.youtube_music)$"#
     open-floating true
+    open-maximized-to-edges false
     open-focused true
     default-column-width { proportion 0.90; }
     default-window-height { proportion 0.88; }

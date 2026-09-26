@@ -14,7 +14,7 @@ binds {
     Mod+O repeat=false hotkey-overlay-title="Notetaker" { spawn-sh "$HOME/.config/niri/scripts/focus-or-launch '^md\\.obsidian\\.Obsidian$' -- obsidian"; }
     Mod+A repeat=false hotkey-overlay-title="Anki" { spawn "anki"; }
     Mod+B repeat=false hotkey-overlay-title="API Client" { spawn "bruno"; }
-    Mod+M repeat=false hotkey-overlay-title="Music" { spawn-sh "$HOME/.config/niri/scripts/focus-or-launch '^(pear-desktop|Pear Desktop)$' --toggle -- pear-desktop"; }
+    Mod+M repeat=false hotkey-overlay-title="Music" { spawn-sh "$HOME/.config/niri/scripts/focus-or-launch '^(pear-desktop|Pear Desktop|youtube-music|YouTube Music|com\\.github\\.th_ch\\.youtube_music)$' --toggle -- pear-desktop"; }
     Mod+Shift+B repeat=false hotkey-overlay-title="Bitwarden" { spawn "bitwarden"; }
     Mod+T repeat=false hotkey-overlay-title="Telegram" { spawn-sh "$HOME/.config/niri/scripts/focus-or-launch '^(org\\.telegram\\.desktop|telegram-desktop)$' -- telegram-desktop"; }
     Mod+D repeat=false hotkey-overlay-title="Vesktop" { spawn-sh "$HOME/.config/niri/scripts/focus-or-launch '^(vesktop|Vesktop)$' -- vesktop"; }
