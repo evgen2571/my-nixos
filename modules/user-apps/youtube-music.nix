@@ -13,7 +13,7 @@ in
 
   config = lib.mkIf cfg.enable ({
     home.packages = with pkgs; [
-      youtube-music
+      pear-desktop
       yt-dlp
     ];
   });

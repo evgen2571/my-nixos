@@ -22,11 +22,14 @@ window-rule {
     open-on-workspace "chats"
 }
 
-// Third DP-1 workspace is reserved for music.
+// Pear opens as a large floating panel on the active monitor and workspace.
 window-rule {
-    match app-id=r#"^(youtube-music|YouTube Music|com\.github\.th_ch\.youtube_music|pear-desktop|Pear Desktop)$"#
-    open-on-workspace "music"
-    default-column-width { proportion 0.55; }
+    match app-id=r#"^(pear-desktop|Pear Desktop)$"#
+    open-floating true
+    open-focused true
+    default-column-width { proportion 0.90; }
+    default-window-height { proportion 0.88; }
+    default-floating-position x=0 y=12 relative-to="top"
 }
 
 // Steam's main UI belongs on gaming; its small utility windows float.
