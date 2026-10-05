@@ -88,6 +88,7 @@
 
     dev = {
       ffmpeg.enable = true;
+      pycharm.enable = true;
       workstation.enable = true;
       ssh.serverIdentityFile = "~/.ssh/id_ed25519_nixos_lp";
       kitty.fontSize = "13.0";
