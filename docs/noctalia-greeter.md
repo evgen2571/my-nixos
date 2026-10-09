@@ -13,7 +13,7 @@ The login view has a minimal, wallpaper-first layout:
 - Niri preselected, with the current login user preselected.
 - Bibata cursor and the same US/Russian keyboard layouts as the desktop.
 
-The declarative greeter settings deliberately **do not** set `appearance.scheme`, `appearance.palette`, or an absolute `appearance.wallpaper` path. These would override Noctalia's current theme or per-monitor wallpapers. Instead, Noctalia Shell has `[shell.greeter_sync] auto_sync = true` and syncs the active wallpaper, palette, theme mode, font, and monitor layout to `/var/lib/noctalia-greeter/sync.toml`. The selected scheme becomes *Synced* after the first successful sync.
+The declarative greeter settings set `appearance.scheme = "Synced"` but deliberately **do not** set `appearance.palette` or an absolute `appearance.wallpaper` path. Pinning the palette or wallpaper would override Noctalia's current colors or per-monitor backgrounds. Instead, Noctalia Shell has `[shell.greeter_sync] auto_sync = true` and syncs the active wallpaper, palette, theme mode, font, and monitor layout to `/var/lib/noctalia-greeter/sync.toml`. The selected scheme becomes *Synced* after the first successful sync.
 
 A narrowly scoped Polkit rule lets the configured local desktop account run only the Greeter 1.5+ `org.noctalia.greeter.sync-appearance` action through the immutable Nix-store helper, restricted to an active local session. It does **not** allow arbitrary root commands or the legacy appearance-sync mode.
 
