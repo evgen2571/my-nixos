@@ -6,7 +6,7 @@
       niri.enable = true;
       hyprland.enable = false;
       cinnamon.enable = false;
-      ly.enable = true;
+      noctaliaGreeter.enable = true;
       # Niri is the active session; keep the portal backend unambiguous.
       gnome.enable = true;
       opentabletdriver.enable = false;
@@ -88,7 +88,7 @@
 
     dev = {
       ffmpeg.enable = true;
-      pycharm.enable = true;
+      pycharm.enable = false;
       workstation.enable = true;
       ssh.serverIdentityFile = "~/.ssh/id_ed25519_nixos_lp";
       kitty.fontSize = "13.0";

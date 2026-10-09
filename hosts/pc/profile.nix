@@ -7,8 +7,8 @@
       hyprland.enable = false;
       kdeplasma.enable = false;
       cinnamon.enable = false;
-      ly.enable = true;
-      # Niri and Plasma are available as separate sessions through Ly.
+      noctaliaGreeter.enable = true;
+      # Niri and Plasma remain selectable in the graphical greeter.
       gnome.enable = false;
       opentabletdriver.enable = true;
     };
