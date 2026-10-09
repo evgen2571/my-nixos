@@ -19,7 +19,9 @@
   services.libinput.enable = true;
 
   services.fprintd.enable = true;
-  security.pam.services.ly.fprintAuth = true;
+  # Enabling fprintd also enables PAM fingerprint auth by default for greetd.
+  # Make login password-only: one prompt, with the password passed to GNOME Keyring.
+  security.pam.services.greetd.fprintAuth = false;
   security.pam.services.sudo.fprintAuth = false;
 
   my.primaryUser = {

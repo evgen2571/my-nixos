@@ -242,6 +242,9 @@ show_location = true
 telemetry_enabled = false
 time_format = "{:%H:%M}"
 
+    [shell.greeter_sync]
+    auto_sync = true
+
     [shell.animation]
     enabled = true
     speed = 1.0
