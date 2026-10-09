@@ -17,13 +17,22 @@ The declarative greeter settings deliberately **do not** set `appearance.scheme`
 
 A narrowly scoped Polkit rule lets the configured local desktop account run only the Greeter 1.5+ `org.noctalia.greeter.sync-appearance` action through the immutable Nix-store helper, restricted to an active local session. It does **not** allow arbitrary root commands or the legacy appearance-sync mode.
 
+The greeter declares `appearance.scheme = "Synced"` so it selects the dynamic Noctalia colors **after** the first successful sync. This cannot generate an initial wallpaper or palette from nothing. A first-time manual sync is required, and a failed sync must be diagnosed rather than replaced by an unchecked wallpaper path.
+
 **One-time setup after the first rebuild:** within your Noctalia desktop, open **Settings → Security → Noctalia Greeter → Sync Now**. You may also use:
 
 ```sh
 noctalia msg greeter-sync
 ```
 
-Wait for the sync confirmation, then log out to inspect the new wallpaper and palette. Auto-sync handles subsequent wallpaper/theme changes; it is not guaranteed to run on the first installation before any setting changes.
+Wait for the sync confirmation. Check the files copied to the greeter (these commands do not expose credentials):
+
+```sh
+sudo ls -lah /var/lib/noctalia-greeter/
+sudo cat /var/lib/noctalia-greeter/sync.toml
+```
+
+If no `sync.toml` or wallpaper file was produced, synchronization did not complete; check the Noctalia notification and `journalctl -b -u greetd`, and confirm the greeter helper/action exist. Then log out to inspect the new wallpaper and palette. Auto-sync handles subsequent wallpaper/theme changes; it is not guaranteed to run on the first installation before any setting changes.
 
 If the background does not update, verify that the greeter helper and Polkit action are present, and check the Noctalia sync status and greetd logs. Do not point `appearance.wallpaper.path` at the live user's home directory: the greeter runs as a separate account and cannot reliably read private home files.
 
@@ -34,6 +43,8 @@ The greeter's supported options let us position the clock, hide the logo and mov
 The **Authentication required — The login keyring did not get unlocked** popup is a GNOME Keyring password prompt, not the Noctalia Greeter interface. Styling the greeter does not affect it.
 
 The Niri module enables GNOME Keyring and Seahorse (Passwords and Keys). Greetd's PAM service has `security.pam.services.greetd.enableGnomeKeyring = true`. This can automatically unlock an encrypted **Login** keyring **only when** authentication used the account password and the keyring password matches it. Fingerprint authentication cannot supply the keyring's encryption password.
+
+Unlike the laptop, the PC does not enable fprintd. With password-only authentication, the account password can reach PAM's keyring module and unlock a matching keyring. The laptop's earlier unexpected fingerprint-first behavior was caused by the NixOS per-PAM-service default, not by a Noctalia plugin.
 
 If the prompt still appears after signing in with the account password:
 
@@ -50,7 +61,9 @@ If the prompt still appears after signing in with the account password:
 
 Do **not** delete `~/.local/share/keyrings` or remove the keyring encryption to silence the popup. If the previous keyring password is unknown, existing stored secrets cannot be recovered merely by creating a new keyring. Do not automate a destructive reset.
 
-The laptop keeps `services.fprintd.enable = true`, but greetd fingerprint PAM remains disabled: `pam_fprintd` can block password entry in a serial PAM conversation, and a fingerprint login would not unlock the keyring anyway.
+The laptop keeps `services.fprintd.enable = true`, but explicitly sets `security.pam.services.greetd.fprintAuth = false` (and leaves sudo fingerprint authentication disabled). **This override is required** because NixOS defaults `security.pam.services.<service>.fprintAuth` to `services.fprintd.enable`. Without an explicit override, the greetd PAM conversation enters fingerprint authentication even when the old Ly-specific setting has been removed. This can delay password entry, and fingerprint login cannot supply the account password to the encrypted GNOME Keyring.
+
+Noctalia Greeter and greetd use a sequential PAM conversation: they cannot start fingerprint verification while simultaneously accepting a password as an alternative. Supported choices are password-only (configured here), fingerprint-first followed by a timeout/failure password fallback, or a custom greeter/PAM service to select a method before starting authentication. The laptop intentionally uses password-only so one login can also unlock the keyring.
 
 ## Deployment and rollback
 
