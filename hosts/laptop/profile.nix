@@ -6,7 +6,7 @@
       niri.enable = true;
       hyprland.enable = false;
       cinnamon.enable = false;
-      ly.enable = true;
+      noctaliaGreeter.enable = true;
       # Niri is the active session; keep the portal backend unambiguous.
       gnome.enable = true;
       opentabletdriver.enable = false;
