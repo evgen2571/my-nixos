@@ -24,6 +24,8 @@ in
     security.rtkit.enable = lib.mkDefault true;
 
     services.gnome.gnome-keyring.enable = true;
+    # Inspect and change the Login keyring password if it differs from PAM.
+    programs.seahorse.enable = true;
 
     environment.systemPackages = with pkgs; [
       brightnessctl
