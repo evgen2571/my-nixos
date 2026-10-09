@@ -35,6 +35,9 @@ in
 
         # Only pin layout. Leave wallpaper, palette, and scheme to Noctalia Sync.
         appearance = {
+          # Show Noctalia's current colors after the first successful Sync Now.
+          # Palette and wallpaper files are still managed by Noctalia, not Nix.
+          scheme = "Synced";
           hide_logo = true;
           password_style = "default";
           power_buttons_position = "bottom-right";
