@@ -1,4 +1,4 @@
-{ ... }:
+{ config, ... }:
 
 {
   my = {
@@ -38,6 +38,16 @@
       };
 
       services = {
+        networkNamespaces = {
+          enable = true;
+
+          namespaces.vpn = {
+            enable = true;
+            server = "free-de";
+
+            bootstrapTokenFile = config.sops.secrets.hide-me-bootstrap-token.path;
+          };
+        };
         lanMouse.enable = true;
         ollama.enable = true;
         virtualization.enable = true;
@@ -51,7 +61,11 @@
   my.primaryUser.home.settings.my.user = {
     ai = {
       opencode.enable = false;
-      codex.enable = false;
+      codex = {
+        enable = true;
+        networkNamespace = "vpn";
+      };
+      t3Code.enable = true;
     };
 
     apps = {
