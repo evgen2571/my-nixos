@@ -187,7 +187,7 @@ in
     stopIfChanged = false;
     serviceConfig = {
       Type = "exec";
-      ExecStart = "${lib.getExe pkgs.slirp4netns} --configure --disable-host-loopback --disable-dns --enable-sandbox --enable-seccomp --netns-type=path /run/netns/${name} tap0";
+      ExecStart = "${lib.getExe pkgs.slirp4netns} --configure --disable-host-loopback --disable-dns --enable-seccomp --netns-type=path /run/netns/${name} tap0";
       ExecStartPost = lib.getExe waitUnderlay;
       # Closing the nonpersistent TAP may already have removed the interface.
       ExecStopPost = "-${pkgs.iproute2}/bin/ip -n ${name} link delete tap0";

@@ -1,4 +1,4 @@
-{ ... }:
+{ config, ... }:
 
 {
   my = {
@@ -40,7 +40,12 @@
       services = {
         networkNamespaces = {
           enable = true;
-          namespaces.vpn.enable = true;
+
+          namespaces.vpn = {
+            enable = true;
+
+            bootstrapTokenFile = config.sops.secrets.hide-me-bootstrap-token.path;
+          };
         };
         lanMouse.enable = true;
         ollama.enable = true;
