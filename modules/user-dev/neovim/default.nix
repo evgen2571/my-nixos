@@ -7,7 +7,14 @@
 
 let
   cfg = config.my.user.dev.neovim;
-  providerPython = pkgs.python3.withPackages (ps: with ps; [ pynvim jupyter-client pillow cairosvg ]);
+  providerPython = pkgs.python3.withPackages (
+    ps: with ps; [
+      pynvim
+      jupyter-client
+      pillow
+      cairosvg
+    ]
+  );
 in
 {
   imports = [

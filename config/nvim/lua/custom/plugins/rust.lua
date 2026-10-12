@@ -12,7 +12,13 @@ return {
 	ft = { "rust" },
 	init = function()
 		vim.g.rustaceanvim = {
-			dap = { adapter = { type = "executable", command = "lldb-dap", name = "lldb" } },
+			dap = {
+				adapter = {
+					type = "executable",
+					command = vim.fn.exepath("lldb-dap") ~= "" and vim.fn.exepath("lldb-dap") or "lldb-dap",
+					name = "lldb",
+				},
+			},
 			server = {
 				default_settings = {
 					["rust-analyzer"] = {

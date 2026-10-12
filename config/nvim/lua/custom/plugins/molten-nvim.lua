@@ -39,6 +39,24 @@ return {
 	end,
 	config = function()
 		vim.api.nvim_create_autocmd("User", {
+			pattern = "MoltenKernelReady",
+			callback = function(ev)
+				require("custom.python").ready_kernels[ev.data.kernel_id] = true
+			end,
+		})
+		vim.api.nvim_create_autocmd("User", {
+			pattern = "MoltenDeinitPost",
+			callback = function()
+				local active = vim.fn.MoltenRunningKernels(false)
+				local ready = require("custom.python").ready_kernels
+				for kernel in pairs(ready) do
+					if not vim.tbl_contains(active, kernel) then
+						ready[kernel] = nil
+					end
+				end
+			end,
+		})
+		vim.api.nvim_create_autocmd("User", {
 			group = vim.api.nvim_create_augroup("research-molten-runtime", { clear = true }),
 			pattern = "MoltenInitPre",
 			callback = function()
@@ -86,12 +104,29 @@ return {
 			desc = "Previous Python cell",
 			ft = "python",
 		},
-		{ "<leader>ml", "<cmd>MoltenEvaluateLine<CR>", desc = "Molten: execute line" },
-		{ "<leader>me", ":<C-u>MoltenEvaluateVisual<CR>gv", mode = "x", desc = "Molten: execute selection" },
+		{
+			"<leader>ml",
+			function()
+				require("custom.python").evaluate("MoltenEvaluateLine")
+			end,
+			desc = "Molten: execute line",
+		},
+		{
+			"<leader>me",
+			":<C-u>lua require('custom.python').evaluate('MoltenEvaluateVisual')<CR>gv",
+			mode = "x",
+			desc = "Molten: execute selection",
+		},
 		{ "<leader>mo", "<cmd>noautocmd MoltenEnterOutput<CR>", desc = "Molten: enter output" },
 		{ "<leader>mh", "<cmd>MoltenHideOutput<CR>", desc = "Molten: hide output" },
 		{ "<leader>ms", "<cmd>MoltenInterrupt<CR>", desc = "Molten: interrupt" },
-		{ "<leader>mr", "<cmd>MoltenRestart<CR>", desc = "Molten: restart kernel" },
+		{
+			"<leader>mr",
+			function()
+				require("custom.python").restart()
+			end,
+			desc = "Molten: restart kernel",
+		},
 		{ "<leader>md", "<cmd>MoltenDeinit<CR>", desc = "Molten: stop kernel" },
 	},
 }

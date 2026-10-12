@@ -73,10 +73,16 @@ return {
 				stopOnEntry = false,
 				args = {},
 				runInTerminal = true,
+				-- Resizing the integrated terminal should not stop the debuggee.
+				postRunCommands = { "process handle SIGWINCH -n false -p true -s false" },
 			},
 		}
 
-		dap.adapters.lldb = { type = "executable", command = "lldb-dap", name = "lldb" }
+		dap.adapters.lldb = {
+			type = "executable",
+			command = vim.fn.exepath("lldb-dap") ~= "" and vim.fn.exepath("lldb-dap") or "lldb-dap",
+			name = "lldb",
+		}
 		dap.configurations.c = vim.deepcopy(dap.configurations.cpp)
 
 		dapui.setup({

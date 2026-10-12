@@ -83,6 +83,8 @@ return {
 					request = "launch",
 					stopOnEntry = false,
 					runInTerminal = true,
+					-- Resizing the integrated terminal should not stop the debuggee.
+					postRunCommands = { "process handle SIGWINCH -n false -p true -s false" },
 					console = "integratedTerminal",
 				},
 				cmake_executor = {

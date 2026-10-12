@@ -1,5 +1,5 @@
 -- Resolve from the buffer, not Neovim's startup directory or a particular host.
-local M = {}
+local M = { ready_kernels = {} }
 function M.root(path)
 	path = path or vim.api.nvim_buf_get_name(0)
 	local start = path ~= "" and vim.fs.dirname(path) or vim.fn.getcwd()
@@ -50,7 +50,38 @@ function M.cell_bounds(lines, row)
 	end
 	return first, last
 end
+function M.can_execute()
+	local ok, kernels = pcall(vim.fn.MoltenRunningKernels, true)
+	if not ok or #kernels == 0 then
+		vim.notify("Initialize a kernel with <leader>mi first", vim.log.levels.WARN)
+		return false
+	end
+	for _, kernel in ipairs(kernels) do
+		if not M.ready_kernels[kernel] then
+			vim.notify("Kernel is starting; wait for Molten to report ready before executing", vim.log.levels.WARN)
+			return false
+		end
+	end
+	return true
+end
+function M.evaluate(command)
+	if M.can_execute() then
+		vim.cmd(command)
+	end
+end
+function M.restart()
+	local ok, kernels = pcall(vim.fn.MoltenRunningKernels, true)
+	if ok then
+		for _, kernel in ipairs(kernels) do
+			M.ready_kernels[kernel] = nil
+		end
+	end
+	vim.cmd("MoltenRestart")
+end
 function M.cell()
+	if not M.can_execute() then
+		return
+	end
 	local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
 	local first, last = M.cell_bounds(lines, vim.fn.line("."))
 	if first <= last then
@@ -67,14 +98,11 @@ function M.prepare_runtime()
 	-- Molten's pinned release writes a connection file under data_dir/runtime
 	-- without creating that directory. Ask the provider for the actual Jupyter path.
 	local provider = vim.g.python3_host_prog or vim.fn.exepath("python3")
-	local result = vim.system(
-		{
-			provider,
-			"-c",
-			'from pathlib import Path; from jupyter_core.paths import jupyter_data_dir; Path(jupyter_data_dir(), "runtime").mkdir(mode=0o700, parents=True, exist_ok=True)',
-		},
-		{ text = true }
-	):wait(5000)
+	local result = vim.system({
+		provider,
+		"-c",
+		'from pathlib import Path; from jupyter_core.paths import jupyter_data_dir; Path(jupyter_data_dir(), "runtime").mkdir(mode=0o700, parents=True, exist_ok=True)',
+	}, { text = true }):wait(5000)
 	if result.code ~= 0 then
 		vim.notify("Jupyter provider unavailable; apply Home Manager and run :UpdateRemotePlugins", vim.log.levels.WARN)
 		return false
