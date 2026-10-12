@@ -35,6 +35,9 @@ let
   };
 
   codexSettings = {
+    # Reuse the Codex CLI's existing login instead of T3's separate OAuth.
+    # Home Manager's mutable settings merge gives this declarative value priority.
+    setupMode = "existing";
     enabled = true;
     binaryPath = lib.getExe config.my.user.ai.codex.package;
     homePath = "${config.home.homeDirectory}/.codex";
