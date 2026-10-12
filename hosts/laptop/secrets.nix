@@ -31,6 +31,20 @@ in
       key = "user_password_hash";
       neededForUsers = true;
     };
+
+    hide-me-bootstrap-token = {
+      sopsFile = file;
+      key = "hide_me_bootstrap_token";
+      owner = "root";
+      mode = "0400";
+    };
+
+    openrouter-api-key = {
+      sopsFile = file;
+      key = "openrouter_api_key";
+      owner = user;
+      mode = "0400";
+    };
   };
 
   users.mutableUsers = false;
