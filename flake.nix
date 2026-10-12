@@ -43,6 +43,17 @@
     llm-agents = {
       url = "github:numtide/llm-agents.nix";
     };
+
+    # Private, non-flake source; fixed revision is resolved through SSH.
+    agent-toolkit = {
+      url = "git+ssh://git@github.com/evgen2571/agent-toolkit.git?rev=c5a37e14c1ad724ae9bfe024f22f768f0a6a2ba7";
+      flake = false;
+    };
+
+    serena = {
+      url = "github:oraios/serena/713ac6db040b59d79049ef418e3f3f9bf35f3b3c";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
