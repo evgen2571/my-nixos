@@ -38,6 +38,13 @@ in
       owner = "root";
       mode = "0400";
     };
+
+    openrouter-api-key = {
+      sopsFile = file;
+      key = "openrouter_api_key";
+      owner = user;
+      mode = "0400";
+    };
   };
 
   users.mutableUsers = false;
