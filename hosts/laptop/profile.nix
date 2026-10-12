@@ -67,6 +67,7 @@
       };
       t3Code.enable = true;
       skillshare.enable = true;
+      codegraph.enable = true;
     };
 
     apps = {
