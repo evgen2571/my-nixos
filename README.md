@@ -169,3 +169,13 @@ secret files, recipient rotation, and rebuilds.
 
 See [competitive programming](docs/competitive-programming.md) for the Codeforces,
 Competitive Companion, CompetiTest and sesh workflow.
+
+## AI resource management
+
+Desktop and laptop install [Skillshare](https://github.com/runkids/skillshare)
+as a user-level CLI. Skills, MCP definitions, plugins and agent settings remain
+writable at runtime; they are not deployed by Home Manager. See
+[Skillshare setup and migration](docs/skillshare.md).
+
+Codex and T3 Code retain their existing VPN-namespace routing, but the former
+agent-toolkit and Serena integration is no longer included in this flake.

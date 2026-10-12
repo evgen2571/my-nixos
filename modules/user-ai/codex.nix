@@ -9,9 +9,17 @@
 let
   cfg = config.my.user.ai.codex;
   agents = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system};
+
+  # Preserve the VPN namespace launcher while leaving Codex arguments,
+  # MCP settings, and authentication mutable.
+  upstreamCommand =
+    if cfg.networkNamespace == null then
+      lib.getExe cfg.unwrappedPackage
+    else
+      "${lib.getExe osConfig.my.system.services.networkNamespaces.launcherPackage} codex-${config.home.username}";
+
   wrapped = pkgs.writeShellScriptBin "codex" ''
-    exec ${lib.getExe osConfig.my.system.services.networkNamespaces.launcherPackage} \
-      codex-${config.home.username} "$@"
+    exec ${upstreamCommand} "$@"
   '';
 in
 {
@@ -32,8 +40,8 @@ in
     package = lib.mkOption {
       type = lib.types.package;
       readOnly = true;
-      default = if cfg.networkNamespace == null then cfg.unwrappedPackage else wrapped;
-      description = "Installed Codex executable, including namespace routing when selected.";
+      default = wrapped;
+      description = "Installed Codex executable with namespace routing.";
     };
   };
 
@@ -41,12 +49,9 @@ in
     assertions = lib.optional (cfg.networkNamespace != null) {
       assertion =
         (osConfig.my.system.services.networkNamespaces.enable or false)
-        && (osConfig.my.system.services.networkNamespaces.namespaces.${cfg.networkNamespace}.enable or false
-        );
+        && (osConfig.my.system.services.networkNamespaces.namespaces.${cfg.networkNamespace}.enable or false);
       message = "Codex networkNamespace requires the corresponding system VPN namespace to be enabled.";
     };
-    # Install exactly one codex executable. User config/auth/session files stay
-    # mutable and untouched, including alternate CODEX_HOME directories.
     home.packages = [ cfg.package ];
   };
 }
