@@ -155,7 +155,9 @@ let
       pkgs.systemd
     ];
     text = ''
-      rm -f ${runtime}/ready
+      # Keep the last success during a probe or brief failure. The launcher
+      # independently enforces the 90-second TTL and fresh tunnel checks;
+      # removing this file here would block launches during each probe.
       systemctl is-active --quiet ${vpn}.service || exit 1
       # This service runs inside the VPN namespace with its own resolver.
       # The independent output filter prevents host-network fallback.
