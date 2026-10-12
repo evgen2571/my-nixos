@@ -24,6 +24,18 @@ let
         default = "free-nl";
         description = "hide.me server short name or FQDN. Free accounts must select a Free server.";
       };
+      egressProbeUrls = lib.mkOption {
+        type = lib.types.listOf (lib.types.strMatching "https://[^[:space:]]+");
+        default = [
+          "https://api.github.com/"
+          "https://www.cloudflare.com/cdn-cgi/trace"
+        ];
+        description = ''
+          HTTPS endpoints checked periodically from inside the VPN namespace.
+          A recent successful probe is required to launch registered applications.
+          Probe success does not guarantee every remote API is reachable.
+        '';
+      };
       bootstrapTokenFile = lib.mkOption {
         type = lib.types.nullOr lib.types.str;
         default = null;
@@ -67,11 +79,12 @@ in
       assertion =
         builtins.match "[a-zA-Z][a-zA-Z0-9_-]{0,31}" name != null
         && ns.killSwitch
+        && ns.egressProbeUrls != [ ]
         && (
           ns.bootstrapTokenFile == null
           || (lib.hasPrefix "/" ns.bootstrapTokenFile && !lib.hasPrefix "/nix/store/" ns.bootstrapTokenFile)
         );
-      message = "Network namespace ${name}: use a safe name, enable killSwitch, and keep bootstrap credentials outside the Nix store.";
+      message = "Network namespace ${name}: use a safe name, enable killSwitch, configure HTTPS egress probes, and keep bootstrap credentials outside the Nix store.";
     }) active;
     boot.kernelModules = [
       "wireguard"
