@@ -169,3 +169,9 @@ secret files, recipient rotation, and rebuilds.
 
 See [competitive programming](docs/competitive-programming.md) for the Codeforces,
 Competitive Companion, CompetiTest and sesh workflow.
+
+## Codex agent toolkit
+
+The NixOS desktop and laptop share a pinned global skills selection, Serena,
+and minimal agent instructions through the private [agent-toolkit](https://github.com/evgen2571/agent-toolkit)
+repository. See [integration, initial locking and activation](docs/agent-toolkit.md).
