@@ -15,14 +15,6 @@ return {
 
 		lint.linters_by_ft = {}
 
-		if executable("ruff") then
-			append("python", "ruff")
-		end
-
-		if executable("mypy") then
-			append("python", "mypy")
-		end
-
 		if executable("statix") then
 			append("nix", "statix")
 		end
@@ -36,7 +28,7 @@ return {
 			append("bash", "shellcheck")
 		end
 
-		vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
+		vim.api.nvim_create_autocmd({ "BufWritePost" }, {
 			group = vim.api.nvim_create_augroup("custom-lint", { clear = true }),
 			callback = function()
 				lint.try_lint()

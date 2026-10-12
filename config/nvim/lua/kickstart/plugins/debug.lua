@@ -3,8 +3,6 @@ return {
 	dependencies = {
 		"rcarriga/nvim-dap-ui",
 		"nvim-neotest/nvim-nio",
-		"mason-org/mason.nvim",
-		"jay-babu/mason-nvim-dap.nvim",
 		"leoluz/nvim-dap-go",
 		"mfussenegger/nvim-dap-python",
 	},
@@ -78,13 +76,8 @@ return {
 			},
 		}
 
-		require("mason-nvim-dap").setup({
-			automatic_installation = true,
-			handlers = {},
-			ensure_installed = {
-				"delve",
-			},
-		})
+		dap.adapters.lldb = { type = "executable", command = "lldb-dap", name = "lldb" }
+		dap.configurations.c = vim.deepcopy(dap.configurations.cpp)
 
 		dapui.setup({
 			icons = { expanded = "▾", collapsed = "▸", current_frame = "*" },
@@ -137,5 +130,8 @@ return {
 		})
 
 		require("dap-python").setup("uv")
+		require("dap-python").resolve_python = function()
+			return require("custom.python").python()
+		end
 	end,
 }

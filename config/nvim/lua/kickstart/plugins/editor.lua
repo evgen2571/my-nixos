@@ -45,7 +45,7 @@ return {
         { '<leader>g', group = 'Git' },
         { '<leader>gc', group = 'Git conflicts' },
         { '<leader>h', group = 'Git hunk', mode = { 'n', 'v' } },
-        { '<leader>m', group = 'Marks / Harpoon' },
+        { '<leader>m', group = 'Molten / Research' },
         { '<leader>r', group = 'Resize split' },
         { '<leader>s', group = 'Search' },
         { '<leader>t', group = 'Toggle / tools' },
