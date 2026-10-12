@@ -10,10 +10,8 @@ let
   cfg = config.my.user.ai.codex;
   agents = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system};
 
-  # Pass toolkit settings to both direct Codex and T3 Code, preserving the
-  # existing VPN namespace and all mutable config/authentication state.
-  toolkitArgs = lib.optionals config.programs.agent-toolkit.enable
-    config.programs.agent-toolkit.codexArguments;
+  # Preserve the VPN namespace launcher while leaving Codex arguments,
+  # MCP settings, and authentication mutable.
   upstreamCommand =
     if cfg.networkNamespace == null then
       lib.getExe cfg.unwrappedPackage
@@ -21,7 +19,7 @@ let
       "${lib.getExe osConfig.my.system.services.networkNamespaces.launcherPackage} codex-${config.home.username}";
 
   wrapped = pkgs.writeShellScriptBin "codex" ''
-    exec ${upstreamCommand} ${lib.escapeShellArgs toolkitArgs} "$@"
+    exec ${upstreamCommand} "$@"
   '';
 in
 {
@@ -43,7 +41,7 @@ in
       type = lib.types.package;
       readOnly = true;
       default = wrapped;
-      description = "Installed Codex executable with namespace routing and toolkit arguments.";
+      description = "Installed Codex executable with namespace routing.";
     };
   };
 
