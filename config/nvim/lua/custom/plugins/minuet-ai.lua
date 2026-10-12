@@ -57,5 +57,14 @@ return {
 				},
 			},
 		})
+		-- Preserve Ctrl-y for both existing completion workflows.
+		vim.keymap.set("i", "<C-y>", function()
+			local cmp = require("blink.cmp")
+			if cmp.is_visible() then
+				cmp.select_and_accept()
+			else
+				require("minuet.virtualtext").action.accept()
+			end
+		end, { desc = "Accept completion or AI suggestion" })
 	end,
 }

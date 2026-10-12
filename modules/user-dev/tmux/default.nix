@@ -73,6 +73,9 @@ in
         # Prefix
         bind C-Space send-prefix
 
+        # Kitty graphics (Molten/image.nvim) through tmux.
+        set -g allow-passthrough on
+
         # True color
         set -ag terminal-overrides ",xterm-256color:RGB"
         set -ag terminal-overrides ",*:Tc"

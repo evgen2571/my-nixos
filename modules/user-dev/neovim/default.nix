@@ -7,6 +7,7 @@
 
 let
   cfg = config.my.user.dev.neovim;
+  providerPython = pkgs.python3.withPackages (ps: with ps; [ pynvim jupyter-client pillow cairosvg ]);
 in
 {
   imports = [
@@ -26,8 +27,9 @@ in
       wl-clipboard
       xclip
       nodejs
-      python313Packages.pynvim
-      python313Packages.jupyter-client
+      imagemagick
+      gcc
+      delve
       lua-language-server
       stylua
       tree-sitter
@@ -37,6 +39,7 @@ in
     home.sessionVariables = {
       EDITOR = "nvim";
       VISUAL = "nvim";
+      NVIM_PYTHON_PROVIDER = "${providerPython}/bin/python3";
     };
   };
 }

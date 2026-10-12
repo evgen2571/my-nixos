@@ -1,8 +1,11 @@
 local M = {}
 function M.setup()
 	package.loaded.matugen = nil
-	local ok, theme = pcall(require, "matugen")
-	if ok and type(theme.setup) == "function" then
+	-- Read directly so a theme generated after startup bypasses Lazy/module caches.
+	local ok, theme = pcall(dofile, vim.fn.stdpath("config") .. "/lua/matugen.lua")
+	ok = ok and type(theme) == "table" and type(theme.setup) == "function"
+	if ok then
+		package.loaded.matugen = theme
 		ok = pcall(theme.setup)
 	end
 	if not ok then
