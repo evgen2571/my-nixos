@@ -120,8 +120,8 @@ let
       chmod 0600 ${state}/accessToken.txt
     '';
   };
-  check = pkgs.writeShellApplication {
-    name = "${netns}-check";
+  localCheck = pkgs.writeShellApplication {
+    name = "${netns}-local-check";
     runtimeInputs = tools;
     text = ''
       systemctl is-active --quiet ${vpn}.service
@@ -133,17 +133,41 @@ let
       awk '$1 == "nameserver" && $2 != "127.0.0.1" && $2 != "::1" { ok = 1 } END { exit !ok }' ${runtime}/resolv.conf
     '';
   };
+  # Agent entry requires both local tunnel readiness and a recent HTTPS probe.
+  # The network probe runs on the timer, never per Codex invocation.
+  check = pkgs.writeShellApplication {
+    name = "${netns}-check";
+    runtimeInputs = [ pkgs.coreutils ];
+    text = ''
+      ${lib.getExe localCheck}
+      [[ -s ${runtime}/ready ]] || exit 1
+      read -r checkedAt < ${runtime}/ready
+      [[ "$checkedAt" =~ ^[0-9]+$ ]] || exit 1
+      now=$(date +%s)
+      (( now >= checkedAt && now - checkedAt <= 90 ))
+    '';
+  };
   health = pkgs.writeShellApplication {
     name = "${netns}-health";
-    runtimeInputs = tools;
+    runtimeInputs = [
+      pkgs.coreutils
+      pkgs.curl
+      pkgs.systemd
+    ];
     text = ''
-      if ${lib.getExe check}; then
-        date +%s > ${runtime}/ready.new
-        mv -f ${runtime}/ready.new ${runtime}/ready
-      else
-        rm -f ${runtime}/ready
-        exit 1
-      fi
+      rm -f ${runtime}/ready
+      systemctl is-active --quiet ${vpn}.service || exit 1
+      # This service runs inside the VPN namespace with its own resolver.
+      # The independent output filter prevents host-network fallback.
+      for url in ${lib.escapeShellArgs ns.egressProbeUrls}; do
+        if curl --noproxy '*' --fail --silent --ipv4 --connect-timeout 4 --max-time 8 "$url" >/dev/null; then
+          date +%s > ${runtime}/ready.new
+          mv -f ${runtime}/ready.new ${runtime}/ready
+          exit 0
+        fi
+      done
+      echo 'No configured HTTPS egress probe succeeded through VPN' >&2
+      exit 1
     '';
   };
 in
@@ -246,19 +270,31 @@ in
   };
 
   systemd.services."${netns}-health" = {
-    description = "Check tunnel, DNS and independent filter for ${name}";
+    description = "Verify external HTTPS egress through VPN ${name}";
     after = [ "${vpn}.service" ];
     serviceConfig = {
       Type = "oneshot";
       ExecStart = lib.getExe health;
-      TimeoutStartSec = 10;
+      NetworkNamespacePath = "/run/netns/${name}";
+      BindReadOnlyPaths = [
+        "${runtime}/resolv.conf:/etc/resolv.conf"
+        "${runtime}/nsswitch.conf:/etc/nsswitch.conf"
+      ];
+      InaccessiblePaths = [ "-/run/nscd" ];
+      ProtectSystem = "strict";
+      ProtectHome = true;
+      PrivateTmp = true;
+      ReadWritePaths = [ runtime ];
+      NoNewPrivileges = true;
+      CapabilityBoundingSet = [ ];
+      TimeoutStartSec = 25;
     };
   };
   systemd.timers."${netns}-health" = {
     wantedBy = [ "timers.target" ];
     timerConfig = {
       OnBootSec = 15;
-      OnUnitActiveSec = 15;
+      OnUnitActiveSec = 30;
       AccuracySec = 1;
     };
   };
