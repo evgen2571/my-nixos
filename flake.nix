@@ -40,17 +40,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Pinned source-only private toolkit; SSH credentials remain per machine.
-    agent-toolkit = {
-      url = "git+ssh://git@github.com/evgen2571/agent-toolkit.git?rev=42a02e74a8072908d8499fb038aae46f9febce9f";
-      flake = false;
-    };
-
-    serena = {
-      url = "github:oraios/serena/713ac6db040b59d79049ef418e3f3f9bf35f3b3c";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     llm-agents = {
       url = "github:numtide/llm-agents.nix";
     };
