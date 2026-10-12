@@ -42,7 +42,7 @@
 
     # Pinned source-only private toolkit; SSH credentials remain per machine.
     agent-toolkit = {
-      url = "git+ssh://git@github.com/evgen2571/agent-toolkit.git?rev=c5a37e14c1ad724ae9bfe024f22f768f0a6a2ba7";
+      url = "git+ssh://git@github.com/evgen2571/agent-toolkit.git?rev=42a02e74a8072908d8499fb038aae46f9febce9f";
       flake = false;
     };
 
