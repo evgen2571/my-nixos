@@ -150,6 +150,9 @@ For the NixOS server, see [Server setup and operations](docs/server.md).
 See [the KDE Plasma workflow guide](docs/kde-plasma.md) for the Niri-like focus,
 keyboard timing, tiling, and Unity/Neovim setup.
 
+See [the Neovim research workflow](docs/neovim-research.md) for editor keys,
+uv environments, notebooks, debugging, and [validation results](docs/neovim-validation.md).
+
 See [the sops secrets guide](docs/sops.md) for recipient setup, encrypted
 secret files, recipient rotation, and rebuilds.
 
@@ -163,3 +166,6 @@ secret files, recipient rotation, and rebuilds.
 - When adding a new module root or changing which profiles should discover a root, update `lib/module-catalog.nix` and keep the root grouping easy to read.
 - For Neovim plugins, look in `config/nvim/lua/custom/plugins/` first.
 - For Telescope/keymap behavior, check `config/nvim/lua/kickstart/plugins/telescope.lua`.
+
+See [competitive programming](docs/competitive-programming.md) for the Codeforces,
+Competitive Companion, CompetiTest and sesh workflow.

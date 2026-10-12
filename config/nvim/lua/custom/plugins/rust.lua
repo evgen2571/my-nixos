@@ -12,6 +12,13 @@ return {
 	ft = { "rust" },
 	init = function()
 		vim.g.rustaceanvim = {
+			dap = {
+				adapter = {
+					type = "executable",
+					command = vim.fn.exepath("lldb-dap") ~= "" and vim.fn.exepath("lldb-dap") or "lldb-dap",
+					name = "lldb",
+				},
+			},
 			server = {
 				default_settings = {
 					["rust-analyzer"] = {
@@ -43,8 +50,18 @@ return {
 		{ "<leader>cre", "<cmd>RustLsp explainError<CR>", desc = "Rust: explain error", ft = "rust" },
 		{ "<leader>crh", "<cmd>RustLsp hover actions<CR>", desc = "Rust: hover actions", ft = "rust" },
 		{ "<leader>crR", "<cmd>RustLsp reloadWorkspace<CR>", desc = "Rust: reload workspace", ft = "rust" },
-		{ "<leader>crk", terminal_cmd("cargo check --all-targets --all-features"), desc = "Rust: cargo check", ft = "rust" },
-		{ "<leader>crl", terminal_cmd("cargo clippy --all-targets --all-features"), desc = "Rust: cargo clippy", ft = "rust" },
+		{
+			"<leader>crk",
+			terminal_cmd("cargo check --all-targets --all-features"),
+			desc = "Rust: cargo check",
+			ft = "rust",
+		},
+		{
+			"<leader>crl",
+			terminal_cmd("cargo clippy --all-targets --all-features"),
+			desc = "Rust: cargo clippy",
+			ft = "rust",
+		},
 		{ "<leader>crr", terminal_cmd("cargo run"), desc = "Rust: cargo run", ft = "rust" },
 		{ "<leader>crw", terminal_cmd("cargo watch -x check"), desc = "Rust: cargo watch check", ft = "rust" },
 	},

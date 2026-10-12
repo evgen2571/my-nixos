@@ -18,18 +18,31 @@ let
 
   sesh = unstable.sesh;
 
-  seshRemoteWindow = pkgs.writeShellApplication {
-    name = "sesh-remote-window";
-    runtimeInputs = [ pkgs.openssh ];
+  # Restrict sesh directory discovery to immediate project directories.
+  # Include unvisited projects; use zoxide scores to prioritize known ones.
+  seshProjectList = pkgs.writeShellApplication {
+    name = "sesh-project-list";
+    runtimeInputs = [ pkgs.coreutils pkgs.findutils pkgs.zoxide ];
     text = ''
-      project_dir="$(basename -- "$PWD")"
-      printf -v remote_command 'cd %q && exec hermes' "dev/$project_dir"
-      exec ssh -tt agent@hermes-host "$remote_command"
+      projects_dir="$HOME/dev"
+      [[ -d "$projects_dir" ]] || exit 0
+
+      declare -A scores=()
+      while IFS= read -r entry; do
+        if [[ "$entry" =~ ^[[:space:]]*([0-9]+([.][0-9]+)?)[[:space:]]+(.*)$ ]]; then
+          scores["''${BASH_REMATCH[3]}"]="''${BASH_REMATCH[1]}"
+        fi
+      done < <(zoxide query --list --score 2>/dev/null || true)
+
+      while IFS= read -r -d "" project; do
+        [[ -d "$project" ]] || continue
+        printf '%s %s\n' "''${scores["$project"]:-0}" "$project"
+      done < <(find "$projects_dir" -mindepth 1 -maxdepth 1 \( -type d -o -type l \) -print0) | sort -k1,1nr -k2,2
     '';
   };
 
   seshConfig =
-    builtins.replaceStrings [ "@SESH_REMOTE_WINDOW@" ] [ "${seshRemoteWindow}/bin/sesh-remote-window" ]
+    builtins.replaceStrings [ "@SESH_PROJECT_LIST@" ] [ "${seshProjectList}/bin/sesh-project-list" ]
       (builtins.readFile ../../../config/sesh/sesh.toml);
 in
 {
@@ -72,6 +85,9 @@ in
       extraConfig = ''
         # Prefix
         bind C-Space send-prefix
+
+        # Kitty graphics (Molten/image.nvim) through tmux.
+        set -g allow-passthrough on
 
         # True color
         set -ag terminal-overrides ",xterm-256color:RGB"

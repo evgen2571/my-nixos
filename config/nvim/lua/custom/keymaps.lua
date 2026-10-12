@@ -33,3 +33,7 @@ map("n", "<A-k>", "<cmd>resize +5<CR>", { desc = "Increase window height" })
 -- Terminal
 map("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
 
+
+-- Explicit Jupytext pairing keeps notebook outputs and metadata in .ipynb.
+vim.api.nvim_create_user_command('NotebookPair', function() require('custom.python').notebook(false) end, {})
+vim.api.nvim_create_user_command('NotebookSync', function() require('custom.python').notebook(true) end, {})

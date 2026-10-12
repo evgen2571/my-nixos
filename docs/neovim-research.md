@@ -1,0 +1,111 @@
+# Neovim development and research
+
+Apply the usual NixOS/Home Manager configuration, then start a new shell so
+`NVIM_PYTHON_PROVIDER` is exported. The activation still copies the Kickstart/Lazy
+config and preserves `lua/matugen.lua`. Run `:Lazy restore` to install pinned
+plugins, allow parser installation to finish, then `:UpdateRemotePlugins` and
+restart Neovim. Use `:checkhealth molten`, `:LspInfo`, and `:ConformInfo` to diagnose
+setup. Neovim 0.12.4 was tested; Tree-sitter uses the rewritten `main` APIs.
+
+Noctalia remains the theme owner. Regenerate its palette once after deploying the
+updated template, before opening Neovim. Missing or invalid generated themes use
+Base16 default dark; SIGUSR1 reloads the generated theme with one configuration
+watcher. Generated files are neither committed nor overwritten by activation.
+
+## Project setup
+
+```sh
+uv init                         # only for a new project
+uv add --dev pytest ipykernel debugpy mypy
+uv sync                         # also after changing branches/dependencies
+nvim analysis.py
+```
+
+Use `uv add numpy pandas matplotlib ...` for project research libraries. Add
+`jupyterlab` or `mlflow` to the project's development group only when needed.
+Commit `pyproject.toml` and `uv.lock`. Prefer `.venv`; an absolute or project-relative
+`UV_PROJECT_ENVIRONMENT` is supported. Buffer/project roots determine interpreter
+selection; a local environment takes priority over an activated environment.
+A uv project without an environment never silently falls back to system packages.
+After creating/replacing an environment, restart its LSP clients (`:LspRestart`) and
+kernel. Start Neovim inside the project shell for its other environment variables.
+
+The Nix Python provider hosts Molten only. Project kernels, debug targets and tests
+use project Python. `<leader>mi` registers a kernelspec with a stable project-specific
+name and absolute interpreter path; recreate it after moving a project. Remove old
+specs with `uv run jupyter kernelspec uninstall nvim-<id>`.
+
+Ruff provides fast linting and formatting; Pyright handles completion and basic
+open-file type diagnostics. Mypy is an explicit project check. Configure rule sets
+in `pyproject.toml`; services such as JupyterLab and MLflow are never global installs.
+
+## Keys (leader is Space)
+
+| Keys | Action |
+| --- | --- |
+| `af`, `if`, `ac`, `ic` | Function/class Tree-sitter textobjects |
+| `<leader>f` | Format selection/buffer; Ruff for Python |
+| `<leader>pr`, `pt`, `pm` | Run current script, project pytest, project Mypy in terminal |
+| `<leader>pj`, `pf` | Start project JupyterLab or local MLflow UI; Ctrl-C stops it |
+| `<leader>tn`, `tf`, `td` | Neotest nearest, current file, debug nearest |
+| `<leader>ts`, `to`, `tx` | Neotest summary, output, stop |
+| `<leader>mi`, `mk` | Start this project's uv kernel, or select a registered kernel |
+| `[j`, `]j`, `<leader>mc` | Previous/next `# %%` cell, execute current cell |
+| `<leader>ml`, visual `<leader>me` | Execute line/selection in the current kernel |
+| `<leader>mo`, `mh` | Enter output / hide floating output |
+| `<leader>ms`, `mr`, `md` | Interrupt, restart, stop kernel |
+| F5 / F1 / F2 / F3 / F7 | Debug continue / into / over / out / UI |
+| `<leader>db`, `dB` | Breakpoint / conditional breakpoint |
+| `<leader>cmd` | Debug selected CMake target |
+| `<leader>ta` | Toggle automatic AI suggestions for this buffer (off initially) |
+| Alt-`]` / Alt-`[` | Request or cycle AI suggestions manually |
+| Ctrl-Y | Accept Blink completion when its menu is open, otherwise AI suggestion |
+
+Wait for Molten’s kernel-ready notification before executing; early execution
+produces a warning instead of losing output. Cells run in a persistent kernel; scripts run as new processes. Output appears
+below cells and in Molten's output window. Kernels stop on buffer unload/editor
+exit; use `md` when finished to release GPU memory. Missing kernels produce an
+instruction to initialize; registration errors explain how to add `ipykernel`.
+
+GoogleTest remains supported: build the test executable, select tests/directories
+in Neotest's summary and run `:ConfigureGtest` to associate the executable. The
+previous wildcard/CMake adapter options were unsupported. CMake, C/C++, Rust and
+GoogleTest share Nix's `lldb-dap` (resolved to an absolute executable path); Go keeps dap-go with declarative Delve. Java,
+Unity and Godot integrations retain their existing settings.
+
+## Notebooks and plots
+
+Open an `.ipynb`, then run `:NotebookPair`. This explicitly pairs it with a
+`py:percent` sibling and opens the Python source. Save your edits, then run
+`:NotebookSync` to synchronize with the notebook. Pairing refuses to overwrite an
+existing Python sibling; synchronization refuses modified paired buffers. Keep
+both files in version control. Notebook outputs, execution counts and metadata
+stay in `.ipynb`; Molten outputs are session-local and are not automatically saved
+into the notebook. Open it in JupyterLab to execute and persist notebook outputs.
+After changing code, old stored outputs may be stale until rerun in JupyterLab.
+Avoid editing both representations simultaneously. Jupytext is a small declarative
+CLI dependency; there is no implicit conversion on every save.
+
+For inline Matplotlib plots execute `%matplotlib inline` in the kernel first.
+Image rendering activates only with an attached UI, Kitty graphics, ImageMagick,
+and (inside tmux) `allow-passthrough on`. Reload tmux's config after deployment;
+check with `tmux show-options -gv allow-passthrough`. Set
+`NVIM_RESEARCH_IMAGES=0` to force text mode. Unsupported terminals/headless sessions
+retain text output; save figures and open them externally or use JupyterLab.
+`MoltenImagePopup` can open image output externally where a viewer is configured.
+Large DataFrames, rich widgets and extensive plots are best inspected in
+JupyterLab (`pj`); Molten supports small textual previews and HTML output through
+`:MoltenOpenInBrowser`.
+
+## Verification
+
+`tests/neovim/run.sh` runs lightweight headless assertions with installed plugins
+and parsers. Use a separate XDG config/data/state/cache tree for isolation; copy
+`config/nvim` and plugin directories (not directory symlinks) into it. Export the
+Nix `NVIM_PYTHON_PROVIDER` when testing remote plugins. The smoke test checks
+highlighting and textobject deletion, adapters, keymaps, formatter availability,
+LSP settings, lint policy and AI toggling without inference. It does not download
+test dependencies or start services automatically.
+
+See [validation results](neovim-validation.md) for the runtime checks actually run
+and the desktop checks still required.

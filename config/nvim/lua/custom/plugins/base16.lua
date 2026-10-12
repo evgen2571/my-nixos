@@ -3,6 +3,7 @@ return {
 	lazy = false,
 	priority = 1000,
 	config = function()
-		require("matugen").setup()
+		require("custom.theme").setup()
+		require("custom.theme").watch()
 	end,
 }

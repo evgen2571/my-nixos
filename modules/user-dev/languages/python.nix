@@ -20,6 +20,7 @@ in
       black
       mypy
       python3Packages.debugpy
+      python3Packages.jupytext
     ];
   };
 }
