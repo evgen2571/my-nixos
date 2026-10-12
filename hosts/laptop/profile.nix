@@ -66,6 +66,7 @@
         networkNamespace = "vpn";
       };
       t3Code.enable = true;
+      skillshare.enable = true;
     };
 
     apps = {
