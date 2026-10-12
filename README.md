@@ -179,3 +179,7 @@ writable at runtime; they are not deployed by Home Manager. See
 
 Codex and T3 Code retain their existing VPN-namespace routing, but the former
 agent-toolkit and Serena integration is no longer included in this flake.
+
+CodeGraph is also installed on both desktop hosts from the existing pinned
+nixpkgs-unstable input, with MCP activation managed live through Skillshare.
+See [CodeGraph setup](docs/codegraph.md).
