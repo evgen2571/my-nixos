@@ -48,6 +48,10 @@ my.system.services.networkNamespaces = {
     killSwitch = true;   # required; disabling it fails evaluation
     server = "free-nl";  # default; use a Free endpoint for a Free account
     bootstrapTokenFile = null; # optional runtime secret path, never a Nix path
+    egressProbeUrls = [
+      "https://api.github.com/"
+      "https://www.cloudflare.com/cdn-cgi/trace"
+    ]; # external connectivity checks, via VPN only
   };
 };
 ```
@@ -123,14 +127,20 @@ packages, services and configuration. A fresh installation needs both.
 | `netns-vpn.service` | Persistent namespace, loopback, private DNS/NSS resources, nft filter |
 | `netns-vpn-underlay.service` | Restricted slirp TAP underlay; restarts on failure |
 | `hide-me-vpn.service` | Root client with only CAP_NET_ADMIN, private DNS mounts and mutable state |
-| `netns-vpn-health.timer` | Checks readiness every 15 seconds |
-| `netns-vpn-health.service` | Updates diagnostic `/run/network-namespaces/vpn/ready` |
+| `netns-vpn-health.timer` | Schedules external HTTPS probes every 30 seconds |
+| `netns-vpn-health.service` | Probes from the VPN namespace with isolated DNS; updates `/run/network-namespaces/vpn/ready` on success |
 
-Each launch performs a fresh privileged readiness check: active client service,
+Every launch performs a fresh privileged local check: active client service,
 filter present, both route families through `hm0`, a recent WireGuard handshake,
-and VPN resolver configured. The marker alone never authorizes a launch.
-Readiness is a local check, not proof that every remote service is reachable.
-Failures refuse launch with exit 125. Existing processes remain filtered.
+and VPN resolver configured. It additionally requires a successful HTTPS probe
+from the preceding 90 seconds. The external probe runs on the timer, not on
+every Codex launch. A stale or missing marker refuses launch with exit 125;
+a marker alone cannot bypass local checks. By default GitHub and Cloudflare
+receive periodic HTTPS requests; customize destinations using `egressProbeUrls`.
+Probe success proves some external connectivity, not that every website or
+Codex API is reachable. An outage after a successful probe can still make an
+already-launched app stall, but nftables keeps its traffic fail-closed.
+The probe unit mounts the same isolated DNS and NSS files as the VPN service.
 
 The client handles short outages through its dead-peer/reconnection logic;
 systemd restarts crashes. Namespace and underlay services are retained during
@@ -143,6 +153,8 @@ sudo systemctl restart hide-me-vpn
 systemctl status netns-vpn netns-vpn-underlay hide-me-vpn
 sudo journalctl -u hide-me-vpn -b --no-pager -n 80
 sudo /etc/network-namespaces/vpn-check
+sudo systemctl status netns-vpn-health.service
+sudo journalctl -u netns-vpn-health.service -b --no-pager -n 30
 sudo ip -n vpn route show table all
 sudo ip -n vpn -6 route show table all
 sudo ip netns exec vpn nft list table inet agent_workspace

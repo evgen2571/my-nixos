@@ -43,6 +43,7 @@
 
           namespaces.vpn = {
             enable = true;
+            server = "free-de";
 
             bootstrapTokenFile = config.sops.secrets.hide-me-bootstrap-token.path;
           };
