@@ -1,0 +1,89 @@
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+let
+  cfg = config.my.system.services.networkNamespaces;
+  namespaceType = lib.types.submodule {
+    options = {
+      enable = lib.mkEnableOption "this isolated VPN namespace";
+      provider = lib.mkOption {
+        type = lib.types.enum [ "hide-me" ];
+        default = "hide-me";
+        description = "VPN provider; uses the official hide.me CLI.";
+      };
+      killSwitch = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Required independent underlay filter and provider kill switch.";
+      };
+      server = lib.mkOption {
+        type = lib.types.strMatching "[a-zA-Z0-9][a-zA-Z0-9.-]*";
+        default = "free-nl";
+        description = "hide.me server short name or FQDN. Free accounts must select a Free server.";
+      };
+      bootstrapTokenFile = lib.mkOption {
+        type = lib.types.nullOr lib.types.str;
+        default = null;
+        example = "/run/secrets/hide-me-bootstrap";
+        description = ''
+          Optional runtime secret path, for example a SOPS-Nix secret. Copied only
+          when persistent state has no token. The client refreshes its writable
+          /var/lib/hide-me-NAME/accessToken.txt, never the bootstrap secret.
+        '';
+      };
+    };
+  };
+  active = lib.filterAttrs (_: ns: ns.enable) cfg.namespaces;
+  instances = lib.mapAttrs (
+    name: ns:
+    import ./namespace.nix {
+      inherit
+        config
+        lib
+        pkgs
+        name
+        ns
+        ;
+    }
+  ) active;
+in
+{
+  imports = [ ./launcher.nix ];
+
+  options.my.system.services.networkNamespaces = {
+    enable = lib.mkEnableOption "isolated VPN namespaces for selected applications";
+    namespaces = lib.mkOption {
+      type = lib.types.attrsOf namespaceType;
+      default = { };
+      description = "Persistent network namespaces, each with independent provider state and DNS.";
+    };
+  };
+
+  config = lib.mkIf cfg.enable {
+    assertions = lib.mapAttrsToList (name: ns: {
+      assertion =
+        builtins.match "[a-zA-Z][a-zA-Z0-9_-]{0,31}" name != null
+        && ns.killSwitch
+        && (
+          ns.bootstrapTokenFile == null
+          || (lib.hasPrefix "/" ns.bootstrapTokenFile && !lib.hasPrefix "/nix/store/" ns.bootstrapTokenFile)
+        );
+      message = "Network namespace ${name}: use a safe name, enable killSwitch, and keep bootstrap credentials outside the Nix store.";
+    }) active;
+    boot.kernelModules = [
+      "wireguard"
+      "tun"
+    ];
+    environment.systemPackages = [ (pkgs.callPackage ../../../packages/hide-me { }) ];
+    environment.etc = lib.mkMerge (
+      lib.mapAttrsToList (_: instance: instance.environment.etc) instances
+    );
+    systemd.services = lib.mkMerge (
+      lib.mapAttrsToList (_: instance: instance.systemd.services) instances
+    );
+    systemd.timers = lib.mkMerge (lib.mapAttrsToList (_: instance: instance.systemd.timers) instances);
+  };
+}

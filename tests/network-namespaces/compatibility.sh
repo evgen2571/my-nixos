@@ -103,23 +103,27 @@ NFT
     stop_vpn() {
       [[ -z $vpn_pid ]] || kill "$vpn_pid" 2>/dev/null || true
       [[ -z $vpn_pid ]] || wait "$vpn_pid" 2>/dev/null || true
+      vpn_pid=
     }
     trap stop_vpn EXIT
-    "$client/bin/hide.me" --firewall-mark 18541 --interface hm0 \
-      --tokenFile "$token_file" --rest-timeout 25s connect "$server" \
-      > "$probe_dir/connect.log" 2>&1 &
-    vpn_pid=$!
-    connected=false
-    for ((i=0; i<60; i++)); do
-      kill -0 "$vpn_pid" || break
-      if grep -q '^Link: Up' "$probe_dir/connect.log"; then
-        connected=true
-        break
-      fi
-      sleep 1
-    done
-    cat "$probe_dir/connect.log"
-    [[ $connected == true ]]
+    start_vpn() {
+      "$client/bin/hide.me" --firewall-mark 18541 --interface hm0 \
+        --tokenFile "$token_file" --rest-timeout 25s connect "$server" \
+        > "$probe_dir/connect.log" 2>&1 &
+      vpn_pid=$!
+      connected=false
+      for ((i=0; i<60; i++)); do
+        kill -0 "$vpn_pid" || break
+        if grep -q '^Link: Up' "$probe_dir/connect.log"; then
+          connected=true
+          break
+        fi
+        sleep 1
+      done
+      cat "$probe_dir/connect.log"
+      [[ $connected == true ]]
+    }
+    start_vpn
     ip route show table 55555
     ip -6 route show table 55555
     ip rule
@@ -143,6 +147,21 @@ NFT
     blocked https://api.ipify.org
     cat "$probe_dir/vpn-resolv.conf" > "$probe_dir/resolv.conf"
     echo 'PASS: resolver failure has no host fallback'
+    stop_vpn
+    blocked http://1.1.1.1
+    blocked 'http://[2606:4700:4700::1111]'
+    echo 'PASS: clean client stop has no underlay fallback'
+    ip link set tap0 down
+    blocked http://1.1.1.1
+    ip link set tap0 up
+    # Linux deletes non-kernel routes when the link goes down. Reapply the
+    # underlay configuration, as a fresh slirp --configure start would do.
+    ip -4 route replace default via 10.0.2.2 dev tap0
+    ip -6 route replace default dev tap0
+    start_vpn
+    recovered_ip=$(app curl --noproxy '*' -4fsS --max-time 15 https://api.ipify.org)
+    [[ $recovered_ip != "$(cat "$probe_dir/host-ip")" ]]
+    echo 'PASS: VPN reconnects after clean stop and underlay link cycle'
     # Removing the tunnel leaves a valid underlay default route in main.
     # Independent nft rules must still prevent application escape.
     ip link delete hm0

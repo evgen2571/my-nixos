@@ -38,6 +38,10 @@
       };
 
       services = {
+        networkNamespaces = {
+          enable = true;
+          namespaces.vpn.enable = true;
+        };
         lanMouse.enable = true;
         ollama.enable = true;
         virtualization.enable = true;
@@ -51,7 +55,11 @@
   my.primaryUser.home.settings.my.user = {
     ai = {
       opencode.enable = false;
-      codex.enable = false;
+      codex = {
+        enable = true;
+        networkNamespace = "vpn";
+      };
+      t3Code.enable = true;
     };
 
     apps = {

@@ -1,109 +1,87 @@
 # VPN agent workspace
 
-Implementation is in progress on `feat/vpn-agent-workspace`. No VPN services or
-application routing have been enabled yet. Existing Codex data and host networking
-have not been changed.
+Both host profiles enable an isolated `vpn` network namespace, hide.me Free,
+VPN-routed Codex, and T3 Code on the host network. Normal use is `codex`,
+`codex resume`, or opening T3 Code from the Niri launcher. Initial VPN secret
+provisioning is required on each machine before these commands can start.
 
-## Package and compatibility gate
+## Architecture
 
-`packages/hide-me/default.nix` builds the official hide.me client at stable release
-`v0.9.14`, commit `85463073f45872b6ab103fa7a007fd0672384d57`, with fixed source and
-Go dependency hashes. The pinned stable nixpkgs Go toolchain satisfies upstream's
-Go 1.24 requirement. The Arch packaging submodule is not needed to compile the
-client. Upstream installation scripts are never executed. The package includes
-upstream `CA.pem` and a default system CA bundle for DoH/server discovery.
+`netns-vpn` creates a persistent namespace and installs an independent IPv4/IPv6
+nftables filter before starting networking. `netns-vpn-underlay` provides a TAP
+interface with slirp4netns userspace NAT. This needs no host veth, forwarding,
+NAT rules or default-route changes. Slirp's host-loopback access and DNS proxy
+are disabled. NetworkManager, Tailscale, Docker and browsers stay on the host.
 
-hide.me negotiates WireGuard keys and addresses using its API. Free accounts do
-not need static WireGuard configuration downloads. The client marks its API and
-resolver sockets, and its kernel WireGuard socket, when `--firewall-mark` is set.
-It does not spawn external processes for negotiation or tunnel configuration.
+The official hide.me CLI runs entirely inside `vpn`. It negotiates WireGuard
+credentials dynamically, so a Free account needs no static WireGuard profile.
+The reproducible package pins upstream v0.9.14, source and Go dependency hashes,
+and installs its pinned CA resource. It never runs the upstream installer or
+fetches executable updates during activation.
 
-Source references:
+The independent output filter allows only loopback, `hm0`, and TCP/UDP on `tap0`
+with reserved mark `0x486d`. The CLI marks its API/DoH sockets and WireGuard's
+kernel transport socket. Applications have no capabilities and cannot set that
+mark. There is no blanket HTTPS, UDP, UID or established-output exception.
+The upstream routing kill switch is also enabled (priority 10, table 55555).
+On restart, the service removes stale tunnel/routing state left by a crash while
+the independent filter remains installed. Loss of the VPN never enables host
+fallback. Userspace NAT may limit throughput compared with a host veth.
 
-- [Pinned README and installation instructions](https://github.com/eventure/hide.client.linux/blob/v0.9.14/README.md)
-- [Configuration](https://github.com/eventure/hide.client.linux/blob/v0.9.14/configuration.go)
-- [API sockets and token refresh](https://github.com/eventure/hide.client.linux/blob/v0.9.14/rest/client.go)
-- [WireGuard setup](https://github.com/eventure/hide.client.linux/blob/v0.9.14/wireguard/wgLink.go)
-- [Routing rules](https://github.com/eventure/hide.client.linux/blob/v0.9.14/wireguard/ipRule.go)
-- [Routing tables](https://github.com/eventure/hide.client.linux/blob/v0.9.14/wireguard/ipRoute.go)
-- [DNS writes](https://github.com/eventure/hide.client.linux/blob/v0.9.14/wireguard/dns.go)
-- [Upstream systemd unit](https://github.com/eventure/hide.client.linux/blob/v0.9.14/hide.me%40.service)
+The client writes a private runtime resolver file, bind-mounted writable over
+its `/etc/resolv.conf`. App launches bind the same file read-only in a private
+mount namespace. Both use `hosts: files dns` and mask `/run/nscd`, preventing
+host NSS/cache IPC from bypassing DNS isolation. Before connection, the resolver
+points at namespace loopback. VPN-provided IPv4/IPv6 DNS replaces it on connection.
+`NetworkNamespacePath` alone would not provide this filesystem isolation.
 
-### Isolation candidate under investigation
+## Configuration
 
-A persistent network namespace can use a `slirp4netns` TAP underlay instead of a
-host veth/NAT configuration. Userspace NAT uses ordinary host sockets without
-changing host routing, forwarding sysctls or firewall rules. Its built-in DNS and
-host-loopback access must be disabled. This has a potential throughput cost; it
-still needs a live hide.me tunnel test before becoming the production design.
+The shared NixOS options are:
 
-An independent namespace `inet` nftables output policy drops traffic except for
-loopback, the WireGuard interface, and marked TCP/UDP on the TAP. Ordinary
-applications have neither CAP_NET_ADMIN nor CAP_NET_RAW and cannot set the
-reserved socket mark. No blanket HTTPS, UDP, UID or established-output exception
-is used. The policy covers both IP families and is installed before any app runs.
-The upstream kill switch remains enabled as a second layer. It installs rules at
-priority 10 and routes in table 55555; marked control/transport traffic bypasses
-that table. These exceptions are protected by the independent nftables policy.
-
-The hide.me process needs CAP_NET_ADMIN for interfaces, routes and socket marks.
-The client itself needs no external executables. Its systemd notification is
-optional; it can run without systemd in the compatibility probe. Slirp and any
-namespace-entry helper have separate capability requirements.
-
-The client writes `/etc/resolv.conf` in place and restores its previous contents
-on shutdown. A private mount namespace must bind a writable resolver file over
-that path for the client, and the same file must be exposed to launched apps.
-`NetworkNamespacePath` alone does not provide this mount. The initial resolver
-must point at inaccessible namespace loopback, with no host fallback. The client
-fills in DNS addresses from the VPN response, including IPv6 when provided.
-Host NSS is another boundary: the laptop has `nscd` and NSS `mymachines` /
-`myhostname` sources. The probe binds a private `hosts: files dns` NSS
-configuration and masks `/run/nscd`, preventing DNS lookups through host cache
-IPC. Production launchers and the client must apply the same protection.
-
-The mutable access-token file is rewritten on refresh. It must stay outside the
-Nix store. Normal connections write no other required persistent state; DoH
-resolver-list and resolver-backup files are optional. Do not use service mode's
-control API for this deployment. Avoid saving generated configuration containing
-credentials, enabling credential logging, or printing token files.
-
-### Running the focused gate
-
-Run all Nix commands on native `nixos-lp`, never through WSL's Nix daemon. A
-separate checkout at `~/dev/my-nixos-vpn-test` preserves the original checkout.
-Its base commit currently has the same tracked tree as the local feature branch
-base. Synchronize new files explicitly; add them to the test checkout's index
-before flake evaluation, because untracked files are excluded from Git flakes.
-
-Build the client using the **pinned** stable nixpkgs path from `nix flake archive
---json --no-write-lock-file`, for example:
-
-```bash
-nix-build --no-out-link -E 'let p = import /nix/store/PINNED-NIXPKGS-source {}; in p.callPackage ./packages/hide-me {}'
-nix-build --no-out-link -E 'let p = import /nix/store/PINNED-NIXPKGS-source {}; in p.symlinkJoin { name = "hide-me-probe-tools"; paths = with p; [ slirp4netns iproute2 nftables wireguard-tools curl coreutils util-linux ]; }'
-bash tests/network-namespaces/compatibility.sh CLIENT_STORE_PATH TOOLS_STORE_PATH
+```nix
+my.system.services.networkNamespaces = {
+  enable = true;
+  namespaces.vpn = {
+    enable = true;
+    provider = "hide-me"; # currently the only provider
+    killSwitch = true;   # required; disabling it fails evaluation
+    server = "free-nl";  # default; use a Free endpoint for a Free account
+    bootstrapTokenFile = null; # optional runtime secret path, never a Nix path
+  };
+};
 ```
 
-The gate needs no sudo. It creates temporary user, network and mount namespaces;
-sets up slirp; binds a private resolver; and installs only namespace-local nft
-rules. It checks missing/invalid tokens, an unreachable endpoint, Free server
-discovery, WireGuard kernel support, and application IPv4/IPv6 blocking. IPv6 has
-an explicit test route so isolation does not rely on a missing default route.
-The test drops all capabilities for app probes. Exit cleanup kills temporary
-processes; it changes no host interfaces or firewall state. Successful completion
-also compares host routes and resolver contents before/after. This proves only
-the gate's tested topology, not a future service/launcher integration.
+Namespace names must start with a letter, contain only letters, digits, `_` or
+`-`, and be at most 32 characters. Each name gets separate runtime and persistent
+state. The PC and laptop profiles use identical shared modules and separate
+machine-local tokens. The existing VPNBook module is preserved.
 
-The optional third argument is an existing mode-0600 token file owned by the
-invoking user; the fourth selects a Free server (default `free-nl`). The live gate
-compares host/VPN egress, checks DNS, reports IPv6 availability, and probes failures
-after DNS loss, tunnel deletion and client crash. It may refresh that token file.
-Do not run concurrent clients sharing mutable token state.
+Home Manager options:
 
-### Initial authentication
+```nix
+my.user.ai.codex = {
+  enable = true;
+  networkNamespace = "vpn"; # null installs ordinary Codex
+};
+my.user.ai.t3Code.enable = true;
+```
 
-In a private terminal **on the laptop**, use the Nix-built client:
+`codex.package` is the installed wrapper; `codex.unwrappedPackage` is the original
+pinned llm-agents package. Only the wrapper is installed in the user profile.
+T3 Code uses the existing unstable input's 0.0.40 package with supported Electron
+43; stable's 0.0.24 depends on an unsupported Electron. No input update or global
+insecure-package exception is required. T3's bundled Codex PATH dependency is
+disabled, and both provider settings locations specify the wrapper's absolute
+executable path. Automatic T3 updates are disabled in its desktop executable.
+Home Manager merges essential provider settings into mutable preferences; it does
+not replace conversations, worktrees, projects, sessions or existing `.codex`.
+
+## Provisioning hide.me authentication
+
+On each machine, after building or installing the package, authenticate in a
+private terminal. Before activation, replace `CLIENT_STORE_PATH` with the built
+hide.me package path; after activation use `hide.me` directly.
 
 ```bash
 umask 077
@@ -112,48 +90,171 @@ cd ~/.local/state/hide-me-bootstrap
 CLIENT_STORE_PATH/bin/hide.me --tokenFile "$PWD/accessToken.txt" token free-nl
 ```
 
-Enter account credentials at the client's terminal prompts. Never pass a password
-as an argument or paste credentials into chat. The token command only requests a
-token; it does not create a tunnel or change routing/DNS. Upstream sometimes exits
-zero on errors, so check its non-sensitive diagnostic and file existence rather
-than trusting exit status alone. This is temporary user-owned bootstrap state;
-production state must be migrated to a root-owned persistent service directory.
-Each host needs its own state. Declarative packages/services cannot eliminate
-initial secret provisioning.
+Enter credentials only at the prompts. This token-only command does not change
+routes or DNS. Check the `Access-Token stored` message and a nonempty private file;
+upstream sometimes returns zero even on failure. Never print the token or include
+it in source, a Nix path, a process argument or logs. Install it once:
 
-## Implementation checkpoint
+```bash
+sudo install -d -o root -g root -m 0700 /var/lib/hide-me-vpn
+sudo test ! -e /var/lib/hide-me-vpn/accessToken.txt && \
+  sudo install -o root -g root -m 0600 \
+    "$HOME/.local/state/hide-me-bootstrap/accessToken.txt" \
+    /var/lib/hide-me-vpn/accessToken.txt
+```
 
-Verified on `nixos-lp` (kernel 7.2.6): native package build, real WireGuard
-creation/cleanup, Free server discovery using marked sockets, and capability-free
-IPv4/IPv6 blocking with no VPN, a missing token, an invalid token (API HTTP 401),
-and an unreachable endpoint (request timeout). Host routes and resolver contents
-were unchanged. The focused probe runs without sudo. The package has no upstream Go
-tests; compilation is not evidence of a working VPN.
+Do not overwrite an existing refreshed token during rebuilds. After successful
+connection, remove the temporary bootstrap copy. The service's mode-0700 state
+directory contains its mutable mode-0600 token. The CLI can refresh it in place.
+Do not run multiple clients sharing that token file. Each machine authenticates
+independently. For deliberate reauthentication, stop `hide-me-vpn`, privately
+create a fresh token, install it, and restart the service.
 
-Pending in sequence:
+Alternatively, set `bootstrapTokenFile = config.sops.secrets.NAME.path` for an
+existing root-readable SOPS secret. The service copies it only when persistent
+state has no token; subsequent refreshes never write to the SOPS file. Secret
+provisioning and mutable authentication state are separate from reproducible
+packages, services and configuration. A fresh installation needs both.
 
-1. Validate live Free-account tunnel compatibility using the bootstrap token.
-   Authenticate manually if absent. The optional live probe has not yet run.
-2. Implement persistent namespace, restricted slirp underlay, private DNS mounts,
-   client service and readiness checks. Verify lifecycle and independent failure
-   isolation. Obtain approval before any potentially disruptive activation;
-   schedule session-independent rollback first. Remote sudo needs user assistance.
-3. Implement a narrowly authorized namespace-entry launcher that drops privileges
-   before Codex, preserves cwd/arguments/terminal/environment/signals, and refuses
-   missing/unready namespaces. Test app-server and child inheritance.
-4. Integrate Codex and the existing untracked `modules/user-ai/t3-code.nix`.
-   Stable nixpkgs has T3 Code 0.0.24; pinned Home Manager has `programs.t3code`
-   and mutable settings merges. Version 0.0.24 source confirms `binaryPath`,
-   `homePath`, empty `shadowHomePath`, both provider settings locations, and
-   `T3CODE_DISABLE_AUTO_UPDATE`. Its runtime/probe starts the configured binary
-   with `app-server`. The unfinished module currently expects a Codex `package`
-   option that is not yet implemented. Still verify desktop launch, executable
-   selection and state preservation at runtime.
-5. Enable both host profiles; build `.#nixos-lp` and `.#nixos-pc` on the laptop.
-   Only test laptop activation. Preserve VPNBook and unrelated applications.
-6. Replace this checkpoint with final operational service, launcher, recovery,
-   fresh-install and troubleshooting instructions. Record actual verification
-   gaps, including graphical and PC runtime checks.
+## Services and recovery
 
-No full NixOS build, live VPN, Codex namespace or T3 Code integration acceptance
-has been established. No system generation has been activated for this work.
+| Unit | Responsibility |
+| --- | --- |
+| `netns-vpn.service` | Persistent namespace, loopback, private DNS/NSS resources, nft filter |
+| `netns-vpn-underlay.service` | Restricted slirp TAP underlay; restarts on failure |
+| `hide-me-vpn.service` | Root client with only CAP_NET_ADMIN, private DNS mounts and mutable state |
+| `netns-vpn-health.timer` | Checks readiness every 15 seconds |
+| `netns-vpn-health.service` | Updates diagnostic `/run/network-namespaces/vpn/ready` |
+
+Each launch performs a fresh privileged readiness check: active client service,
+filter present, both route families through `hm0`, a recent WireGuard handshake,
+and VPN resolver configured. The marker alone never authorizes a launch.
+Readiness is a local check, not proof that every remote service is reachable.
+Failures refuse launch with exit 125. Existing processes remain filtered.
+
+The client handles short outages through its dead-peer/reconnection logic;
+systemd restarts crashes. Namespace and underlay services are retained during
+ordinary rebuilds to avoid destroying active sessions. A deliberate namespace
+policy/underlay configuration change requires a controlled restart or reboot.
+Restart only the VPN client for routine connection recovery:
+
+```bash
+sudo systemctl restart hide-me-vpn
+systemctl status netns-vpn netns-vpn-underlay hide-me-vpn
+sudo journalctl -u hide-me-vpn -b --no-pager -n 80
+sudo /etc/network-namespaces/vpn-check
+sudo ip -n vpn route show table all
+sudo ip -n vpn -6 route show table all
+sudo ip netns exec vpn nft list table inet agent_workspace
+sudo ip netns exec vpn wg show hm0 latest-handshakes
+```
+
+Avoid dumping WireGuard configuration or token files. For full teardown, stop the
+client, underlay, health timer and namespace in that order. Processes retaining
+an old namespace keep its filter until they exit. Restarting `netns-vpn` destroys
+the named namespace and disconnects existing agent sessions.
+
+## Launcher and Codex
+
+The generic launcher uses a sealed descriptor to preserve the caller's environment
+through a command-specific sudo rule. The privileged helper accepts only immutable
+application registrations for their authorized normal user. It checks readiness,
+enters the network namespace, isolates DNS mounts, restores supplementary groups,
+drops all root identities and capabilities, enables `no_new_privs`, closes extra
+descriptors, then executes the fixed application. User environment is interpreted
+only after privilege drop. No arbitrary root shell or `ip netns exec` is authorized.
+The sudo entry does not allocate a pseudo-terminal; stdio, cwd, arguments and exit
+status are preserved. Its monitor forwards normal terminal signals.
+
+All local children, including `codex app-server` command children, inherit the
+namespace. Existing `.codex`, alternate `CODEX_HOME`, SSH-agent socket, Git and
+normal project permissions remain available. Codex approval/sandbox settings are
+not changed. `no_new_privs` prevents setuid/sudo elevation from agent children;
+this is required to prevent changing the reserved mark or escaping the namespace.
+Host UNIX services such as Docker, forwarded SSH endpoints or other host daemons
+can perform work outside this namespace; network isolation applies to local
+process sockets, not work delegated to those services. Existing host integration
+is not an independent security sandbox against the authorized machine owner.
+
+An existing Codex login can be reused. For a new login, use
+`codex login --device-auth`: the host browser cannot reach a callback on the VPN
+namespace's loopback. Device authorization must be enabled for the account.
+See [official Codex authentication guidance](https://learn.chatgpt.com/docs/auth).
+Do not change sandbox/approval configuration to work around login or networking.
+
+To register another package, add a fixed system registration and install a wrapper:
+
+```nix
+my.system.services.networkNamespaces.applications.mytool = {
+  namespace = "vpn";
+  user = "evgen2571";
+  package = pkgs.mytool; # lib.getExe fixes the executable at build time
+};
+# A writeShellScriptBin wrapper can exec:
+# ${lib.getExe config.my.system.services.networkNamespaces.launcherPackage} mytool "$@"
+```
+
+The application registration chooses the executable, not its arguments. Do not
+register a generic shell unless you intend to authorize that user's arbitrary
+unprivileged commands inside the namespace. Codex registrations are automatic.
+
+## Remote builds and temporary activation
+
+Use WSL only for editing/Git/SSH. Run all Nix commands on native NixOS, in the
+separate `~/dev/my-nixos-vpn-test` checkout. Include new files in its Git index.
+Build sequentially:
+
+```bash
+nixos-rebuild build --flake .#nixos-lp
+readlink -f result # record the laptop output before the next build replaces result
+nixos-rebuild build --flake .#nixos-pc
+```
+
+Never activate the PC configuration on the laptop. Before laptop activation,
+record `/run/current-system`, routes, resolver checksum and the SSH/Tailscale
+route. Obtain approval for the first live activation. Schedule a root systemd
+rollback timer to run the recorded old generation's `switch-to-configuration test`
+independently of SSH, then activate the built laptop generation with `test`.
+Do not restart NetworkManager, Tailscale or SSH separately. Temporary activation
+does not update the boot generation; reboot is an additional recovery route.
+The reviewed helper `tests/network-namespaces/activate-laptop.sh` records this
+state, provisions the token only if absent, arms a 20-minute rollback and performs
+temporary activation. It refuses non-laptop outputs and immediately rolls back
+if activation fails or the host default routes/resolver change. Run it locally
+only after approval, with the recorded laptop system path, private bootstrap path
+and the actual SSH peer IP as its three arguments. It does not cancel rollback.
+Keep rollback armed until host connectivity, VPN and wrapper checks have passed;
+only then cancel its timer. Home Manager preferences and refreshed tokens are
+mutable state and are not reverted by switching generations.
+
+## Verification checkpoint
+
+Native laptop kernel 7.2.6: the official package builds and lists Free servers.
+A live disposable namespace connected to hide.me Free, with different host/VPN
+IPv4 egress and working VPN IPv6 and DNS. Capability-free app probes stayed
+blocked with no VPN, missing/invalid token, unreachable server, failed DNS,
+clean client stop, removed WireGuard tunnel and killed client. Reconnection after
+clean stop and a simulated underlay outage succeeded once underlay routes were
+reapplied. Host routes/resolver were unchanged. Actual host suspend/resume is a
+separate production check.
+Six launcher tests verified identity/groups, arguments, environment, cwd, stdio,
+exit status, signal handling, file access, child namespace inheritance, complete
+capability drop and refusal of missing/unready/unsafe targets. These used a test
+sudo adapter; production sudo/systemd integration still requires activation.
+Real generated service scripts passed repeated initialization/cleanup and stale
+crash-state recovery in subordinate user namespaces. Focused module evaluation
+checks no added host NAT/firewall rules and the dependency/privilege configuration.
+
+Full host builds are in progress. Production activation, suspend/reconnect,
+wrapped Codex authentication/exec/resume/app-server and graphical T3 provider
+acceptance remain pending. PC runtime verification requires the PC itself.
+After activation, open T3 normally in Niri, select Codex, create a session in an
+existing project, run a command reporting `id`, `/proc/self/ns/net` and VPN egress,
+then close/reopen and resume it. Compare with the host namespace/egress and verify
+that the project and conversation persist. Do not report this manual test as
+passed until it has actually run.
+
+Pinned implementation references: [hide.me README](https://github.com/eventure/hide.client.linux/blob/v0.9.14/README.md),
+[marked API sockets](https://github.com/eventure/hide.client.linux/blob/v0.9.14/rest/client.go),
+[WireGuard implementation](https://github.com/eventure/hide.client.linux/tree/v0.9.14/wireguard),
+[T3 0.0.40 source](https://github.com/pingdotgg/t3code/tree/v0.0.40).
