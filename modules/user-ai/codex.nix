@@ -9,9 +9,15 @@
 let
   cfg = config.my.user.ai.codex;
   agents = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system};
+  # Inject pinned toolkit MCP/plugin switches before user arguments. The
+  # namespace launcher still executes the exact registered Codex binary.
+  toolkitArgs = config.programs.agent-toolkit.codexArguments or [ ];
   wrapped = pkgs.writeShellScriptBin "codex" ''
     exec ${lib.getExe osConfig.my.system.services.networkNamespaces.launcherPackage} \
-      codex-${config.home.username} "$@"
+      codex-${config.home.username} ${lib.escapeShellArgs toolkitArgs} "$@"
+  '';
+  direct = pkgs.writeShellScriptBin "codex" ''
+    exec ${lib.getExe cfg.unwrappedPackage} ${lib.escapeShellArgs toolkitArgs} "$@"
   '';
 in
 {
@@ -32,7 +38,7 @@ in
     package = lib.mkOption {
       type = lib.types.package;
       readOnly = true;
-      default = if cfg.networkNamespace == null then cfg.unwrappedPackage else wrapped;
+      default = if cfg.networkNamespace == null then (if toolkitArgs == [ ] then cfg.unwrappedPackage else direct) else wrapped;
       description = "Installed Codex executable, including namespace routing when selected.";
     };
   };
