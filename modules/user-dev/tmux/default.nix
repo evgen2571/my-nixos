@@ -34,7 +34,7 @@ let
         fi
       done < <(zoxide query --list --score 2>/dev/null || true)
 
-      while IFS= read -r -d '' project; do
+      while IFS= read -r -d "" project; do
         [[ -d "$project" ]] || continue
         printf '%s %s\n' "''${scores["$project"]:-0}" "$project"
       done < <(find "$projects_dir" -mindepth 1 -maxdepth 1 \( -type d -o -type l \) -print0) | sort -k1,1nr -k2,2
