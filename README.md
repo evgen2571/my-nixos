@@ -2,7 +2,7 @@
 
 Personal NixOS + Home Manager config.
 
-See [VPN agent workspace](docs/network-namespaces.md) for hide.me provisioning,
+See [declarative Codex toolkit](docs/agent-toolkit.md) for global skills, Serena,\nPonytail and the desktop/laptop activation workflow.\n\nSee [VPN agent workspace](docs/network-namespaces.md) for hide.me provisioning,
 VPN-routed Codex, T3 Code integration and recovery on the PC and laptop.
 
 This repo is mostly split into small modules. Hosts choose what they need, profiles collect shared imports, and modules keep the actual options/packages/services.
