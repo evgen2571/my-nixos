@@ -166,3 +166,6 @@ secret files, recipient rotation, and rebuilds.
 - When adding a new module root or changing which profiles should discover a root, update `lib/module-catalog.nix` and keep the root grouping easy to read.
 - For Neovim plugins, look in `config/nvim/lua/custom/plugins/` first.
 - For Telescope/keymap behavior, check `config/nvim/lua/kickstart/plugins/telescope.lua`.
+
+See [competitive programming](docs/competitive-programming.md) for the Codeforces,
+Competitive Companion, CompetiTest and sesh workflow.

@@ -41,6 +41,7 @@ return {
       spec = {
         { '<leader>c', group = 'Code' },
         { '<leader>cr', group = 'Rust' },
+        { '<leader>cp', group = 'CP' },
         { '<leader>d', group = 'Debug / diagnostics' },
         { '<leader>g', group = 'Git' },
         { '<leader>gc', group = 'Git conflicts' },
