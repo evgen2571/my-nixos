@@ -1,5 +1,6 @@
 include "obsidian.kdl"
 include "apps.kdl"
+include "t3code.kdl"
 
 // Layer rules
 layer-rule {

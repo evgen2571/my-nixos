@@ -53,6 +53,10 @@ window-rule {
 
 
 // ============================================================================
+// Floated dialogs use output-relative proportions for both dimensions.
+// Niri only accepts logical-pixel offsets for default-floating-position;
+// keep those offsets small and anchor dialogs to the appropriate screen edge.
+//
 // LEVEL 1
 // Opened from main window -> LEFT
 //
@@ -68,10 +72,10 @@ window-rule {
     open-maximized-to-edges false
     open-focused true
 
-    default-column-width { fixed 1120; }
-    default-window-height { fixed 1050; }
+    default-column-width { proportion 0.44; }
+    default-window-height { proportion 0.76; }
 
-    default-floating-position x=70 y=90 relative-to="top-left"
+    default-floating-position x=20 y=32 relative-to="top-left"
 }
 
 
@@ -83,10 +87,10 @@ window-rule {
     open-maximized-to-edges false
     open-focused true
 
-    default-column-width { fixed 800; }
-    default-window-height { fixed 800; }
+    default-column-width { proportion 0.36; }
+    default-window-height { proportion 0.62; }
 
-    default-floating-position x=70 y=140 relative-to="top-left"
+    default-floating-position x=20 y=48 relative-to="top-left"
 }
 
 
@@ -98,10 +102,10 @@ window-rule {
     open-maximized-to-edges false
     open-focused true
 
-    default-column-width { fixed 950; }
-    default-window-height { fixed 760; }
+    default-column-width { proportion 0.40; }
+    default-window-height { proportion 0.60; }
 
-    default-floating-position x=70 y=170 relative-to="top-left"
+    default-floating-position x=20 y=56 relative-to="top-left"
 }
 
 
@@ -113,10 +117,10 @@ window-rule {
     open-maximized-to-edges false
     open-focused true
 
-    default-column-width { fixed 720; }
-    default-window-height { fixed 560; }
+    default-column-width { proportion 0.32; }
+    default-window-height { proportion 0.46; }
 
-    default-floating-position x=70 y=220 relative-to="top-left"
+    default-floating-position x=20 y=64 relative-to="top-left"
 }
 
 
@@ -136,10 +140,10 @@ window-rule {
     open-maximized-to-edges false
     open-focused true
 
-    default-column-width { fixed 1120; }
-    default-window-height { fixed 1050; }
+    default-column-width { proportion 0.44; }
+    default-window-height { proportion 0.76; }
 
-    default-floating-position x=70 y=90 relative-to="top-right"
+    default-floating-position x=20 y=32 relative-to="top-right"
 }
 
 
@@ -151,8 +155,8 @@ window-rule {
     open-maximized-to-edges false
     open-focused true
 
-    default-column-width { fixed 1120; }
-    default-window-height { fixed 1050; }
+    default-column-width { proportion 0.44; }
+    default-window-height { proportion 0.76; }
 
-    default-floating-position x=70 y=90 relative-to="top-right"
+    default-floating-position x=20 y=32 relative-to="top-right"
 }
