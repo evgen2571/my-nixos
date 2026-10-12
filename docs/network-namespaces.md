@@ -134,7 +134,9 @@ Every launch performs a fresh privileged local check: active client service,
 filter present, both route families through `hm0`, a recent WireGuard handshake,
 and VPN resolver configured. It additionally requires a successful HTTPS probe
 from the preceding 90 seconds. The external probe runs on the timer, not on
-every Codex launch. A stale or missing marker refuses launch with exit 125;
+every Codex launch. Failed or in-progress probes preserve the last success
+until it expires; VPN disconnection still fails the independent local checks.
+A stale or missing marker refuses launch with exit 125;
 a marker alone cannot bypass local checks. By default GitHub and Cloudflare
 receive periodic HTTPS requests; customize destinations using `egressProbeUrls`.
 Probe success proves some external connectivity, not that every website or
