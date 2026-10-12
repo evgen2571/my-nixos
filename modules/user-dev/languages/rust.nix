@@ -13,6 +13,7 @@ in
 
   config = lib.mkIf cfg.enable {
     home.packages = with pkgs; [
+      lldb
       rustc
       cargo
       rustfmt

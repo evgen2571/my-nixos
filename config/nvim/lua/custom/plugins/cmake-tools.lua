@@ -3,6 +3,7 @@ return {
 		"Civitasv/cmake-tools.nvim",
 		ft = { "c", "cpp", "cmake" },
 		cmd = {
+			"CMakeDebug",
 			"CMakeBuild",
 			"CMakeGenerate",
 			"CMakeGenerateAndRefreshLSP",
@@ -36,6 +37,7 @@ return {
 					vim.keymap.set("n", lhs, rhs, { buffer = bufnr, desc = desc })
 				end
 
+				map("<leader>cmd", "<cmd>CMakeDebug<CR>", "CMake: debug")
 				map("<leader>cmb", "<cmd>CMakeBuild<CR>", "CMake: build")
 				map("<leader>cmg", "<cmd>CMakeGenerateAndRefreshLSP<CR>", "CMake: generate + refresh LSP")
 				map("<leader>cmr", "<cmd>CMakeRun<CR>", "CMake: run")
@@ -77,10 +79,12 @@ return {
 				},
 				cmake_dap_configuration = {
 					name = "cpp",
-					type = "codelldb",
+					type = "lldb",
 					request = "launch",
 					stopOnEntry = false,
 					runInTerminal = true,
+					-- Resizing the integrated terminal should not stop the debuggee.
+					postRunCommands = { "process handle SIGWINCH -n false -p true -s false" },
 					console = "integratedTerminal",
 				},
 				cmake_executor = {

@@ -3,8 +3,6 @@ return {
 	dependencies = {
 		"rcarriga/nvim-dap-ui",
 		"nvim-neotest/nvim-nio",
-		"mason-org/mason.nvim",
-		"jay-babu/mason-nvim-dap.nvim",
 		"leoluz/nvim-dap-go",
 		"mfussenegger/nvim-dap-python",
 	},
@@ -75,16 +73,17 @@ return {
 				stopOnEntry = false,
 				args = {},
 				runInTerminal = true,
+				-- Resizing the integrated terminal should not stop the debuggee.
+				postRunCommands = { "process handle SIGWINCH -n false -p true -s false" },
 			},
 		}
 
-		require("mason-nvim-dap").setup({
-			automatic_installation = true,
-			handlers = {},
-			ensure_installed = {
-				"delve",
-			},
-		})
+		dap.adapters.lldb = {
+			type = "executable",
+			command = vim.fn.exepath("lldb-dap") ~= "" and vim.fn.exepath("lldb-dap") or "lldb-dap",
+			name = "lldb",
+		}
+		dap.configurations.c = vim.deepcopy(dap.configurations.cpp)
 
 		dapui.setup({
 			icons = { expanded = "▾", collapsed = "▸", current_frame = "*" },
@@ -137,5 +136,24 @@ return {
 		})
 
 		require("dap-python").setup("uv")
+		require("dap-python").resolve_python = function()
+			return require("custom.python").python()
+		end
+		local python_adapter = dap.adapters.python
+		dap.adapters.python = function(callback, configuration)
+			python_adapter(function(adapter)
+				if adapter.type == "executable" then
+					local root = require("custom.python").root(configuration.program)
+					adapter.options.cwd = root
+					adapter.args = { "run", "--project", root, "--with", "debugpy", "python", "-m", "debugpy.adapter" }
+				end
+				callback(adapter)
+			end, configuration)
+		end
+		for _, configuration in ipairs(dap.configurations.python) do
+			configuration.cwd = function()
+				return require("custom.python").root()
+			end
+		end
 	end,
 }

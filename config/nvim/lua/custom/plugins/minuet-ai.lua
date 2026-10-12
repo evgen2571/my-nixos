@@ -1,12 +1,21 @@
 return {
 	"milanglacier/minuet-ai.nvim",
-	lazy = false,
+	event = "InsertEnter",
+	keys = {
+		{
+			"<leader>ta",
+			function()
+				require("minuet.virtualtext").action.toggle_auto_trigger()
+			end,
+			desc = "Toggle AI completion for buffer",
+		},
+	},
 	config = function()
 		require("minuet").setup({
 			virtualtext = {
-				-- Enable automatic virtual-text suggestions for every filetype.
+				-- Manual suggestions by default; opt into inference per buffer.
 				-- Use auto_trigger_ignore_ft below if a filetype is too noisy.
-				auto_trigger_ft = { "*" },
+				auto_trigger_ft = {},
 				auto_trigger_ignore_ft = {},
 				show_on_completion_menu = false,
 				keymap = {
@@ -48,5 +57,14 @@ return {
 				},
 			},
 		})
+		-- Preserve Ctrl-y for both existing completion workflows.
+		vim.keymap.set("i", "<C-y>", function()
+			local cmp = require("blink.cmp")
+			if cmp.is_visible() then
+				cmp.select_and_accept()
+			else
+				require("minuet.virtualtext").action.accept()
+			end
+		end, { desc = "Accept completion or AI suggestion" })
 	end,
 }

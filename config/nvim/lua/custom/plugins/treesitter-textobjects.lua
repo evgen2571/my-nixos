@@ -1,19 +1,18 @@
 return {
-	"nvim-treesitter/nvim-treesitter",
-	dependencies = {
-		"nvim-treesitter/nvim-treesitter-textobjects",
-	},
-	opts = function(_, opts)
-		opts.textobjects = opts.textobjects or {}
-		opts.textobjects.select = vim.tbl_deep_extend("force", opts.textobjects.select or {}, {
-			enable = true,
-			lookahead = true,
-			keymaps = {
-				["af"] = "@function.outer",
-				["if"] = "@function.inner",
-				["ac"] = "@class.outer",
-				["ic"] = "@class.inner",
-			},
-		})
+	"nvim-treesitter/nvim-treesitter-textobjects",
+	branch = "main",
+	event = { "BufReadPost", "BufNewFile" },
+	config = function()
+		require("nvim-treesitter-textobjects").setup({ select = { lookahead = true } })
+		for key, query in pairs({
+			af = "@function.outer",
+			["if"] = "@function.inner",
+			ac = "@class.outer",
+			ic = "@class.inner",
+		}) do
+			vim.keymap.set({ "x", "o" }, key, function()
+				require("nvim-treesitter-textobjects.select").select_textobject(query, "textobjects")
+			end, { desc = "Select " .. query })
+		end
 	end,
 }

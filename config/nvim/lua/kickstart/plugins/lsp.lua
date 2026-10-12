@@ -10,6 +10,7 @@ return {
   },
   {
     'neovim/nvim-lspconfig',
+    event = { 'BufReadPre', 'BufNewFile' },
     dependencies = {
       { 'j-hui/fidget.nvim', opts = {} },
       'saghen/blink.cmp',
@@ -124,8 +125,16 @@ return {
       end
 
       local servers = {
-        pyright = {},
-        ruff = {},
+        pyright = {
+          on_init = function(client)
+            client.config.settings.python.pythonPath = require('custom.python').python(client.config.root_dir)
+            client:notify('workspace/didChangeConfiguration', { settings = client.config.settings })
+          end,
+          settings = { python = { analysis = {
+            diagnosticMode = 'openFilesOnly', typeCheckingMode = 'basic',
+          } }, pyright = { disableOrganizeImports = true } },
+        },
+        ruff = { on_attach = function(client) client.server_capabilities.hoverProvider = false end },
         nixd = {},
         clangd = {
           cmd = { 'clangd', '--header-insertion=never', '--compile-commands-dir=.' },
