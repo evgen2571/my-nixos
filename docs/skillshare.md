@@ -16,13 +16,24 @@ Home Manager installs **the CLI only**. It does not run `skillshare init`,
 configuration. Changing Skillshare skills, MCP definitions, or supported plugins
 later requires **no NixOS or Home Manager rebuild**.
 
-The existing `agent-toolkit` integration still manages global Codex skills,
-some Codex launcher arguments, Serena, Ponytail preparation, and global
-instructions. **Do not use Skillshare to sync to those same global Codex paths
-yet.** Skillshare and Home Manager must not both own the same files. Preserve
-Codex authentication, unrelated MCP configurations, account-managed plugins,
-and the VPN namespace launcher. A later explicit migration should retire only
-the conflicting parts of the toolkit after ownership and rollback checks.
+The previous declarative agent-toolkit and Serena integration has been
+removed from this configuration. Existing Codex authentication and mutable
+configuration stay in the user's home directory. Native Codex/T3 Code continue
+to use the existing VPN namespace launcher.
+
+**Migration note:** on the first activation, Home Manager may remove the
+symlinks it previously managed in `~/.agents/skills/`, `~/.codex/AGENTS.md`,
+and `~/.local/share/agent-toolkit/ponytail-marketplace`. Before activation,
+copy any content you want to retain to ordinary writable files (dereference
+symlinks when copying). Home Manager does not delete your old external
+`agent-toolkit` Git checkout or its source repository. Do not manually
+delete unrelated Codex skills, configuration, authentication, or plugins.
+
+Skillshare may manage global skills after the old Home Manager-owned symlinks
+have been retired, but inspect existing paths and review its sync dry run
+first. Avoid overwriting unmanaged resources. The account-installed
+Superpowers plugin (if still enabled) remains account-managed and was **not**
+uninstalled or disabled by removing NixOS integration.
 
 ## First test, after activation
 
@@ -41,9 +52,10 @@ skillshare install anthropics/skills/skills/frontend-design -p
 skillshare sync -p --dry-run
 ```
 
-Review the sync output **before** running `skillshare sync -p`. For this first
-test, avoid global initialization/targets and any operation that would rewrite
-Home Manager-owned files. `skillshare ui` opens the dashboard.
+Review the sync output **before** running `skillshare sync -p`. Once the
+old managed links have been removed during activation, you may also try global
+Skillshare resources, after backing up your live Codex configuration.
+`skillshare ui` opens the dashboard.
 
 Use Skillshare to make runtime resource changes after ownership is established.
 New Codex sessions are normally needed to observe changes to MCP or plugin
@@ -52,9 +64,8 @@ already-running session.
 
 ## Build, activate and check
 
-The private `agent-toolkit` input in `my-nixos` must already be accessible and
-`flake.lock` must include the required inputs (see `docs/agent-toolkit.md`).
-Build on a machine that can access those private inputs.
+Neither `agent-toolkit` nor Serena is required to evaluate the flake.
+Both inputs and their obsolete lock nodes have been removed.
 
 ```sh
 nix build .#nixosConfigurations.nixos-pc.config.system.build.toplevel --no-link
@@ -67,6 +78,12 @@ sudo nixos-rebuild switch --flake .#nixos-lp
 
 skillshare version
 ```
+
+After activation, verify `codex --version` and `codex mcp list`. If Serena
+was also configured independently in writable `~/.codex/config.toml`, remove
+that entry explicitly only if you no longer want it. The removed declarative
+launcher no longer registers Serena. Restart Codex and T3 Code after changes.
+Do not delete `~/.codex/auth.json`, other login state, or account plugins.
 
 The release tarball is fixed by SHA-256, derived from the upstream maintainer's
 published Homebrew formula. Updating the **Skillshare executable** is a Nix
