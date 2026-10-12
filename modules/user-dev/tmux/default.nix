@@ -37,7 +37,8 @@ let
       while IFS= read -r -d "" project; do
         [[ -d "$project" ]] || continue
         printf '%s %s\n' "''${scores["$project"]:-0}" "$project"
-      done < <(find "$projects_dir" -mindepth 1 -maxdepth 1 \( -type d -o -type l \) -print0) | sort -k1,1nr -k2,2
+      # Follow ~/dev when it is a symlink, retaining ~/dev paths in the output.
+      done < <(find -H "$projects_dir" -mindepth 1 -maxdepth 1 \( -type d -o -type l \) -print0) | sort -k1,1nr -k2,2
     '';
   };
 
