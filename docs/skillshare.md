@@ -92,3 +92,5 @@ resources does not.
 
 Upstream: https://github.com/runkids/skillshare
 Documentation: https://skillshare.runkids.cc/docs
+
+For local code structure search, see [CodeGraph and its optional MCP](codegraph.md).
