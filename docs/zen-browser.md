@@ -26,8 +26,8 @@ Essentials, Sine mods and URL-based workspace routing.
 
 ### ChatGPT project pins
 
-Direct ChatGPT Project URLs cannot be inferred from project names. Copy each
-real project's address from ChatGPT and enter it in
+Direct ChatGPT Project URLs cannot be inferred from project names. To add more
+projects, copy each address from ChatGPT and enter it in
 `config/zen/chatgpt-projects.nix`:
 
 ```nix
@@ -55,7 +55,7 @@ settings = {
 };
 ```
 
-`Ctrl+`` toggles compact mode:
+Press **Ctrl + backtick** (`Ctrl + \\``) to toggle compact mode:
 
 ```nix
 keyboardShortcutsVersion = 20; # Zen 1.22.2b in the pinned flake
