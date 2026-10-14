@@ -13,7 +13,21 @@ in
   settings = {
     "zen.workspaces.continue-where-left-off" = true;
     "zen.window-sync.enabled" = true;
+    # Settings > Look and Feel > Sidebar and Top Toolbar.
+    "zen.view.use-single-toolbar" = false;
+    "zen.view.sidebar-expanded" = true;
   };
+
+  # Zen 1.22.2b ships keyboard shortcuts schema 20.
+  # Ctrl+` toggles compact mode; other bindings remain browser defaults.
+  keyboardShortcutsVersion = 20;
+  keyboardShortcuts = [
+    {
+      id = "zen-compact-mode-toggle";
+      key = "`";
+      modifiers.control = true;
+    }
+  ];
 
   sine = {
     enable = true;
