@@ -10,13 +10,13 @@ Essentials, Sine mods and URL-based workspace routing.
 - `modules/user-apps/zen-browser.nix`: package and optional profile management.
 - `config/zen/profile.nix`: shared spaces, pins, Essentials, routes and Sine.
 - `config/zen/chatgpt-projects.nix`: user-specific ChatGPT project pins
-  (intentionally empty until you supply the real project URLs).
+  (contains the nine project URLs currently provided).
 - `hosts/pc/profile.nix`, `hosts/laptop/profile.nix`: enable separately per host.
 
 ## Shared workspace layout
 
-- **ChatGPT**: ChatGPT home, plus your ChatGPT Projects (populate
-  `chatgpt-projects.nix` with actual URLs).
+- **ChatGPT**: ChatGPT home and nine direct project pins in
+  `chatgpt-projects.nix`.
 - **Development**: folders for Competitive Programming (Codeforces, CSES,
   AtCoder, CP-Algorithms, USACO Guide, LeetCode), Documentation (NixOS, Home
   Manager, C++/Python/Rust/MDN), ML and Research, and Developer Tools.
@@ -43,6 +43,42 @@ real project's address from ChatGPT and enter it in
 The placeholders above are documentation only; do not activate them verbatim.
 If this Git repository is public, names/URLs disclose project metadata (though
 private content remains access-controlled).
+
+### Layout and keyboard shortcuts
+
+The profile uses Zen's **Sidebar and Top Toolbar** layout:
+
+```nix
+settings = {
+  "zen.view.use-single-toolbar" = false;
+  "zen.view.sidebar-expanded" = true;
+};
+```
+
+`Ctrl+`` toggles compact mode:
+
+```nix
+keyboardShortcutsVersion = 20; # Zen 1.22.2b in the pinned flake
+keyboardShortcuts = [
+  {
+    id = "zen-compact-mode-toggle";
+    key = "`";
+    modifiers.control = true;
+  }
+];
+```
+
+Additional bindings can be appended to `keyboardShortcuts` by shortcut ID,
+without replacing all other defaults. The shortcut schema version is pinned
+to Zen 1.22.2b's value; after updating the browser, inspect
+`zen.keyboard.shortcuts.version` in `about:config` and adjust if necessary.
+
+**Close Zen before activation.** The flake modifies
+`zen-keyboard-shortcuts.json` and skips the update if the file does not yet
+exist (open Zen once to let it create the profile). You can inspect current
+bindings in `Settings > Keyboard Shortcuts`. Your Niri configuration uses
+`Alt+grave` for window cycling, not `Ctrl+grave`, so there is no declared
+Niri conflict.
 
 ### Declarative space routing
 
