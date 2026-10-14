@@ -7,14 +7,15 @@
 
 let
   cfg = config.my.user.dev.neovim;
-  providerPython = pkgs.python3.withPackages (
-    ps: with ps; [
-      pynvim
+  neovimWithPython = pkgs.neovim.override {
+    withPython3 = true;
+    extraPython3Packages = ps: with ps; [
       jupyter-client
       pillow
       cairosvg
-    ]
-  );
+      nbformat
+    ];
+  };
 in
 {
   imports = [
@@ -25,7 +26,7 @@ in
 
   config = lib.mkIf cfg.enable {
     home.packages = with pkgs; [
-      neovim
+      neovimWithPython
       git
       curl
       unzip
@@ -46,7 +47,6 @@ in
     home.sessionVariables = {
       EDITOR = "nvim";
       VISUAL = "nvim";
-      NVIM_PYTHON_PROVIDER = "${providerPython}/bin/python3";
     };
   };
 }
