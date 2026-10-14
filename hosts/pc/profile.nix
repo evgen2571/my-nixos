@@ -82,7 +82,10 @@
       telegram.enable = true;
       youtubeMusic.enable = true;
       voxtype.enable = true;
-      zenBrowser.enable = true;
+      zenBrowser = {
+        enable = true;
+        profilePath = "vrrqsw0h.evgen2571";
+      };
     };
 
     desktop = {

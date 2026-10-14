@@ -55,7 +55,7 @@ settings = {
 };
 ```
 
-Press **Ctrl + backtick** (`Ctrl + \\``) to toggle compact mode:
+Press **Ctrl + backtick** to toggle compact mode:
 
 ```nix
 keyboardShortcutsVersion = 20; # Zen 1.22.2b in the pinned flake
