@@ -26,7 +26,18 @@ in
       luarocks
       direnv
       nix-direnv
+      nh
+      nix-tree
+      bat
+      eza
+      tealdeer
     ];
+
+    programs.atuin = {
+      enable = true;
+      enableFishIntegration = false; # Fish is configured through config/fish/config.fish.
+      settings.auto_sync = false;
+    };
 
     # Let projects opt into per-repo toolchains with a checked-in `.envrc`
     # containing `use flake` or `use nix`, without manually entering nix-shell.

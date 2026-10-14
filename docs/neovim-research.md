@@ -1,8 +1,10 @@
 # Neovim development and research
 
-Apply the usual NixOS/Home Manager configuration, then start a new shell so
-`NVIM_PYTHON_PROVIDER` is exported. The activation still copies the Kickstart/Lazy
-config and preserves `lua/matugen.lua`. Run `:Lazy restore` to install pinned
+Apply the usual NixOS/Home Manager configuration, then start a new shell.
+The Nix-wrapped Neovim enables the Python provider and includes Molten's host
+dependencies; project kernels still use their own uv environments. The activation
+copies the Kickstart/Lazy config and preserves `lua/matugen.lua`.
+Run `:Lazy restore` to install pinned
 plugins, allow parser installation to finish, then `:UpdateRemotePlugins` and
 restart Neovim. Use `:checkhealth molten`, `:LspInfo`, and `:ConformInfo` to diagnose
 setup. Neovim 0.12.4 was tested; Tree-sitter uses the rewritten `main` APIs.
@@ -101,8 +103,8 @@ JupyterLab (`pj`); Molten supports small textual previews and HTML output throug
 
 `tests/neovim/run.sh` runs lightweight headless assertions with installed plugins
 and parsers. Use a separate XDG config/data/state/cache tree for isolation; copy
-`config/nvim` and plugin directories (not directory symlinks) into it. Export the
-Nix `NVIM_PYTHON_PROVIDER` when testing remote plugins. The smoke test checks
+`config/nvim` and plugin directories (not directory symlinks) into it. Use the Nix-wrapped
+Neovim with its Python provider enabled when testing remote plugins. The smoke test checks
 highlighting and textobject deletion, adapters, keymaps, formatter availability,
 LSP settings, lint policy and AI toggling without inference. It does not download
 test dependencies or start services automatically.

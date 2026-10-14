@@ -2,13 +2,6 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 vim.g.have_nerd_font = false
 
--- Provider for remote plugins; project kernels use their own uv Python.
-if vim.env.NVIM_PYTHON_PROVIDER then
-  vim.g.python3_host_prog = vim.env.NVIM_PYTHON_PROVIDER
-  -- The Nix wrapper disables providers by default; enable our declared host.
-  vim.g.loaded_python3_provider = nil
-end
-
 require 'custom.options'
 require 'custom.keymaps'
 require 'custom.autocmds'
