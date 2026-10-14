@@ -4,6 +4,12 @@ window-rule {
     exclude title=r#"^(Picture-in-Picture|Picture in picture)$"#
     open-maximized-to-edges true
     open-on-workspace "browser"
+
+	draw-border-with-background false
+	background-effect {
+		blur true
+		xray true
+	}
 }
 
 // Dolphin is a convenient floating file browser. Dialogs stay with their parent.

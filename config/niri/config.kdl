@@ -6,6 +6,13 @@ config-notification {
     disable-failed
 }
 
+blur {
+    passes 3
+    offset 4.0
+    noise 0.02
+    saturation 1.4
+}
+
 gestures {
     hot-corners {
         off
