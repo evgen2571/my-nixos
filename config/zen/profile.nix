@@ -16,6 +16,8 @@ in
     # Settings > Look and Feel > Sidebar and Top Toolbar.
     "zen.view.use-single-toolbar" = false;
     "zen.view.sidebar-expanded" = true;
+
+    "browser.tabs.allow_transparent_browser" = true;
   };
 
   # Zen 1.22.2b ships keyboard shortcuts schema 20.

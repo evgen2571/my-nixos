@@ -8,12 +8,12 @@
 
 let
   cfg = config.my.desktop.noctaliaGreeter;
-  greeterPackage = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.noctalia-greeter;
+  greeterPackage =
+    inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.noctalia-greeter;
 in
 {
-  # The 26.05 system nixpkgs has the package, but not yet the NixOS module.
   imports = [
-    (inputs.nixpkgs-unstable + "/nixos/modules/services/display-managers/noctalia-greeter.nix")
+    inputs.noctalia-greeter.nixosModules.default
   ];
 
   options.my.desktop.noctaliaGreeter.enable = lib.mkEnableOption "Noctalia Greeter display manager";
@@ -23,15 +23,13 @@ in
       enable = true;
       package = greeterPackage;
 
-      cursorTheme = {
-        package = pkgs.bibata-cursors;
-        name = "Bibata-Modern-Ice";
-      };
+      cursorTheme.package = pkgs.bibata-cursors;
 
       settings = {
         session.default = "niri";
         user.default = config.my.primaryUser.name;
         cursor.size = 24;
+        cursor.theme = "Bibata-Modern-Ice";
 
         # Only pin layout. Leave wallpaper, palette, and scheme to Noctalia Sync.
         appearance = {
