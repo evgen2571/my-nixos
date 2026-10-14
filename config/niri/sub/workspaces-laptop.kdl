@@ -10,18 +10,14 @@ workspace "notes" {
 	open-on-output "eDP-1"
 }
 
+workspace "chats" {
+	open-on-output "eDP-1"
+}
+
 workspace "anki" {
 	open-on-output "eDP-1"
 }
 
 workspace "gaming" {
-	open-on-output "eDP-1"
-}
-
-workspace "chats" {
-	open-on-output "eDP-1"
-}
-
-workspace "music" {
 	open-on-output "eDP-1"
 }

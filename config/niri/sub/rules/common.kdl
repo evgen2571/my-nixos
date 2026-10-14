@@ -1,6 +1,5 @@
 include "obsidian.kdl"
 include "apps.kdl"
-include "t3code.kdl"
 
 // Layer rules
 layer-rule {
@@ -48,11 +47,12 @@ window-rule {
     match app-id=r#"^(kitty|foot)$"#
     draw-border-with-background false
     opacity 0.92
+	open-maximized-to-edges true
 }
 
 // Editor terminal
 window-rule {
-    match title="editor"
+    match title=r"editor"
     opacity 0.94
     open-maximized-to-edges true
     open-on-workspace "code"
@@ -60,7 +60,7 @@ window-rule {
 
 // GUI editors, if enabled later.
 window-rule {
-    match app-id=r#"^(code|Code|codium|VSCodium|dev\.zed\.Zed|zed)$"#
+    match app-id=r#"^(code|Code|orca|codium|VSCodium|dev\.zed\.Zed|zed)$"#
     open-maximized-to-edges true
     open-on-workspace "code"
 }
