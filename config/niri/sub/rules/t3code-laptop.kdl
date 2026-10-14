@@ -1,8 +1,0 @@
-// T3 Code desktop application (Laptop: third named eDP-1 workspace).
-// The Electron app ID can differ between development and packaged builds.
-window-rule {
-    match app-id=r#"^(com\.t3tools\.(T3Code|t3code)(\.Development)?|t3code|T3Code)$"#
-    open-floating false
-    open-maximized-to-edges true
-    open-on-workspace "notes"
-}

@@ -68,7 +68,6 @@ my.user.ai.codex = {
   enable = true;
   networkNamespace = "vpn"; # null installs ordinary Codex
 };
-my.user.ai.t3Code.enable = true;
 ```
 
 `codex.package` is the installed wrapper; `codex.unwrappedPackage` is the original
@@ -271,4 +270,3 @@ passed until it has actually run.
 Pinned implementation references: [hide.me README](https://github.com/eventure/hide.client.linux/blob/v0.9.14/README.md),
 [marked API sockets](https://github.com/eventure/hide.client.linux/blob/v0.9.14/rest/client.go),
 [WireGuard implementation](https://github.com/eventure/hide.client.linux/tree/v0.9.14/wireguard),
-[T3 0.0.40 source](https://github.com/pingdotgg/t3code/tree/v0.0.40).
