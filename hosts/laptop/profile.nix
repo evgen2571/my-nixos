@@ -65,7 +65,7 @@
         enable = true;
         networkNamespace = "vpn";
       };
-      t3Code.enable = true;
+      orca.enable = true;
       skillshare.enable = true;
       codegraph.enable = true;
     };
@@ -85,7 +85,10 @@
       telegram.enable = true;
       youtubeMusic.enable = true;
       voxtype.enable = true;
-      zenBrowser.enable = true;
+      zenBrowser = {
+        enable = true;
+        profilePath = "it4r6j1f.operator";
+      };
     };
 
     desktop = {

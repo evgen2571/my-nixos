@@ -24,6 +24,14 @@
   security.pam.services.greetd.fprintAuth = false;
   security.pam.services.sudo.fprintAuth = false;
 
+  networking.extraHosts = ''
+    192.0.2.12 api.example.test auth.example.test
+  '';
+
+  security.pki.certificateFiles = [
+    
+  ];
+
   my.primaryUser = {
     enable = true;
     name = "operator";

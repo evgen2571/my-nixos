@@ -61,7 +61,8 @@
         enable = true;
         networkNamespace = "vpn";
       };
-      t3Code.enable = true;
+      t3Code.enable = false;
+      orca.enable = true;
       skillshare.enable = true;
       codegraph.enable = true;
     };
@@ -82,7 +83,10 @@
       telegram.enable = true;
       youtubeMusic.enable = true;
       voxtype.enable = true;
-      zenBrowser.enable = true;
+      zenBrowser = {
+        enable = true;
+        profilePath = "vrrqsw0h.operator";
+      };
     };
 
     desktop = {
@@ -105,8 +109,6 @@
       ffmpeg.enable = true;
       workstation.enable = true;
       ssh.serverIdentityFile = "~/.ssh/id_ed25519_nixos_pc";
-
-      bb.enable = true;
 
       languages = {
         cpp.enable = true;
