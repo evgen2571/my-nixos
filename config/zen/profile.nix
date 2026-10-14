@@ -13,10 +13,13 @@ in
   settings = {
     "zen.workspaces.continue-where-left-off" = true;
     "zen.window-sync.enabled" = true;
-    # Settings > Look and Feel > Sidebar and Top Toolbar.
+
+    # Sidebar and Top Toolbar
     "zen.view.use-single-toolbar" = false;
     "zen.view.sidebar-expanded" = true;
 
+    # Nebula transparency
+    "zen.widget.linux.transparency" = true;
     "browser.tabs.allow_transparent_browser" = true;
   };
 

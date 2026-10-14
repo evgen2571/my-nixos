@@ -82,7 +82,6 @@ let
             laptop = "workspaces-laptop.kdl";
           };
           workspacesFile = workspaceFiles.${workspaceProfile};
-          t3codeRuleFile = if workspaceProfile == "laptop" then "t3code-laptop.kdl" else "t3code.kdl";
         in
         mkXdgSourceSet [
           {
@@ -108,10 +107,6 @@ let
           {
             target = "niri/sub/rules/apps.kdl";
             source = configDir + "/sub/rules/apps.kdl";
-          }
-          {
-            target = "niri/sub/rules/t3code.kdl";
-            source = configDir + "/sub/rules/${t3codeRuleFile}";
           }
           {
             target = "niri/scripts/focus-or-launch";

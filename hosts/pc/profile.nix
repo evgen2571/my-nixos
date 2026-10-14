@@ -61,7 +61,6 @@
         enable = true;
         networkNamespace = "vpn";
       };
-      t3Code.enable = false;
       orca.enable = true;
       skillshare.enable = true;
       codegraph.enable = true;

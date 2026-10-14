@@ -23,13 +23,14 @@ in
       enable = true;
       package = greeterPackage;
 
-      cursorTheme.package = pkgs.bibata-cursors;
-
       settings = {
         session.default = "niri";
         user.default = config.my.primaryUser.name;
-        cursor.size = 24;
-        cursor.theme = "Bibata-Modern-Ice";
+        cursor = {
+          theme = "Bibata-Modern-Ice";
+          size = 24;
+          path = "${pkgs.bibata-cursors}/share/icons";
+        };
 
         # Only pin layout. Leave wallpaper, palette, and scheme to Noctalia Sync.
         appearance = {

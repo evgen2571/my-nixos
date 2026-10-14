@@ -11,9 +11,24 @@ let
 
   unstable = import inputs.nixpkgs-unstable {
     system = pkgs.stdenv.hostPlatform.system;
-    config = {
-      allowUnfree = true;
-    };
+    config.allowUnfree = true;
+
+    overlays = [
+      (_: prev: {
+        go-mockery = prev.go-mockery.overrideAttrs (_: rec {
+          version = "3.8.1";
+
+          src = prev.fetchFromGitHub {
+            owner = "vektra";
+            repo = "mockery";
+            tag = "v${version}";
+            hash = "sha256-HCbnifYWE/3CG85dt0FPWT9hLSQbgOXuOKTBJHO0S2U=";
+          };
+
+          vendorHash = "sha256-ksfAHdPdOd8ELS0CSBg+E7KPd5xX/uGeLPn9HiItjdI=";
+        });
+      })
+    ];
   };
 
   sesh = unstable.sesh;
@@ -22,7 +37,11 @@ let
   # Include unvisited projects; use zoxide scores to prioritize known ones.
   seshProjectList = pkgs.writeShellApplication {
     name = "sesh-project-list";
-    runtimeInputs = [ pkgs.coreutils pkgs.findutils pkgs.zoxide ];
+    runtimeInputs = [
+      pkgs.coreutils
+      pkgs.findutils
+      pkgs.zoxide
+    ];
     text = ''
       projects_dir="$HOME/dev"
       [[ -d "$projects_dir" ]] || exit 0

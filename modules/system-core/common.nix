@@ -77,8 +77,8 @@
   ];
 
   nix.settings = {
-    max-jobs = 1;
-    cores = 2;
+    max-jobs = "auto";
+    cores = 0;
     eval-cache = true;
     min-free = 5368709120;
     max-free = 10737418240;
