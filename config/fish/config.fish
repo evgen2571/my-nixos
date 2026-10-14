@@ -22,6 +22,16 @@ if status is-interactive
     if command -q direnv
         direnv hook fish | source
     end
+
+    if command -q atuin
+        atuin init fish | source
+    end
+
+    if command -q eza
+        alias l 'eza --icons=auto --group-directories-first'
+        alias ll 'eza -lah --icons=auto --group-directories-first --git'
+        alias lt 'eza --tree --level=2 --icons=auto'
+    end
 end
 
 set -gx COLORTERM truecolor

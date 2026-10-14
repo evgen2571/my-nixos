@@ -110,6 +110,10 @@ function M.prepare_runtime()
 	return true
 end
 function M.kernel()
+	if vim.fn.exists(":MoltenInit") ~= 2 then
+		vim.notify("Molten commands unavailable; run :Lazy load molten-nvim, :UpdateRemotePlugins, then restart Neovim", vim.log.levels.WARN)
+		return
+	end
 	local python = M.python()
 	if not python:find("/bin/python", 1, true) or python == vim.fn.exepath("python3") then
 		vim.notify("Create the project environment with uv sync and add ipykernel first", vim.log.levels.WARN)
