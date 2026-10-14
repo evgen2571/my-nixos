@@ -1,103 +1,116 @@
 # Declarative Zen Browser
 
-Zen is installed on both `nixos-pc` and `nixos-lp` using the existing
+Both `nixos-pc` and `nixos-lp` install Zen through
 [zen-browser-flake](https://github.com/0xc000022070/zen-browser-flake).
-Its Home Manager module can manage spaces, pinned tabs, Essentials, and Sine
-mods without custom session-file scripts.
+Home Manager provides native declarations for spaces, nested pin folders,
+Essentials, Sine mods and URL-based workspace routing.
 
-## Configuration
+## Files
 
-- `modules/user-apps/zen-browser.nix` — browser package and opt-in profile
-  management.
-- `config/zen/profile.nix` — shared desired workspaces, pinned tabs, Essentials,
-  and Sine mods.
-- `hosts/pc/profile.nix` and `hosts/laptop/profile.nix` — enable profile
-  management independently via `my.user.apps.zenBrowser.profilePath`.
+- `modules/user-apps/zen-browser.nix`: package and optional profile management.
+- `config/zen/profile.nix`: shared spaces, pins, Essentials, routes and Sine.
+- `config/zen/chatgpt-projects.nix`: user-specific ChatGPT project pins
+  (intentionally empty until you supply the real project URLs).
+- `hosts/pc/profile.nix`, `hosts/laptop/profile.nix`: enable separately per host.
 
-The supplied Personal/Development/Study spaces and URLs are **examples**, not
-a snapshot of the existing Zen installation. Change them to the desired layout
-before activating the profile on either host.
+## Shared workspace layout
 
-## Adopt an existing profile (one host at a time)
+- **ChatGPT**: ChatGPT home, plus your ChatGPT Projects (populate
+  `chatgpt-projects.nix` with actual URLs).
+- **Development**: folders for Competitive Programming (Codeforces, CSES,
+  AtCoder, CP-Algorithms, USACO Guide, LeetCode), Documentation (NixOS, Home
+  Manager, C++/Python/Rust/MDN), ML and Research, and Developer Tools.
+- **Chill / Watch**: Watching (YouTube, Kinopoisk, YouTube Music) and Anime
+  (AniList, Shikimori, MyAnimeList).
+- **Essentials**: GitHub and Google Calendar, visible in all workspaces.
 
-1. Close Zen, then back up its directory:
+### ChatGPT project pins
+
+Direct ChatGPT Project URLs cannot be inferred from project names. Copy each
+real project's address from ChatGPT and enter it in
+`config/zen/chatgpt-projects.nix`:
+
+```nix
+{
+  "Actline" = {
+    id = "<a new stable UUID (uuidgen)>";
+    url = "<the real URL copied from your ChatGPT project>";
+    position = 200;
+  };
+}
+```
+
+The placeholders above are documentation only; do not activate them verbatim.
+If this Git repository is public, names/URLs disclose project metadata (though
+private content remains access-controlled).
+
+### Declarative space routing
+
+The pinned Zen flake supports `spaces.<name>.routes` and writes
+`zen-space-routing.jsonlz4`. For example:
+
+```nix
+spaces.Development.routes.CSES.reference = "cses.fi";
+```
+
+Rules select the target workspace for **new tabs**, not existing tabs.
+The simple URL substring matching is intentional. GitHub and Google Calendar
+are Essentials with no forced route, since you may use them in any space.
+Unmatched external links open in `most-recent-space`. Manual routes that are
+not declared in Nix are preserved (`spaceRouting.force = false`).
+
+## Safe activation (one host at a time)
+
+1. Back up your entire Zen directory after closing the browser:
 
    ```sh
    cp -a ~/.config/zen ~/zen-backup-$(date +%Y%m%d-%H%M%S)
    ```
 
-2. Start Zen and open `about:profiles`. Under the current **default profile**,
-   note its **Root Directory**. Copy only the final directory name (for example
-   `abcdefgh.Default Profile`). Then close Zen again.
-
-3. Before enabling, edit `config/zen/profile.nix` to match the actual
-   workspaces and tabs you want to keep. Keep their existing IDs: changing an
-   ID creates a different space/tab instead of adopting the existing one. The
-   IDs live in `zen-sessions.jsonlz4` inside the profile and can be inspected
-   with an mozlz4-compatible decoder. Do not use the example UUIDs if your
-   workspace/tab already exists. If unsure, first adopt just one space and
-   leave `spacesForce` / `pinsForce` false.
-
-4. Set this **in the applicable host profile**, inside the existing
-   `my.primaryUser.home.settings.my.user.apps` block:
+2. Open `about:profiles`, find the **Root Directory** of your current default
+   profile, and record its last directory component, for example
+   `abcdefgh.Default Profile`. Then close Zen.
+3. Review the new workspace and tab UUIDs in `config/zen/profile.nix`. If
+   you already have the same spaces/pins, use their current UUIDs from
+   `zen-sessions.jsonlz4` (inspect with a mozlz4-compatible decoder).
+   A changed UUID creates a new space/tab rather than adopting the original.
+4. Set `zenBrowser` in the existing
+   `my.primaryUser.home.settings.my.user.apps` of each host's profile:
 
    ```nix
    zenBrowser = {
      enable = true;
-     profilePath = "abcdefgh.Default Profile"; # replace per host
+     profilePath = "abcdefgh.Default Profile"; # use the actual name per host
    };
    ```
 
-   Repeat on the other host using **its own** profile path. The same desired
-   workspace IDs may be shared across hosts, but the profile directory names
-   normally differ.
-
-5. Keep Zen closed during evaluation and activation:
+5. Close Zen and execute:
 
    ```sh
    sudo nixos-rebuild build --flake .#nixos-pc
    sudo nixos-rebuild switch --flake .#nixos-pc
    ```
 
-   Substitute `nixos-lp` on the laptop. Check the workspaces, pins, Essentials
-   and Sine UI after reopening Zen.
+   Use `nixos-lp` for the laptop, with its own profile directory name.
 
-Without `profilePath`, the browser continues to be installed as before; the
-declarative profile is **not activated**. This prevents a rebuild from creating
-an accidental replacement default profile.
+Until `profilePath` is set, Zen remains installed as before and none of the
+declarative profile edits are activated.
 
-## Sine mods
+## Sine and state safety
 
-Sine's engine is enabled with `sine.enable = true` once profile management is
-activated. Put mod IDs in `config/zen/profile.nix`:
+`sine.enable = true` enables Sine's engine. Add Sine store directory IDs to
+`sine.mods` (for example `"Arc-2.0"`). The engine is flake-pinned but
+individual mods are fetched from the live remote store during activation and
+are **not immutable, content-hash-pinned builds**. Sine preferences modified in
+the UI are not fully managed by this file.
 
-```nix
-sine.mods = [ "Arc-2.0" ];
-```
+Always close Zen before rebuild/switch with session-file changes; the flake
+can skip writing while Zen owns the profile lock.
 
-These are Sine store directory IDs, not arbitrary GitHub repository URLs.
-Supported mods are installed/updated by the Zen flake's activation scripts.
-Mods installed manually in Sine remain separate. `sine.mods` is not the same
-as the flake's regular Zen theme-store `mods` option; do not set both.
+Keep `spacesForce = false`, `pinsForce = false`, and
+`spaceRouting.force = false` while adopting your current setup. History,
+cookies, logins, manually installed add-ons and session data stay in the
+writable profile: do not commit or symlink the whole profile into the Nix store.
 
-The Sine engine/bootloader versions are pinned by the Zen flake input. **Mod
-downloads occur from a live remote store at activation**, so this is a
-declarative *list of selected mods*, not a fully immutable, hash-pinned mod
-build. Sine preference changes made in the UI are not fully declared here.
-
-## Safety / limitations
-
-- Leave `spacesForce` and `pinsForce` set to `false` during adoption; existing
-  entries are preserved. Forcing deletion/demotion is only appropriate when
-  the Nix file exhaustively describes what should remain.
-- **Close Zen before switching** when spaces/pins are managed. Zen keeps session
-  data in memory, and the flake's activation can skip writes while it is open.
-- The profile directory includes history, cookies, passwords, and session
-  state: **never commit it to Git**. Do not symlink the whole profile to the
-  Nix store.
-- Logins, cookies, browsing history, manually installed extensions, and
-  per-mod Sine preferences are not made declarative by this module.
-- If moving from another installation layout, confirm where `about:profiles`
-  says the live profile is stored; the flake expects `~/.config/zen`.
-
-Reference: [Zen Browser flake examples](https://github.com/0xc000022070/zen-browser-flake/tree/main/examples).
+References: upstream `examples/10-pinned-tabs.nix` and
+`examples/18-space-routing.nix`.
