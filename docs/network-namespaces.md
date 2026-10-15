@@ -1,9 +1,13 @@
 # VPN agent workspace
 
-Both host profiles enable an isolated `vpn` network namespace, hide.me Free,
-VPN-routed Codex, and T3 Code on the host network. Normal use is `codex`,
-`codex resume`, or opening T3 Code from the Niri launcher. Initial VPN secret
-provisioning is required on each machine before these commands can start.
+The host profiles now select a shared server gateway and desktop namespace
+clients. See [shared VPN gateway](shared-vpn-gateway.md) for transport design,
+provisioning, migration, rollback and pending live verification. Normal Orca
+keeps host networking; `orca-vpn` selects the isolated namespace.
+
+The remaining sections describe the reusable **standalone Hide.me provider**,
+its isolation primitives and historical verification. They are also used by the
+server gateway; desktop clients no longer need their own Hide.me connection.
 
 ## Architecture
 
@@ -58,8 +62,8 @@ my.system.services.networkNamespaces = {
 
 Namespace names must start with a letter, contain only letters, digits, `_` or
 `-`, and be at most 32 characters. Each name gets separate runtime and persistent
-state. The PC and laptop profiles use identical shared modules and separate
-machine-local tokens. The existing VPNBook module is preserved.
+state. The standalone role supports machine-local tokens; the shared deployment
+uses a provider token only on the server. The existing VPNBook module is preserved.
 
 Home Manager options:
 
@@ -82,8 +86,8 @@ not replace conversations, worktrees, projects, sessions or existing `.codex`.
 
 ## Provisioning hide.me authentication
 
-On each machine, after building or installing the package, authenticate in a
-private terminal. Before activation, replace `CLIENT_STORE_PATH` with the built
+On the provider machine only, after building or installing the package,
+authenticate in a private terminal. Before activation, replace `CLIENT_STORE_PATH` with the built
 hide.me package path; after activation use `hide.me` directly.
 
 ```bash
@@ -109,9 +113,9 @@ sudo test ! -e /var/lib/hide-me-vpn/accessToken.txt && \
 Do not overwrite an existing refreshed token during rebuilds. After successful
 connection, remove the temporary bootstrap copy. The service's mode-0700 state
 directory contains its mutable mode-0600 token. The CLI can refresh it in place.
-Do not run multiple clients sharing that token file. Each machine authenticates
-independently. For deliberate reauthentication, stop `hide-me-vpn`, privately
-create a fresh token, install it, and restart the service.
+Do not run multiple clients sharing that token file. Only the server authenticates
+in the shared deployment. For deliberate reauthentication, stop `hide-me-vpn`,
+privately create a fresh token, install it, and restart the service.
 
 Alternatively, set `bootstrapTokenFile = config.sops.secrets.NAME.path` for an
 existing root-readable SOPS secret. The service copies it only when persistent
@@ -211,7 +215,7 @@ The application registration chooses the executable, not its arguments. Do not
 register a generic shell unless you intend to authorize that user's arbitrary
 unprivileged commands inside the namespace. Codex registrations are automatic.
 
-## Remote builds and temporary activation
+## Historical laptop activation procedure (standalone only)
 
 Use WSL only for editing/Git/SSH. Run all Nix commands on native NixOS, in the
 separate `~/dev/my-nixos-vpn-test` checkout. Include new files in its Git index.
@@ -240,7 +244,7 @@ Keep rollback armed until host connectivity, VPN and wrapper checks have passed;
 only then cancel its timer. Home Manager preferences and refreshed tokens are
 mutable state and are not reverted by switching generations.
 
-## Verification checkpoint
+## Historical standalone verification checkpoint
 
 Native laptop kernel 7.2.6: the official package builds and lists Free servers.
 A live disposable namespace connected to hide.me Free, with different host/VPN

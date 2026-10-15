@@ -59,7 +59,23 @@ in
     };
   };
   config = lib.mkIf cfg.enable {
-    my.system.services.networkNamespaces.applications = codexApps;
+    my.system.services.networkNamespaces.applications =
+      codexApps
+      //
+        lib.mapAttrs'
+          (
+            user: hm:
+            lib.nameValuePair "orca-${user}" {
+              inherit user;
+              namespace = hm.my.user.ai.orca.networkNamespace;
+              package = hm.my.user.ai.orca.unwrappedPackage;
+            }
+          )
+          (
+            lib.filterAttrs (
+              _: hm: (hm.my.user.ai.orca.enable or false) && (hm.my.user.ai.orca.networkNamespace or null) != null
+            ) (config.home-manager.users or { })
+          );
     assertions = lib.mapAttrsToList (id: app: {
       assertion =
         builtins.match "[a-zA-Z][a-zA-Z0-9_-]*" id != null

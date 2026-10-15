@@ -8,6 +8,40 @@ let
   cfg = config.my.system.services.networkNamespaces;
   namespaceType = lib.types.submodule {
     options = {
+      shared = {
+        role = lib.mkOption {
+          type = lib.types.enum [
+            "standalone"
+            "gateway"
+            "client"
+          ];
+          default = "standalone";
+        };
+        address = lib.mkOption {
+          type = lib.types.str;
+          default = "10.77.0.1/24";
+        };
+        address6 = lib.mkOption {
+          type = lib.types.str;
+          default = "fd77::1/64";
+        };
+        endpoint = lib.mkOption {
+          type = lib.types.nullOr (lib.types.strMatching "[0-9.]+:[0-9]+");
+          default = null;
+          description = "Gateway Tailscale IPv4 and UDP port; required for clients.";
+        };
+        peers = lib.mkOption {
+          default = [ ];
+          type = lib.types.listOf (
+            lib.types.submodule {
+              options = {
+                publicKeyFile = lib.mkOption { type = lib.types.str; };
+                allowedIPs = lib.mkOption { type = lib.types.listOf lib.types.str; };
+              };
+            }
+          );
+        };
+      };
       enable = lib.mkEnableOption "this isolated VPN namespace";
       provider = lib.mkOption {
         type = lib.types.enum [ "hide-me" ];
@@ -63,7 +97,10 @@ let
   ) active;
 in
 {
-  imports = [ ./launcher.nix ];
+  imports = [
+    ./launcher.nix
+    ./shared.nix
+  ];
 
   options.my.system.services.networkNamespaces = {
     enable = lib.mkEnableOption "isolated VPN namespaces for selected applications";

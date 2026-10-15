@@ -97,11 +97,13 @@ machines for remote access. The server uses regular OpenSSH over Tailscale
 with committed **public** authorized keys. Services explicitly control
 which ports are exposed.
 
-The desktop hosts also provide a separate `vpn` network namespace backed by
-the hide.me client. Selected AI tools, including Codex and T3 Code, run
-through that namespace with isolated DNS, routing, and egress checks rather
-than moving the host's default network into the VPN. See
-[VPN namespace design](docs/network-namespaces.md).
+The profiles select one Hide.me connection in the server's `vpn` namespace.
+Desktop `vpn` namespaces send selected applications through that gateway over
+Tailscale, preserving isolated DNS, fail-closed routing and egress checks. Codex
+uses the namespace by default; `orca-vpn` is opt-in so normal Orca retains host
+SSH access. Host defaults and Docker stay on regular networking. This migration
+requires approved activation; see [shared gateway](docs/shared-vpn-gateway.md)
+and [namespace primitives](docs/network-namespaces.md).
 
 Currently both desktop hosts map `api.example.test` and
 `auth.example.test` to `192.0.2.12` using `networking.extraHosts` and trust
