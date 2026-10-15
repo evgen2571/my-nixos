@@ -14,12 +14,13 @@
     in
     {
       checks = {
+        shared-vpn-systemd = import ../tests/network-namespaces/systemd.nix { inherit pkgs; };
         shared-vpn-module = builtins.deepSeq shared.system shared.fixtures;
         standalone-vpn-module = builtins.deepSeq standalone.system standalone.launcher;
         shared-vpn-scripts =
           pkgs.runCommand "shared-vpn-script-checks" { nativeBuildInputs = [ pkgs.shellcheck ]; }
             ''
-              shellcheck ${../tests/network-namespaces/shared.sh} ${../tests/network-namespaces/prepare-shared-rollback.sh}
+              shellcheck ${../tests/network-namespaces/shared.sh} ${../tests/network-namespaces/prepare-shared-rollback.sh} ${../modules/system-services/network-namespaces/migration}/*.sh
               touch $out
             '';
       };

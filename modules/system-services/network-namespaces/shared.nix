@@ -5,6 +5,14 @@
   ...
 }:
 let
+  guard = pkgs.writeShellApplication {
+    name = "vpn-desktop-provider-guard";
+    runtimeInputs = [
+      pkgs.coreutils
+      pkgs.systemd
+    ];
+    text = builtins.readFile ./migration/desktop-provider-guard.sh;
+  };
   active = lib.filterAttrs (
     _: ns: ns.enable && ns.shared.role != "standalone"
   ) config.my.system.services.networkNamespaces.namespaces;
@@ -25,12 +33,14 @@ let
         ];
         text = ''
           umask 077
+          rm -f ${runtime}/transport-ready
           if [[ ! -s ${state}/private-key ]]; then
             wg genkey > ${state}/private-key.new
             mv ${state}/private-key.new ${state}/private-key
           fi
           chmod 0600 ${state}/private-key
-          wg pubkey < ${state}/private-key > ${state}/public-key
+          wg pubkey < ${state}/private-key > ${state}/public-key.new
+          mv ${state}/public-key.new ${state}/public-key
           ${lib.concatMapStringsSep "\n" (
             peer: "test -s ${lib.escapeShellArg peer.publicKeyFile}"
           ) ns.shared.peers}
@@ -69,6 +79,7 @@ let
                 printf 'nameserver 10.77.0.1\noptions timeout:2 attempts:2\n' > ${runtime}/resolv.conf
               ''
           }
+          touch ${runtime}/transport-ready
         '';
       };
     in
@@ -87,6 +98,10 @@ let
           message = "Shared VPN ${name} requires runtime peer keys and allowed IPs (one peer and an endpoint for clients).";
         }
       ];
+      system.activationScripts."${unit}-desktop-guard" = lib.mkIf (!gateway) {
+        deps = [ "etc" ];
+        text = "${lib.getExe guard} block hide-me-${name}.service";
+      };
       systemd.services.${unit} = {
         description = "Tailscale transport for shared VPN ${name}";
         wantedBy = [ "multi-user.target" ];
@@ -97,6 +112,7 @@ let
           "tailscaled.service"
         ];
         bindsTo = [ "netns-${name}.service" ];
+        partOf = [ "netns-${name}.service" ];
         serviceConfig = {
           Type = "oneshot";
           RemainAfterExit = true;
@@ -109,7 +125,7 @@ let
           StateDirectoryMode = "0700";
           ExecStart = lib.getExe start;
           ExecStop = "-${pkgs.iproute2}/bin/ip -n ${name} link delete shared0";
-          ExecStopPost = "${pkgs.coreutils}/bin/rm -f ${runtime}/ready";
+          ExecStopPost = "${pkgs.coreutils}/bin/rm -f ${runtime}/ready ${runtime}/transport-ready";
           Restart = "on-failure";
           RestartSec = 10;
         };
@@ -117,10 +133,12 @@ let
       };
       systemd.services."netns-${name}-dns" = lib.mkIf gateway {
         description = "VPN-only DNS for shared clients";
-        wantedBy = [ "multi-user.target" ];
-        requires = [ "${unit}.service" ];
+        requires = [ "netns-${name}.service" ];
         after = [ "${unit}.service" ];
-        bindsTo = [ "${unit}.service" ];
+        bindsTo = [ "netns-${name}.service" ];
+        # Depending on an auto-restarting transport would bypass its retry delay.
+        unitConfig.ConditionPathExists = "${runtime}/transport-ready";
+        partOf = [ "${unit}.service" ];
         serviceConfig = {
           ExecStart = "${pkgs.dnsmasq}/bin/dnsmasq --keep-in-foreground --conf-file=/dev/null --interface=shared0 --bind-interfaces --listen-address=10.77.0.1 --resolv-file=${runtime}/resolv.conf --no-hosts --cache-size=0 --pid-file=";
           User = "dnsmasq";
@@ -142,6 +160,10 @@ let
 in
 {
   config = lib.mkIf config.my.system.services.networkNamespaces.enable {
+    environment.systemPackages = [ guard ];
+    system.activationScripts = lib.mkMerge (
+      map (instance: instance.system.activationScripts) (lib.attrValues instances)
+    );
     assertions = lib.concatMap (instance: instance.assertions) (lib.attrValues instances);
     systemd.services = lib.mkMerge (
       map (instance: instance.systemd.services) (lib.attrValues instances)

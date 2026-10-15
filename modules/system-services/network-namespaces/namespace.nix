@@ -231,6 +231,7 @@ in
     ];
     wants = [ "network-online.target" ];
     bindsTo = [ "${netns}.service" ];
+    partOf = [ "${netns}.service" ];
     restartIfChanged = false;
     stopIfChanged = false;
     serviceConfig = {
@@ -259,6 +260,7 @@ in
     requires = [ "${underlay}.service" ];
     after = [ "${underlay}.service" ];
     bindsTo = [ "${netns}.service" ];
+    partOf = [ "${netns}.service" ];
     # Underlay restart should not force namespace teardown. The client's DPD
     # handles short outages and retries; systemd handles a crashed client.
     serviceConfig = {

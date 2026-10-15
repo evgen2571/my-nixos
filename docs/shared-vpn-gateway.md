@@ -67,11 +67,24 @@ stall, new launches fail readiness checks, and DNS cannot use the host resolver.
 `netns-vpn-shared` generates a persistent mode-0600 private key under its mode-0700
 `/var/lib/netns-vpn-shared` directory. Private keys never enter Nix expressions,
 Git, process arguments or logs. Peer public keys are runtime files in the same
-directory. Startup refuses missing peers and retries every ten seconds. It does
+directory. Startup refuses missing peers and retries every ten seconds. It publishes public keys atomically and does
 not overwrite an existing private key. Back up private state privately if needed.
+Client activation installs a persistent `/etc/systemd/system.control/hide-me-vpn.service`
+mask. This directory has higher priority than the generation-managed unit tree
+and survives reboot into pre-migration generations, including laptop SOPS token
+reprovisioning. Normal `systemctl unmask` does not remove this guard. Explicit
+`vpn-desktop-provider-guard unblock` is required after the gateway is confirmed
+stopped. Installing the guard does not stop an already running provider.
+
 Missing transport does not create an alternate route. Provider crashes and short
 underlay outages retain the existing reconnection logic; transport handshakes
-resume after Tailscale connectivity returns. Actual suspend/resume needs live
+resume after Tailscale connectivity returns. Gateway transport recreation also
+restarts its bound DNS unit. DNS is ordered after transport and gated by a root-owned transport-setup
+marker; it requires the namespace rather than the auto-restarting transport,
+so missing peer keys respect the transport retry delay instead of causing a
+dependency restart loop. Namespace restarts propagate to transport, underlay
+and provider units. A fresh transport can require a new WireGuard handshake;
+recovery is not instantaneous and readiness checks stay fail-closed meanwhile. Actual suspend/resume needs live
 verification. The server night-suspend timer is disabled while its gateway role
 is selected; the wake timer is retained. Gateway availability then depends on
 server power, networking and manual suspend decisions.
@@ -83,23 +96,36 @@ local Hide.me implementation. The role, client addresses, endpoint and peer
 public-key paths live under `my.system.services.networkNamespaces.namespaces.vpn.shared`.
 Only public-key paths are configured; secret contents must remain runtime state.
 
-## Required host-side inspection
+## Host-side inspection checkpoint
 
-This Codex session is inside `vpn` with `no_new_privs`; it cannot reach server
-Tailscale or elevate privileges. Use Orca's host terminal or a normal terminal
-on `nixos-pc` to collect the following **read-only** output:
+On 2026-10-15 a separate Orca host terminal, network namespace `4026531833`,
+ran plain `ssh server` successfully. `SSH_CONNECTION` confirmed the transport
+from PC Tailscale `100.116.169.8` to server `100.96.206.10:22`. This Codex session remained in namespace
+`4026532702`; no `setns`, privilege escalation or `no_new_privs` change was used.
+The server itself reported `nixos-server`, Tailscale IPv4 **100.96.206.10**,
+active SSH/Tailscale, no active Hide.me/namespace service, ordinary default route
+via `192.168.1.1`, and a healthy Docker container. PC default routing also remained
+ordinary, and its existing namespace/provider stayed active. The server still has
+its night-suspend timer enabled; candidate activation disables that timer.
+
+Server `sudo -n` requires a password. Token presence is **unknown**, not absent.
+An operator must check privately from a host terminal:
 
 ```bash
-ssh server 'hostname; systemctl is-active tailscaled sshd hide-me-vpn netns-vpn; ip -brief address; ip route; ip -6 route; systemctl list-timers --all --no-pager'
-ssh server 'sudo -n test -s /var/lib/hide-me-vpn/accessToken.txt && echo token-present || echo token-absent-or-sudo-unavailable'
-ssh server 'sudo -n docker ps --format "{{.Names}} {{.Ports}}"'
+ssh -t server 'sudo bash -c "if test -s /var/lib/hide-me-vpn/accessToken.txt; then echo token-present; else echo token-absent; fi"'
+```
+
+Repeat read-only inspection immediately before approved deployment:
+
+```bash
+ssh server 'hostname; tailscale ip -4; systemctl is-active tailscaled sshd; ip route; ip -6 route; ip rule; ip -6 rule; sha256sum /etc/resolv.conf; docker ps --format "{{.Names}} {{.Status}} {{.Ports}}"'
 systemctl is-active hide-me-vpn netns-vpn tailscaled
 ```
 
-Do not print token contents, private keys, environment dumps or full WireGuard
+Do not print tokens, private keys, environment dumps or full WireGuard
 configurations. The laptop must be online for simultaneous real-client testing.
-A host-side execution session with ordinary `ssh server` and authorized sudo is
-needed for approved deployment; do not bypass this session's security settings.
+A host-side execution session with authorized sudo is needed for approved
+migration. Keep a host terminal independent of Codex's namespace throughout.
 
 ## Reversible migration (approval required)
 
@@ -136,31 +162,68 @@ needed for approved deployment; do not bypass this session's security settings.
    activate anything. Verify the timer is active. Use `test`, never `switch`,
    for the first activation so the boot generation stays unchanged.
 5. Stop desktop Hide.me providers only after approval for the exclusive handover.
-   Confirm PC and laptop providers are inactive. Temporarily mask them on both
-   desktops to prevent accidental old-generation reconnection. Activate the
+   First install the persistent guard on **both** desktops from the reviewed
+   checkout, then stop their providers:
+
+   ```bash
+   sudo bash modules/system-services/network-namespaces/migration/desktop-provider-guard.sh block
+   sudo systemctl stop hide-me-vpn.service
+   test "$(systemctl show hide-me-vpn.service -p LoadState --value)" = masked
+   ! systemctl is-active --quiet hide-me-vpn.service
+   ```
+
+   Check both machines; an offline, unguarded laptop blocks migration because it
+   could reconnect when it boots. This mask survives reboot into old generations
+   and old laptop SOPS token provisioning. Do not use `--runtime` masks. Activate the
    approved server candidate with `SYSTEM_PATH/bin/switch-to-configuration test`.
-   On failure, stop server Hide.me, run its recorded old generation with `test`,
-   confirm the server provider stopped, then unmask/restart the previous PC VPN.
+   On failure, start its `shared-vpn-rollback.service` immediately or let the
+   armed timer run. Confirm server Hide.me inactive before explicitly removing
+   the persistent guard and restarting the previous provider on one desktop.
 6. Verify server host SSH/Tailscale, Docker health, unchanged host routes/resolver,
    gateway VPN egress/DNS and kill switch. With its rollback still armed, prepare
    each client rollback and activate its matching built output with `test`.
    Namespace units deliberately survive rebuilds: the local-to-shared migration
    needs a controlled stop of health timer, provider, underlay and namespace,
-   followed by start of namespace, shared transport and health timer. This ends
+   followed by temporary activation and an explicit start:
+
+   ```bash
+   sudo systemctl stop netns-vpn-health.timer netns-vpn-health.service hide-me-vpn.service netns-vpn-underlay.service netns-vpn.service
+   sudo SYSTEM_PATH/bin/switch-to-configuration test
+   sudo systemctl start netns-vpn.service netns-vpn-shared.service netns-vpn-health.timer
+   ```
+
+   Prepare each client's rollback **before** stopping its namespace. This ends
    existing app sessions; close/save them first. Do not restart NetworkManager,
    SSH or Tailscale. Verify each client's fresh namespace/filter and shared routes.
 7. Perform the live checklist below before cancelling any rollback. For manual
    rollback, stop server Hide.me and restore the server first; then restore client
-   generations. Client automatic rollback intentionally **masks** local Hide.me
-   rather than starting another connection while the server might still run.
-   Confirm server provider inactive before unmasking/restarting one desktop VPN.
-   Existing tokens are retained. Restore the old namespace with a controlled
-   restart; ordinary generation switching alone does not replace retained filters.
+   generations using `sudo systemctl start shared-vpn-rollback.service`.
+   The root oneshot cancels its timer to prevent a repeated manual rollback,
+   uses the rooted old generation's executable and PATH,
+   stops probes/provider/DNS/transport/underlay/namespace in order, removes any
+   orphaned named namespace and VPN links, clears its runtime resources, switches
+   to the old generation and explicitly starts its restored namespace lifecycle.
+   Existing app processes can retain an old namespace, but its shared egress link
+   is removed. They must be relaunched.
+
+   Desktop rollback keeps the **persistent** provider guard. It does not assume
+   that the server's rollback has already run and never starts a second provider.
+   After confirming server Hide.me inactive, restore exactly one desktop provider:
+
+   ```bash
+   sudo bash modules/system-services/network-namespaces/migration/desktop-provider-guard.sh unblock
+   sudo systemctl start hide-me-vpn.service netns-vpn-health.timer
+   ```
+
+   Existing tokens are retained. No guard is removed automatically, including
+   during old-generation activation or reboot. A rollback failure leaves the
+   guard installed; inspect `journalctl -u shared-vpn-rollback` from the host.
 8. Only after all checks pass, cancel `shared-vpn-rollback.timer` on each host,
    then persist the reviewed configuration with a separately approved `switch`.
    Remove rollback snapshot roots when no longer needed. Never cancel a timer
    because SSH alone still works. A boot of the old generation is a recovery
-   option, but avoid booting a desktop local provider while the gateway runs.
+   option: the persistent guard must remain installed on both desktops for as
+   long as the gateway can run. Keep it after successful migration too.
 
 ## Verification
 
@@ -174,7 +237,16 @@ nix build --no-link .#nixosConfigurations.nixos-pc.config.system.build.toplevel
 nix build --no-link .#nixosConfigurations.nixos-lp.config.system.build.toplevel
 ```
 
-The test uses disposable user/mount/network namespaces and the generated init and
+`nix flake check` includes a two-VM test with real systemd, generated units,
+privilege-restricted DNS, a simulated old provider and mock transport/egress. It
+checks missing-peer startup/retry, DNS resolver-file updates, DNS outage/recovery,
+DNS restart with gateway transport, blocked UDP recovery, independent rollback
+with an app retaining the old namespace, and an actual reboot into the old
+standalone image whose activation does not install a guard. No real Hide.me
+connection or credentials are involved. The guard must still block that image's
+provider; the test records provider starts to detect unwanted reconnects.
+
+The separate `shared-vpn-test` uses disposable user/mount/network namespaces and the generated init and
 transport scripts. It models Tailscale transport with local host UDP and Hide.me
 with a separate mock egress namespace, tests simultaneous clients, both address
 families, private DNS, failed VPN/transport and recovery, and compares host routes
@@ -199,14 +271,100 @@ Live acceptance remains distinct and must run through host SSH after approval:
   update access during VPN loss. Check suspend/reconnect separately if manual
   suspend is expected. Do not claim any of these passed based on mock tests.
 
+## Exact live acceptance steps (not yet run)
+
+These commands require explicit networking-activation approval and the migration
+steps above, including both persistent desktop guards, exchanged public keys,
+a privately provisioned server token, and independent rollback on all three hosts.
+Server sudo requires an operator's password. Do not enter it in agent messages.
+
+1. Record the rollback snapshot path printed by each helper. Keep two host SSH
+   sessions to the server and a local recovery console. Before activation and
+   after every fault, compare `ip -4/-6 route show table all`, `ip -4/-6 rule show`,
+   and `sha256sum /etc/resolv.conf` against those snapshots. Verify `ssh server`,
+   `tailscale ping nixos-server`, `docker ps`/container health, normal browser
+   access and `nix flake metadata --refresh` from host terminals. Exercise the
+   actual Docker service with its normal client during each fault too. Health/timer
+   status alone does not prove real egress or unaffected Docker traffic.
+2. After the server/client temporary activation, run on each host:
+
+   ```bash
+   sudo /etc/network-namespaces/vpn-check
+   systemctl status netns-vpn netns-vpn-shared netns-vpn-health.timer --no-pager
+   sudo ip -n vpn route show table all
+   sudo ip -n vpn -6 route show table all
+   sudo ip netns exec vpn nft list table inet agent_workspace
+   sudo ip netns exec vpn wg show shared0 latest-handshakes
+   ```
+
+   Additionally check server `hide-me-vpn`, `netns-vpn-underlay`, `netns-vpn-dns`
+   and `server-night-suspend.timer` (the suspend timer must be disabled/inactive).
+3. Simultaneously on PC/laptop, use the existing wrapped Codex to run an actual
+   child command, then resume that session:
+
+   ```bash
+   codex exec 'Run id, readlink /proc/self/ns/net, cat /etc/resolv.conf, curl --noproxy "*" -4 --max-time 10 https://api.ipify.org, and curl --noproxy "*" -6 --max-time 10 https://api64.ipify.org. Report raw results.'
+   codex resume
+   ```
+
+   Compare with server namespace and ordinary host egress from a root host
+   terminal (`sudo ip netns exec vpn curl --noproxy '*' -4/-6 ...` versus ordinary
+   `curl -4/-6 ...`). Both clients must share server VPN egress, distinct from host
+   egress. Close any ordinary Orca instance, launch `orca-vpn`, repeat the child
+   probes and verify its process namespace. Restart normal Orca and verify its
+   existing plain SSH integration. Root probes alone cannot replace app tests.
+4. Capture DNS on the gateway from separate approved root host terminals:
+
+   ```bash
+   nix shell --inputs-from . nixpkgs#tcpdump
+   sudo ip netns exec vpn "$(command -v tcpdump)" -ni shared0 port 53
+   sudo ip netns exec vpn "$(command -v tcpdump)" -ni hm0 port 53
+   sudo ip netns exec vpn "$(command -v tcpdump)" -ni tap0 port 53
+   sudo "$(command -v tcpdump)" -ni any port 53
+   ```
+
+   Query from both wrapped clients while checking their resolver/NSS mounts and
+   masked nscd path. Plain DNS must use client `10.77.0.1` and server `hm0`; none
+   may escape on the underlay or host. DoH bootstrap traffic is encrypted and is
+   separately restricted by the provider mark, not observable as port-53 DNS.
+5. With both client probes running, use host SSH to stop/restart only the server
+   provider, then restart its underlay and shared transport separately:
+
+   ```bash
+   ssh -t server 'sudo systemctl stop hide-me-vpn'
+   # Both client address families and DNS must fail; host SSH/Docker must work.
+   ssh -t server 'sudo systemctl start hide-me-vpn'
+   ssh -t server 'sudo systemctl restart netns-vpn-underlay'
+   ssh -t server 'sudo systemctl restart netns-vpn-shared'
+   ```
+
+   Verify fresh readiness and DNS after each recovery. Also simulate invalid
+   upstream DNS by backing up `/run/network-namespaces/vpn/resolv.conf`, writing
+   only `nameserver 127.0.0.1` **in place**, verifying DNS/app failure, then restoring
+   its original contents **in place** (bind mounts depend on the inode). Do not
+   edit the token or host resolver. Test a removed tunnel and blocked Tailscale
+   UDP only with a recovery console and an approved timed restore, preserving
+   the SSH control path. Neither packet-family may fall back to host networking.
+6. Test each armed rollback with `sudo systemctl start shared-vpn-rollback.service`,
+   restoring the server first. Confirm restored namespace/filter/resolver and
+   closed retained app namespace egress. Check desktop provider `LoadState=masked`.
+   Re-apply a new approved test only after re-arming rollback. Reboot a guarded
+   desktop into its old generation while the verified gateway remains active;
+   confirm its provider never starts. Check server manual suspend/resume only
+   with a local recovery operator. These destructive session tests end app
+   connections and require their own explicit approval.
+7. Only after all checks pass cancel rollback timers, persist the reviewed
+   generations with an approved `switch`, and retain both desktop guards.
+
 ## Implementation checkpoint
 
-Non-activating builds for all three hosts, `nix flake check`, ShellCheck and the
-disposable integration test passed on the PC. The disposable test uses mock
-transport/egress and explicitly reapplies mock provider state on recovery.
-No host configuration was activated, no local provider was stopped, and no keys
-or credentials were provisioned. Server live inspection, real Hide.me/Tailscale
-acceptance and production application/SSH/Docker checks remain pending the
-host-side access and approval described above. Build results and test logs are
-local `/tmp/shared-vpn-{build-server,build-pc,build-lp,flake-check,test}.log` files;
-these are evidence for this session, not durable deployment state.
+Host-side SSH/address/Docker inspection succeeded through a separate Orca host
+terminal; sudo token inspection requires a password. Live migration and all
+acceptance steps above remain unperformed. No live provider, namespace, route,
+mask or timer was changed. Automated test results and builds are recorded in
+PR #12; mock tests do not establish real Hide.me/Tailscale acceptance.
+
+Review verification passed: all three host builds, the real-systemd VM regression
+test (including old-generation reboot and reversible guard), the disposable
+simultaneous IPv4/IPv6/DNS/fail-closed test, formatting and ShellCheck. VM tests
+use mocked provider and Tailscale transport; no live Hide.me acceptance is implied.
