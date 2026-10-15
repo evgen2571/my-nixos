@@ -37,6 +37,32 @@
       syncthing.enable = true;
     };
 
+    system.services.networkNamespaces = {
+      enable = true;
+      namespaces.vpn = {
+        enable = true;
+        shared = {
+          role = "gateway";
+          peers = [
+            {
+              publicKeyFile = "/var/lib/netns-vpn-shared/pc.pub";
+              allowedIPs = [
+                "10.77.0.2/32"
+                "fd77::2/128"
+              ];
+            }
+            {
+              publicKeyFile = "/var/lib/netns-vpn-shared/laptop.pub";
+              allowedIPs = [
+                "10.77.0.3/32"
+                "fd77::3/128"
+              ];
+            }
+          ];
+        };
+      };
+    };
+
     system.services.tailscale = {
       enable = true;
       openFirewall = true;

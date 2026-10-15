@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 
 {
   imports = [
@@ -50,6 +50,7 @@
   };
 
   systemd.timers.server-night-suspend = {
+    enable = config.my.system.services.networkNamespaces.namespaces.vpn.shared.role != "gateway";
     wantedBy = [ "timers.target" ];
     timerConfig = {
       OnCalendar = "*-*-* 01:00:00";

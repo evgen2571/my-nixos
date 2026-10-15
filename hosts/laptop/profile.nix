@@ -40,12 +40,23 @@
       services = {
         networkNamespaces = {
           enable = true;
-
           namespaces.vpn = {
             enable = true;
-            server = "free-de";
-
-            bootstrapTokenFile = config.sops.secrets.hide-me-bootstrap-token.path;
+            shared = {
+              role = "client";
+              endpoint = "100.96.206.10:51877";
+              address = "10.77.0.3/24";
+              address6 = "fd77::3/64";
+              peers = [
+                {
+                  publicKeyFile = "/var/lib/netns-vpn-shared/server.pub";
+                  allowedIPs = [
+                    "0.0.0.0/0"
+                    "::/0"
+                  ];
+                }
+              ];
+            };
           };
         };
         lanMouse.enable = true;
@@ -65,7 +76,10 @@
         enable = true;
         networkNamespace = "vpn";
       };
-      orca.enable = true;
+      orca = {
+        enable = true;
+        networkNamespace = "vpn";
+      };
       skillshare.enable = true;
       codegraph.enable = true;
     };

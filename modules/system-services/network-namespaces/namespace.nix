@@ -6,6 +6,8 @@
   ns,
 }:
 let
+  shared = ns.shared.role != "standalone";
+  isClient = ns.shared.role == "client";
   runtime = "/run/network-namespaces/${name}";
   state = "/var/lib/hide-me-${name}";
   netns = "netns-${name}";
@@ -28,18 +30,33 @@ let
         type filter hook output priority 0; policy drop;
         oifname "lo" accept
         oifname "hm0" accept
+        ${lib.optionalString shared ''oifname "shared0" accept''}
         oifname "tap0" meta mark 0x486d meta l4proto { tcp, udp } accept
         counter drop
       }
       chain input {
         type filter hook input priority 0; policy drop;
         iifname "lo" accept
+        ${lib.optionalString (ns.shared.role == "gateway") ''
+          iifname "shared0" tcp dport 53 accept
+                  iifname "shared0" udp dport 53 accept''}
         ct state established,related accept
       }
       chain forward {
         type filter hook forward priority 0; policy drop;
+        ${lib.optionalString (ns.shared.role == "gateway") ''
+          iifname "shared0" oifname "hm0" accept
+                  iifname "hm0" oifname "shared0" ct state established,related accept''}
       }
     }
+    ${lib.optionalString (ns.shared.role == "gateway") ''
+      table inet shared_vpn_nat {
+        chain postrouting {
+          type nat hook postrouting priority srcnat; policy accept;
+          oifname "hm0" masquerade
+        }
+      }
+    ''}
   '';
   init = pkgs.writeShellApplication {
     name = "${netns}-init";
@@ -59,7 +76,10 @@ let
       chmod 0644 ${runtime}/nsswitch.conf
       # Flush and repopulate in ONE nft transaction; no open-filter interval.
       if ip netns exec ${name} nft list table inet agent_workspace >/dev/null 2>&1; then
-        { echo 'flush table inet agent_workspace'; cat ${policy}; } |
+        { echo 'flush table inet agent_workspace'; ${
+          lib.optionalString (ns.shared.role == "gateway")
+            "if ip netns exec ${name} nft list table inet shared_vpn_nat >/dev/null 2>&1; then echo 'flush table inet shared_vpn_nat'; fi;"
+        } cat ${policy}; } |
           ip netns exec ${name} nft -f -
       else
         ip netns exec ${name} nft -f ${policy}
@@ -124,11 +144,13 @@ let
     name = "${netns}-local-check";
     runtimeInputs = tools;
     text = ''
-      systemctl is-active --quiet ${vpn}.service
+      systemctl is-active --quiet ${if isClient then "netns-${name}-shared" else vpn}.service
       ip netns exec ${name} nft list table inet agent_workspace >/dev/null
-      ip -n ${name} -4 route get 1.1.1.1 | grep -q 'dev hm0'
-      ip -n ${name} -6 route get 2606:4700:4700::1111 | grep -q 'dev hm0'
-      ip netns exec ${name} wg show hm0 latest-handshakes |
+      ip -n ${name} -4 route get 1.1.1.1 | grep -q 'dev ${if isClient then "shared0" else "hm0"}'
+      ip -n ${name} -6 route get 2606:4700:4700::1111 | grep -q 'dev ${
+        if isClient then "shared0" else "hm0"
+      }'
+      ip netns exec ${name} wg show ${if isClient then "shared0" else "hm0"} latest-handshakes |
         awk -v now="$(date +%s)" '$2 > 0 && now >= $2 && now - $2 < 180 { ok = 1 } END { exit !ok }'
       awk '$1 == "nameserver" && $2 != "127.0.0.1" && $2 != "::1" { ok = 1 } END { exit !ok }' ${runtime}/resolv.conf
     '';
@@ -158,7 +180,7 @@ let
       # Keep the last success during a probe or brief failure. The launcher
       # independently enforces the 90-second TTL and fresh tunnel checks;
       # removing this file here would block launches during each probe.
-      systemctl is-active --quiet ${vpn}.service || exit 1
+      systemctl is-active --quiet ${if isClient then "netns-${name}-shared" else vpn}.service || exit 1
       # This service runs inside the VPN namespace with its own resolver.
       # The independent output filter prevents host-network fallback.
       for url in ${lib.escapeShellArgs ns.egressProbeUrls}; do
@@ -199,7 +221,7 @@ in
     };
   };
 
-  systemd.services.${underlay} = {
+  systemd.services.${underlay} = lib.mkIf (!isClient) {
     description = "Restricted userspace underlay for ${name}";
     wantedBy = [ "multi-user.target" ];
     requires = [ "${netns}.service" ];
@@ -231,7 +253,7 @@ in
     };
   };
 
-  systemd.services.${vpn} = {
+  systemd.services.${vpn} = lib.mkIf (!isClient) {
     description = "hide.me Free VPN in namespace ${name}";
     wantedBy = [ "multi-user.target" ];
     requires = [ "${underlay}.service" ];
@@ -273,7 +295,7 @@ in
 
   systemd.services."${netns}-health" = {
     description = "Verify external HTTPS egress through VPN ${name}";
-    after = [ "${vpn}.service" ];
+    after = [ "${if isClient then "netns-${name}-shared" else vpn}.service" ];
     serviceConfig = {
       Type = "oneshot";
       ExecStart = lib.getExe health;
