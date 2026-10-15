@@ -18,6 +18,8 @@ in
       "noctalia/bar.toml".source = configPaths.wm.noctaliaConfigDir + "/bar-${cfg.profile}.toml";
       "noctalia/user-templates.toml".source =
         configPaths.wm.noctaliaConfigDir + "/user-templates.toml";
+      "noctalia/templates/niri-dropdown.kdl".source =
+        configPaths.wm.noctaliaConfigDir + "/templates/niri-dropdown.kdl";
       "noctalia/widgets-common.toml".source =
         configPaths.wm.noctaliaConfigDir + "/widgets-common.toml";
       "noctalia/widgets.toml".source =

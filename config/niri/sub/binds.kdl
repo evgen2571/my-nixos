@@ -3,7 +3,7 @@ binds {
 
     // Apps
     Mod+Return repeat=false hotkey-overlay-title="Terminal" { spawn "kitty"; }
-    Mod+Shift+Return repeat=false hotkey-overlay-title="Dropdown Terminal" { spawn-sh "$HOME/.config/niri/scripts/focus-or-launch '^kitty$' --title '^dropdown-term$' --toggle -- kitty -T dropdown-term"; }
+    Mod+Shift+Return repeat=false hotkey-overlay-title="Dropdown Terminal" { spawn-sh "$HOME/.config/niri/scripts/focus-or-launch '^kitty$' --title '^dropdown-term$' --toggle -- env DROPDOWN_TERM=1 kitty -T dropdown-term tmux new-session -A -s dropdown -e DROPDOWN_TERM=1"; }
     Mod+F repeat=false hotkey-overlay-title="Browser" { spawn-sh "$HOME/.config/niri/scripts/focus-or-launch '^(zen-beta|zen)$' -- zen-beta"; }
     Mod+E repeat=false hotkey-overlay-title="TUI File Manager" { spawn "kitty" "-T" "file-manager" "yazi"; }
     Mod+Shift+E repeat=false hotkey-overlay-title="GUI File Manager" { spawn-sh "$HOME/.config/niri/scripts/focus-or-launch '^org\\.kde\\.dolphin$' -- dolphin"; }

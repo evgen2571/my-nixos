@@ -383,6 +383,10 @@ wallpaper_scheme = "m3-content"
         output_path = "~/.config/nvim/lua/matugen.lua"
         post_hook = "pkill -SIGUSR1 nvim"
 
+        [theme.templates.user.niri-dropdown]
+        input_path = "$XDG_CONFIG_HOME/noctalia/templates/niri-dropdown.kdl"
+        output_path = "$XDG_CONFIG_HOME/niri/noctalia-dropdown.kdl"
+
 [wallpaper]
 directory = "/home/evgen2571/drive/Wallpapers"
 directory_dark = ""

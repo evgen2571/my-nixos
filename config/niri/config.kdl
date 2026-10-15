@@ -90,3 +90,6 @@ include "sub/input.kdl"
 include "sub/startup.kdl"
 
 include "./noctalia.kdl"
+
+// Noctalia-generated dropdown colors; optional before the first theme render.
+include optional=true "./noctalia-dropdown.kdl"
