@@ -5,6 +5,8 @@ return {
     event = 'VimEnter',
     opts = {
       delay = 0,
+      preset = 'modern',
+      win = { border = 'rounded' },
       icons = {
         mappings = vim.g.have_nerd_font,
         keys = vim.g.have_nerd_font and {} or {
@@ -39,17 +41,30 @@ return {
         },
       },
       spec = {
-        { '<leader>c', group = 'Code' },
+        {
+          '<leader>?',
+          function()
+            require('which-key').show { keys = '<leader>', loop = true }
+          end,
+          desc = 'Show all shortcut groups',
+        },
+        { '<leader>b', group = '📌 Bookmarks (Harpoon)' },
+        { '<leader>c', group = '🧰 Code & build' },
+        { '<leader>cm', group = 'CMake' },
+        { '<leader>cp', group = 'Competitive programming' },
         { '<leader>cr', group = 'Rust' },
-        { '<leader>cp', group = 'CP' },
-        { '<leader>d', group = 'Debug / diagnostics' },
-        { '<leader>g', group = 'Git' },
+        { '<leader>d', group = '🐛 Debug & diagnostics' },
+        { '<leader>g', group = '🌿 Git' },
         { '<leader>gc', group = 'Git conflicts' },
-        { '<leader>h', group = 'Git hunk', mode = { 'n', 'v' } },
-        { '<leader>m', group = 'Molten / Research' },
-        { '<leader>r', group = 'Resize split' },
-        { '<leader>s', group = 'Search' },
-        { '<leader>t', group = 'Toggle / tools' },
+        { '<leader>h', group = 'Git hunks', mode = { 'n', 'v' } },
+        { '<leader>m', group = '🧪 Notebooks / Molten' },
+        { '<leader>r', group = '🌐 Remote SSH' },
+        { '<leader>s', group = '🔎 Find & search' },
+        { '<leader>t', group = '🛠️ Tests & toggles' },
+        { '<leader>v', group = '📖 Markdown view' },
+        -- Preserve established Harpoon aliases without cluttering the guide.
+        { '<leader>a', hidden = true },
+        { '<leader>e', hidden = true },
       },
     },
   },

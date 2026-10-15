@@ -41,6 +41,34 @@ Ruff provides fast linting and formatting; Pyright handles completion and basic
 open-file type diagnostics. Mypy is an explicit project check. Configure rule sets
 in `pyproject.toml`; services such as JupyterLab and MLflow are never global installs.
 
+## Finding keybindings (leader is Space)
+
+Press `Space` to see the Which-Key menu with categorized shortcuts.
+Use `Space ?` to open the menu as a persistent guide (Esc to close),
+or `Space s k` to fuzzy-search all mapped keys by name. Groups include
+Search, Code / build, Bookmarks, Git, Debug, Remote SSH, notebooks,
+Markdown, and tests / toggles; they follow existing mappings rather than
+replacing them. Remote SSH uses `Space r`; window resizing remains on Alt
++ h/j/k/l.
+
+| Keys | Action |
+| --- | --- |
+| `Space ?` | Open interactive shortcut guide |
+| `Space s k` | Search shortcuts by description |
+| `Space s f` / `Space s g` | Find project files / grep content (local or remote) |
+| `Space Space` | Switch open buffers |
+| `Space b a` / `Space b m` | Bookmark current file / show Harpoon menu |
+| `Space b 1` through `Space b 4` | Jump to a bookmarked file |
+
+Previous `Space a`, `Space e`, and Alt+a/s/d/f Harpoon shortcuts still
+work; they are kept as compatibility aliases. The grouped menu displays
+the new `Space b` alternatives.
+
+Telescope's pinned utilities need a small local compatibility fallback
+because Neovim 0.12 lacks both the removed `vim.F.if_nil` and the newer
+`vim.nonnil` (introduced in 0.13). This fallback only changes Telescope
+when its own helper is missing.
+
 ## Keys (leader is Space)
 
 | Keys | Action |

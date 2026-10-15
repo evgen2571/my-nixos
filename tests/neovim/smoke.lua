@@ -98,6 +98,31 @@ check("Markdown editing without Obsidian", function()
 	assert(require("conform").get_formatter_info("prettier", 0).available)
 	vim.bo.modified = false
 end)
+check("Telescope fallback for Neovim 0.12", function()
+	require("lazy").load({ plugins = { "telescope.nvim" } })
+	local utils = require("telescope.utils")
+	assert(type(utils.if_nil) == "function")
+	assert(utils.if_nil(nil, "fallback") == "fallback")
+	assert(utils.if_nil(false, true) == false)
+end)
+check("Discoverable keymaps", function()
+	for _, lhs in ipairs({
+		"<leader>?", "<leader>sk", "<leader>ba", "<leader>bm",
+		"<leader>b1", "<leader>b2", "<leader>b3", "<leader>b4",
+	}) do
+		assert(vim.fn.maparg(lhs, "n") ~= "", "Missing shortcut: " .. lhs)
+	end
+	local spec = require("lazy.core.config").plugins["which-key.nvim"].opts.spec
+	local groups = {}
+	for _, entry in ipairs(spec) do
+		if entry.group then
+			groups[entry[1]] = entry.group
+		end
+	end
+	assert(groups["<leader>b"])
+	assert(groups["<leader>r"] == "🌐 Remote SSH")
+	assert(groups["<leader>v"])
+end)
 check("AI toggle without Ollama inference", function()
 	require("minuet")
 	local action = require("minuet.virtualtext").action
