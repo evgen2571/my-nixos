@@ -6,6 +6,12 @@ let
 in
 {
   sops.secrets = {
+    vpn-wireguard-private-key = {
+      sopsFile = ../../secrets/vpn/pc.yaml;
+      key = "wireguard_private_key";
+      mode = "0400";
+      restartUnits = [ "netns-vpn-shared.service" ];
+    };
     ssh-github-private-key = {
       sopsFile = file;
       key = "ssh_github_private_key";

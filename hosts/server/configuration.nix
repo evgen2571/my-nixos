@@ -4,6 +4,7 @@
   imports = [
     ./hardware-configuration.nix
     ./profile.nix
+    ./secrets.nix
     ../../modules/system-core/server.nix
     ../../modules/system-core/user.nix
   ];

@@ -22,7 +22,6 @@ let
       gateway = ns.shared.role == "gateway";
       unit = "netns-${name}-shared";
       runtime = "/run/network-namespaces/${name}";
-      state = "/var/lib/${unit}";
       start = pkgs.writeShellApplication {
         name = "${unit}-start";
         runtimeInputs = with pkgs; [
@@ -34,24 +33,15 @@ let
         text = ''
           umask 077
           rm -f ${runtime}/transport-ready
-          if [[ ! -s ${state}/private-key ]]; then
-            wg genkey > ${state}/private-key.new
-            mv ${state}/private-key.new ${state}/private-key
-          fi
-          chmod 0600 ${state}/private-key
-          wg pubkey < ${state}/private-key > ${state}/public-key.new
-          mv ${state}/public-key.new ${state}/public-key
-          ${lib.concatMapStringsSep "\n" (
-            peer: "test -s ${lib.escapeShellArg peer.publicKeyFile}"
-          ) ns.shared.peers}
+          test -s ${lib.escapeShellArg ns.shared.privateKeyFile}
           # WireGuard's UDP socket stays in its birth namespace (the host).
           ip -n ${name} link delete shared0 2>/dev/null || true
           transport="svpn$$"
           ip link add "$transport" type wireguard
           trap 'ip link delete "$transport" 2>/dev/null || true' EXIT
-          wg set "$transport" private-key ${state}/private-key ${lib.optionalString gateway "listen-port 51877"}
+          wg set "$transport" private-key ${lib.escapeShellArg ns.shared.privateKeyFile} ${lib.optionalString gateway "listen-port 51877"}
           ${lib.concatMapStringsSep "\n" (peer: ''
-            wg set "$transport" peer "$(cat ${lib.escapeShellArg peer.publicKeyFile})" allowed-ips ${lib.escapeShellArg (lib.concatStringsSep "," peer.allowedIPs)} ${
+            wg set "$transport" peer ${lib.escapeShellArg peer.publicKey} allowed-ips ${lib.escapeShellArg (lib.concatStringsSep "," peer.allowedIPs)} ${
               lib.optionalString (!gateway) "endpoint ${ns.shared.endpoint} persistent-keepalive 25"
             }
           '') ns.shared.peers}
@@ -87,20 +77,17 @@ let
       assertions = [
         {
           assertion =
-            ns.shared.peers != [ ]
+            lib.hasPrefix "/" ns.shared.privateKeyFile
+            && !lib.hasPrefix "/nix/store/" ns.shared.privateKeyFile
+            && ns.shared.peers != [ ]
             && (gateway || (builtins.length ns.shared.peers == 1 && ns.shared.endpoint != null))
-            && lib.all (
-              p:
-              lib.hasPrefix "/" p.publicKeyFile
-              && !lib.hasPrefix "/nix/store/" p.publicKeyFile
-              && p.allowedIPs != [ ]
-            ) ns.shared.peers;
-          message = "Shared VPN ${name} requires runtime peer keys and allowed IPs (one peer and an endpoint for clients).";
+            && lib.all (p: p.allowedIPs != [ ]) ns.shared.peers;
+          message = "Shared VPN ${name} requires a runtime private key, declarative public keys and allowed IPs (one peer and an endpoint for clients).";
         }
       ];
       system.activationScripts."${unit}-desktop-guard" = lib.mkIf (!gateway) {
         deps = [ "etc" ];
-        text = "${lib.getExe guard} block hide-me-${name}.service";
+        text = "${lib.getExe guard} ${name}";
       };
       systemd.services.${unit} = {
         description = "Tailscale transport for shared VPN ${name}";
@@ -121,8 +108,6 @@ let
             "CAP_NET_ADMIN"
             "CAP_SYS_ADMIN"
           ];
-          StateDirectory = unit;
-          StateDirectoryMode = "0700";
           ExecStart = lib.getExe start;
           ExecStop = "-${pkgs.iproute2}/bin/ip -n ${name} link delete shared0";
           ExecStopPost = "${pkgs.coreutils}/bin/rm -f ${runtime}/ready ${runtime}/transport-ready";
@@ -160,7 +145,9 @@ let
 in
 {
   config = lib.mkIf config.my.system.services.networkNamespaces.enable {
-    environment.systemPackages = [ guard ];
+    environment.systemPackages = lib.optional (lib.any (ns: ns.shared.role == "client") (
+      lib.attrValues active
+    )) guard;
     system.activationScripts = lib.mkMerge (
       map (instance: instance.system.activationScripts) (lib.attrValues instances)
     );
