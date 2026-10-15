@@ -30,12 +30,17 @@ let
           default = null;
           description = "Gateway Tailscale IPv4 and UDP port; required for clients.";
         };
+        privateKeyFile = lib.mkOption {
+          type = lib.types.str;
+          default = "/run/secrets/vpn-wireguard-private-key";
+          description = "Root-readable runtime WireGuard private key, normally managed by sops-nix.";
+        };
         peers = lib.mkOption {
           default = [ ];
           type = lib.types.listOf (
             lib.types.submodule {
               options = {
-                publicKeyFile = lib.mkOption { type = lib.types.str; };
+                publicKey = lib.mkOption { type = lib.types.strMatching "[A-Za-z0-9+/]{43}="; };
                 allowedIPs = lib.mkOption { type = lib.types.listOf lib.types.str; };
               };
             }
@@ -127,7 +132,9 @@ in
       "wireguard"
       "tun"
     ];
-    environment.systemPackages = [ (pkgs.callPackage ../../../packages/hide-me { }) ];
+    environment.systemPackages = lib.optional (lib.any (ns: ns.shared.role != "client") (
+      lib.attrValues active
+    )) (pkgs.callPackage ../../../packages/hide-me { });
     environment.etc = lib.mkMerge (
       lib.mapAttrsToList (_: instance: instance.environment.etc) instances
     );

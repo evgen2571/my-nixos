@@ -29,9 +29,11 @@ let
       chain output {
         type filter hook output priority 0; policy drop;
         oifname "lo" accept
-        oifname "hm0" accept
+        ${lib.optionalString (!isClient) ''oifname "hm0" accept''}
         ${lib.optionalString shared ''oifname "shared0" accept''}
-        oifname "tap0" meta mark 0x486d meta l4proto { tcp, udp } accept
+        ${lib.optionalString (
+          !isClient
+        ) ''oifname "tap0" meta mark 0x486d meta l4proto { tcp, udp } accept''}
         counter drop
       }
       chain input {
@@ -129,8 +131,15 @@ let
       done
       printf 'nameserver 127.0.0.1\noptions timeout:1 attempts:1\n' > ${runtime}/resolv.conf
       ${lib.optionalString (ns.bootstrapTokenFile != null) ''
-        if [[ ! -s ${state}/accessToken.txt ]]; then
-          install -m 0600 ${lib.escapeShellArg ns.bootstrapTokenFile} ${state}/accessToken.txt
+        if [[ ! -s ${lib.escapeShellArg ns.bootstrapTokenFile} ]]; then
+          echo 'Provision a nonempty Hide.me bootstrap token in SOPS before starting the gateway.' >&2
+          exit 1
+        fi
+        digest=$(sha256sum ${lib.escapeShellArg ns.bootstrapTokenFile} | cut -d ' ' -f 1)
+        if [[ ! -s ${state}/bootstrap-digest || "$(cat ${state}/bootstrap-digest)" != "$digest" ]]; then
+          install -m 0600 ${lib.escapeShellArg ns.bootstrapTokenFile} ${state}/accessToken.new
+          mv ${state}/accessToken.new ${state}/accessToken.txt
+          printf '%s\n' "$digest" > ${state}/bootstrap-digest
         fi
       ''}
       if [[ ! -s ${state}/accessToken.txt || -L ${state}/accessToken.txt ]]; then
@@ -204,8 +213,8 @@ in
       "${vpn}.service"
     ];
     # Changing a package elsewhere must not destroy active app namespaces.
-    restartIfChanged = false;
-    stopIfChanged = false;
+    restartIfChanged = shared;
+    stopIfChanged = shared;
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;

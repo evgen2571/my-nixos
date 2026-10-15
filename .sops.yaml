@@ -49,3 +49,14 @@ creation_rules:
           - *pc
           - *laptop
           - *server
+
+  # VPN private keys and server-only authentication.
+  - path_regex: secrets/vpn/pc\.yaml$
+    key_groups:
+      - age: [*admin, *pc]
+  - path_regex: secrets/vpn/laptop\.yaml$
+    key_groups:
+      - age: [*admin, *laptop]
+  - path_regex: secrets/vpn/server\.yaml$
+    key_groups:
+      - age: [*admin, *server]

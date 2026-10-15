@@ -11,6 +11,11 @@ depend on an OpenSSH host key.
 | `nixos-lp` | `secrets/hosts/laptop.yaml` |
 | `nixos-server` | `secrets/hosts/server.yaml` |
 
+VPN private keys live separately in `secrets/vpn/<host>.yaml`, encrypted only to
+the administrator and that host. Public WireGuard keys are declarative in
+`hosts/vpn-public-keys.nix`. Server authentication uses the server VPN file; its
+currently empty bootstrap token must be privately provisioned before deployment.
+
 Use `secrets/common.yaml` only for a value genuinely consumed by multiple
 hosts. Keep every `sops.secrets` declaration next to the host or service that
 consumes it.
@@ -23,9 +28,9 @@ than being moved into SOPS.
 
 ## Bootstrap the recipients
 
-The active `.sops.yaml` is deliberately unusable until this procedure is
-complete: it contains empty `keys` and `creation_rules` values plus a commented
-template. Do not invent recipients or use its placeholder strings.
+The active `.sops.yaml` already declares the administrator and three dedicated
+host recipients. The steps below describe initial setup for a new host; do not
+replace existing host identities or working recipients. Never invent recipients.
 
 ### 1. Generate each host identity
 
@@ -111,6 +116,11 @@ nix shell nixpkgs#sops -c sops secrets/hosts/server.yaml
 ```
 
 Use `secrets/hosts/pc.yaml` or `secrets/hosts/laptop.yaml` for the other hosts.
+VPN private keys live separately in `secrets/vpn/<host>.yaml`, encrypted only to
+the administrator and that host. Public WireGuard keys are declarative in
+`hosts/vpn-public-keys.nix`. Server authentication uses the server VPN file; its
+currently empty bootstrap token must be privately provisioned before deployment.
+
 Use `secrets/common.yaml` only when more than one configured host consumes the
 same value. SOPS opens an editor and saves encrypted YAML; inspect the result
 before committing to ensure no plaintext value remains.
