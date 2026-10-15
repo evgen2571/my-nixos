@@ -59,20 +59,11 @@ window-rule {
     match app-id=r#"^kitty$"# title="dropdown-term"
     draw-border-with-background false
     opacity 0.88
+	open-maximized-to-edges false
     open-floating true
     open-focused true
     default-column-width { proportion 0.70; }
     default-window-height { proportion 0.42; }
     default-floating-position x=0 y=12 relative-to="top"
-    focus-ring {
-        on
-        width 3
-        active-color "#b58bcc"
-    }
-    shadow {
-        on
-        spread 4
-        softness 10
-        color "#695175"
-    }
+    // Focus-ring and shadow colors come from the Noctalia-generated rule.
 }

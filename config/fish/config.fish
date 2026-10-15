@@ -1,5 +1,7 @@
 function fish_greeting
-	microfetch
+    if not set -q DROPDOWN_TERM
+        microfetch
+    end
 end
 
 set -U fish_greeting

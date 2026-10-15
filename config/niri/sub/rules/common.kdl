@@ -47,7 +47,6 @@ window-rule {
     match app-id=r#"^(kitty|foot)$"#
     draw-border-with-background false
     opacity 0.92
-	open-maximized-to-edges true
 }
 
 // Editor terminal

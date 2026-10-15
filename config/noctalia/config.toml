@@ -374,7 +374,7 @@ wallpaper_scheme = "m3-content"
 
     [theme.templates]
     builtin_ids = [ "cava", "gtk3", "gtk4", "kcolorscheme", "kitty", "niri" ]
-    community_ids = [ "pear-desktop", "telegram", "libreoffice", "neovim", "obsidian", "lazygit", "yazi" ]
+    community_ids = [ "pear-desktop", "telegram", "libreoffice", "neovim", "obsidian", "lazygit", "yazi", "codex", "opencode", "bat", "obs", "prismlauncher" ]
     enable_builtin_templates = true
     enable_community_templates = true
 
@@ -382,6 +382,10 @@ wallpaper_scheme = "m3-content"
         input_path = "~/.config/nvim/lua/matugen-template.lua"
         output_path = "~/.config/nvim/lua/matugen.lua"
         post_hook = "pkill -SIGUSR1 nvim"
+
+        [theme.templates.user.niri-dropdown]
+        input_path = "$XDG_CONFIG_HOME/noctalia/templates/niri-dropdown.kdl"
+        output_path = "$XDG_CONFIG_HOME/niri/noctalia-dropdown.kdl"
 
 [wallpaper]
 directory = "/home/operator/drive/Wallpapers"
