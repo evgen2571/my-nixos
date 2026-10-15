@@ -98,6 +98,18 @@ check("Markdown editing without Obsidian", function()
 	assert(require("conform").get_formatter_info("prettier", 0).available)
 	vim.bo.modified = false
 end)
+check("Popup documentation and compact shortcut menu", function()
+	local hover = vim.fn.maparg("K", "n", false, true)
+	assert(hover.desc == "Documentation: hover at cursor")
+	assert(vim.lsp.config.gopls, "gopls LSP is not registered")
+
+	local opts = require("lazy.core.config").plugins["which-key.nvim"].opts
+	assert(opts.preset == "classic")
+	assert(opts.win.border == "none")
+	assert(opts.layout.width.max == 34)
+	assert(opts.layout.spacing == 2)
+	assert(opts.win.height.max == 12)
+end)
 check("Telescope fallback for Neovim 0.12", function()
 	require("lazy").load({ plugins = { "telescope.nvim" } })
 	local utils = require("telescope.utils")

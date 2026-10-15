@@ -43,7 +43,9 @@ in `pyproject.toml`; services such as JupyterLab and MLflow are never global ins
 
 ## Finding keybindings (leader is Space)
 
-Press `Space` to see the Which-Key menu with categorized shortcuts.
+Press `Space` to see a compact, borderless, bottom-aligned Which-Key menu
+in multiple columns. Its maximum height is limited to 12 rows. The plugin
+internally uses a floating Neovim window even for this classic presentation.
 Use `Space ?` to open the menu as a persistent guide (Esc to close),
 or `Space s k` to fuzzy-search all mapped keys by name. Groups include
 Search, Code / build, Bookmarks, Git, Debug, Remote SSH, notebooks,
@@ -123,6 +125,12 @@ Markdown and Markdown-inline Tree-sitter parsers are already installed.
 Marksman provides Markdown LSP navigation, completion and reference diagnostics.
 Open a Markdown file and use `:LspInfo` to check it attached. The renderer's
 checkbox and callout completions are enabled through its built-in LSP source.
+
+Pressing `K` requests LSP hover in a small rounded popup by the cursor. If
+no hover-capable language server is attached, it displays a short notification
+rather than invoking `keywordprg` (for example, `go doc` in a terminal).
+Go and gopls are installed declaratively for Go projects; open a module with
+`go.mod` and check `:LspInfo` if hover is unavailable.
 
 `:Man` provides Unix manual pages, not language API docs. For Java, keep the
 existing JDTLS integration: open a Java project, check `:LspInfo`, then press

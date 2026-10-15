@@ -137,6 +137,7 @@ return {
         ruff = { on_attach = function(client) client.server_capabilities.hoverProvider = false end },
         nixd = {},
         marksman = {},
+        gopls = {},
         clangd = {
           cmd = { 'clangd', '--header-insertion=never', '--compile-commands-dir=.' },
         },

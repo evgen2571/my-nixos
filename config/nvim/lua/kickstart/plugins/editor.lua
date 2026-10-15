@@ -4,9 +4,21 @@ return {
     'folke/which-key.nvim',
     event = 'VimEnter',
     opts = {
-      delay = 0,
-      preset = 'modern',
-      win = { border = 'rounded' },
+      delay = 180,
+      -- Classic is a borderless bottom-anchored multi-column menu.
+      -- Which-Key still implements it with a floating window internally.
+      preset = 'classic',
+      show_help = false,
+      win = {
+        border = 'none',
+        padding = { 0, 1 },
+        height = { min = 3, max = 12 },
+        no_overlap = false,
+      },
+      layout = {
+        width = { min = 18, max = 34 },
+        spacing = 2,
+      },
       icons = {
         mappings = vim.g.have_nerd_font,
         keys = vim.g.have_nerd_font and {} or {
