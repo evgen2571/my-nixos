@@ -16,7 +16,7 @@ return {
     opts = {
       notify_on_error = false,
       format_on_save = function(bufnr)
-        local disable_filetypes = { c = true, cpp = true }
+        local disable_filetypes = { c = true, cpp = true, markdown = true }
         if disable_filetypes[vim.bo[bufnr].filetype] then
           return nil
         else
@@ -37,6 +37,7 @@ return {
         c = { 'clang_format' },
         gdscript = { 'gdformat' },
         java = { 'google-java-format' },
+        markdown = { 'prettier' },
       },
       formatters = {
         clang_format = {

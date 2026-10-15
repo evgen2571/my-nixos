@@ -83,6 +83,85 @@ check("LSP, formatting and lint policy", function()
 	assert(not lint.linters_by_ft.python)
 	assert(require("conform").get_formatter_info("ruff_format", 0).available)
 end)
+check("Markdown editing without Obsidian", function()
+	local plugins = require("lazy.core.config").plugins
+	assert(plugins["render-markdown.nvim"])
+	assert(not plugins["obsidian.nvim"])
+	assert(plugins["render-markdown.nvim"].opts.completions.lsp.enabled)
+	assert(vim.lsp.config.marksman)
+	vim.cmd.edit(vim.fn.tempname() .. ".md")
+	vim.bo.filetype = "markdown"
+	assert(vim.wo.wrap and vim.wo.linebreak and vim.wo.breakindent)
+	assert(not vim.wo.list and not vim.wo.relativenumber)
+	assert(vim.fn.maparg("<leader>vr", "n") ~= "")
+	assert(vim.fn.maparg("<leader>vp", "n") ~= "")
+	assert(require("conform").get_formatter_info("prettier", 0).available)
+	vim.bo.modified = false
+end)
+check("Popup documentation and compact shortcut menu", function()
+	local hover = vim.fn.maparg("K", "n", false, true)
+	assert(hover.desc == "Documentation: hover at cursor")
+	assert(vim.lsp.config.gopls, "gopls LSP is not registered")
+
+	local opts = require("lazy.core.config").plugins["which-key.nvim"].opts
+	assert(opts.preset == "classic")
+	assert(opts.win.border == "none")
+	assert(opts.layout.width.max == 34)
+	assert(opts.layout.spacing == 2)
+	assert(opts.win.height.max == 12)
+end)
+check("Compact hover Markdown", function()
+	local hover = require("custom.hover")
+	assert(hover.preview_options.max_width == 60)
+	assert(hover.preview_options.max_height == 12)
+	local compact = hover.compact({
+		"```go",
+		"func Error(msg string, args ...any)",
+		"```",
+		"",
+		"---",
+		"",
+		"Error calls [Logger.Error](https://pkg.go.dev/log/slog#Logger.Error).",
+		"",
+		"",
+		"Added in go1.21",
+	})
+	assert(vim.deep_equal(compact, {
+		"```go",
+		"func Error(msg string, args ...any)",
+		"```",
+		"Error calls [Logger.Error](https://pkg.go.dev/log/slog#Logger.Error).",
+		"",
+		"Added in go1.21",
+	}))
+	local fenced = hover.compact({ "```text", "---", "```" })
+	assert(fenced[2] == "---", "Fenced content must not be modified")
+end)
+check("Telescope fallback for Neovim 0.12", function()
+	require("lazy").load({ plugins = { "telescope.nvim" } })
+	local utils = require("telescope.utils")
+	assert(type(utils.if_nil) == "function")
+	assert(utils.if_nil(nil, "fallback") == "fallback")
+	assert(utils.if_nil(false, true) == false)
+end)
+check("Discoverable keymaps", function()
+	for _, lhs in ipairs({
+		"<leader>?", "<leader>sk", "<leader>ba", "<leader>bm",
+		"<leader>b1", "<leader>b2", "<leader>b3", "<leader>b4",
+	}) do
+		assert(vim.fn.maparg(lhs, "n") ~= "", "Missing shortcut: " .. lhs)
+	end
+	local spec = require("lazy.core.config").plugins["which-key.nvim"].opts.spec
+	local groups = {}
+	for _, entry in ipairs(spec) do
+		if entry.group then
+			groups[entry[1]] = entry.group
+		end
+	end
+	assert(groups["<leader>b"])
+	assert(groups["<leader>r"] == "🌐 Remote SSH")
+	assert(groups["<leader>v"])
+end)
 check("AI toggle without Ollama inference", function()
 	require("minuet")
 	local action = require("minuet.virtualtext").action

@@ -44,6 +44,20 @@ autocmd("Colorscheme", {
 	end,
 })
 
+-- Keep prose readable without changing window options for source code.
+autocmd("FileType", {
+	pattern = "markdown",
+	desc = "Comfortable Markdown reading and editing",
+	callback = function()
+		vim.opt_local.wrap = true
+		vim.opt_local.linebreak = true
+		vim.opt_local.breakindent = true
+		vim.opt_local.list = false
+		vim.opt_local.relativenumber = false
+		vim.opt_local.colorcolumn = ""
+	end,
+})
+
 local focus_group = augroup("custom-window-focus", { clear = true })
 autocmd({ "BufEnter", "WinEnter" }, {
 	group = focus_group,

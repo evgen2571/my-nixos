@@ -40,6 +40,11 @@ in
       delve
       lua-language-server
       stylua
+      marksman
+      # Go tooling is required for gopls-backed hover documentation.
+      go
+      gopls
+      prettier
       tree-sitter
       matugen
     ];

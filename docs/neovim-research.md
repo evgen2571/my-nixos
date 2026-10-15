@@ -41,6 +41,36 @@ Ruff provides fast linting and formatting; Pyright handles completion and basic
 open-file type diagnostics. Mypy is an explicit project check. Configure rule sets
 in `pyproject.toml`; services such as JupyterLab and MLflow are never global installs.
 
+## Finding keybindings (leader is Space)
+
+Press `Space` to see a compact, borderless, bottom-aligned Which-Key menu
+in multiple columns. Its maximum height is limited to 12 rows. The plugin
+internally uses a floating Neovim window even for this classic presentation.
+Use `Space ?` to open the menu as a persistent guide (Esc to close),
+or `Space s k` to fuzzy-search all mapped keys by name. Groups include
+Search, Code / build, Bookmarks, Git, Debug, Remote SSH, notebooks,
+Markdown, and tests / toggles; they follow existing mappings rather than
+replacing them. Remote SSH uses `Space r`; window resizing remains on Alt
++ h/j/k/l.
+
+| Keys | Action |
+| --- | --- |
+| `Space ?` | Open interactive shortcut guide |
+| `Space s k` | Search shortcuts by description |
+| `Space s f` / `Space s g` | Find project files / grep content (local or remote) |
+| `Space Space` | Switch open buffers |
+| `Space b a` / `Space b m` | Bookmark current file / show Harpoon menu |
+| `Space b 1` through `Space b 4` | Jump to a bookmarked file |
+
+Previous `Space a`, `Space e`, and Alt+a/s/d/f Harpoon shortcuts still
+work; they are kept as compatibility aliases. The grouped menu displays
+the new `Space b` alternatives.
+
+Telescope's pinned utilities need a small local compatibility fallback
+because Neovim 0.12 lacks both the removed `vim.F.if_nil` and the newer
+`vim.nonnil` (introduced in 0.13). This fallback only changes Telescope
+when its own helper is missing.
+
 ## Keys (leader is Space)
 
 | Keys | Action |
@@ -74,6 +104,42 @@ in Neotest's summary and run `:ConfigureGtest` to associate the executable. The
 previous wildcard/CMake adapter options were unsupported. CMake, C/C++, Rust and
 GoogleTest share Nix's `lldb-dap` (resolved to an absolute executable path); Go keeps dap-go with declarative Delve. Java,
 Unity and Godot integrations retain their existing settings.
+
+## Markdown and API documentation
+
+Markdown works in any `.md` file; Neovim does not load an Obsidian plugin.
+`render-markdown.nvim` renders headings, checkboxes, links, tables and fenced
+code blocks directly in Neovim. Prose wraps at word boundaries with relative
+line numbers and visible whitespace disabled only for Markdown buffers.
+Markdown and Markdown-inline Tree-sitter parsers are already installed.
+
+| Keys | Action |
+| --- | --- |
+| `<leader>vr` | Toggle inline Markdown rendering |
+| `<leader>vp` | Show a side-by-side Markdown preview inside Neovim |
+| `Alt-c` | Toggle a task checkbox |
+| `<leader>f` | Format Markdown with Prettier (explicit only; no format-on-save) |
+| `K` | LSP hover documentation for symbols and Markdown links |
+| `gd` | Follow a Markdown reference or code symbol (with language server attached) |
+
+Marksman provides Markdown LSP navigation, completion and reference diagnostics.
+Open a Markdown file and use `:LspInfo` to check it attached. The renderer's
+checkbox and callout completions are enabled through its built-in LSP source.
+
+Pressing `K` requests LSP hover in a compact popup by the cursor (up to
+60 columns and 12 lines). Hover Markdown drops decorative `---` dividers and
+redundant empty lines while preserving code blocks, links and actual text.
+The popup remains focusable for scrolling. If no hover-capable language server
+is attached, `K` displays a short notification instead of invoking
+`keywordprg` (for example, `go doc` in a terminal).
+Go and gopls are installed declaratively for Go projects; open a module with
+`go.mod` and check `:LspInfo` if hover is unavailable.
+
+`:Man` provides Unix manual pages, not language API docs. For Java, keep the
+existing JDTLS integration: open a Java project, check `:LspInfo`, then press
+`K` on a symbol for Javadoc hover. Neovim supplies this binding when LSP is
+attached; no separate `man.lua` plugin is needed. Python, Rust and other
+languages use their respective language servers for hover documentation.
 
 ## Notebooks and plots
 
