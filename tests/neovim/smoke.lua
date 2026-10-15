@@ -83,6 +83,21 @@ check("LSP, formatting and lint policy", function()
 	assert(not lint.linters_by_ft.python)
 	assert(require("conform").get_formatter_info("ruff_format", 0).available)
 end)
+check("Markdown editing without Obsidian", function()
+	local plugins = require("lazy.core.config").plugins
+	assert(plugins["render-markdown.nvim"])
+	assert(not plugins["obsidian.nvim"])
+	assert(plugins["render-markdown.nvim"].opts.completions.lsp.enabled)
+	assert(vim.lsp.config.marksman)
+	vim.cmd.edit(vim.fn.tempname() .. ".md")
+	vim.bo.filetype = "markdown"
+	assert(vim.wo.wrap and vim.wo.linebreak and vim.wo.breakindent)
+	assert(not vim.wo.list and not vim.wo.relativenumber)
+	assert(vim.fn.maparg("<leader>vr", "n") ~= "")
+	assert(vim.fn.maparg("<leader>vp", "n") ~= "")
+	assert(require("conform").get_formatter_info("prettier", 0).available)
+	vim.bo.modified = false
+end)
 check("AI toggle without Ollama inference", function()
 	require("minuet")
 	local action = require("minuet.virtualtext").action

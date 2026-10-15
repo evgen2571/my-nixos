@@ -75,6 +75,33 @@ previous wildcard/CMake adapter options were unsupported. CMake, C/C++, Rust and
 GoogleTest share Nix's `lldb-dap` (resolved to an absolute executable path); Go keeps dap-go with declarative Delve. Java,
 Unity and Godot integrations retain their existing settings.
 
+## Markdown and API documentation
+
+Markdown works in any `.md` file; Neovim does not load an Obsidian plugin.
+`render-markdown.nvim` renders headings, checkboxes, links, tables and fenced
+code blocks directly in Neovim. Prose wraps at word boundaries with relative
+line numbers and visible whitespace disabled only for Markdown buffers.
+Markdown and Markdown-inline Tree-sitter parsers are already installed.
+
+| Keys | Action |
+| --- | --- |
+| `<leader>vr` | Toggle inline Markdown rendering |
+| `<leader>vp` | Show a side-by-side Markdown preview inside Neovim |
+| `Alt-c` | Toggle a task checkbox |
+| `<leader>f` | Format Markdown with Prettier (explicit only; no format-on-save) |
+| `K` | LSP hover documentation for symbols and Markdown links |
+| `gd` | Follow a Markdown reference or code symbol (with language server attached) |
+
+Marksman provides Markdown LSP navigation, completion and reference diagnostics.
+Open a Markdown file and use `:LspInfo` to check it attached. The renderer's
+checkbox and callout completions are enabled through its built-in LSP source.
+
+`:Man` provides Unix manual pages, not language API docs. For Java, keep the
+existing JDTLS integration: open a Java project, check `:LspInfo`, then press
+`K` on a symbol for Javadoc hover. Neovim supplies this binding when LSP is
+attached; no separate `man.lua` plugin is needed. Python, Rust and other
+languages use their respective language servers for hover documentation.
+
 ## Notebooks and plots
 
 Open an `.ipynb`, then run `:NotebookPair`. This explicitly pairs it with a

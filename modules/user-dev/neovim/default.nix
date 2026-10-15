@@ -40,6 +40,8 @@ in
       delve
       lua-language-server
       stylua
+      marksman
+      prettier
       tree-sitter
       matugen
     ];
