@@ -76,6 +76,16 @@ assert services.hide-me-gateway.serviceConfig.NetworkNamespacePath == "/run/netn
 assert
   services.netns-gateway-underlay.serviceConfig.ExecStart
   == "${lib.getExe pkgs.slirp4netns} --configure --disable-host-loopback --disable-dns --enable-seccomp --netns-type=path /run/netns/gateway tap0";
+assert services.netns-gateway-dns.requires == [ "netns-gateway.service" ];
+assert
+  services.netns-gateway-dns.unitConfig.ConditionPathExists
+  == "/run/network-namespaces/gateway/transport-ready";
+assert services.netns-gateway-dns.partOf == [ "netns-gateway-shared.service" ];
+assert services.netns-gateway-shared.partOf == [ "netns-gateway.service" ];
+assert builtins.elem "netns-gateway-dns.service" services.netns-gateway-shared.wants;
+assert builtins.elem "tailscaled.service" services.netns-gateway-shared.after;
+assert builtins.elem "netns-gateway.service" services.netns-gateway-shared.requires;
+assert c.system.activationScripts.netns-pc-shared-desktop-guard.text != "";
 assert !c.networking.nat.enable;
 assert c.networking.firewall.interfaces.tailscale0.allowedUDPPorts == [ 51877 ];
 assert lib.all (
