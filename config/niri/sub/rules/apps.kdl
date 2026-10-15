@@ -59,6 +59,7 @@ window-rule {
     match app-id=r#"^kitty$"# title="dropdown-term"
     draw-border-with-background false
     opacity 0.88
+	open-maximized-to-edges false
     open-floating true
     open-focused true
     default-column-width { proportion 0.70; }

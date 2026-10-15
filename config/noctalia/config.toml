@@ -374,7 +374,7 @@ wallpaper_scheme = "m3-content"
 
     [theme.templates]
     builtin_ids = [ "cava", "gtk3", "gtk4", "kcolorscheme", "kitty", "niri" ]
-    community_ids = [ "pear-desktop", "telegram", "libreoffice", "neovim", "obsidian", "lazygit", "yazi" ]
+    community_ids = [ "pear-desktop", "telegram", "libreoffice", "neovim", "obsidian", "lazygit", "yazi", "codex", "opencode", "bat", "obs", "prismlauncher" ]
     enable_builtin_templates = true
     enable_community_templates = true
 

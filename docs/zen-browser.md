@@ -58,7 +58,7 @@ settings = {
 Press **Ctrl + backtick** to toggle compact mode:
 
 ```nix
-keyboardShortcutsVersion = 20; # Zen 1.22.2b in the pinned flake
+keyboardShortcutsVersion = 21; # Zen 1.22.2b in the pinned flake
 keyboardShortcuts = [
   {
     id = "zen-compact-mode-toggle";

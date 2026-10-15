@@ -25,7 +25,7 @@ in
 
   # Zen 1.22.2b ships keyboard shortcuts schema 20.
   # Ctrl+` toggles compact mode; other bindings remain browser defaults.
-  keyboardShortcutsVersion = 20;
+  keyboardShortcutsVersion = 21;
   keyboardShortcuts = [
     {
       id = "zen-compact-mode-toggle";
