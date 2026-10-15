@@ -126,9 +126,12 @@ Marksman provides Markdown LSP navigation, completion and reference diagnostics.
 Open a Markdown file and use `:LspInfo` to check it attached. The renderer's
 checkbox and callout completions are enabled through its built-in LSP source.
 
-Pressing `K` requests LSP hover in a small rounded popup by the cursor. If
-no hover-capable language server is attached, it displays a short notification
-rather than invoking `keywordprg` (for example, `go doc` in a terminal).
+Pressing `K` requests LSP hover in a compact popup by the cursor (up to
+60 columns and 12 lines). Hover Markdown drops decorative `---` dividers and
+redundant empty lines while preserving code blocks, links and actual text.
+The popup remains focusable for scrolling. If no hover-capable language server
+is attached, `K` displays a short notification instead of invoking
+`keywordprg` (for example, `go doc` in a terminal).
 Go and gopls are installed declaratively for Go projects; open a module with
 `go.mod` and check `:LspInfo` if hover is unavailable.
 

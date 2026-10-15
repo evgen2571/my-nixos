@@ -110,6 +110,33 @@ check("Popup documentation and compact shortcut menu", function()
 	assert(opts.layout.spacing == 2)
 	assert(opts.win.height.max == 12)
 end)
+check("Compact hover Markdown", function()
+	local hover = require("custom.hover")
+	assert(hover.preview_options.max_width == 60)
+	assert(hover.preview_options.max_height == 12)
+	local compact = hover.compact({
+		"```go",
+		"func Error(msg string, args ...any)",
+		"```",
+		"",
+		"---",
+		"",
+		"Error calls [Logger.Error](https://pkg.go.dev/log/slog#Logger.Error).",
+		"",
+		"",
+		"Added in go1.21",
+	})
+	assert(vim.deep_equal(compact, {
+		"```go",
+		"func Error(msg string, args ...any)",
+		"```",
+		"Error calls [Logger.Error](https://pkg.go.dev/log/slog#Logger.Error).",
+		"",
+		"Added in go1.21",
+	}))
+	local fenced = hover.compact({ "```text", "---", "```" })
+	assert(fenced[2] == "---", "Fenced content must not be modified")
+end)
 check("Telescope fallback for Neovim 0.12", function()
 	require("lazy").load({ plugins = { "telescope.nvim" } })
 	local utils = require("telescope.utils")

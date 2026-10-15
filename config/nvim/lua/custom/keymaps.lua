@@ -2,21 +2,8 @@ local map = vim.keymap.set
 
 local opts = { noremap = true, silent = true }
 
--- Use LSP hover instead of the filetype's keywordprg (:terminal go doc, etc.).
--- This also makes K behave consistently when the language server is unavailable.
-map("n", "K", function()
-  local clients = vim.lsp.get_clients({ bufnr = 0, method = "textDocument/hover" })
-  if #clients == 0 then
-    vim.notify("No documentation server attached; check :LspInfo", vim.log.levels.INFO)
-    return
-  end
-  vim.lsp.buf.hover({
-    border = "rounded",
-    max_width = 76,
-    max_height = 18,
-    focusable = true,
-  })
-end, { desc = "Documentation: hover at cursor" })
+-- Keep hover documentation close to the cursor without launching keywordprg.
+map("n", "K", require("custom.hover").show, { desc = "Documentation: hover at cursor" })
 
 -- Search / diagnostics
 map("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear search highlight" })
