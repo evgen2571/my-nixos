@@ -98,11 +98,14 @@ with committed **public** authorized keys. Services explicitly control
 which ports are exposed.
 
 The profiles select one Hide.me connection in the server's `vpn` namespace.
-Desktop `vpn` namespaces send selected applications through that gateway over
-Tailscale, preserving isolated DNS, fail-closed routing and egress checks. Codex
+Desktop `vpn` namespaces have no local provider or underlay; they send selected
+applications through that gateway over Tailscale, preserving isolated DNS,
+fail-closed routing and egress checks. Codex
 uses the namespace by default; `orca-vpn` is opt-in so normal Orca retains host
 SSH access. Host defaults and Docker stay on regular networking. This migration
-requires approved activation; see [shared gateway](docs/shared-vpn-gateway.md)
+uses SOPS private keys/authentication and declarative public peers. Persistent
+desktop masks protect old-generation boots. Initial deployment disables desktops
+first and requires approved activation; see [shared gateway](docs/shared-vpn-gateway.md)
 and [namespace primitives](docs/network-namespaces.md).
 
 Currently both desktop hosts map `api.example.test` and

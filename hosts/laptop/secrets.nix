@@ -6,6 +6,12 @@ let
 in
 {
   sops.secrets = {
+    vpn-wireguard-private-key = {
+      sopsFile = file;
+      key = "wireguard_private_key";
+      mode = "0400";
+      restartUnits = [ "netns-vpn-shared.service" ];
+    };
     ssh-github-private-key = {
       sopsFile = file;
       key = "ssh_github_private_key";
@@ -30,13 +36,6 @@ in
       sopsFile = file;
       key = "user_password_hash";
       neededForUsers = true;
-    };
-
-    hide-me-bootstrap-token = {
-      sopsFile = file;
-      key = "hide_me_bootstrap_token";
-      owner = "root";
-      mode = "0400";
     };
 
     openrouter-api-key = {

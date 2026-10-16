@@ -6,7 +6,7 @@ old=$1 host=$2
 [[ "$old" == /nix/store/* && -x "$old/bin/switch-to-configuration" ]]
 case "$host" in nixos-server|nixos-pc|nixos-lp) ;; *) exit 2;; esac
 if [[ "$host" != nixos-server ]]; then
-  bash "$(dirname -- "${BASH_SOURCE[0]}")/desktop-provider-guard.sh" block
+  bash "$(dirname -- "${BASH_SOURCE[0]}")/desktop-provider-guard.sh"
 fi
 # A manual trigger must not cause a second rollback when the timer later expires.
 if [[ $(systemctl show shared-vpn-rollback.timer -p LoadState --value) != not-found ]]; then
@@ -30,14 +30,16 @@ if ip netns list | grep -q '^vpn\( \|$\)'; then
 fi
 rm -rf /run/network-namespaces/vpn
 "$old/bin/switch-to-configuration" test
-# Explicitly start restored lifecycle units; generation switching can retain them.
-for unit in netns-vpn.service netns-vpn-underlay.service netns-vpn-shared.service \
-  netns-vpn-dns.service hide-me-vpn.service netns-vpn-health.timer; do
-  if [[ $(systemctl show "$unit" -p LoadState --value) == loaded ]]; then
-    systemctl start "$unit"
-  fi
-done
-if [[ "$host" != nixos-server ]]; then
-  [[ $(systemctl show hide-me-vpn.service -p LoadState --value) == masked ]]
-  if systemctl is-active --quiet hide-me-vpn.service; then exit 1; fi
+if [[ "$host" == nixos-server ]]; then
+  for unit in netns-vpn.service netns-vpn-underlay.service netns-vpn-shared.service \
+    netns-vpn-dns.service hide-me-vpn.service netns-vpn-health.timer; do
+    if [[ $(systemctl show "$unit" -p LoadState --value) == loaded ]]; then
+      systemctl start "$unit"
+    fi
+  done
+else
+  # Old desktop generations are recovery for host access, never local VPN fallback.
+  for unit in netns-vpn-health.timer netns-vpn-health.service netns-vpn.service; do
+    if [[ $(systemctl show "$unit" -p LoadState --value) != not-found ]]; then systemctl stop "$unit"; fi
+  done
 fi

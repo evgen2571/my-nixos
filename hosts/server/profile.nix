@@ -1,4 +1,4 @@
-{ ... }:
+{ config, ... }:
 
 {
   my = {
@@ -41,18 +41,20 @@
       enable = true;
       namespaces.vpn = {
         enable = true;
+        bootstrapTokenFile = config.sops.secrets.hide-me-bootstrap-token.path;
         shared = {
+          privateKeyFile = config.sops.secrets.vpn-wireguard-private-key.path;
           role = "gateway";
           peers = [
             {
-              publicKeyFile = "/var/lib/netns-vpn-shared/pc.pub";
+              publicKey = (import ../vpn-public-keys.nix).pc;
               allowedIPs = [
                 "10.77.0.2/32"
                 "fd77::2/128"
               ];
             }
             {
-              publicKeyFile = "/var/lib/netns-vpn-shared/laptop.pub";
+              publicKey = (import ../vpn-public-keys.nix).laptop;
               allowedIPs = [
                 "10.77.0.3/32"
                 "fd77::3/128"

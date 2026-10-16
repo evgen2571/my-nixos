@@ -22,16 +22,31 @@ for name in gateway pc laptop; do
   "$name-init"
   install -d -m 0700 "/var/lib/netns-$name-shared"
 done
-# Missing peers must refuse startup but generate a persistent private key.
-if gateway-start; then echo 'Missing peer key accepted' >&2; exit 1; fi
+# Missing runtime private keys must refuse startup; the module never generates them.
+if gateway-start; then echo 'Missing private key accepted' >&2; exit 1; fi
+[[ ! -e /var/lib/netns-gateway-shared/private-key ]]
+seed=1
 for name in gateway pc laptop; do
   state="/var/lib/netns-$name-shared"
-  if [[ ! -s "$state/private-key" ]]; then wg genkey > "$state/private-key"; fi
+  python3 -c 'import base64,sys; print(base64.b64encode(bytes([int(sys.argv[1])])*32).decode())' "$seed" > "$state/private-key"
+  seed=$((seed + 1))
   chmod 0600 "$state/private-key"
-  wg pubkey < "$state/private-key" > "$state/public-key"
-  [[ $(stat -c %a "$state/private-key") == 600 ]]
 done
 for name in gateway pc laptop; do "$name-start"; done
+# SOPS bootstrap is required; unchanged seeds preserve provider refreshes.
+auth-init
+install -d -m 0700 /var/lib/hide-me-auth
+: > /run/mock-hide-me-token
+if ip netns exec auth auth-prepare; then echo 'Empty bootstrap accepted' >&2; exit 1; fi
+printf 'mock-seed-one' > /run/mock-hide-me-token
+ip netns exec auth auth-prepare
+[[ $(cat /var/lib/hide-me-auth/accessToken.txt) == mock-seed-one ]]
+printf 'mock-refreshed-token' > /var/lib/hide-me-auth/accessToken.txt
+ip netns exec auth auth-prepare
+[[ $(cat /var/lib/hide-me-auth/accessToken.txt) == mock-refreshed-token ]]
+printf 'mock-seed-two' > /run/mock-hide-me-token
+ip netns exec auth auth-prepare
+[[ $(cat /var/lib/hide-me-auth/accessToken.txt) == mock-seed-two ]]
 ip netns add external
 ip -n gateway link add hm0 type veth peer name outside
 ip -n gateway link set outside netns external

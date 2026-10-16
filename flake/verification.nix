@@ -14,7 +14,14 @@
     in
     {
       checks = {
-        shared-vpn-systemd = import ../tests/network-namespaces/systemd.nix { inherit pkgs; };
+        shared-vpn-host-profiles = import ../tests/network-namespaces/hosts.nix {
+          inherit pkgs;
+          configurations = inputs.self.nixosConfigurations;
+        };
+        shared-vpn-systemd = import ../tests/network-namespaces/systemd.nix {
+          inherit pkgs;
+          sopsNix = inputs.sops-nix;
+        };
         shared-vpn-module = builtins.deepSeq shared.system shared.fixtures;
         standalone-vpn-module = builtins.deepSeq standalone.system standalone.launcher;
         shared-vpn-scripts =

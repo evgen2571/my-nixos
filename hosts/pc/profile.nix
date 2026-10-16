@@ -1,4 +1,4 @@
-{ ... }:
+{ config, ... }:
 
 {
   my = {
@@ -45,12 +45,13 @@
             enable = true;
             shared = {
               role = "client";
+              privateKeyFile = config.sops.secrets.vpn-wireguard-private-key.path;
               endpoint = "192.0.2.11:51877";
               address = "10.77.0.2/24";
               address6 = "fd77::2/64";
               peers = [
                 {
-                  publicKeyFile = "/var/lib/netns-vpn-shared/server.pub";
+                  publicKey = (import ../vpn-public-keys.nix).server;
                   allowedIPs = [
                     "0.0.0.0/0"
                     "::/0"

@@ -16,20 +16,25 @@ let
         my.system.services.networkNamespaces = {
           enable = true;
           namespaces = {
+            auth = {
+              enable = true;
+              bootstrapTokenFile = "/run/mock-hide-me-token";
+            };
             gateway = {
               enable = true;
               shared = {
                 role = "gateway";
+                privateKeyFile = "/var/lib/netns-gateway-shared/private-key";
                 peers = [
                   {
-                    publicKeyFile = "/var/lib/netns-pc-shared/public-key";
+                    publicKey = (import ./public-keys.nix).pc;
                     allowedIPs = [
                       "10.77.0.2/32"
                       "fd77::2/128"
                     ];
                   }
                   {
-                    publicKeyFile = "/var/lib/netns-laptop-shared/public-key";
+                    publicKey = (import ./public-keys.nix).laptop;
                     allowedIPs = [
                       "10.77.0.3/32"
                       "fd77::3/128"
@@ -43,12 +48,13 @@ let
             enable = true;
             shared = {
               role = "client";
+              privateKeyFile = "/var/lib/netns-${name}-shared/private-key";
               address = if name == "pc" then "10.77.0.2/24" else "10.77.0.3/24";
               address6 = if name == "pc" then "fd77::2/64" else "fd77::3/64";
               endpoint = "127.0.0.1:51877";
               peers = [
                 {
-                  publicKeyFile = "/var/lib/netns-gateway-shared/public-key";
+                  publicKey = (import ./public-keys.nix).gateway;
                   allowedIPs = [
                     "0.0.0.0/0"
                     "::/0"
@@ -99,6 +105,8 @@ assert lib.all (
   fixtures = pkgs.runCommand "shared-vpn-fixtures" { } (
     ''
       mkdir -p $out/bin
+      ln -s ${services.netns-auth.serviceConfig.ExecStart} $out/bin/auth-init
+      ln -s ${services.hide-me-auth.serviceConfig.ExecStartPre} $out/bin/auth-prepare
     ''
     + lib.concatMapStringsSep "\n" (name: ''
       ln -s ${services."netns-${name}".serviceConfig.ExecStart} $out/bin/${name}-init

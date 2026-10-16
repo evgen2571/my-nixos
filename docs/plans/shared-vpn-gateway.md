@@ -1,13 +1,12 @@
 # Shared VPN gateway execution plan
 
-- [x] Read architecture and namespace implementation; preserve standalone provider and existing PC connection.
-- [x] Evaluate Tailscale-only designs; retain a host-born WireGuard link over existing Tailscale, with namespace-only forwarding/NAT.
-- [x] Configure three profiles, opt-in Orca wrapper, runtime keys, migration/rollback documentation and original disposable integration checks.
-- [x] Inspect server through a separate Orca host terminal: plain SSH succeeds; server confirms `192.0.2.11`, active SSH/Tailscale, ordinary host routing, healthy Docker, no provider/namespace, nightly suspend enabled. Server sudo requires a password; token state unknown.
-- [x] Review PR #12 for reboot/rollback/lifecycle safety: replace ephemeral masks with persistent system.control masks, tear down retained namespace resources during rollback, pin independent timer PATH, propagate namespace/DNS restarts.
-- [x] Run updated systemd VM test: startup/missing-peer retry, DNS changes/failure, transport recovery, retained-app rollback and old-generation reboot guard.
-- [x] Rebuild three hosts; updated systemd VM, disposable IPv4/IPv6, formatting and shell checks pass.
-- [x] Complete final flake check; the reviewed commit targets existing PR #12 only.
-- [ ] Operator provisions public peer keys and server token if absent; guarded approved exclusive cutover and live acceptance.
+- [x] Keep existing server namespace/slirp/Hide.me architecture and Tailscale transport.
+- [x] Apply server-only requirement: no desktop provider, underlay, token declaration or fallback; permanent masks survive old-generation boot.
+- [x] Replace runtime key generation/exchange with host-specific SOPS private keys and declarative public peers. Server SOPS authentication entry is empty pending private provisioning.
+- [x] Simplify rollback: desktop restores host access with local networking services disabled, never a provider recovery path. Shared namespace changes activate automatically.
+- [x] Native and real-SOPS VM tests pass: automatic client activation/boot/reboot, lifecycle and old-generation masks; all three hosts build.
+- [x] Final production-profile assertions, flake/format/shell checks pass; native and real-SOPS VM regressions pass.
+- [x] Commit implementation and update existing draft PR #12 only; live acceptance remains pending.
+- [ ] Operator privately provisions server SOPS token, obtains approval, disables both desktops first, arms rollback, activates gateway/clients and runs live acceptance.
 
-No networking activation is authorized. No live masks/timers/providers/routes/namespaces were changed. The existing PC provider remains active. Both desktops must be online and persistently guarded before the server provider can start; an offline unguarded laptop blocks cutover. Guards survive old-generation boot and are removed only after the server provider is confirmed stopped. Exact host-side steps are in `docs/shared-vpn-gateway.md`.
+No live networking activation is authorized. Private WireGuard keys were generated only in memory and encrypted to each host/admin recipient; plaintext never entered Git or the Nix store. No live host credentials, masks, timers, providers or routes changed. The prior host audit confirmed server Tailscale `192.0.2.11`, successful host SSH and healthy Docker. Real Hide.me and application acceptance remain pending.
