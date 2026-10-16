@@ -2,7 +2,7 @@
 
 This is the **current architecture and operational verification guide**, based on the versioned Nix configuration. Git source alone cannot prove the live generation, credentials, connectivity, DNS isolation or whether initial acceptance has been completed. Check running hosts through normal host-networked operator sessions before drawing those conclusions.
 
-For changes to implementation read [agents/networking.md](agents/networking.md). For low-level primitives and private bootstrap procedures see [network-namespaces.md](network-namespaces.md). The initial rollout plan is a [historical snapshot](archive/shared-vpn-gateway-implementation-plan.md), **not** a present-tense execution plan.
+For changes to implementation read [agents/networking.md](agents/networking.md). For low-level primitives and private bootstrap procedures see [network-namespaces.md](network-namespaces.md). The [original rollout plan](archive/shared-vpn-gateway-implementation-plan.md) and [full initial rollout runbook](archive/shared-vpn-initial-rollout-runbook.md) are historical snapshots, **not** present-tense execution plans.
 
 ## Topology and boundaries
 

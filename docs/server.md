@@ -107,4 +107,4 @@ A boot-menu generation rollback or `nixos-rebuild --rollback` can restore NixOS 
 
 This server has already received a hardware-specific NixOS configuration in Git. First-install procedures (generating hardware config, Tailscale enrollment, creating storage filesystems) are **not** routine maintenance steps and must not be blindly repeated on a provisioned host.
 
-The shared-VPN implementation plan has been archived under [archive/](archive/); check current host status and the active runbook before interpreting historical acceptance checkboxes.
+Previous [first-install server notes](archive/server-initial-setup-notes.md) and the [shared-VPN implementation plan](archive/shared-vpn-gateway-implementation-plan.md) are archived for provenance, not operational truth. Check current host status and the active runbook before interpreting historical acceptance checkboxes.
