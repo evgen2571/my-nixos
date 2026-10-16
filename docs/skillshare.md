@@ -18,10 +18,9 @@ later requires **no NixOS or Home Manager rebuild**.
 
 The previous declarative agent-toolkit and Serena integration has been
 removed from this configuration. Existing Codex authentication and mutable
-configuration stay in the user's home directory. Native Codex/T3 Code continue
-to use the existing VPN namespace launcher.
+configuration stay in the user's home directory. Codex continues to use the VPN namespace launcher; normal Orca runs on host networking and the explicit `orca-vpn` wrapper opts into isolation.
 
-**Migration note:** on the first activation, Home Manager may remove the
+**Historical migration note:** on the first activation of the old agent-toolkit removal, Home Manager could remove the
 symlinks it previously managed in `~/.agents/skills/`, `~/.codex/AGENTS.md`,
 and `~/.local/share/agent-toolkit/ponytail-marketplace`. Before activation,
 copy any content you want to retain to ordinary writable files (dereference
@@ -82,7 +81,7 @@ skillshare version
 After activation, verify `codex --version` and `codex mcp list`. If Serena
 was also configured independently in writable `~/.codex/config.toml`, remove
 that entry explicitly only if you no longer want it. The removed declarative
-launcher no longer registers Serena. Restart Codex and T3 Code after changes.
+launcher no longer registers Serena. Restart affected Codex or Orca sessions after resource changes.
 Do not delete `~/.codex/auth.json`, other login state, or account plugins.
 
 The release tarball is fixed by SHA-256, derived from the upstream maintainer's

@@ -1,169 +1,124 @@
 # Architecture
 
-This repository defines three NixOS machines from one flake. NixOS owns
-system configuration and services; Home Manager, integrated into each NixOS
-configuration, owns user applications and dotfiles. Host profiles select
-features, while reusable modules implement them.
+This document is the durable architecture contract for `my-nixos`: what owns each kind of configuration, how modules reach hosts, and which behaviors must be preserved. For actionable task entry points use [docs/task-routing.md](docs/task-routing.md); for module implementation patterns use [docs/modules.md](docs/modules.md). [AGENTS.md](AGENTS.md) defines the agent workflow, not the system design.
+
+The Nix code is authoritative about current implementation. When documentation and code disagree, inspect the code and amend documentation as part of a scoped fix rather than reproducing an outdated assumption.
 
 ## Configuration flow
 
 ```text
 flake.nix (flake-parts; pinned inputs in flake.lock)
-  └── flake/hosts.nix
-        ├── lib/module-catalog.nix + lib/module-discovery.nix
-        │     ├── desktop system + Home Manager module sets
-        │     └── server system + Home Manager module sets
-        ├── hosts/pc/configuration.nix + profile.nix
-        ├── hosts/laptop/configuration.nix + profile.nix
-        └── hosts/server/configuration.nix + profile.nix
-              ├── modules/system-* / modules/desktops / modules/hardware
-              ├── modules/server (server only)
-              ├── modules/system-core/user.nix (primary-user adapter)
-              │     └── home/operator/home.nix + host Home Manager settings
-              │           └── modules/user-*
-              └── config/ (source dotfiles, wired by lib/config-paths.nix)
+  └─ flake/hosts.nix: mkHost using nixpkgs.lib.nixosSystem
+      ├─ lib/module-catalog.nix → lib/module-discovery.nix
+      │   ├─ desktop: system modules + shared Home Manager modules
+      │   └─ server:  system modules + shared Home Manager modules
+      ├─ hosts/pc/configuration.nix      + profile.nix + secrets.nix
+      ├─ hosts/laptop/configuration.nix  + profile.nix + secrets.nix
+      └─ hosts/server/configuration.nix  + profile.nix + secrets.nix
+          ├─ modules/system-core/{common,server,user}.nix (explicit host imports)
+          ├─ modules/secrets.nix (explicit flake import)
+          ├─ discovered modules: NixOS/system-* and Home Manager/user-*
+          └─ modules/system-core/user.nix (primary-user adapter)
+              └─ home/operator/home.nix and per-host HM settings
+                  └─ config/ source dotfiles via lib/config-paths.nix
 ```
 
-`flake/hosts.nix` constructs each `nixosConfigurations` output using
-`nixpkgs.lib.nixosSystem`. It imports the host configuration, the appropriate
-discovered module profile, Home Manager, and sops-nix. It also passes flake
-inputs and `configPaths` to modules.
+`flake/hosts.nix` assembles the outputs with Home Manager and sops-nix NixOS modules, passes flake inputs and `configPaths` as special arguments, and assigns either the `desktop` or `server` discovered module profile. The Home Manager modules are supplied through `home-manager.sharedModules`; host user choices are supplied separately.
 
-## Repository layout
+**Availability is not enablement.** `lib/module-catalog.nix` chooses which module roots are visible to a profile. `lib/module-discovery.nix` finds importable modules. Hosts then enable capabilities via options, generally from `profile.nix`. A directory with `default.nix` is a single discovered module; its other files must be imported by that entry point. See [module conventions](docs/modules.md).
 
-| Location | Responsibility |
-| --- | --- |
-| `flake.nix`, `flake.lock`, `flake/` | Inputs, host outputs, development shell, formatting |
-| `hosts/<host>/configuration.nix` | Hardware, identity, boot, and machine-specific settings |
-| `hosts/<host>/profile.nix` | Enabled capabilities and host-specific options |
-| `hosts/<host>/hardware-configuration.nix` | Filesystems and hardware detected for that machine |
-| `lib/module-discovery.nix` | Find importable modules recursively |
-| `lib/module-catalog.nix` | Assign discovered system/user modules to desktop/server profiles |
-| `lib/config-paths.nix` | Centralize source paths and host-specific dotfile mappings |
-| `modules/system-*`, `modules/desktops`, `modules/hardware` | NixOS services, packages, sessions, and hardware |
-| `modules/server` | Server-only services and storage |
-| `modules/user-*` | Home Manager applications, development tools, and desktop settings |
-| `config/` | Fish, Neovim, Niri, Noctalia, Kitty, tmux-related, and other app configuration |
-| `secrets/`, `keys/` | Encrypted SOPS documents and public key material |
-| `packages/` | Locally packaged software, such as hide.me |
-| `tests/`, `docs/` | Verification scripts and subsystem-specific documentation |
+## Ownership boundaries
 
-Module discovery treats a directory containing `default.nix` as one module.
-Otherwise it finds `.nix` files recursively. The catalog assigns whole roots
-to profiles; discovery does not automatically *enable* a feature. Options
-typically use `my.system.*` for system facilities and `my.user.*` for
-Home Manager. The `my.server.*` namespace is reserved for server features.
-
-## Machines and profiles
-
-| Flake output | Role | Configuration |
+| Layer | Owns | Does not own |
 | --- | --- | --- |
-| `nixos-pc` | Main graphical development workstation | Desktop profile, Niri/Noctalia, NVIDIA, development and AI tools |
-| `nixos-lp` | Laptop development workstation | Desktop profile, Niri/Noctalia, laptop-specific hardware and services |
-| `nixos-server` | Self-hosted services and storage | Server profile, SSH/Tailscale, Docker, Syncthing, `/srv` directories |
+| `flake.nix`, `flake/` | Inputs, output assembly, formatter, checks, development shell | Host-specific feature toggles |
+| `hosts/<host>/configuration.nix` | Host identity, boot, hardware, base imports and exceptional machine settings | Generic app/service implementations |
+| `hosts/<host>/profile.nix` | Which system/user features are enabled, host-specific option values | Reusable package and service logic |
+| `lib/module-catalog.nix` | Imported module roots for desktop/server | Application enable flags |
+| `modules/system-*`, `modules/desktops/`, `modules/hardware/`, `modules/server/` | System packages, services, hardware, security, desktop/session plumbing | User application dotfile contents |
+| `modules/user-*` | Home Manager packages, application integration, user services and XDG mappings | Host boot and global network policy |
+| `config/` | Source dotfiles, editor/plugin config, window manager rules, browser profile definitions | OS service ownership or secrets |
+| `secrets/`, `keys/` | Encrypted SOPS documents and public key material | Plaintext authentication material |
+| `tests/` | Automated behavior checks and smoke tests | Deployment authorization |
 
-Both desktop hosts enable the `my.user.dev.workstation` bundle. It enables
-the shared shell, editor, terminal workflow, toolchains, and related user
-configuration; individual applications and language toolchains can still be
-enabled per host. The server has a separate base system configuration and
-enables only the user-side features it needs.
+Custom options normally follow `my.system.*`, `my.user.*`, `my.desktop.*`, `my.hardware.*`, or `my.server.*`. `modules/system-core/user.nix` bridges `my.primaryUser.home.settings` to the selected `home-manager.users` entry, keeping user feature selection in the host profile.
 
-The primary-user adapter (`modules/system-core/user.nix`) creates the NixOS
-user and connects `my.primaryUser.home.settings` to
-`home-manager.users.<name>`. This keeps per-host user choices in
-`profile.nix` without mixing Home Manager options into system modules.
+Application configuration may cross two layers deliberately. For example, the NixOS Niri module provisions the session and portals, while the Home Manager Niri module maps files in `config/niri/` into the user's XDG configuration. The source dotfiles are **not** a replacement for the module that installs them.
 
-## Ownership and lifecycle
+## Hosts and profiles
 
-- **NixOS:** boot, networking, security, services, hardware, system packages,
-  filesystem mounts, and system trust roots.
-- **Home Manager:** user packages, shell and Git configuration, editor setup,
-  application settings, and XDG files.
-- **Source dotfiles:** `config/` stores human-maintained files that modules
-  link or copy to the appropriate runtime locations. The Neovim activation
-  copies its configuration while preserving the generated Matugen theme.
-- **Runtime state:** login sessions, application databases, generated caches,
-  AI agent/Skillshare settings, credentials, and other writable state live
-  outside the Nix store. They are not reconstructed solely from the flake.
+| Output | Role | Selection |
+| --- | --- | --- |
+| `nixos-pc` | Main Niri/Noctalia development desktop | `hosts/pc/profile.nix`; desktop catalog |
+| `nixos-lp` | Niri/Noctalia laptop | `hosts/laptop/profile.nix`; desktop catalog |
+| `nixos-server` | Services, storage and server-only VPN gateway | `hosts/server/profile.nix`; server catalog |
 
-The intended edit path is: change a reusable module or source config, select
-it in a host profile if necessary, build the target host, and activate its
-new generation. Do not put machine-specific defaults into a shared module.
+The two desktop hosts enable `my.user.dev.workstation`, a Home Manager bundle that defaults shared terminal, shell, editor and tool features on. Language options and individual applications remain host-selectable. The server has a smaller Home Manager module profile and a separate base system configuration.
 
-## Networking
+Hardware-specific `configuration.nix` files and `hardware-configuration.nix` files should not be flattened into a generic host module just to reduce apparent duplication. Share behavior only when its meaning and deployment lifecycle are genuinely the same.
 
-NetworkManager provides ordinary host networking; Tailscale connects the
-machines for remote access. The server uses regular OpenSSH over Tailscale
-with committed **public** authorized keys. Services explicitly control
-which ports are exposed.
+## State ownership and activation
 
-The profiles select one Hide.me connection in the server's `vpn` namespace.
-Desktop `vpn` namespaces have no local provider or underlay; they send selected
-applications through that gateway over Tailscale, preserving isolated DNS,
-fail-closed routing and egress checks. Codex
-uses the namespace by default; `orca-vpn` is opt-in so normal Orca retains host
-SSH access. Host defaults and Docker stay on regular networking. This migration
-uses SOPS private keys/authentication and declarative public peers. Persistent
-desktop masks protect old-generation boots. Initial deployment disables desktops
-first and requires approved activation; see [shared gateway](docs/shared-vpn-gateway.md)
-and [namespace primitives](docs/network-namespaces.md).
+Configuration source and live application state are not interchangeable:
 
-Currently both desktop hosts map `api.example.test` and
-`auth.example.test` to `192.0.2.12` using `networking.extraHosts` and trust
-the same example development root CA stored at
-`hosts/pc/certs/example-dev-rootCA.pem`. These mappings and trust settings
-are still NixOS-managed and require activation after edits. Only the public
-CA certificate belongs in Git; its signing private key does not.
+1. **Declarative OS state:** NixOS options configure system services, security, boot, network and installed software.
+2. **Declarative user integration:** Home Manager manages user packages, application wiring, session variables and many XDG files.
+3. **Source configuration:** `config/` is version-controlled input; `lib/config-paths.nix` maps sources to runtime paths and selects machine-specific variants (for example Niri workspace files).
+4. **Mutable runtime state:** Generated colors, accounts/login sessions, application databases, writable agent resources, cached data and certain application-owned files are intentionally outside immutable Nix-store management.
 
-## Secrets and trust
+Neovim is a special case: `modules/user-dev/neovim/config.nix` copies `config/nvim/` through a Home Manager activation entry using `rsync`, excluding generated `lua/matugen.lua`. Replacing this with a whole-directory symlink would change the expected state model. Noctalia also combines declarative source config with generated runtime theme/settings. Zen profiles are selected per host; not all browser data is declaratively reproduced. Skillshare agent resources, MCP definitions and settings remain writable at runtime; see [docs/skillshare.md](docs/skillshare.md).
 
-sops-nix uses a dedicated per-host age identity at
-`/var/lib/sops-nix/key.txt`, configured by `modules/secrets.nix`. Hosts or
-service modules declare the encrypted secret files they consume; decrypted
-values become protected runtime paths, not Nix expressions or store files.
+NixOS system generations provide system rollback, not a backup of mutable application data or secrets. Activation scripts must be safe on repeated runs and must not erase state they do not own.
 
-Commit SOPS-encrypted YAML, public recipients, and public SSH/CA certificates
-only. Never commit private SSH/age/CA keys, session tokens, or decrypted
-secrets. See [SOPS workflow](docs/sops.md).
+## Network and security invariants
 
-## Server data and services
+Ordinary host networking is managed independently of the isolated VPN path. Tailscale connects the machines. The selected-agent route is:
 
-`modules/server/` configures the service foundation: storage, SSH, Docker,
-and Syncthing. The server profile currently mounts its data filesystem at
-`/srv/storage` and creates separate `/srv/compose`, `/srv/appdata`,
-`/srv/shared`, `/srv/backups`, and `/srv/secrets` paths. Those sibling
-directories are not automatically on the `/srv/storage` filesystem.
+```text
+Codex or explicit orca-vpn
+  → desktop vpn namespace (shared0)
+  → host Tailscale transport
+  → server vpn namespace (shared0)
+  → Hide.me tunnel (hm0)
+  → Internet
+```
 
-Persistent services must explicitly manage storage dependencies and backups;
-Syncthing replication alone is not a backup. The host also configures
-overnight suspend and RTC wake timers in `hosts/server/configuration.nix`.
-See [server operations](docs/server.md), but treat the current Nix files as
-authoritative if operational documentation lags behind.
+The **server alone** hosts the Hide.me provider and restricted underlay. Desktop namespaces are clients; they have no local provider or fallback to host networking. Selected applications fail closed when provider, tunnel, DNS or egress validation fails. Normal desktop traffic, host SSH and Docker retain normal networking. The launcher is restricted to registered applications and is not a general privileged shell.
 
-## Developer workflow
+VPN changes must preserve independent namespace firewalling, IPv4/IPv6 routing, isolated DNS, scoped privileges, safe service lifecycle and recovery controls. Read [docs/shared-vpn-gateway.md](docs/shared-vpn-gateway.md) and [docs/network-namespaces.md](docs/network-namespaces.md). The earlier implementation plan is archived in `docs/archive/`; operational code, host observations, and current runbooks take precedence.
+
+sops-nix decrypts committed encrypted documents into protected runtime secret paths. Host-specific age identities live outside the repository under `/var/lib/sops-nix/key.txt`. Private keys and access tokens must not appear in unencrypted Git files, Nix expressions, derivation arguments, or public documentation. Public SSH/WireGuard/CA keys may be versioned. See [docs/sops.md](docs/sops.md).
+
+The PC and laptop currently declare the same example development host aliases and trust the same public development root CA from a file under `hosts/pc/certs/`. These are still NixOS-managed and require activation to change; consolidating them is a separate refactor, not documentation work.
+
+## Server data boundaries
+
+`modules/server/` owns SSH, Docker foundation, storage and Syncthing. The server profile mounts the data filesystem at `/srv/storage` and configures `/srv/compose`, `/srv/appdata`, `/srv/shared`, `/srv/backups` and `/srv/secrets` separately; those paths are **not implicitly on the storage mount**. Services must explicitly handle storage dependencies and backups. Syncthing replication is not a substitute for backups.
+
+Server sleep/wake logic is in `hosts/server/configuration.nix` and is sensitive to the gateway role. See [docs/server.md](docs/server.md) before modifying lifecycle or storage.
+
+## Design decisions and non-goals
+
+- **Host choices remain declarative at the host boundary.** Modules implement features; profiles select them. This avoids hidden host-name branching in reusable modules.
+- **The catalog is the import boundary.** A new file under an already-discovered root normally needs no new path bookkeeping. New roots require an intentional catalog change.
+- **Use native NixOS/Home Manager options first.** Custom activation scripts are justified for specific mutable-state constraints, not as a default package manager.
+- **Runtime state is not necessarily reproducible.** Do not claim the flake reconstructs credentials, sessions or all application databases.
+- **Isolation and access recovery take precedence over simplification.** VPN and server code may carry deliberate complexity to preserve security and operational safety.
+- **Documentation has a single owner per question.** This file explains architecture; [docs/modules.md](docs/modules.md) explains module mechanics; [docs/task-routing.md](docs/task-routing.md) locates files; `docs/` runbooks describe operational workflows; [AGENTS.md](AGENTS.md) directs coding agents.
+
+## Validation and deployment
+
+Use non-activating verification while developing:
 
 ```sh
 nix develop
 nix fmt
-nix flake check
-just build-pc                    # non-activating PC build
-just build-lp                    # non-activating laptop build
-just build-server                # non-activating server build
-just switch-pc                   # activate on the matching machine
+nix flake check --no-build
+just build-pc
+just build-lp
+just build-server
 ```
 
-The `justfile` also provides `dry-*`, `boot-*`, and generic
-`build`/`switch` targets. Perform a non-activating build before switching,
-especially when changing authentication, storage, boot, or networking. NixOS
-generations provide rollback points; runtime application state and secrets
-need their own backup and recovery procedures.
+`nix flake check --no-build` evaluates but does not execute registered tests. Run `nix flake check` for the full flake checks when appropriate. `flake/verification.nix` currently registers network-namespace checks; `tests/neovim/run.sh` is a separate Neovim smoke entry point. Review the changed diff after formatting and build the affected hosts; changes to shared modules may require all three. `justfile` also defines non-activating `dry-*` and explicitly activating `switch-*`/`boot-*` recipes.
 
-## Design conventions
-
-1. Keep the separation **host selection → reusable module → runtime state**.
-2. Use a common module for shared behavior and `profile.nix` for host choices.
-3. Prefer existing Home Manager/NixOS options over bespoke activation scripts;
-   preserve application-managed state when scripts are unavoidable.
-4. Never interpolate private credentials into the Nix store.
-5. Add tests for behavior that can break activation or remote access, and keep
-   subsystem-specific details in `docs/` rather than growing this overview.
+Deploy on the matching real host only with explicit authorization. Changes to networking, access control, authentication, boot, storage or secrets need a concrete rollback/recovery plan, not just a successful evaluation.

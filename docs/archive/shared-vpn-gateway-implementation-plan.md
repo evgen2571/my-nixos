@@ -1,3 +1,9 @@
+# Archived: shared VPN gateway implementation plan
+
+> Historical implementation snapshot, preserved for design rationale. The checkbox states and "pending" wording below reflect planning and verification **at the time this plan was written**, not a current operational status report. Never use this plan as a deployment checklist. For current source-of-truth configuration and read-only status checks see [../shared-vpn-gateway.md](../shared-vpn-gateway.md), [../network-namespaces.md](../network-namespaces.md), and [../server.md](../server.md).
+
+---
+
 # Shared VPN gateway execution plan
 
 - [x] Keep existing server namespace/slirp/Hide.me architecture and Tailscale transport.
