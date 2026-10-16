@@ -7,7 +7,7 @@ in
 {
   sops.secrets = {
     vpn-wireguard-private-key = {
-      sopsFile = ../../secrets/vpn/pc.yaml;
+      sopsFile = file;
       key = "wireguard_private_key";
       mode = "0400";
       restartUnits = [ "netns-vpn-shared.service" ];
