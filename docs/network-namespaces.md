@@ -1,8 +1,7 @@
 # Isolated VPN namespace primitives
 
 Production uses one server Hide.me provider and desktop WireGuard-only clients.
-See [server-only shared gateway](shared-vpn-gateway.md) for SOPS, permanent desktop
-disable, automatic lifecycle, approved deployment and live acceptance. There is
+See [server-only shared gateway](shared-vpn-gateway.md) for SOPS, persistent desktop provider guards, lifecycle, current-state verification and approved deployment. There is
 no desktop provider or fallback, including when rolling back to old generations.
 
 ## Server provider
@@ -29,9 +28,7 @@ only loopback and `shared0`, not provider or underlay interfaces.
 
 ## Private server authentication
 
-The production server's bootstrap token is declared through sops-nix. Its entry
-in `secrets/vpn/server.yaml` is currently empty and **must be provisioned** before
-the gateway can authenticate. Do not reuse live desktop mutable token files.
+The server declares its bootstrap token through sops-nix. The repository does **not** establish whether the protected runtime secret is currently provisioned on the host; verify service readiness through the approved private operator workflow, without printing or decrypting the token. A missing/empty runtime secret blocks authentication. Do not reuse historical desktop mutable token files.
 In a private host terminal, build the client package without activation:
 
 ```bash
@@ -49,7 +46,7 @@ CLIENT_STORE_PATH/bin/hide.me --tokenFile "$PWD/accessToken.txt" token free-nl
 ```
 
 Enter credentials only at the interactive prompts. Confirm a nonempty private
-token file; upstream may return zero on failure. Privately put that token into
+token file; upstream may return zero on failure. For a genuinely unprovisioned server, privately put that token into
 `hide_me_bootstrap_token` using `sops secrets/vpn/server.yaml` with the admin age
 identity. Commit only the encrypted document, and remove the temporary bootstrap
 copy afterward. Never print the token or pass it as an argument/Nix value.

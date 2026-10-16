@@ -85,7 +85,7 @@ Codex or explicit orca-vpn
 
 The **server alone** hosts the Hide.me provider and restricted underlay. Desktop namespaces are clients; they have no local provider or fallback to host networking. Selected applications fail closed when provider, tunnel, DNS or egress validation fails. Normal desktop traffic, host SSH and Docker retain normal networking. The launcher is restricted to registered applications and is not a general privileged shell.
 
-VPN changes must preserve independent namespace firewalling, IPv4/IPv6 routing, isolated DNS, scoped privileges, safe service lifecycle and recovery controls. Read [docs/shared-vpn-gateway.md](docs/shared-vpn-gateway.md) and [docs/network-namespaces.md](docs/network-namespaces.md). An older plan under `docs/plans/` is historical planning context; operational code and current runbooks take precedence.
+VPN changes must preserve independent namespace firewalling, IPv4/IPv6 routing, isolated DNS, scoped privileges, safe service lifecycle and recovery controls. Read [docs/shared-vpn-gateway.md](docs/shared-vpn-gateway.md) and [docs/network-namespaces.md](docs/network-namespaces.md). The earlier implementation plan is archived in `docs/archive/`; operational code, host observations, and current runbooks take precedence.
 
 sops-nix decrypts committed encrypted documents into protected runtime secret paths. Host-specific age identities live outside the repository under `/var/lib/sops-nix/key.txt`. Private keys and access tokens must not appear in unencrypted Git files, Nix expressions, derivation arguments, or public documentation. Public SSH/WireGuard/CA keys may be versioned. See [docs/sops.md](docs/sops.md).
 
