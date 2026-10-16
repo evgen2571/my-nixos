@@ -2,7 +2,7 @@
 
 [CodeGraph](https://github.com/colbymchenry/codegraph) is a local source-code
 knowledge graph and MCP server. The existing `nixpkgs-unstable` flake input
-already includes its Nix package (v1.6.0 at the currently pinned revision).
+provides its Nix package at the pinned revision.
 
 `modules/user-ai/codegraph.nix` installs only that package. Both
 `nixos-pc` and `nixos-lp` enable it; the server does not. It does not
@@ -46,9 +46,7 @@ To manage the entry through the interactive dashboard instead, run
 - Target: `codex`
 
 Skillshare writes the native Codex MCP configuration only when you sync.
-T3 Code's Codex provider uses the existing Codex home, so it should see the
-same MCP settings after a fresh provider session. Restart Codex/T3 Code after
-changing MCP settings; running agent sessions do not hot-reload them reliably.
+Restart Codex after changing MCP settings; existing running sessions do not reliably hot-reload their MCP configuration. Orca integrations may require separate target-specific configuration; do not assume all agents read Codex's MCP list.
 
 To keep CodeGraph out of every project by default, use project-scoped Skillshare
 configuration instead of the global command above. In the target repository,

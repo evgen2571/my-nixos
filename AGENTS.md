@@ -44,4 +44,5 @@ For architecture, read [ARCHITECTURE.md](ARCHITECTURE.md). For module mechanics,
 - [Task-to-file routing](docs/task-routing.md): fastest entry point for common requests.
 - [Architecture](ARCHITECTURE.md): flow, invariants, runtime ownership, host responsibilities.
 - [Module conventions](docs/modules.md): discovery, scopes, option patterns, and enablement.
-- Subsystem-specific operational guides in `docs/`: consult only for the subsystem you are editing.
+- [Neovim agent guide](docs/agents/neovim.md), [desktop agent guide](docs/agents/desktop.md), [networking agent guide](docs/agents/networking.md): focused subsystem boundaries and checks. Read only the one relevant to the task.
+- Subsystem operational guides in `docs/` remain the detailed source for user-facing workflows and incident procedures.

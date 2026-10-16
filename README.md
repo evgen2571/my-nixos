@@ -56,6 +56,7 @@ Not every application setting is fully declarative: login sessions, generated th
 | [ARCHITECTURE.md](ARCHITECTURE.md) | System design, ownership, invariants, and rationale |
 | [docs/task-routing.md](docs/task-routing.md) | Which files to open for a specific task |
 | [docs/modules.md](docs/modules.md) | Module discovery, option patterns, and host enablement |
+| [docs/agents/](docs/agents/) | Focused Neovim, desktop, and networking guides for coding agents |
 | [AGENTS.md](AGENTS.md) | Repository-specific coding-agent rules |
 | [docs/server.md](docs/server.md) | Server operations and persistent data |
 | [docs/shared-vpn-gateway.md](docs/shared-vpn-gateway.md) | Server-only VPN gateway and deployment safeguards |
@@ -65,6 +66,6 @@ Not every application setting is fully declarative: login sessions, generated th
 | [docs/zen-browser.md](docs/zen-browser.md) | Zen profile/workspace behavior |
 | [docs/skillshare.md](docs/skillshare.md) | Runtime-managed skills and agent resources |
 
-Other focused guides in `docs/` cover competitive programming, CodeGraph, KDE, Noctalia greeter, and recorded Neovim validation. Existing documents stay in their current locations until a separate documentation-migration phase.
+Other focused guides in `docs/` cover competitive programming, CodeGraph, KDE, Noctalia greeter, and recorded Neovim validation. Historical migration material is kept under `docs/archive/`, separate from current operations.
 
 **For agents:** start with [AGENTS.md](AGENTS.md), then follow [task routing](docs/task-routing.md); do not load every subsystem guide for a small task.
