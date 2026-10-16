@@ -1,185 +1,70 @@
 # my-nixos
 
-Personal NixOS + Home Manager config.
+Personal, multi-host NixOS configuration built with flakes and Home Manager. The same repository manages a desktop PC, a laptop, and a server; each host selects reusable features instead of maintaining an independent configuration.
 
-See [VPN agent workspace](docs/network-namespaces.md) for hide.me provisioning,
-VPN-routed Codex, T3 Code integration and recovery on the PC and laptop.
+## Hosts
 
-This repo is mostly split into small modules. Hosts choose what they need, profiles collect shared imports, and modules keep the actual options/packages/services.
+| Flake output | Purpose | Entry point |
+| --- | --- | --- |
+| `nixos-pc` | Main Niri/Noctalia workstation | [hosts/pc/](hosts/pc/) |
+| `nixos-lp` | Niri/Noctalia laptop | [hosts/laptop/](hosts/laptop/) |
+| `nixos-server` | Self-hosted services and shared VPN gateway | [hosts/server/](hosts/server/) |
 
-## Quick map
+The configuration is organized as **flake assembly → host choices → reusable NixOS/Home Manager modules → source dotfiles and runtime state**.
 
-```text
-flake.nix                 entry point
-flake/hosts.nix           declares nixos-pc, nixos-lp, nixos-server
-flake/devshells.nix       tools for working on this repo
-flake/formatting.nix      nix fmt setup
+- `flake.nix` and `flake/`: inputs, host outputs, formatting, checks, and development shell.
+- `hosts/<host>/configuration.nix`: machine identity, boot, hardware-related settings, and base imports.
+- `hosts/<host>/profile.nix`: features and host-specific options.
+- `modules/system-*`, `modules/desktops/`, `modules/hardware/`, `modules/server/`: NixOS behavior.
+- `modules/user-*`: Home Manager behavior.
+- `config/`: source configuration for Niri, Neovim, Fish, Zen, Noctalia, and other applications.
+- `lib/module-catalog.nix` and `lib/module-discovery.nix`: module availability, not feature enablement.
 
-hosts/<name>/             host-specific config
-hosts/<name>/profile.nix  what that machine enables
+See [ARCHITECTURE.md](ARCHITECTURE.md) for the actual import graph and ownership rules.
 
-home/evgen2571/home.nix   base Home Manager user config
+## Working with the configuration
 
-lib/module-discovery.nix  recursive module discovery helper
-lib/module-catalog.nix    profile import sets built from discovered module roots
-lib/config-paths.nix      paths for copied config files
+On a NixOS machine with flakes enabled, clone the repository and work from its root:
 
-modules/system-*          NixOS modules
-modules/user-*            Home Manager modules
-modules/desktops          window managers / login / desktop plumbing
-modules/hardware          GPU, bluetooth, tablets, capture, etc.
-
-config/nvim               Neovim config
-config/fish               shell config
-config/niri               Niri config
-config/hypr               Hyprland config
-```
-
-## How I usually navigate
-
-Start here:
-
-- `flake/hosts.nix` — see all machines and profiles.
-- `hosts/pc/profile.nix` — see what the main PC enables.
-- `lib/module-catalog.nix` — see which discovered module roots each profile imports.
-
-For a new app/tool:
-
-1. Add a small module under the right `modules/user-*` or `modules/system-*` folder.
-2. Enable it in `hosts/<host>/profile.nix`.
-
-`lib/module-discovery.nix` only scans the module hierarchy for importable modules. `lib/module-catalog.nix` groups those discovered modules into profile import sets. New modules should not need separate path/import bookkeeping.
-
-Rule of thumb:
-
-- `configuration.nix` = machine basics and hardware-ish decisions.
-- `profile.nix` = toggles for this machine.
-- `modules/` = reusable logic.
-- `config/` = raw dotfiles copied/linked by modules.
-
-## Adding a new module
-
-1. Pick the scope.
-   - Use a NixOS/system module when it configures system services, hardware, desktop sessions, users, drivers, or system packages.
-   - Use a Home Manager/user module when it configures user apps, dotfiles, shells, editor config, or `home.packages`.
-
-2. Put the module in the matching folder.
-   - System examples: `modules/system-services/`, `modules/system-apps/`, `modules/hardware/`, `modules/desktops/`.
-   - User examples: `modules/user-apps/`, `modules/user-dev/`, `modules/user-desktop/`, `modules/user-files/`.
-   - Prefer copying the shape of the closest sibling module.
-
-3. Give it a small enable option.
-
-   System module pattern:
-
-   ```nix
-   { config, lib, pkgs, ... }:
-   let
-     cfg = config.my.system.services.example;
-   in
-   {
-     options.my.system.services.example.enable = lib.mkEnableOption "Example service";
-
-     config = lib.mkIf cfg.enable {
-       environment.systemPackages = with pkgs; [ example ];
-     };
-   }
-   ```
-
-   Home Manager module pattern:
-
-   ```nix
-   { config, lib, pkgs, ... }:
-   let
-     cfg = config.my.user.apps.example;
-   in
-   {
-     options.my.user.apps.example.enable = lib.mkEnableOption "Example app";
-
-     config = lib.mkIf cfg.enable {
-       home.packages = with pkgs; [ example ];
-     };
-   }
-   ```
-
-4. Let the catalog import it through the matching discovered profile root.
-   - `modules/desktops`, `modules/hardware`, `modules/system-apps`, `modules/system-dev`, and `modules/system-files` are discovered for desktop NixOS hosts.
-   - `modules/system-services` is discovered for both desktop and server NixOS hosts.
-   - `modules/user-ai`, `modules/user-apps`, `modules/user-desktop`, and `modules/user-files` are discovered for desktop Home Manager profiles.
-   - `modules/user-dev` is discovered for both desktop and server Home Manager profiles.
-   - A directory with `default.nix` is treated as one module; otherwise `.nix` files below the root are discovered recursively.
-
-5. Enable it per host in `hosts/<host>/profile.nix`.
-   - System modules usually toggle `my.system.*` or another system option namespace.
-   - User modules should usually go through the primary-user adapter:
-
-   ```nix
-   my.primaryUser.home.settings.my.user.apps.example.enable = true;
-   ```
-
-6. Verify before rebuilding.
-
-   ```bash
-   nix fmt
-   git diff --check
-   nixos-rebuild build --flake .#nixos-pc
-   ```
-
-   Use the target host name for host-specific changes, for example `.#nixos-lp` or `.#nixos-server`.
-
-Do not add per-module imports manually. Discovery makes modules available by scanning the configured roots, and `lib/module-catalog.nix` decides which profile imports each root. Add or change catalog roots only when a whole folder should become available to a different profile.
-
-## Common commands
-
-```bash
+```sh
 nix develop
 nix fmt
-nixos-rebuild build --flake .#nixos-pc
+nix flake check --no-build
+just build-pc
+```
+
+Replace `build-pc` with `build-lp` or `build-server` as appropriate. `just` is a separate prerequisite if not already installed; equivalent commands are in [justfile](justfile). The build targets produce a system closure **without activating it**. `nix flake check --no-build` only evaluates checks; it is not proof that their test programs passed. Run `nix flake check` when the full checks are warranted and prerequisites are available.
+
+Deployment is a distinct, intentional step performed **on the matching host**:
+
+```sh
 sudo nixos-rebuild switch --flake .#nixos-pc
 ```
 
-Other hosts:
+Do not deploy a changed networking, boot, security, or storage configuration without planning for recovery. NixOS generations roll back system configuration, not necessarily application databases, mutable secrets, or other runtime data.
 
-```bash
-nixos-rebuild build --flake .#nixos-lp
-nixos-rebuild build --flake .#nixos-server
-```
+## Making a change
 
-For the NixOS server, see [Server setup and operations](docs/server.md).
+For an existing application, find its module, then edit its source configuration in `config/` if applicable. To select or deselect a feature on a machine, use the matching `hosts/<host>/profile.nix`. For a new feature, follow [module conventions](docs/modules.md) rather than adding arbitrary imports.
 
-See [the KDE Plasma workflow guide](docs/kde-plasma.md) for the Niri-like focus,
-keyboard timing, tiling, and Unity/Neovim setup.
+Not every application setting is fully declarative: login sessions, generated themes, writable editor configuration, and agent resources have explicit runtime-state boundaries. Read the relevant subsystem guide before changing activation or file ownership.
 
-See [the Neovim research workflow](docs/neovim-research.md) for editor keys,
-uv environments, notebooks, debugging, and [validation results](docs/neovim-validation.md).
+## Documentation
 
-See [the sops secrets guide](docs/sops.md) for recipient setup, encrypted
-secret files, recipient rotation, and rebuilds.
+| Read this | For |
+| --- | --- |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | System design, ownership, invariants, and rationale |
+| [docs/task-routing.md](docs/task-routing.md) | Which files to open for a specific task |
+| [docs/modules.md](docs/modules.md) | Module discovery, option patterns, and host enablement |
+| [AGENTS.md](AGENTS.md) | Repository-specific coding-agent rules |
+| [docs/server.md](docs/server.md) | Server operations and persistent data |
+| [docs/shared-vpn-gateway.md](docs/shared-vpn-gateway.md) | Server-only VPN gateway and deployment safeguards |
+| [docs/network-namespaces.md](docs/network-namespaces.md) | Namespace implementation and troubleshooting |
+| [docs/sops.md](docs/sops.md) | Encrypted secrets and recipient management |
+| [docs/neovim-research.md](docs/neovim-research.md) | Neovim workflow and keybindings |
+| [docs/zen-browser.md](docs/zen-browser.md) | Zen profile/workspace behavior |
+| [docs/skillshare.md](docs/skillshare.md) | Runtime-managed skills and agent resources |
 
-## Small notes for future me
+Other focused guides in `docs/` cover competitive programming, CodeGraph, KDE, Noctalia greeter, and recorded Neovim validation. Existing documents stay in their current locations until a separate documentation-migration phase.
 
-- Keep modules boring and easy to delete.
-- Prefer one module per tool/service.
-- Put modules under the discovered `modules/*` roots; keep profile imports catalog-derived.
-- If a module has an `enable` option, the host should toggle it from `profile.nix`.
-- Do not hide host-specific choices inside reusable modules.
-- When adding a new module root or changing which profiles should discover a root, update `lib/module-catalog.nix` and keep the root grouping easy to read.
-- For Neovim plugins, look in `config/nvim/lua/custom/plugins/` first.
-- For Telescope/keymap behavior, check `config/nvim/lua/kickstart/plugins/telescope.lua`.
-
-See [competitive programming](docs/competitive-programming.md) for the Codeforces,
-Competitive Companion, CompetiTest and sesh workflow.
-
-## AI resource management
-
-Desktop and laptop install [Skillshare](https://github.com/runkids/skillshare)
-as a user-level CLI. Skills, MCP definitions, plugins and agent settings remain
-writable at runtime; they are not deployed by Home Manager. See
-[Skillshare setup and migration](docs/skillshare.md).
-
-Codex and T3 Code retain their existing VPN-namespace routing, but the former
-agent-toolkit and Serena integration is no longer included in this flake.
-
-CodeGraph is also installed on both desktop hosts from the existing pinned
-nixpkgs-unstable input, with MCP activation managed live through Skillshare.
-See [CodeGraph setup](docs/codegraph.md).
+**For agents:** start with [AGENTS.md](AGENTS.md), then follow [task routing](docs/task-routing.md); do not load every subsystem guide for a small task.
