@@ -1,6 +1,16 @@
-// OBS: preserve the existing policy pending dialog/projector observations.
+// Settings is a separate observed window; preserve projector fullscreen requests.
 window-rule {
     match app-id=r#"^(com\.obsproject\.Studio|obs)$"#
+    exclude title=r#"^Settings$"#
     open-maximized-to-edges true
     open-on-workspace "gaming"
+}
+
+window-rule {
+    match app-id=r#"^(com\.obsproject\.Studio|obs)$"# title=r#"^Settings$"#
+    open-floating true
+    open-maximized-to-edges false
+    open-focused true
+    default-column-width { proportion 0.60; }
+    default-window-height { proportion 0.75; }
 }
