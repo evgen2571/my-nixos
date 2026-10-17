@@ -1,0 +1,6 @@
+// Vesktop: preserve the existing policy pending auxiliary-window observations.
+window-rule {
+    match app-id=r#"^(vesktop|Vesktop)$"#
+    open-maximized-to-edges true
+    open-on-workspace "chats"
+}

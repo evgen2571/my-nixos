@@ -1,0 +1,13 @@
+// Zen: keep normal browser windows on the browser workspace.
+window-rule {
+    match app-id=r#"^(zen-beta|zen)$"#
+    exclude title=r#"^(Picture-in-Picture|Picture in picture)$"#
+    open-maximized-to-edges true
+    open-on-workspace "browser"
+
+	draw-border-with-background false
+	background-effect {
+		blur true
+		xray true
+	}
+}
