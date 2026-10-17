@@ -1,6 +1,17 @@
-// Telegram: preserve the existing policy pending auxiliary-window observations.
+// Main chats; the separately observed media viewer stays with the current workflow.
 window-rule {
     match app-id=r#"^(org\.telegram\.desktop|telegram-desktop)$"#
+    exclude title=r#"^Media viewer$"#
     open-maximized-to-edges true
     open-on-workspace "chats"
+}
+
+window-rule {
+    match app-id=r#"^(org\.telegram\.desktop|telegram-desktop)$"# title=r#"^Media viewer$"#
+    open-floating true
+    open-maximized-to-edges false
+    open-fullscreen false
+    open-focused true
+    default-column-width { proportion 0.80; }
+    default-window-height { proportion 0.80; }
 }
