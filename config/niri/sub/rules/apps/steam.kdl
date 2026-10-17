@@ -1,0 +1,16 @@
+// Settings, Friends List and Special Offers observed on PC; other titles inherited.
+// Exclude them here: a later rule cannot undo open-on-workspace.
+window-rule {
+    match app-id=r#"^(steam|steamwebhelper)$"#
+    exclude title=r#"^(Steam Settings|Friends List|Chat|Properties|Downloads|Special Offers)$"#
+    open-maximized-to-edges true
+    open-on-workspace "gaming"
+}
+window-rule {
+    match app-id=r#"^(steam|steamwebhelper)$"# title=r#"^(Steam Settings|Friends List|Chat|Properties|Downloads|Special Offers)$"#
+    open-maximized-to-edges false
+    open-floating true
+    open-focused true
+    default-column-width { proportion 0.58; }
+    default-window-height { proportion 0.65; }
+}

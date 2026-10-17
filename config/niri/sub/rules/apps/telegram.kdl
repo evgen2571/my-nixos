@@ -1,0 +1,28 @@
+// Main signatures observed on PC; see docs/niri-window-rules.md for title semantics.
+// shortcut: call names can collide with main titles, revisit when window roles are matchable.
+window-rule {
+    match app-id=r#"^(org\.telegram\.desktop|telegram-desktop)$"# title=r#"^(Telegram( \([0-9]+\))?|(\([0-9]+\) )?\u200e\u2068.+\u2069.*)$"#
+    open-maximized-to-edges true
+    open-on-workspace "chats"
+}
+
+// Calls/popouts use arbitrary contact/channel names; keep them with the current workflow.
+window-rule {
+    match app-id=r#"^(org\.telegram\.desktop|telegram-desktop)$"#
+    exclude title=r#"^(Telegram( \([0-9]+\))?|(\([0-9]+\) )?\u200e\u2068.+\u2069.*)$"#
+    open-floating true
+    open-maximized-to-edges false
+    open-focused true
+    default-column-width { proportion 0.60; }
+    default-window-height { proportion 0.70; }
+}
+
+window-rule {
+    match app-id=r#"^(org\.telegram\.desktop|telegram-desktop)$"# title=r#"^Media viewer$"#
+    open-floating true
+    open-maximized-to-edges false
+    open-fullscreen false
+    open-focused true
+    default-column-width { proportion 0.80; }
+    default-window-height { proportion 0.80; }
+}

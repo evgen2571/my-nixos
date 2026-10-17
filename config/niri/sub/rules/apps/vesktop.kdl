@@ -1,0 +1,18 @@
+// Main signatures observed on PC; see docs/niri-window-rules.md for title semantics.
+// shortcut: call names can collide with main titles, revisit when window roles are matchable.
+window-rule {
+    match app-id=r#"^(vesktop|Vesktop)$"# title=r#"^((\([0-9]+\) )?Discord( \| .*)?|vesktop|Vesktop)$"#
+    open-maximized-to-edges true
+    open-on-workspace "chats"
+}
+
+// Calls/popouts use arbitrary contact/channel names; keep them with the current workflow.
+window-rule {
+    match app-id=r#"^(vesktop|Vesktop)$"#
+    exclude title=r#"^((\([0-9]+\) )?Discord( \| .*)?|vesktop|Vesktop)$"#
+    open-floating true
+    open-maximized-to-edges false
+    open-focused true
+    default-column-width { proportion 0.60; }
+    default-window-height { proportion 0.70; }
+}

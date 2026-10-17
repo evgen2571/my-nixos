@@ -1,0 +1,16 @@
+// Versioned titles observed on PC; do not route the New Instance and Settings dialogs.
+window-rule {
+    match app-id=r#"^(org\.prismlauncher\.PrismLauncher|PrismLauncher)$"#
+    exclude title=r#"^(New Instance|Settings) — Prism Launcher [0-9]+\.[0-9]+\.[0-9]+$"#
+    open-maximized-to-edges true
+    open-on-workspace "gaming"
+}
+
+window-rule {
+    match app-id=r#"^(org\.prismlauncher\.PrismLauncher|PrismLauncher)$"# title=r#"^(New Instance|Settings) — Prism Launcher [0-9]+\.[0-9]+\.[0-9]+$"#
+    open-floating true
+    open-maximized-to-edges false
+    open-focused true
+    default-column-width { proportion 0.60; }
+    default-window-height { proportion 0.70; }
+}
