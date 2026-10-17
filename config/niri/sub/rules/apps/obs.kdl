@@ -1,0 +1,6 @@
+// OBS: preserve the existing policy pending dialog/projector observations.
+window-rule {
+    match app-id=r#"^(com\.obsproject\.Studio|obs)$"#
+    open-maximized-to-edges true
+    open-on-workspace "gaming"
+}

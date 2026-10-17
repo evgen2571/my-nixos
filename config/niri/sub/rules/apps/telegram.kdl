@@ -1,0 +1,6 @@
+// Telegram: preserve the existing policy pending auxiliary-window observations.
+window-rule {
+    match app-id=r#"^(org\.telegram\.desktop|telegram-desktop)$"#
+    open-maximized-to-edges true
+    open-on-workspace "chats"
+}

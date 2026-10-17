@@ -1,5 +1,11 @@
 include "obsidian.kdl"
 include "apps.kdl"
+include "apps/telegram.kdl"
+include "apps/steam.kdl"
+include "apps/prism.kdl"
+include "apps/vesktop.kdl"
+include "apps/zen.kdl"
+include "apps/obs.kdl"
 
 // Layer rules
 layer-rule {
@@ -155,7 +161,7 @@ window-rule {
 
 // Gaming launchers and games.
 window-rule {
-    match app-id=r#"^(net\.lutris\.Lutris|lutris|org\.prismlauncher\.PrismLauncher|PrismLauncher|sh\.ppy\.osu|osu!)$"#
+    match app-id=r#"^(net\.lutris\.Lutris|lutris|sh\.ppy\.osu|osu!)$"#
     open-maximized-to-edges true
     open-on-workspace "gaming"
 }
@@ -164,13 +170,6 @@ window-rule {
 window-rule {
     match app-id=r#"^(gamescope|cs2|Minecraft|minecraft|osu!)$"#
     open-fullscreen true
-    open-on-workspace "gaming"
-}
-
-// Recording/streaming tools, if enabled later.
-window-rule {
-    match app-id=r#"^(com\.obsproject\.Studio|obs)$"#
-    open-maximized-to-edges true
     open-on-workspace "gaming"
 }
 

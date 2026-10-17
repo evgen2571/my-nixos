@@ -1,0 +1,6 @@
+// Prism: preserve the existing policy pending auxiliary-window observations.
+window-rule {
+    match app-id=r#"^(org\.prismlauncher\.PrismLauncher|PrismLauncher)$"#
+    open-maximized-to-edges true
+    open-on-workspace "gaming"
+}
