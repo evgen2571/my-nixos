@@ -14,6 +14,12 @@
     in
     {
       checks = {
+        config-paths =
+          assert import ../tests/config-paths { inherit (pkgs) lib; };
+          pkgs.runCommand "config-paths-checks" { } ''
+            test -x ${../config/niri/scripts/focus-or-launch}
+            touch $out
+          '';
         shared-vpn-host-profiles = import ../tests/network-namespaces/hosts.nix {
           inherit pkgs;
           configurations = inputs.self.nixosConfigurations;

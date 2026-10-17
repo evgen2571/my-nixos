@@ -1,4 +1,4 @@
-{ root }:
+{ root, lib }:
 let
   inherit (builtins) listToAttrs readFile;
 
@@ -83,91 +83,27 @@ let
           };
           workspacesFile = workspaceFiles.${workspaceProfile};
         in
-        mkXdgSourceSet [
-          {
-            target = "niri/config.kdl";
-            source = configDir + "/config.kdl";
-          }
-          {
-            target = "niri/sub/outputs.kdl";
-            source = configDir + "/sub/outputs.kdl";
-          }
-          {
-            target = "niri/sub/workspaces.kdl";
-            source = configDir + "/sub/${workspacesFile}";
-          }
-          {
-            target = "niri/sub/rules/common.kdl";
-            source = configDir + "/sub/rules/common.kdl";
-          }
-          {
-            target = "niri/sub/rules/obsidian.kdl";
-            source = configDir + "/sub/rules/obsidian.kdl";
-          }
-          {
-            target = "niri/sub/rules/apps.kdl";
-            source = configDir + "/sub/rules/apps.kdl";
-          }
-          {
-            target = "niri/scripts/focus-or-launch";
-            source = configDir + "/scripts/focus-or-launch";
-          }
-          {
-            target = "niri/sub/binds.kdl";
-            source = configDir + "/sub/binds.kdl";
-          }
-          {
-            target = "niri/sub/layout.kdl";
-            source = configDir + "/sub/layout.kdl";
-          }
-          {
-            target = "niri/sub/input.kdl";
-            source = configDir + "/sub/input.kdl";
-          }
-          {
-            target = "niri/sub/startup.kdl";
-            source = configDir + "/sub/startup.kdl";
-          }
-        ];
+        # Keep leaf ownership: Noctalia generates siblings in the live Niri directory.
+        builtins.removeAttrs (listToAttrs (
+          map (
+            source: mkXdgSource "niri/${lib.removePrefix "${toString configDir}/" (toString source)}" source
+          ) (lib.filesystem.listFilesRecursive configDir)
+        )) (map (file: "niri/sub/${file}") (builtins.attrValues workspaceFiles))
+        // {
+          "niri/sub/workspaces.kdl".source = configDir + "/sub/${workspacesFile}";
+        };
 
       hyprland =
         {
           configDir ? wm.hyprlandConfigDir,
         }:
-        mkXdgSourceSet [
-          {
-            target = "hypr/hyprland.conf";
-            source = configDir + "/hyprland.conf";
-          }
-          {
-            target = "hypr/sub/outputs.conf";
-            source = configDir + "/sub/outputs.conf";
-          }
-          {
-            target = "hypr/sub/workspaces.conf";
-            source = configDir + "/sub/workspaces.conf";
-          }
-          {
-            target = "hypr/sub/rules.conf";
-            source = configDir + "/sub/rules.conf";
-          }
-          {
-            target = "hypr/sub/binds.conf";
-            source = configDir + "/sub/binds.conf";
-          }
-          {
-            target = "hypr/sub/layout.conf";
-            source = configDir + "/sub/layout.conf";
-          }
-          {
-            target = "hypr/sub/input.conf";
-            source = configDir + "/sub/input.conf";
-          }
-          {
-            target = "hypr/sub/startup.conf";
-            source = configDir + "/sub/startup.conf";
-          }
-        ];
+        {
+          "hypr/hyprland.conf".source = configDir + "/hyprland.conf";
+          "hypr/sub" = {
+            source = configDir + "/sub";
+            recursive = true;
+          };
+        };
 
       kdeplasma =
         {
