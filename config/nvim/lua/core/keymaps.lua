@@ -3,7 +3,7 @@ local map = vim.keymap.set
 local opts = { noremap = true, silent = true }
 
 -- Keep hover documentation close to the cursor without launching keywordprg.
-require("custom.hover").setup()
+require("integrations.hover").setup()
 
 -- Search / diagnostics
 map("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear search highlight" })

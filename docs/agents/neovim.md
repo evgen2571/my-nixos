@@ -6,20 +6,20 @@ Use this guide **only for Neovim/editor tasks**. Begin with the narrowest matchi
 
 | Change | Start here | Also inspect when relevant |
 | --- | --- | --- |
-| Editor mappings, UI and basic behavior | `config/nvim/lua/custom/keymaps.lua`, `options.lua`; `hover.lua` owns the `K` binding and popup | Existing plugin mappings, `config/nvim/init.lua` |
-| Plugin addition or customization | `config/nvim/lua/custom/plugins/` | `config/nvim/lua/kickstart/plugins/`, `config/nvim/lazy-lock.json` |
-| Telescope search or hover documentation | `config/nvim/lua/kickstart/plugins/telescope.lua`, `config/nvim/lua/custom/hover.lua` | LSP keymaps and shared floating-window logic |
-| LSP, completion or formatting | `config/nvim/lua/kickstart/plugins/lsp.lua`, `completion.lua`, `conform.lua` | Matching `custom/plugins/` language configuration |
-| Language-specific Python/research | `config/nvim/lua/custom/languages/python.lua`, `custom/plugins/molten-nvim.lua` | `after/ftplugin/python.lua`, [research workflow](../neovim-research.md) |
+| Editor mappings, UI and basic behavior | `config/nvim/lua/core/keymaps.lua`, `core/options.lua`; `integrations/hover.lua` owns the `K` binding and popup | Existing plugin mappings, `config/nvim/init.lua` |
+| Plugin addition or customization | `config/nvim/lua/plugins/` | `config/nvim/lua/plugins/init.lua`, `config/nvim/lazy-lock.json` |
+| Telescope search or hover documentation | `config/nvim/lua/plugins/telescope.lua`, `config/nvim/lua/integrations/hover.lua` | LSP keymaps and shared floating-window logic |
+| LSP, completion or formatting | `config/nvim/lua/plugins/lsp.lua`, `completion.lua`, `conform.lua` | Matching `plugins/` language configuration |
+| Language-specific Python/research | `config/nvim/lua/languages/python.lua`, `plugins/molten-nvim.lua` | `after/ftplugin/python.lua`, [research workflow](../neovim-research.md) |
 | Install language servers or editor packages | `modules/user-dev/neovim/default.nix` | Host profiles / language bundles |
 | Change how dotfiles are deployed | `modules/user-dev/neovim/config.nix` | `lib/config-paths.nix`, generated theme behavior |
-| Theme integration | `config/nvim/lua/custom/theme.lua`, `config/nvim/lua/matugen-template.lua` | `config/noctalia/` and SIGUSR1 behavior |
+| Theme integration | `config/nvim/lua/integrations/theme.lua`, `config/nvim/lua/matugen-template.lua` | `config/noctalia/` and SIGUSR1 behavior |
 
-See [the before/after ownership matrix](../neovim-ownership.md) for the full responsibility map and deferred work. `custom.python` is a compatibility alias; edit `custom.languages.python`.
+See [the before/after ownership matrix](../neovim-ownership.md) for the full responsibility map and deferred work. `custom.python` is a compatibility alias; edit `languages.python`.
 
 ## Invariants
 
-- This is a Lazy/Kickstart-derived Neovim setup with local customizations. **Inspect both plugin trees before changing a shared mapping or option**; do not replace the plugin manager or start a competing configuration tree for a small task.
+- This is a Lazy-based Neovim setup. **Inspect `lua/plugins/init.lua` and the owning plugin spec before changing a shared mapping or option**; do not replace the plugin manager or start a competing configuration tree for a small task.
 - The NixOS module installs the editor and provider packages. The Home Manager activation copies `config/nvim/` into the writable `~/.config/nvim` using rsync and **excludes `lua/matugen.lua`**. Do not replace this copy mechanism with a read-only symlink, or commit generated palettes.
 - `config/nvim/lazy-lock.json` pins plugins. Avoid unrelated upgrades or regenerating the lockfile when adjusting UI behavior.
 - Keep keybind ownership unambiguous; check existing keymaps, which-key descriptions, and plugin defaults before introducing new bindings. Do not rewrite a larger keybinding scheme for a one-window display bug.
