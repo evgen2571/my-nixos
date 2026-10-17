@@ -41,6 +41,7 @@
       enable = true;
       namespaces.vpn = {
         enable = true;
+        server = "free-de";
         bootstrapTokenFile = config.sops.secrets.hide-me-bootstrap-token.path;
         shared = {
           privateKeyFile = config.sops.secrets.vpn-wireguard-private-key.path;
