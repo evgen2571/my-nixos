@@ -62,6 +62,7 @@ error. Do not mark issue #16 runtime acceptance complete from evaluation alone.
 ## Validation evidence
 
 - `nix flake check --no-build`: passed, including all three host evaluations.
+- Full `nix flake check`: passed, including the shared VPN systemd VM test.
 - Focused `niri-host-profiles` check: passed; removing satellite caused its
   assertion to fail, then restoring the package passed again.
 - Non-activating laptop toplevel build: passed.
