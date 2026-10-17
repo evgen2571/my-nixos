@@ -75,7 +75,7 @@ return {
 				require("neotest-python")({
 					runner = "pytest",
 					python = function(root)
-						return require("custom.python").python(root)
+						return require("custom.languages.python").python(root)
 					end,
 					dap = { justMyCode = false },
 				}),

@@ -28,6 +28,21 @@ check("Python cells", function()
 	assert(first == 4 and last == 4)
 	assert(not py.graphics()) -- headless always uses text output
 end)
+check("Notebook commands and Python compatibility", function()
+	local py = require("custom.languages.python")
+	assert(require("custom.python") == py, "Alias must share kernel readiness state")
+	local notebook, calls = py.notebook, {}
+	py.notebook = function(sync)
+		calls[#calls + 1] = sync and "sync" or "pair"
+	end
+	local ok, err = pcall(function()
+		vim.cmd.NotebookPair()
+		vim.cmd.NotebookSync()
+	end)
+	py.notebook = notebook
+	assert(ok, err)
+	assert(vim.deep_equal(calls, { "pair", "sync" }))
+end)
 check("Tree-sitter and textobjects", function()
 	vim.cmd.edit(vim.fn.tempname() .. ".py")
 	vim.api.nvim_buf_set_lines(
@@ -146,8 +161,14 @@ check("Telescope fallback for Neovim 0.12", function()
 end)
 check("Discoverable keymaps", function()
 	for _, lhs in ipairs({
-		"<leader>?", "<leader>sk", "<leader>ba", "<leader>bm",
-		"<leader>b1", "<leader>b2", "<leader>b3", "<leader>b4",
+		"<leader>?",
+		"<leader>sk",
+		"<leader>ba",
+		"<leader>bm",
+		"<leader>b1",
+		"<leader>b2",
+		"<leader>b3",
+		"<leader>b4",
 	}) do
 		assert(vim.fn.maparg(lhs, "n") ~= "", "Missing shortcut: " .. lhs)
 	end

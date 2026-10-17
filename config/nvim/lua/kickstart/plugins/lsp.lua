@@ -127,7 +127,7 @@ return {
       local servers = {
         pyright = {
           on_init = function(client)
-            client.config.settings.python.pythonPath = require('custom.python').python(client.config.root_dir)
+            client.config.settings.python.pythonPath = require('custom.languages.python').python(client.config.root_dir)
             client:notify('workspace/didChangeConfiguration', { settings = client.config.settings })
           end,
           settings = { python = { analysis = {

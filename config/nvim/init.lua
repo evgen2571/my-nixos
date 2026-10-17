@@ -4,6 +4,7 @@ vim.g.have_nerd_font = false
 
 require 'custom.options'
 require 'custom.keymaps'
+require('custom.languages.python').setup_commands()
 require 'custom.autocmds'
 
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'

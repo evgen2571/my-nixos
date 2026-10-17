@@ -11,7 +11,7 @@ return {
 			build = false, -- CLI processor needs no LuaRocks/magick bindings.
 			lazy = true,
 			config = function()
-				if not require("custom.python").graphics() then
+				if not require("custom.languages.python").graphics() then
 					return
 				end
 				local ok, err = pcall(function()
@@ -41,14 +41,14 @@ return {
 		vim.api.nvim_create_autocmd("User", {
 			pattern = "MoltenKernelReady",
 			callback = function(ev)
-				require("custom.python").ready_kernels[ev.data.kernel_id] = true
+				require("custom.languages.python").ready_kernels[ev.data.kernel_id] = true
 			end,
 		})
 		vim.api.nvim_create_autocmd("User", {
 			pattern = "MoltenDeinitPost",
 			callback = function()
 				local active = vim.fn.MoltenRunningKernels(false)
-				local ready = require("custom.python").ready_kernels
+				local ready = require("custom.languages.python").ready_kernels
 				for kernel in pairs(ready) do
 					if not vim.tbl_contains(active, kernel) then
 						ready[kernel] = nil
@@ -60,10 +60,10 @@ return {
 			group = vim.api.nvim_create_augroup("research-molten-runtime", { clear = true }),
 			pattern = "MoltenInitPre",
 			callback = function()
-				require("custom.python").prepare_runtime()
+				require("custom.languages.python").prepare_runtime()
 			end,
 		})
-		if require("custom.python").graphics() then
+		if require("custom.languages.python").graphics() then
 			local ok = pcall(require, "image")
 			if ok and require("image").is_enabled() then
 				vim.g.molten_image_provider = "image.nvim"
@@ -74,7 +74,7 @@ return {
 		{
 			"<leader>mi",
 			function()
-				require("custom.python").kernel()
+				require("custom.languages.python").kernel()
 			end,
 			desc = "Molten: project uv kernel",
 			ft = "python",
@@ -83,7 +83,7 @@ return {
 		{
 			"<leader>mc",
 			function()
-				require("custom.python").cell()
+				require("custom.languages.python").cell()
 			end,
 			desc = "Molten: execute # %% cell",
 			ft = "python",
@@ -91,7 +91,7 @@ return {
 		{
 			"]j",
 			function()
-				require("custom.python").move_cell(1)
+				require("custom.languages.python").move_cell(1)
 			end,
 			desc = "Next Python cell",
 			ft = "python",
@@ -99,7 +99,7 @@ return {
 		{
 			"[j",
 			function()
-				require("custom.python").move_cell(-1)
+				require("custom.languages.python").move_cell(-1)
 			end,
 			desc = "Previous Python cell",
 			ft = "python",
@@ -107,13 +107,13 @@ return {
 		{
 			"<leader>ml",
 			function()
-				require("custom.python").evaluate("MoltenEvaluateLine")
+				require("custom.languages.python").evaluate("MoltenEvaluateLine")
 			end,
 			desc = "Molten: execute line",
 		},
 		{
 			"<leader>me",
-			":<C-u>lua require('custom.python').evaluate('MoltenEvaluateVisual')<CR>gv",
+			":<C-u>lua require('custom.languages.python').evaluate('MoltenEvaluateVisual')<CR>gv",
 			mode = "x",
 			desc = "Molten: execute selection",
 		},
@@ -123,7 +123,7 @@ return {
 		{
 			"<leader>mr",
 			function()
-				require("custom.python").restart()
+				require("custom.languages.python").restart()
 			end,
 			desc = "Molten: restart kernel",
 		},

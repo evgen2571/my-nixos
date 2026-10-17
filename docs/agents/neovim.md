@@ -6,14 +6,16 @@ Use this guide **only for Neovim/editor tasks**. Begin with the narrowest matchi
 
 | Change | Start here | Also inspect when relevant |
 | --- | --- | --- |
-| Editor mappings, UI and basic behavior | `config/nvim/lua/custom/keymaps.lua`, `options.lua`, `hover.lua` | Existing plugin mappings, `config/nvim/init.lua` |
+| Editor mappings, UI and basic behavior | `config/nvim/lua/custom/keymaps.lua`, `options.lua`; `hover.lua` owns the `K` binding and popup | Existing plugin mappings, `config/nvim/init.lua` |
 | Plugin addition or customization | `config/nvim/lua/custom/plugins/` | `config/nvim/lua/kickstart/plugins/`, `config/nvim/lazy-lock.json` |
 | Telescope search or hover documentation | `config/nvim/lua/kickstart/plugins/telescope.lua`, `config/nvim/lua/custom/hover.lua` | LSP keymaps and shared floating-window logic |
 | LSP, completion or formatting | `config/nvim/lua/kickstart/plugins/lsp.lua`, `completion.lua`, `conform.lua` | Matching `custom/plugins/` language configuration |
-| Language-specific Python/research | `config/nvim/lua/custom/python.lua`, `custom/plugins/molten-nvim.lua` | `after/ftplugin/python.lua`, [research workflow](../neovim-research.md) |
+| Language-specific Python/research | `config/nvim/lua/custom/languages/python.lua`, `custom/plugins/molten-nvim.lua` | `after/ftplugin/python.lua`, [research workflow](../neovim-research.md) |
 | Install language servers or editor packages | `modules/user-dev/neovim/default.nix` | Host profiles / language bundles |
 | Change how dotfiles are deployed | `modules/user-dev/neovim/config.nix` | `lib/config-paths.nix`, generated theme behavior |
 | Theme integration | `config/nvim/lua/custom/theme.lua`, `config/nvim/lua/matugen-template.lua` | `config/noctalia/` and SIGUSR1 behavior |
+
+See [the before/after ownership matrix](../neovim-ownership.md) for the full responsibility map and deferred work. `custom.python` is a compatibility alias; edit `custom.languages.python`.
 
 ## Invariants
 
