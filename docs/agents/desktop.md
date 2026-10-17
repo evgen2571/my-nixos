@@ -17,6 +17,8 @@ Use for Niri, Noctalia, desktop applications, window rules, workspace placement,
 | Noctalia greeter, PAM login | `modules/desktops/noctalia-greeter.nix`, `hosts/laptop/configuration.nix`, [greeter runbook](../noctalia-greeter.md) |
 | Zen browser spaces/pins | `config/zen/`, `modules/user-apps/zen-browser.nix`, [Zen runbook](../zen-browser.md) |
 
+PC/laptop common feature selections live in `hosts/common/desktop.nix`, explicitly imported by both local profiles. Keep machine choices in those profiles; consult the [inventory](../desktop-host-defaults.md) before changing a shared selection. VPN settings and wrappers remain host-local.
+
 ## Niri: two layers, not two conflicting configs
 
 `modules/desktops/niri/default.nix` installs/configures the system session, graphics portals and associated services. `modules/user-desktop/niri/config.nix` selects the **per-user** KDL source mappings. `lib/config-paths.nix` maps the chosen host-specific workspace source to the deployed `~/.config/niri/sub/workspaces.kdl`. Do not edit only `config/niri/sub/workspaces.kdl` expecting the desktop hosts to use it: both profiles explicitly select `pc` or `laptop`.

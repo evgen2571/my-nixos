@@ -33,7 +33,7 @@ flake.nix (flake-parts; pinned inputs in flake.lock)
 | --- | --- | --- |
 | `flake.nix`, `flake/` | Inputs, output assembly, formatter, checks, development shell | Host-specific feature toggles |
 | `hosts/<host>/configuration.nix` | Host identity, boot, hardware, base imports and exceptional machine settings | Generic app/service implementations |
-| `hosts/<host>/profile.nix` | Which system/user features are enabled, host-specific option values | Reusable package and service logic |
+| `hosts/<host>/profile.nix`, `hosts/common/` | Shared desktop feature selection and explicit host-specific option values | Reusable package and service logic |
 | `lib/module-catalog.nix` | Imported module roots for desktop/server | Application enable flags |
 | `modules/system-*`, `modules/desktops/`, `modules/hardware/`, `modules/server/` | System packages, services, hardware, security, desktop/session plumbing | User application dotfile contents |
 | `modules/user-*` | Home Manager packages, application integration, user services and XDG mappings | Host boot and global network policy |
@@ -52,6 +52,8 @@ Application configuration may cross two layers deliberately. For example, the Ni
 | `nixos-pc` | Main Niri/Noctalia development desktop | `hosts/pc/profile.nix`; desktop catalog |
 | `nixos-lp` | Niri/Noctalia laptop | `hosts/laptop/profile.nix`; desktop catalog |
 | `nixos-server` | Services, storage and server-only VPN gateway | `hosts/server/profile.nix`; server catalog |
+
+The two desktop profiles explicitly import `hosts/common/desktop.nix` for identical feature selections and `hosts/common/actline-development.nix` for development aliases and public CA trust. Host differences and VPN selections remain local. These shared profiles are outside module discovery and retain ordinary declaration priority; see the [selection inventory](docs/desktop-host-defaults.md).
 
 The two desktop hosts enable `my.user.dev.workstation`, a Home Manager bundle that defaults shared terminal, shell, editor and tool features on. Language options and individual applications remain host-selectable. The server has a smaller Home Manager module profile and a separate base system configuration.
 
@@ -89,7 +91,7 @@ VPN changes must preserve independent namespace firewalling, IPv4/IPv6 routing, 
 
 sops-nix decrypts committed encrypted documents into protected runtime secret paths. Host-specific age identities live outside the repository under `/var/lib/sops-nix/key.txt`. Private keys and access tokens must not appear in unencrypted Git files, Nix expressions, derivation arguments, or public documentation. Public SSH/WireGuard/CA keys may be versioned. See [docs/sops.md](docs/sops.md).
 
-The PC and laptop currently declare the same Actline development host aliases and trust the same public development root CA from a file under `hosts/pc/certs/`. These are still NixOS-managed and require activation to change; consolidating them is a separate refactor, not documentation work.
+Only PC and laptop import `hosts/common/actline-development.nix`, which owns their Actline development host aliases and trust in the existing public root CA under `hosts/pc/certs/`. The server does not import this feature. These settings remain NixOS-managed and require activation to change.
 
 ## Server data boundaries
 

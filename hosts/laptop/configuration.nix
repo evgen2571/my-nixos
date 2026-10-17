@@ -24,14 +24,6 @@
   security.pam.services.greetd.fprintAuth = false;
   security.pam.services.sudo.fprintAuth = false;
 
-  networking.extraHosts = ''
-    100.112.239.4 api.actline.test auth.actline.test
-  '';
-
-  security.pki.certificateFiles = [
-    ../pc/certs/actline-dev-rootCA.pem
-  ];
-
   my.primaryUser = {
     enable = true;
     name = "evgen2571";
