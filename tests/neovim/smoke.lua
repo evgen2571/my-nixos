@@ -20,13 +20,28 @@ check("Python provider", function()
 	assert(vim.fn.has("python3") == 1, "Neovim must have a working Python 3 provider for Molten")
 end)
 check("Python cells", function()
-	local py = require("custom.python")
+	local py = require("languages.python")
 	local lines = { "# %%", "x = 1", "# %%", "print(x)" }
 	local first, last = py.cell_bounds(lines, 2)
 	assert(first == 2 and last == 2)
 	first, last = py.cell_bounds(lines, 3)
 	assert(first == 4 and last == 4)
 	assert(not py.graphics()) -- headless always uses text output
+end)
+check("Notebook commands and Python compatibility", function()
+	local py = require("languages.python")
+	assert(require("custom.python") == py, "Alias must share kernel readiness state")
+	local notebook, calls = py.notebook, {}
+	py.notebook = function(sync)
+		calls[#calls + 1] = sync and "sync" or "pair"
+	end
+	local ok, err = pcall(function()
+		vim.cmd.NotebookPair()
+		vim.cmd.NotebookSync()
+	end)
+	py.notebook = notebook
+	assert(ok, err)
+	assert(vim.deep_equal(calls, { "pair", "sync" }))
 end)
 check("Tree-sitter and textobjects", function()
 	vim.cmd.edit(vim.fn.tempname() .. ".py")
@@ -63,7 +78,7 @@ check("DAP registration", function()
 	assert(dap.configurations.c[1].type == "lldb")
 	assert(type(dap.adapters.python) == "function")
 	assert(type(dap.adapters.go) == "function")
-	assert(require("dap-python").resolve_python() == require("custom.python").python())
+	assert(require("dap-python").resolve_python() == require("languages.python").python())
 end)
 check("pytest and GoogleTest adapters", function()
 	require("neotest")
@@ -111,7 +126,7 @@ check("Popup documentation and compact shortcut menu", function()
 	assert(opts.win.height.max == 12)
 end)
 check("Compact hover Markdown", function()
-	local hover = require("custom.hover")
+	local hover = require("integrations.hover")
 	assert(hover.preview_options.max_width == 60)
 	assert(hover.preview_options.max_height == 12)
 	local compact = hover.compact({
@@ -146,8 +161,14 @@ check("Telescope fallback for Neovim 0.12", function()
 end)
 check("Discoverable keymaps", function()
 	for _, lhs in ipairs({
-		"<leader>?", "<leader>sk", "<leader>ba", "<leader>bm",
-		"<leader>b1", "<leader>b2", "<leader>b3", "<leader>b4",
+		"<leader>?",
+		"<leader>sk",
+		"<leader>ba",
+		"<leader>bm",
+		"<leader>b1",
+		"<leader>b2",
+		"<leader>b3",
+		"<leader>b4",
 	}) do
 		assert(vim.fn.maparg(lhs, "n") ~= "", "Missing shortcut: " .. lhs)
 	end

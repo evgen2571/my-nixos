@@ -2,9 +2,15 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 vim.g.have_nerd_font = false
 
-require 'custom.options'
-require 'custom.keymaps'
-require 'custom.autocmds'
+-- Compatibility for local integrations; the source tree uses responsibility names.
+package.preload['custom.python'] = function()
+  return require 'languages.python'
+end
+
+require 'core.options'
+require 'core.keymaps'
+require('languages.python').setup_commands()
+require 'core.autocmds'
 
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
@@ -22,18 +28,7 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-require('lazy').setup({
-  require 'kickstart.plugins.editor',
-  require 'kickstart.plugins.telescope',
-  require 'kickstart.plugins.lsp',
-  require 'kickstart.plugins.conform',
-  require 'kickstart.plugins.completion',
-  require 'kickstart.plugins.debug',
-  require 'kickstart.plugins.autopairs',
-  require 'kickstart.plugins.gitsigns',
-  require 'kickstart.plugins.treesitter',
-  { import = 'custom.plugins' },
-}, {
+require('lazy').setup(require 'plugins', {
   ui = {
     icons = vim.g.have_nerd_font and {} or {
       cmd = '⌘',

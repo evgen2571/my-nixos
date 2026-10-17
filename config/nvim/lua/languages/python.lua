@@ -111,7 +111,10 @@ function M.prepare_runtime()
 end
 function M.kernel()
 	if vim.fn.exists(":MoltenInit") ~= 2 then
-		vim.notify("Molten commands unavailable; run :Lazy load molten-nvim, :UpdateRemotePlugins, then restart Neovim", vim.log.levels.WARN)
+		vim.notify(
+			"Molten commands unavailable; run :Lazy load molten-nvim, :UpdateRemotePlugins, then restart Neovim",
+			vim.log.levels.WARN
+		)
 		return
 	end
 	local python = M.python()
@@ -202,5 +205,14 @@ function M.notebook(sync)
 			vim.notify("Paired notebook synchronized; outputs remain in .ipynb")
 		end)
 	end)
+end
+-- Commands stay available in every buffer; project/kernel work runs on demand.
+function M.setup_commands()
+	vim.api.nvim_create_user_command("NotebookPair", function()
+		M.notebook(false)
+	end, {})
+	vim.api.nvim_create_user_command("NotebookSync", function()
+		M.notebook(true)
+	end, {})
 end
 return M

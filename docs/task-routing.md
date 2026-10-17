@@ -11,8 +11,8 @@ Use this page to identify the **smallest relevant slice** of the repository. Ope
 | Change flake inputs | `flake.nix`, `flake.lock` | All affected hosts; avoid incidental lockfile churn |
 | Change module discovery/import behavior | `lib/module-catalog.nix`, `lib/module-discovery.nix` | [Module conventions](modules.md), desktop and server evaluation |
 | Change Fish/tmux/Kitty workflow | `config/fish/`, `modules/user-dev/` | `lib/config-paths.nix` and workstation bundle |
-| Change Neovim keybindings/editor UI | `config/nvim/lua/custom/` | [Neovim agent guide](agents/neovim.md), `config/nvim/lua/kickstart/`, `tests/neovim/run.sh` |
-| Change Neovim plugin or language setup | `config/nvim/lua/custom/plugins/` | Plugin lockfile, `modules/user-dev/neovim/`, [Neovim guide](neovim-research.md) |
+| Change Neovim keybindings/editor UI | `config/nvim/lua/core/` | [Neovim agent guide](agents/neovim.md), `config/nvim/lua/plugins/`, `tests/neovim/run.sh` |
+| Change Neovim plugin or language setup | `config/nvim/lua/plugins/` | Plugin lockfile, `modules/user-dev/neovim/`, [Neovim guide](neovim-research.md) |
 | Change Niri shortcuts/layout | `config/niri/sub/binds.kdl` or `layout.kdl` | [Desktop agent guide](agents/desktop.md), `config/niri/config.kdl`, `modules/user-desktop/niri/` |
 | Change Niri window rules | `config/niri/sub/rules/` | `config/niri/config.kdl`, `lib/config-paths.nix` |
 | Change PC/laptop Niri workspaces | `config/niri/sub/workspaces-pc.kdl` or `workspaces-laptop.kdl` | `modules/user-desktop/niri/config.nix` |

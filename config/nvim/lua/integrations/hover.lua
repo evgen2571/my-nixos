@@ -111,4 +111,8 @@ function M.show()
   end)
 end
 
+function M.setup()
+  vim.keymap.set("n", "K", M.show, { desc = "Documentation: hover at cursor" })
+end
+
 return M

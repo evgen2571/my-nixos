@@ -1,4 +1,4 @@
-local py = require("custom.python")
+local py = require("languages.python")
 local function map(lhs, fn, desc)
 	vim.keymap.set("n", lhs, fn, { buffer = true, desc = desc })
 end
