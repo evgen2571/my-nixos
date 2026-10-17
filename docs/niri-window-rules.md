@@ -16,6 +16,8 @@ Initial read-only `niri msg --json windows` / `workspaces` on the PC session, 20
 | Steam offers | `steam` | `Special Offers` | `gaming` | non-floating, 2560×1416 |
 | Prism main | `org.prismlauncher.PrismLauncher` | `Prism Launcher 11.1.1` | `music` | non-floating, 2560×1416 |
 | Prism instance creation | `org.prismlauncher.PrismLauncher` | `New Instance — Prism Launcher 11.1.1` | `gaming` | non-floating, 2560×1416 |
+| Prism settings | `org.prismlauncher.PrismLauncher` | `Settings — Prism Launcher 11.1.1` | `gaming` | non-floating, observed directly via IPC |
+| Zen PiP | `zen-beta` | `Picture-in-Picture` | `browser` | floating, observed directly via IPC |
 | OBS main | `com.obsproject.Studio` | `OBS 32.1.2 - Profile: Untitled - Scenes: Untitled` | `anki` | non-floating, 2560×1416 |
 | OBS settings | `com.obsproject.Studio` | `Settings` | `gaming` | non-floating, 2560×1416 |
 | Vesktop main / popouts; other requested auxiliaries | unavailable | unavailable | unavailable | not observed |
@@ -28,9 +30,9 @@ IPC does not report fullscreen/maximized flags here; window dimensions alone can
 | --- | --- | --- |
 | `telegram.kdl` | Media viewer excluded from chats maximization/routing; centered, focused 0.80×0.80 floating viewer with initial fullscreen disabled | Check actual opening and later fullscreen requests, closing/focus return, and other auxiliaries |
 | `steam.kdl` | Existing utility titles plus observed Special Offers excluded from gaming routing; floating width 0.48 → 0.58, height 0.65 retained | Settings/Friends/Offers metadata confirmed; inherited `Chat`, `Properties`, `Downloads` titles remain unverified; game properties/localized titles, media and other utilities still need observations |
-| `prism.kdl` | Observed versioned New Instance dialog excluded from gaming maximization/routing; focused 0.60×0.70 floating | Identify Edit Instance, Settings, Accounts, standalone logs/progress; distinguish panels from windows; version suffix/localization variants remain unmatched |
+| `prism.kdl` | Observed versioned New Instance and Settings dialogs excluded from gaming maximization/routing; focused 0.60×0.70 floating | Identify Edit Instance, Accounts, standalone logs/progress; distinguish panels from windows; version suffix/localization variants remain unmatched |
 | `vesktop.kdl` | Existing chats maximization moved unchanged; Discord/Slack stay in simple rules | Identify independent call/video/media windows; preserve deliberate fullscreen |
-| `zen.kdl` | Existing browser routing, blur and PiP exclusion moved unchanged; other browsers stay in simple rules | Observe PiP and true independent auth/extension popups; preserve ordinary new windows |
+| `zen.kdl` | Existing browser routing, blur and PiP exclusion moved unchanged; other browsers stay in simple rules | PiP metadata/floating confirmed; observe true independent auth/extension popups; preserve ordinary new windows |
 | `obs.kdl` | Observed Settings excluded from gaming maximization/routing; focused 0.60×0.75 floating | Identify filters/properties and other secondary windows; distinguish windowed/fullscreen projectors without app-wide fullscreen suppression |
 
 Auxiliary rules use default centering, proportional sizing and no workspace/output target. Only Telegram's media viewer overrides initial fullscreen; deliberate video/projector/game fullscreen remains unrestricted. Unknown auxiliary titles still inherit main policies until observed. The ownership split alone does **not** complete all auxiliary-window requirements.
