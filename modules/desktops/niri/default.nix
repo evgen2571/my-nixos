@@ -31,6 +31,8 @@ in
       brightnessctl
       playerctl
       polkit_gnome
+      # Niri manages satellite on demand and publishes its allocated DISPLAY.
+      xwayland-satellite
 
       pipewire
       wireplumber
