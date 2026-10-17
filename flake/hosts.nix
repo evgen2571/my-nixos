@@ -1,7 +1,10 @@
 { inputs, withSystem, ... }:
 let
   moduleProfiles = (import ../lib/module-catalog.nix { root = ../.; }).profiles;
-  configPaths = import ../lib/config-paths.nix { root = ../.; };
+  configPaths = import ../lib/config-paths.nix {
+    root = ../.;
+    lib = inputs.nixpkgs.lib;
+  };
   mkHost =
     {
       hostModule,

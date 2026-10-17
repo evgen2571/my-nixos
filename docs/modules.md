@@ -107,3 +107,68 @@ Secrets must be wired as protected runtime paths, typically via sops-nix, never 
 5. Report checks actually run and any runtime validation not performed. Do not activate a live system without explicit authorization.
 
 Task-specific entry points and relevant existing tests: [task routing](task-routing.md).
+
+## Deployment ownership inventory (captured before R01 edits)
+
+All targets below are relative to `~/.config/` unless stated otherwise. PC and
+laptop enable the workstation bundle; the server enables only Git from these
+user modules, so it deploys none of the listed application files.
+
+| Source / owner | PC target | Laptop target | Ownership mode |
+| --- | --- | --- | --- |
+| `config/fish/config.fish` | `fish/config.fish` | same | Static file link |
+| `config/fish/{conf.d,functions}/` | `fish/{conf.d,functions}/` | same | Recursive trees; containing directories remain writable |
+| `config/kitty/kitty.conf` | `kitty/kitty.conf` (17.0) | `kitty/kitty.conf` (appended 13.0 override) | Static file link on PC; host-generated text on laptop |
+| `config/starship/starship.toml` | `starship.toml` | same | Static file link |
+| `config/niri/config.kdl`, common `sub/` files, `scripts/focus-or-launch` | matching `niri/` paths | same | Static file links; script retains executable bit |
+| `config/niri/sub/workspaces-{pc,laptop}.kdl` | `niri/sub/workspaces.kdl` from PC source | same target from laptop source | Host-selected static file link; default profile uses `workspaces.kdl` |
+| Noctalia theme generator | `niri/noctalia.kdl`, optional `niri/noctalia-dropdown.kdl`, Kitty/theme outputs | same | Mutable/generated state; never owned by the Niri adapter |
+| `config/noctalia/config.toml`, common TOML and dropdown template | matching `noctalia/` files | same | Static sources via Noctalia HM options and explicit file links |
+| `config/noctalia/{bar,widgets}-{pc,laptop}.toml` | `noctalia/{bar,widgets}.toml` from PC sources | same targets from laptop sources | Host-selected static file links |
+| Noctalia runtime settings | `~/.local/state/noctalia/settings.toml` | same | Mutable state; existing stale-settings pruning stays unchanged; v4 copy installer disabled |
+| `config/nvim/` | `nvim/` | same | Activation-time rsync copy with writable permissions; preserves generated `lua/matugen.lua` |
+| tmux HM options / `config/sesh/sesh.toml` | `tmux/tmux.conf`, `sesh/sesh.toml` | same | Generated text; sesh substitutes the packaged executable path |
+| `config/zen/profile.nix` via Zen HM module | selected `zen/vrrqsw0h.evgen2571` profile | selected `zen/it4r6j1f.evgen2571` profile | Managed profile settings alongside application-owned sessions, logins and databases; never link the whole profile |
+| `config/hyprland/{hyprland.conf,sub/}` | disabled | disabled | Static file links at `hypr/hyprland.conf`, `hypr/sub/*` when enabled |
+| `config/kdeplasma/{kcminputrc,kwinrc,kxkbrc}` | disabled | disabled | Static file links at XDG root when enabled; explicit names avoid owning unrelated desktop state |
+| end4 Hyprland installer | disabled | disabled | Existing opt-in activation-time installation; outside the static adapter |
+
+The safe simplifications are automatic discovery of Niri source leaves (excluding
+workspace variants before assigning the selected alias) and recursive linking of
+Hyprland's static `sub/` tree. Fish is already recursive. Kitty, Noctalia, sesh,
+Neovim and Zen retain their purposeful host/generated/writable boundaries. No new
+activation cleanup or migration is needed: existing effective leaf targets stay
+identical, and no currently unmanaged file is removed.
+
+### Adding a source file or host override
+
+- **Niri:** add an ordinary static file anywhere under `config/niri/`, add its
+  KDL `include` where needed, and stage it in Git (flake sources omit untracked
+  files). The adapter discovers source leaves automatically. The three workspace
+  sources are excluded from discovery and only the selected `workspaceProfile`
+  becomes `niri/sub/workspaces.kdl`; the other variants are not deployed. Keep
+  generated `noctalia*.kdl` files out of this source tree. The adapter owns leaves,
+  not the live directory, so generated siblings remain writable.
+- **Hyprland:** add static includes under `config/hyprland/sub/`; Home Manager
+  recursively links them. Keep generated files outside that source subtree.
+- **Fish:** add loaded snippets/functions to the existing recursive directories.
+  **Starship/KDE:** retain the clear explicit file mappings; add an explicit target
+  if a new file is actually needed. KDE's files live directly in the XDG root,
+  which must never be linked as a whole.
+- **Host variants:** use the existing host profile options (`workspaceProfile`,
+  Kitty `fontSize`, Noctalia `profile`/`configFile`). For a new exceptional target,
+  exclude its ordinary source from discovery before declaring its selected alias;
+  never manage the same effective leaf through both a recursive tree and a child
+  declaration. Inspect evaluated `home.file` targets, including recursive leaves.
+- **Writable/generated applications:** change the owning module deliberately.
+  Do not extend static discovery into Neovim, Noctalia's runtime outputs, Zen
+  profiles or Skillshare resources. Noctalia's explicit template/common/profile
+  links avoid importing its v4 reference files, scripts and runtime state.
+
+`tests/config-paths/` checks automatic nested-file deployment and the existing
+workspace/terminal adapter contracts; it is registered as the `config-paths`
+flake check. A deployment refactor should also compare evaluated Home Manager
+files and activation entries for both desktops (and the server for shared modules)
+against the previous revision, preserving content, source/text mode, effective
+leaf targets and executable permissions. A source store path changing because the
+flake revision changed is not itself a content change.
