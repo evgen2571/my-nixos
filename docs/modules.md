@@ -12,6 +12,8 @@ flake/hosts.nix
   → hosts/<host>/profile.nix enables/configures the option
 ```
 
+PC and laptop profiles explicitly import `hosts/common/desktop.nix` for identical selections and `hosts/common/example-development.nix` for scoped development aliases/CA trust. These files sit outside discovered roots; do not also add them to the catalog. Host differences and security-sensitive VPN settings stay local. Shared declarations retain their original priority; the [inventory](desktop-host-defaults.md) records what moved and what deliberately stayed local.
+
 A discovered module is **available**, not enabled. Modules typically define a `lib.mkEnableOption` and gate their behavior with `lib.mkIf cfg.enable`.
 
 Discovery walks `.nix` files recursively. A directory with a `default.nix` is imported **as that single module**, so implementation files beside it are not individually discovered. The `default.nix` must explicitly import any helpers that are NixOS or Home Manager modules. Do not add imports to host profiles for a module already discovered through the catalog.
