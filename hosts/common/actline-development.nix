@@ -6,6 +6,6 @@
   '';
 
   security.pki.certificateFiles = [
-    ../pc/certs/actline-dev-rootCA.pem
+    ./certs/actline-dev-rootCA.pem
   ];
 }

@@ -28,7 +28,7 @@ selection, not an added `mkForce`.
 | User apps: Bitwarden, Bruno, Chrome, Notion, osu!lazer, Slack off | Shared stable default | Shared desktop selection |
 | User Niri/Noctalia/screen recorder on; Hyprland/end4 dotfiles off | Shared stable default | Shared desktop selection; profiles still choose workspace/Noctalia variants |
 | FFmpeg/workstation, Dolphin/Yazi on | Shared stable default | Shared desktop selection; bundle implementation unchanged |
-| Actline aliases and public CA | Shared stable default | Separate `hosts/common/actline-development.nix`, explicitly selected by both profiles; same aliases and same existing public CA file, no server trust expansion |
+| Actline aliases and public CA | Shared stable default | Separate `hosts/common/actline-development.nix`, explicitly selected by both profiles; same aliases and unchanged public CA content under `hosts/common/certs/`, no server trust expansion |
 | GNOME, OpenTabletDriver, PC-only Plasma selection | Host override | Local desktop blocks; GNOME differs |
 | Bluetooth, NVIDIA, hardware screen recorder | Intentionally duplicated for clarity/safety | Local hardware blocks, including identical toggles; GPU ownership remains visible |
 | PC Zenless Zone Zero/Sunshine off, laptop Waydroid on; virtualization differs | Host override | Local system blocks |
