@@ -182,6 +182,6 @@ and the desktop checks still required.
 
 See [the ownership map](neovim-ownership.md) before changing editor behavior.
 Python project, notebook commands and kernel helpers live in
-`config/nvim/lua/custom/languages/python.lua`; `custom.python` remains an alias.
-The `K` binding and popup implementation live together in `custom/hover.lua`;
+`config/nvim/lua/languages/python.lua`; `custom.python` remains an alias.
+The `K` binding and popup implementation live together in `integrations/hover.lua`;
 LSP attachment/navigation and Telescope search keep their existing owners.

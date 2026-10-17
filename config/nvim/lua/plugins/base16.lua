@@ -3,7 +3,7 @@ return {
 	lazy = false,
 	priority = 1000,
 	config = function()
-		require("custom.theme").setup()
-		require("custom.theme").watch()
+		require("integrations.theme").setup()
+		require("integrations.theme").watch()
 	end,
 }

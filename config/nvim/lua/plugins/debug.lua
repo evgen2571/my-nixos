@@ -137,13 +137,13 @@ return {
 
 		require("dap-python").setup("uv")
 		require("dap-python").resolve_python = function()
-			return require("custom.languages.python").python()
+			return require("languages.python").python()
 		end
 		local python_adapter = dap.adapters.python
 		dap.adapters.python = function(callback, configuration)
 			python_adapter(function(adapter)
 				if adapter.type == "executable" then
-					local root = require("custom.languages.python").root(configuration.program)
+					local root = require("languages.python").root(configuration.program)
 					adapter.options.cwd = root
 					adapter.args = { "run", "--project", root, "--with", "debugpy", "python", "-m", "debugpy.adapter" }
 				end
@@ -152,7 +152,7 @@ return {
 		end
 		for _, configuration in ipairs(dap.configurations.python) do
 			configuration.cwd = function()
-				return require("custom.languages.python").root()
+				return require("languages.python").root()
 			end
 		end
 	end,
