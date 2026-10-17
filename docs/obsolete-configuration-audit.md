@@ -74,3 +74,7 @@ error. Do not mark issue #16 runtime acceptance complete from evaluation alone.
   `config/niri/noctalia.kdl`; no claim of full session validation is made.
 - Interactive Steam launch remains unverified after the fix; no deployment,
   compositor restart, logout or service restart was performed.
+
+The user accepted a reduced verification scope: the optional full PC build was
+stopped during dependency compilation. PC evaluation and host checks passed;
+the complete PC build and post-deployment Steam checks are left to the user.
