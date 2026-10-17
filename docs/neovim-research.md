@@ -177,3 +177,11 @@ test dependencies or start services automatically.
 
 See [validation results](neovim-validation.md) for the runtime checks actually run
 and the desktop checks still required.
+
+## Configuration ownership
+
+See [the ownership map](neovim-ownership.md) before changing editor behavior.
+Python project, notebook commands and kernel helpers live in
+`config/nvim/lua/custom/languages/python.lua`; `custom.python` remains an alias.
+The `K` binding and popup implementation live together in `custom/hover.lua`;
+LSP attachment/navigation and Telescope search keep their existing owners.
