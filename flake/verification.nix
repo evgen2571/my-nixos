@@ -14,6 +14,10 @@
     in
     {
       checks = {
+        niri-host-profiles = import ../tests/niri/hosts.nix {
+          inherit pkgs;
+          configurations = inputs.self.nixosConfigurations;
+        };
         config-paths =
           assert import ../tests/config-paths { inherit (pkgs) lib; };
           pkgs.runCommand "config-paths-checks" { } ''
