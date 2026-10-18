@@ -1,6 +1,6 @@
 # Archived: shared VPN initial rollout runbook
 
-> Historical snapshot of the **previous** deployment and rollback documentation. It contains time-bound assumptions about first-time provisioning, approval, inactive services and pending live acceptance. **Do not follow these steps on the current hosts without a new operator-reviewed deployment plan and current-state checks.** Use [the active gateway guide](../shared-vpn-gateway.md) and [the networking agent guide](../agents/networking.md) for current architecture and diagnosis.
+> Historical snapshot of the **previous** deployment and rollback documentation. It contains time-bound assumptions about first-time provisioning, approval, inactive services and pending live acceptance. **Do not follow these steps on the current hosts without a new operator-reviewed deployment plan and current-state checks.** Use [the active gateway guide](../guides/shared-vpn-gateway.md) and [the networking agent guide](../../.agents/networking.md) for current architecture and diagnosis.
 
 ---
 
@@ -47,7 +47,7 @@ other host identities are not recipients. Private keys have been generated and e
 the module never generates keys at boot. No plaintext private key is committed
 or put into the Nix store. sops-nix decrypts root-only mode-0400 runtime files and
 restarts the relevant service when a secret changes. There is no manual public-key
-exchange. See [SOPS workflow](../sops.md) for identities and private editing.
+exchange. See [SOPS workflow](../reference/secrets.md) for identities and private editing.
 
 **Server authentication is intentionally not provisioned yet.** Its
 `hide_me_bootstrap_token` entry is empty; this is not a working credential.
@@ -62,7 +62,7 @@ nix shell --inputs-from . nixpkgs#sops -c sops secrets/vpn/server.yaml
 Use a trusted private editor/session with the admin age identity. Enter the token
 only in the editor; never use shell arguments, chat, Git plaintext or Nix strings.
 Obtain it using the token-only interactive procedure in
-[namespace primitives](../network-namespaces.md). Confirm SOPS recipients against the
+[namespace primitives](../reference/network-namespaces.md). Confirm SOPS recipients against the
 hosts' existing `/var/lib/sops-nix/key.txt` public identities; do not replace host
 age identities or print their private contents. No current admin identity was
 available to this agent, so real authentication requires that manual step.

@@ -1,8 +1,8 @@
 # Public/private migration contract (M01)
 
-Implementation and current commands: [installation and source modes](installation.md).
+Implementation and current commands: [installation and source modes](../getting-started/installation.md).
 The dated M01 inventory below remains the historical contract and audit boundary.
-[Personal metadata extraction](personal-metadata.md) records the M02.5 ownership changes, neutral Home Manager base and retained/deferred metadata.
+[Personal metadata extraction](../reference/personal-metadata.md) records the M02.5 ownership changes, neutral Home Manager base and retained/deferred metadata.
 
 Specification for [issue #28](https://github.com/evgen2571/my-nixos/issues/28),
 revised to follow the [latest PR #34 review](https://github.com/evgen2571/my-nixos/pull/34#issuecomment-6250388864).
@@ -12,10 +12,10 @@ This is a proposed migration, not a completed split or permission to publish.
 M01 changes documentation only. Configuration, ciphertext, generated files and
 mutable runtime state stay unchanged; actual templates and wiring belong to M02.
 
-The [architecture](../ARCHITECTURE.md), [module conventions](modules.md),
-[SOPS guide](sops.md), [server guide](server.md),
-[VPN gateway guide](shared-vpn-gateway.md) and
-[namespace guide](network-namespaces.md) remain authoritative operational guides.
+The [architecture](../concepts/architecture.md), [module conventions](../development/modules.md),
+[SOPS guide](../reference/secrets.md), [server guide](../guides/server.md),
+[VPN gateway guide](../guides/shared-vpn-gateway.md) and
+[namespace guide](../reference/network-namespaces.md) remain authoritative operational guides.
 Some SOPS prose predates the current files: active declarations use
 `secrets/hosts/*.yaml`, not the historical `secrets/vpn/*.yaml`; current policy
 also includes admin-only bootstrap documents. Follow executable declarations.
@@ -144,8 +144,8 @@ explicit local source mode. This does not authorize publishing maintainer data.
 | `.agent/vpn-resilience-plan.md` | P: same after sensitive-literal review | Public / sensitive values | Planning history is not inherently private | Extract only sensitive incident facts; no implementation dependency |
 | `docs/{desktop-host-defaults,obsolete-configuration-audit}.md` | P: same after sensitive-literal review | Documented public | Host selection and architecture remain public | Preserve useful inventories and links |
 | `docs/{server,shared-vpn-gateway,network-namespaces,sops,zen-browser}.md` | P: same; sensitive operational values only in S: docs/ | Public / sensitive values | Daily workflows and public host operations stay documented | Commands run from P; do not duplicate guides privately |
-| `README.md`, `AGENTS.md`, `ARCHITECTURE.md`, `docs/{modules,task-routing}.md`, `docs/agents/` | P: same | Public | Public repository remains the complete configuration | M02 documents optional input, templates and unchanged entry point |
-| `docs/public-private-migration.md` | P: same after final exposure review | Public contract | Ownership and migration design should be understandable publicly | Keep contract; extract any sensitive audit evidence rather than moving entire inventory |
+| `README.md`, `AGENTS.md`, `docs/concepts/architecture.md`, `docs/{modules,task-routing}.md`, `docs/agents/` | P: same | Public | Public repository remains the complete configuration | M02 documents optional input, templates and unchanged entry point |
+| `docs/archive/public-private-migration.md` | P: same after final exposure review | Public contract | Ownership and migration design should be understandable publicly | Keep contract; extract any sensitive audit evidence rather than moving entire inventory |
 | Remaining `docs/`, `.gitignore`, `.clang-format` | P: same after link/value review | Documented public | Guidance/tooling remains public | No blanket username replacement or documentation migration |
 | New `templates/host/{configuration.nix,profile.nix,README.md}` | P: new in M02 | Public examples | Forkable host through existing assembly | Use caller hardware/identity, explicit state versions and safe credential defaults |
 | New `templates/private/{flake.nix,README.md,hosts/}` | P: new in M02 | Public examples | Tracked nested flake is default private input | Empty maps by default; optional empty/narrow host override example, no ciphertext or fake production credentials |

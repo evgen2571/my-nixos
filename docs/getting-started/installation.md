@@ -8,15 +8,15 @@ host profiles describe real machines; they are not defaults for a new installati
 
 | What you need | Start here |
 | --- | --- |
-| Rebuild or update the existing PC, laptop or server | [Maintainer builds and deployment](deployment-checklist.md) |
-| Understand the configuration or change an app/module | [Architecture](../ARCHITECTURE.md), then [task routing](task-routing.md) |
+| Rebuild or update the existing PC, laptop or server | [Maintainer builds and deployment](../guides/deployment.md) |
+| Understand the configuration or change an app/module | [Architecture](../concepts/architecture.md), then [task routing](../../.agents/skills/task-routing/SKILL.md) |
 | Adapt the repository to your own machine | [New machine without secrets](#new-machine-without-secrets) below |
-| Add encrypted credentials to your own host | [Single-repository SOPS](sops.md#single-repository-setup) |
-| Restore an existing host or recover access | [Restore](deployment-checklist.md#restore-an-existing-host) and [rollback](deployment-checklist.md#rollback-and-recovery) |
+| Add encrypted credentials to your own host | [Single-repository SOPS](../reference/secrets.md#single-repository-setup) |
+| Restore an existing host or recover access | [Restore](../guides/deployment.md#restore-an-existing-host) and [rollback](../guides/deployment.md#rollback-and-recovery) |
 
 All builds start in this repository. The input/command syntax was tested with
 Nix 2.34.8; older relative-path lock behavior is unverified. Recorded host and VM
-results are in [M03 validation](m03-validation.md).
+results are in [M03 validation](../archive/m03-validation.md).
 
 ## New machine without secrets
 
@@ -52,7 +52,7 @@ machine. Never reuse another host's disk identifiers.
 Edit `hosts/my-host/configuration.nix`: choose the hostname, timezone, bootloader,
 networking and primary username. Set NixOS/Home Manager state versions for this
 initial installation. Select features in `hosts/my-host/profile.nix` using
-[the existing modules](modules.md).
+[the existing modules](../development/modules.md).
 
 The template uses key-only SSH. Replace its empty `authorizedKeys` list inside
 `my.primaryUser` with your **public** key:
@@ -115,8 +115,8 @@ console. `--no-root-passwd` leaves root locked and relies on the user access abo
 
 ## Ongoing changes
 
-Use [Making a change](../README.md#making-a-change) and
-[task routing](task-routing.md) for public modules, host profiles and app dotfiles.
+Use [Making a change](../../README.md#making-a-change) and
+[task routing](../../.agents/skills/task-routing/SKILL.md) for public modules, host profiles and app dotfiles.
 Build affected hosts before activating changes. Credential editing belongs in the
-[SOPS guide](sops.md); existing-host updates and recovery are in the
-[maintainer guide](deployment-checklist.md).
+[SOPS guide](../reference/secrets.md); existing-host updates and recovery are in the
+[maintainer guide](../guides/deployment.md).

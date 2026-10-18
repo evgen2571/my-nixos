@@ -14,10 +14,10 @@ Use for Niri, Noctalia, desktop applications, window rules, workspace placement,
 | Window behavior and app matching | `config/niri/sub/rules/common.kdl`, `rules/apps.kdl`, `rules/apps/*.kdl`, `rules/obsidian.kdl` |
 | Host display/workspace topology | `config/niri/sub/workspaces-pc.kdl`, `workspaces-laptop.kdl`, profiles |
 | Noctalia configuration / generated colors | `modules/user-desktop/noctalia/`, `config/noctalia/` |
-| Noctalia greeter, PAM login | `modules/desktops/noctalia-greeter.nix`, `hosts/laptop/configuration.nix`, [greeter runbook](../noctalia-greeter.md) |
-| Zen browser spaces/pins | `config/zen/`, `modules/user-apps/zen-browser.nix`, [Zen runbook](../zen-browser.md) |
+| Noctalia greeter, PAM login | `modules/desktops/noctalia-greeter.nix`, `hosts/laptop/configuration.nix`, [greeter runbook](../docs/guides/noctalia-greeter.md) |
+| Zen browser spaces/pins | `config/zen/`, `modules/user-apps/zen-browser.nix`, [Zen runbook](../docs/guides/zen-browser.md) |
 
-PC/laptop common feature selections live in `hosts/common/desktop.nix`, explicitly imported by both local profiles. Keep machine choices in those profiles; consult the [inventory](../desktop-host-defaults.md) before changing a shared selection. VPN settings and wrappers remain host-local.
+PC/laptop common feature selections live in `hosts/common/desktop.nix`, explicitly imported by both local profiles. Keep machine choices in those profiles; consult the [inventory](../docs/reference/desktop-host-defaults.md) before changing a shared selection. VPN settings and wrappers remain host-local.
 
 ## Niri: two layers, not two conflicting configs
 
@@ -29,7 +29,7 @@ The Niri adapter recursively discovers **individual source files**, including ne
 
 Before adding a match, collect `niri msg --json windows` and `niri msg --json workspaces` for the main window and each separate auxiliary window. Match app-id and reliable title together; multiple `match` lines mean OR. Exclude auxiliaries from the main maximize/workspace rule: later rules cannot unset its workspace target. `is-floating` is evaluated after opening and cannot select initial placement. Use proportional floating sizes and default centering; omit workspace routing for auxiliaries. Scope any `open-fullscreen false` to a verified viewer, preserving deliberate game/video/projector fullscreen. See [Niri's matching semantics](https://niri-wm.github.io/niri/Configuration%3A-Window-Rules.html).
 
-Validate a temporary complete deployment tree with each host's workspace source, the installed/configured Niri version, and actual generated Noctalia includes. Do not write test files into the live config. Test dialogs after moving the main window, focus return, resizing and multiple outputs on both hosts. See [R05 observations and remaining checks](../niri-window-rules.md) before extending these rules.
+Validate a temporary complete deployment tree with each host's workspace source, the installed/configured Niri version, and actual generated Noctalia includes. Do not write test files into the live config. Test dialogs after moving the main window, focus return, resizing and multiple outputs on both hosts. See [R05 observations and remaining checks](../docs/archive/niri-window-rules.md) before extending these rules.
 
 Workspace names (such as `code`, `browser`, `anki`, `gaming`) are logical targets; physical output bindings differ by machine. Check `workspaces-pc.kdl` and `workspaces-laptop.kdl` and the relevant app rule before changing placement or shortcuts.
 

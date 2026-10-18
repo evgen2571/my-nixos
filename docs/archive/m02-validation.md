@@ -63,7 +63,7 @@ health/egress test, identity inspection or publication audit was performed. No
 live first-access, server suspend/resume or rollback exercise is implied.
 
 Use the target's rebuild with normal re-exec and the target's guarded installer,
-not old install-media tools or explicit bypass flags; see [installation](installation.md).
+not old install-media tools or explicit bypass flags; see [installation](../getting-started/installation.md).
 The native pre-switch hook alone runs too late to guard profile selection, hence
 the tested rebuild patch. Installer integration is built and inspected; no disks
 were installed. Private input visibility stays PRIVATE; history publication still

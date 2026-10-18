@@ -2,7 +2,7 @@
 
 This is the **current architecture and operational verification guide**, based on the versioned Nix configuration. Git source alone cannot prove the live generation, credentials, connectivity, DNS isolation or whether initial acceptance has been completed. Check running hosts through normal host-networked operator sessions before drawing those conclusions.
 
-For changes to implementation read [agents/networking.md](agents/networking.md). For low-level primitives and private bootstrap procedures see [network-namespaces.md](network-namespaces.md). The [original rollout plan](archive/shared-vpn-gateway-implementation-plan.md) and [full initial rollout runbook](archive/shared-vpn-initial-rollout-runbook.md) are historical snapshots, **not** present-tense execution plans.
+For changes to implementation read [agents/networking.md](../../.agents/networking.md). For low-level primitives and private bootstrap procedures see [network-namespaces.md](../reference/network-namespaces.md). The [original rollout plan](../archive/shared-vpn-gateway-implementation-plan.md) and [full initial rollout runbook](../archive/shared-vpn-initial-rollout-runbook.md) are historical snapshots, **not** present-tense execution plans.
 
 ## Topology and boundaries
 
@@ -95,7 +95,7 @@ The full flake and namespace harness exercise isolated fixtures; they do not rep
 
 ## Historical rollout records
 
-The [archived implementation plan](archive/shared-vpn-gateway-implementation-plan.md) records test intentions, an earlier state of provisioning and a one-time rollout procedure. In particular, statements there about unprovisioned credentials or no live activation are **not statements about the current hosts**. Do not use its first-deployment migration and rollback scripts during routine updates.
+The [archived implementation plan](../archive/shared-vpn-gateway-implementation-plan.md) records test intentions, an earlier state of provisioning and a one-time rollout procedure. In particular, statements there about unprovisioned credentials or no live activation are **not statements about the current hosts**. Do not use its first-deployment migration and rollback scripts during routine updates.
 
 ## Resilience and day-to-day diagnosis
 
@@ -270,7 +270,7 @@ earlier versions are upgraded using their saved invocation evidence. Health,
 not start completion, clears the released hold. The hold survives monitor
 restarts and reboot. A manual budget reset never copies or removes token files.
 
-For confirmed invalid credentials, use the [private bootstrap procedure](network-namespaces.md#private-server-authentication).
+For confirmed invalid credentials, use the [private bootstrap procedure](../reference/network-namespaces.md#private-server-authentication).
 First verify account status privately with Hide.me; payment/account renewal and
 token renewal are separate operations. A generic 401 does not tell you which is
 needed. Do not replace a valid refreshed token with an old SOPS seed. Create a

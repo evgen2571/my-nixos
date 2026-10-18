@@ -35,7 +35,7 @@ local directory outside both repositories, with no secret decryption.
 
 | Area | Comparison and evidence |
 | --- | --- |
-| Boot/storage | State versions, boot parameters/loader selection, filesystem devices/types/options and swap match M02.5; server `/srv/*` ownership remains as documented in [server operations](server.md) |
+| Boot/storage | State versions, boot parameters/loader selection, filesystem devices/types/options and swap match M02.5; server `/srv/*` ownership remains as documented in [server operations](../guides/server.md) |
 | Accounts/access | Primary name, UID/HOME/shell/groups, immutable-user/password policy, sudo, authorized keys and SSH settings match |
 | Secrets | All SOPS declaration metadata, runtime paths, ownership/modes and `neededForUsers` match, excluding ciphertext source location |
 | VPN/security | Complete namespace configuration, roles/peers, routes, IPv4/IPv6, DNS/filtering settings and host firewall match; isolated registered namespace/systemd checks cover behavior |
@@ -116,13 +116,13 @@ tests intentionally skip their root-only case.
 
 | Contract | Delivery |
 | --- | --- |
-| One-repository install with viable first access | [New machine without secrets](installation.md#new-machine-without-secrets): generated target hardware, builder registration, explicit boot/network/account policy, standard `nixos-install`, access verification |
-| No secrets versus no private repository | [Source selection](sops.md#source-selection) and tested none/local template; no production account-policy relaxation or credentialed-service fallback |
-| Optional local SOPS | [Single-repository SOPS](sops.md#single-repository-setup): own admin/host recipients, encrypted tracking, consumer files, runtime identity, permissions and metadata exposure |
-| Private deployment readiness | [Deployment guards](deployment-checklist.md#deployment-guards), registered guard/source/metadata checks and synthetic VM preflight; target identity remains a separate prerequisite |
-| Paired builds and flag forwarding | Pinned owner builds above, existing helper tests, [reviewed input selection](deployment-checklist.md#select-reviewed-inputs); no personal public-lock override |
-| Fresh/restored bootstrap and rollback | [Operator checklists](deployment-checklist.md): all three targets, guarded installer, identity restoration and `neededForUsers`, independent access, tested-backup requirement, guarded upgrade and generation rollback |
-| Ordinary development | [Ongoing changes](installation.md#ongoing-changes): public modules/profiles/dotfiles, local ciphertext or owner input; one build root |
+| One-repository install with viable first access | [New machine without secrets](../getting-started/installation.md#new-machine-without-secrets): generated target hardware, builder registration, explicit boot/network/account policy, standard `nixos-install`, access verification |
+| No secrets versus no private repository | [Source selection](../reference/secrets.md#source-selection) and tested none/local template; no production account-policy relaxation or credentialed-service fallback |
+| Optional local SOPS | [Single-repository SOPS](../reference/secrets.md#single-repository-setup): own admin/host recipients, encrypted tracking, consumer files, runtime identity, permissions and metadata exposure |
+| Private deployment readiness | [Deployment guards](../guides/deployment.md#deployment-guards), registered guard/source/metadata checks and synthetic VM preflight; target identity remains a separate prerequisite |
+| Paired builds and flag forwarding | Pinned owner builds above, existing helper tests, [reviewed input selection](../guides/deployment.md#select-reviewed-inputs); no personal public-lock override |
+| Fresh/restored bootstrap and rollback | [Operator checklists](../guides/deployment.md): all three targets, guarded installer, identity restoration and `neededForUsers`, independent access, tested-backup requirement, guarded upgrade and generation rollback |
+| Ordinary development | [Ongoing changes](../getting-started/installation.md#ongoing-changes): public modules/profiles/dotfiles, local ciphertext or owner input; one build root |
 
 ## Limits and readiness decision
 
@@ -137,7 +137,7 @@ tested backups are prerequisites, not a claim that backups were restored here.
 Synthetic login/preflight/namespace tests cannot establish those live outcomes.
 Preserve runtime identities, user/application data and persistent desktop provider
 masks. An unavailable private input is never permission to bypass guards.
-[Agent execution rules](../AGENTS.md#deployment-security-and-data-safety) require
+[Agent execution rules](../../AGENTS.md#deployment-security-and-data-safety) require
 separate authorization for live operations; operator procedures mark their effects
 in the maintainer guide. Issue #31's publication audit remains separate; these
 checks do not authorize a repository visibility change.

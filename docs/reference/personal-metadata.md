@@ -3,7 +3,7 @@
 Issue #36 changes declarative source ownership only. `my-nixos` retains all real
 hosts, feature selection, Home Manager, dotfiles, networking and deployment logic.
 The optional private input still exports only `nixosModules` and `secretFiles`.
-Build from this repository with the explicit override in [installation](installation.md);
+Build from this repository with the explicit override in [installation](../getting-started/installation.md);
 never record the personal input in the public lock. Merge the coordinated private
 PR before this public change. Deploy reviewed paired revisions; older public
 revisions must keep their previous pinned private input until both PRs land.
@@ -23,10 +23,10 @@ SSH authorization when SSH is enabled. Missing metadata must be corrected in the
 private input; never bypass the deployment guard to install public defaults.
 
 `modules/system-core/user.nix` remains the sole account/HM adapter and now imports
-[home/default.nix](../home/default.nix). User-specific drive mount paths derive
+[home/default.nix](../../home/default.nix). User-specific drive mount paths derive
 from the primary account; the real override keeps their exact previous targets.
 Newcomers choose a username, optional Git identity and safe first login using
-[templates/host](../templates/host/README.md), with either `none` or local SOPS.
+[templates/host](../../templates/host/README.md), with either `none` or local SOPS.
 
 Active Noctalia TOML is parsed into native settings with default priority. Private
 modules override only selected leaves; public bars/widgets and generated settings

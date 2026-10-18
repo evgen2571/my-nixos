@@ -1,6 +1,6 @@
 # Agent guide: networking and VPN
 
-Use for network namespaces, Hide.me gateway/client setup, Tailscale transport, DNS isolation, launcher authorization and VPN recovery. These are **security-sensitive** changes. Use [../shared-vpn-gateway.md](../shared-vpn-gateway.md) as the current design/runbook and [../network-namespaces.md](../network-namespaces.md) for implementation details. Do not start with the archived migration plan.
+Use for network namespaces, Hide.me gateway/client setup, Tailscale transport, DNS isolation, launcher authorization and VPN recovery. These are **security-sensitive** changes. Use [../shared-vpn-gateway.md](../docs/guides/shared-vpn-gateway.md) as the current design/runbook and [../network-namespaces.md](../docs/reference/network-namespaces.md) for implementation details. Do not start with the archived migration plan.
 
 ## Entry points
 
@@ -36,7 +36,7 @@ Use for network namespaces, Hide.me gateway/client setup, Tailscale transport, D
 
 A successful Nix evaluation or VM fixture does not establish working real-world Hide.me egress or prove there are no DNS leaks. Live checks belong to an approved operator session.
 
-See [server operations](../server.md) for host SSH, storage, services and suspend/wake interactions.
+See [server operations](../docs/guides/server.md) for host SSH, storage, services and suspend/wake interactions.
 
 ## Recovery implementation and checks
 
@@ -52,6 +52,6 @@ including the October 17 active-provider + HTTP 401 regression. The registered
 namespace and VM checks retain real IPv4/IPv6/DNS/isolation coverage. Simulations
 cannot establish the real provider's token/account cause or live failover.
 Use `vpn-status --verbose` for sanitized local evidence; avoid publishing raw
-provider journals. The authoritative [recovery policy](../shared-vpn-gateway.md#resilience-and-day-to-day-diagnosis)
+provider journals. The authoritative [recovery policy](../docs/guides/shared-vpn-gateway.md#resilience-and-day-to-day-diagnosis)
 includes maintenance, explicit reset, private re-auth and the operator-approved
 live validation matrix. Never turn those deployment steps into development tests.

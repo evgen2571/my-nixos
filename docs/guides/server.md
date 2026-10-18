@@ -1,6 +1,6 @@
 # Server operations: nixos-server
 
-This runbook describes the **configuration in Git**, not a live health report. Before changing or deploying the server, inspect the running generation, actual mount points, current services and Tailscale reachability on the host. For VPN design and safety, read [shared VPN gateway](shared-vpn-gateway.md); agents should start with [agents/networking.md](agents/networking.md) for network changes.
+This runbook describes the **configuration in Git**, not a live health report. Before changing or deploying the server, inspect the running generation, actual mount points, current services and Tailscale reachability on the host. For VPN design and safety, read [shared VPN gateway](shared-vpn-gateway.md); agents should start with [agents/networking.md](../../.agents/networking.md) for network changes.
 
 ## Ownership
 
@@ -12,7 +12,7 @@ This runbook describes the **configuration in Git**, not a live health report. B
 | Services (SSH, Docker, storage, Syncthing) | `modules/server/` |
 | Tailscale | `modules/system-services/tailscale.nix` |
 | Namespace gateway and related systemd units | `modules/system-services/network-namespaces/` |
-| Runtime credentials | `hosts/server/secrets.nix`, `modules/secrets.nix`, [SOPS guide](sops.md) |
+| Runtime credentials | `hosts/server/secrets.nix`, `modules/secrets.nix`, [SOPS guide](../reference/secrets.md) |
 | Client SSH aliases | `modules/user-dev/ssh.nix` and host profiles |
 
 The flake output is `nixos-server`; the private override retains the existing normal user. `modules/server/` is imported only into the server catalog profile. Some system service modules are imported by both server and desktop profiles, but their features are enabled per host.
@@ -86,7 +86,7 @@ For gateway troubleshooting, prefer [the VPN runbook](shared-vpn-gateway.md) and
 
 SOPS-encrypted documents under `secrets/` and public recipients/keys may be versioned. Protected runtime paths are consumed by configured services. Never store plaintext access tokens, private age/SSH/WireGuard keys or decrypted secrets in Git, derivations, issue discussions or logs. `/srv/secrets` is only a filesystem interface if a service explicitly needs it.
 
-See [SOPS workflow](sops.md) for recipient rotation and provisioning. Missing runtime credentials are an operational deployment condition, **not** permission to invent test or production secret values.
+See [SOPS workflow](../reference/secrets.md) for recipient rotation and provisioning. Missing runtime credentials are an operational deployment condition, **not** permission to invent test or production secret values.
 
 ## Build and release safety
 
@@ -107,4 +107,4 @@ A boot-menu generation rollback or `nixos-rebuild --rollback` can restore NixOS 
 
 This server has already received a hardware-specific NixOS configuration in Git. First-install procedures (generating hardware config, Tailscale enrollment, creating storage filesystems) are **not** routine maintenance steps and must not be blindly repeated on a provisioned host.
 
-Previous [first-install server notes](archive/server-initial-setup-notes.md) and the [shared-VPN implementation plan](archive/shared-vpn-gateway-implementation-plan.md) are archived for provenance, not operational truth. Check current host status and the active runbook before interpreting historical acceptance checkboxes.
+Previous [first-install server notes](../archive/server-initial-setup-notes.md) and the [shared-VPN implementation plan](../archive/shared-vpn-gateway-implementation-plan.md) are archived for provenance, not operational truth. Check current host status and the active runbook before interpreting historical acceptance checkboxes.

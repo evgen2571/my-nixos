@@ -7,4 +7,4 @@ repository is required. `none` and `private` modes ignore these files.
 Maintainer host/recovery ciphertext lives in the optional private input. Bootstrap
 recovery documents remain admin-only and are not exported as host secret files.
 Never commit plaintext, decrypted working copies or private identities. See the
-[SOPS guide](../docs/sops.md) and [source selection](../docs/installation.md).
+[SOPS guide](../docs/reference/secrets.md) and [source selection](../docs/getting-started/installation.md).

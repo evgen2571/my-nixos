@@ -1,8 +1,8 @@
 # SOPS secrets and source selection
 
 Use this reference when a host needs credentials. For a new host without secrets,
-start with [installation](installation.md#new-machine-without-secrets). For the
-maintainer's existing hosts, use [builds and deployment](deployment-checklist.md).
+start with [installation](../getting-started/installation.md#new-machine-without-secrets). For the
+maintainer's existing hosts, use [builds and deployment](../guides/deployment.md).
 All builds start in public `my-nixos`; a second repository is optional.
 
 ## Source selection
@@ -22,9 +22,9 @@ host scalars and age metadata even without consumers, and local recipient scope;
 sops-nix also validates declared secrets. A filename alone is insufficient.
 
 The tracked `templates/private` flake is an empty default. Its
-[two-map interface](../templates/private/README.md) provides optional narrow
+[two-map interface](../../templates/private/README.md) provides optional narrow
 metadata and ciphertext, not another host builder. Existing outputs retain their
-[private-material guards](deployment-checklist.md#deployment-guards) even if their
+[private-material guards](../guides/deployment.md#deployment-guards) even if their
 source mode is changed. See [metadata ownership](personal-metadata.md) for the
 personal values supplied by that input.
 
@@ -33,7 +33,7 @@ personal values supplied by that input.
 Ciphertext is not a decryption identity. Each host uses its own protected age key
 at `/var/lib/sops-nix/key.txt`, outside Git and the Nix store. Preserve existing
 identities; generating a new key cannot decrypt old documents. For restored
-production hardware, follow [host restoration](deployment-checklist.md#restore-an-existing-host).
+production hardware, follow [host restoration](../guides/deployment.md#restore-an-existing-host).
 Although sops-nix supports key generation, production preflight requires the
 original identity to be provisioned **before** installation or deployment.
 
@@ -125,7 +125,7 @@ Point the service's runtime credential-file option at
 expressions, generated sources or derivation arguments. Without credentials,
 leave the dependent service disabled. Existing owners, modes and restarts stay intact.
 
-Run the [non-activating host checks/build](installation.md#3-register-and-build).
+Run the [non-activating host checks/build](../getting-started/installation.md#3-register-and-build).
 This validates ciphertext/declarations, not production decryption. Provision the
 protected target identity before installing. After boot, inspect only metadata:
 
@@ -161,5 +161,5 @@ the encrypted diff. Revocation cannot erase historical copies. Plan identity los
 or rotation separately; never replace working identities during this migration.
 
 Existing-host deployment and decryption checks are in the
-[maintainer guide](deployment-checklist.md). Source relocation removes selected
+[maintainer guide](../guides/deployment.md). Source relocation removes selected
 material only at HEAD; history remains subject to #31's separate publication audit.

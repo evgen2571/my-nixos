@@ -2,7 +2,7 @@
 
 Start here for the existing `nixos-pc`, `nixos-lp` and `nixos-server`. Run commands
 from the public `my-nixos` checkout on the matching host, using normal host
-networking. For another machine, use [host adaptation](installation.md#new-machine-without-secrets).
+networking. For another machine, use [host adaptation](../getting-started/installation.md#new-machine-without-secrets).
 
 | Task | Procedure | Effect |
 | --- | --- | --- |
@@ -12,7 +12,7 @@ networking. For another machine, use [host adaptation](installation.md#new-machi
 | Recover after a failed update | [Rollback](#rollback-and-recovery) | Can change the running/booted generation |
 
 **For agents:** live installation, activation, identity changes and rollback require
-separate explicit authorization under [AGENTS.md](../AGENTS.md#deployment-security-and-data-safety).
+separate explicit authorization under [AGENTS.md](../../AGENTS.md#deployment-security-and-data-safety).
 The warnings below describe operational effects for any reader.
 
 ## Select reviewed inputs
@@ -33,7 +33,7 @@ sha256sum flake.lock
 Check `private_rev` against the reviewed pair before continuing. The invoking user
 and root/remote builder need Git/store access; acquire inputs before maintenance.
 Never embed credentials in URLs or record personal overrides in the public lock.
-The [private template](../templates/private/README.md) defines the input interface.
+The [private template](../../templates/private/README.md) defines the input interface.
 
 ## Build without activation
 
@@ -55,11 +55,11 @@ nix flake check --override-input private "$private_input" --no-write-lock-file
 | Laptop | `just build-lp --override-input private "$private_input" --no-write-lock-file` |
 | Server | `just build-server --override-input private "$private_input" --no-write-lock-file` |
 
-`just` is a separate prerequisite. Its [recipes](../justfile) use
+`just` is a separate prerequisite. Its [recipes](../../justfile) use
 `nix build .#nixosConfigurations.HOST.config.system.build.toplevel`.
 Check `git diff --exit-code -- flake.lock` afterward. Successful builds do not
 establish target decryption, hardware boot or provider health; recorded results
-and limits are in [M03 validation](m03-validation.md).
+and limits are in [M03 validation](../archive/m03-validation.md).
 
 Helpers forward trailing flags: `just build/dry/switch/boot HOST` and Fish
 `nb`/`nd`/`nsw`/`nboot`. Build and dry-build leave generation selection unchanged;
@@ -76,7 +76,7 @@ Use the same reviewed pinned input for any later deployment.
   Preserve the known-good generation and source pair from garbage collection.
 - Verify backups by restoring samples into protected scratch storage: original
   age identity, ciphertext/policy, SSH client identity and mutable application data.
-  See [SOPS identity requirements](sops.md#identities-and-recipient-policy).
+  See [SOPS identity requirements](../reference/secrets.md#identities-and-recipient-policy).
 - For the server, verify `findmnt -T /srv/storage`, `findmnt -T /srv/appdata`,
   `findmnt -T /srv/backups` and `findmnt -T /srv/compose`. Sibling `/srv/*` paths
   are not implicitly on the storage mount. Confirm application-consistent backups

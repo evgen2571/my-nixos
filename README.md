@@ -12,16 +12,16 @@ and independently reuse the configuration without requiring private infrastructu
 The maintainer's desktop, laptop, and server remain the primary use case. Reuse
 starts with understanding the existing choices and adapting them to your own
 hardware and services; the existing host profiles are not installation defaults
-for other machines. See [installation and source modes](docs/installation.md) for
+for other machines. See [installation and source modes](docs/getting-started/installation.md) for
 independent use without the maintainer's private repository or services.
 
 ## Hosts
 
 | Flake output | Purpose | Entry point |
 | --- | --- | --- |
-| `nixos-pc` | Main Niri/Noctalia workstation | [hosts/pc/](hosts/pc/) |
-| `nixos-lp` | Niri/Noctalia laptop | [hosts/laptop/](hosts/laptop/) |
-| `nixos-server` | Self-hosted services and shared VPN gateway | [hosts/server/](hosts/server/) |
+| `nixos-pc` | Main Niri/Noctalia workstation | [hosts/pc/](hosts/pc) |
+| `nixos-lp` | Niri/Noctalia laptop | [hosts/laptop/](hosts/laptop) |
+| `nixos-server` | Self-hosted services and shared VPN gateway | [hosts/server/](hosts/server) |
 
 The configuration is organized as **flake assembly → host choices → reusable NixOS/Home Manager modules → source dotfiles and runtime state**.
 
@@ -33,7 +33,7 @@ The configuration is organized as **flake assembly → host choices → reusable
 - `config/`: source configuration for Niri, Neovim, Fish, Zen, Noctalia, and other applications.
 - `lib/module-catalog.nix` and `lib/module-discovery.nix`: module availability, not feature enablement.
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) for the actual import graph and ownership rules.
+See [ARCHITECTURE.md](docs/concepts/architecture.md) for the actual import graph and ownership rules.
 
 ## Sensitive inputs and installation
 
@@ -41,7 +41,7 @@ This repository remains the sole build/deployment root. A clean clone evaluates
 all three hosts without credentials using the empty `templates/private` input.
 New hosts can use no secrets or their own single-repository SOPS; the existing
 production hosts require an explicit private override and refuse secretless builds.
-Start with [installation and source modes](docs/installation.md),
+Start with [installation and source modes](docs/getting-started/installation.md),
 [templates/host](templates/host/README.md), or
 [templates/private](templates/private/README.md).
 
@@ -70,7 +70,7 @@ Do not deploy a changed networking, boot, security, or storage configuration wit
 
 ## Making a change
 
-For an existing application, find its module, then edit its source configuration in `config/` if applicable. To select or deselect a feature on a machine, use the matching `hosts/<host>/profile.nix`. For a new feature, follow [module conventions](docs/modules.md) rather than adding arbitrary imports.
+For an existing application, find its module, then edit its source configuration in `config/` if applicable. To select or deselect a feature on a machine, use the matching `hosts/<host>/profile.nix`. For a new feature, follow [module conventions](docs/development/modules.md) rather than adding arbitrary imports.
 
 Not every application setting is fully declarative: login sessions, generated themes, writable editor configuration, and agent resources have explicit runtime-state boundaries. Read the relevant subsystem guide before changing activation or file ownership.
 
@@ -78,19 +78,19 @@ Not every application setting is fully declarative: login sessions, generated th
 
 | Read this | For |
 | --- | --- |
-| [ARCHITECTURE.md](ARCHITECTURE.md) | System design, ownership, invariants, and rationale |
-| [docs/task-routing.md](docs/task-routing.md) | Which files to open for a specific task |
-| [docs/modules.md](docs/modules.md) | Module discovery, option patterns, and host enablement |
-| [docs/agents/](docs/agents/) | Focused Neovim, desktop, and networking guides for coding agents |
+| [ARCHITECTURE.md](docs/concepts/architecture.md) | System design, ownership, invariants, and rationale |
+| [docs/task-routing.md](.agents/skills/task-routing/SKILL.md) | Which files to open for a specific task |
+| [docs/modules.md](docs/development/modules.md) | Module discovery, option patterns, and host enablement |
+| [docs/agents/](.agents) | Focused Neovim, desktop, and networking guides for coding agents |
 | [AGENTS.md](AGENTS.md) | Repository-specific coding-agent rules |
-| [docs/server.md](docs/server.md) | Server operations and persistent data |
-| [docs/shared-vpn-gateway.md](docs/shared-vpn-gateway.md) | Server-only VPN gateway and deployment safeguards |
-| [docs/network-namespaces.md](docs/network-namespaces.md) | Namespace implementation and troubleshooting |
-| [docs/sops.md](docs/sops.md) | Encrypted secrets and recipient management |
-| [docs/neovim-research.md](docs/neovim-research.md) | Neovim workflow and keybindings |
-| [docs/zen-browser.md](docs/zen-browser.md) | Zen profile/workspace behavior |
-| [docs/skillshare.md](docs/skillshare.md) | Runtime-managed skills and agent resources |
+| [docs/server.md](docs/guides/server.md) | Server operations and persistent data |
+| [docs/shared-vpn-gateway.md](docs/guides/shared-vpn-gateway.md) | Server-only VPN gateway and deployment safeguards |
+| [docs/network-namespaces.md](docs/reference/network-namespaces.md) | Namespace implementation and troubleshooting |
+| [docs/sops.md](docs/reference/secrets.md) | Encrypted secrets and recipient management |
+| [docs/neovim-research.md](docs/guides/neovim-research.md) | Neovim workflow and keybindings |
+| [docs/zen-browser.md](docs/guides/zen-browser.md) | Zen profile/workspace behavior |
+| [docs/skillshare.md](docs/guides/skillshare.md) | Runtime-managed skills and agent resources |
 
 Other focused guides in `docs/` cover competitive programming, CodeGraph, KDE, Noctalia greeter, and recorded Neovim validation. Historical migration material is kept under `docs/archive/`, separate from current operations.
 
-**For agents:** start with [AGENTS.md](AGENTS.md), then follow [task routing](docs/task-routing.md); do not load every subsystem guide for a small task.
+**For agents:** start with [AGENTS.md](AGENTS.md), then follow [task routing](.agents/skills/task-routing/SKILL.md); do not load every subsystem guide for a small task.
