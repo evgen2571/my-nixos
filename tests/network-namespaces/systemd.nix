@@ -75,6 +75,8 @@ let
       namespaces.vpn.enable = true;
     };
     systemd.timers.netns-vpn-health.wantedBy = lib.mkForce [ ];
+    # No external HTTPS/provider/Tailscale dependency in this isolated LAN fixture.
+    systemd.timers.netns-vpn-recovery.wantedBy = lib.mkForce [ ];
   };
   mockProvider = {
     wantedBy = [ "multi-user.target" ];
@@ -252,6 +254,11 @@ pkgs.testers.runNixOSTest {
             print(machine.succeed("ip -brief address; ip route; ip -n vpn route show table all; ip netns exec vpn wg show shared0 public-key; ip netns exec vpn wg show shared0 endpoints; ip netns exec vpn wg show shared0 latest-handshakes; ip netns exec vpn nft list table inet agent_workspace"))
         raise
     client.wait_until_succeeds(dns + " | grep -x 203.0.113.1")
+    # A fresh marker must never bypass fresh independent filter checks.
+    client.succeed("date +%s > /run/network-namespaces/vpn/ready; /etc/network-namespaces/vpn-check")
+    client.succeed("ip netns exec vpn nft 'chain inet agent_workspace forward { policy accept; }'")
+    client.fail("/etc/network-namespaces/vpn-check")
+    client.succeed("ip netns exec vpn nft 'chain inet agent_workspace forward { policy drop; }'")
     assert server.succeed("systemctl show netns-vpn-dns -p User --value").strip() == "dnsmasq"
     # DNS follows provider resolver changes and has no cached fallback.
     server.succeed("printf 'nameserver 203.0.113.3\\n' > /run/network-namespaces/vpn/resolv.conf")
@@ -296,6 +303,9 @@ pkgs.testers.runNixOSTest {
     # Normal client reboot automatically decrypts SOPS and starts only the overlay.
     laptop.reboot()
     laptop.wait_for_unit("netns-vpn-shared.service")
+    laptop.succeed("systemctl start netns-vpn-recovery.service")
+    laptop.succeed("vpn-status --verbose | grep 'VPN:'")
+    laptop.succeed("test -s /var/lib/network-namespaces-vpn/status.json")
     laptop.wait_until_succeeds(probe)
     for unit in ["hide-me-vpn.service", "netns-vpn-underlay.service"]:
         assert laptop.succeed(f"systemctl show {unit} -p LoadState --value").strip() == "masked"

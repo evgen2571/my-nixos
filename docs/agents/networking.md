@@ -37,3 +37,21 @@ Use for network namespaces, Hide.me gateway/client setup, Tailscale transport, D
 A successful Nix evaluation or VM fixture does not establish working real-world Hide.me egress or prove there are no DNS leaks. Live checks belong to an approved operator session.
 
 See [server operations](../server.md) for host SSH, storage, services and suspend/wake interactions.
+
+## Recovery implementation and checks
+
+`namespace.nix` imports `doctor.nix` to install the local `doctor.py` helper,
+read-only `vpn-status`, isolated family/destination probes, and a shared-role
+systemd recovery timer. `shared.nix` owns transport/DNS lifecycle and bounded
+systemd startup retries. Do not add a second timer that races the recovery
+oneshot or move probes out of their private resolver/network mounts.
+
+Run `python3 tests/network-namespaces/recovery.py` for simulated CLI behavior,
+including the October 17 active-provider + HTTP 401 regression. The registered
+`shared-vpn-recovery` flake check runs the same tests in a Nix sandbox; existing
+namespace and VM checks retain real IPv4/IPv6/DNS/isolation coverage. Simulations
+cannot establish the real provider's token/account cause or live failover.
+Use `vpn-status --verbose` for sanitized local evidence; avoid publishing raw
+provider journals. The authoritative [recovery policy](../shared-vpn-gateway.md#resilience-and-day-to-day-diagnosis)
+includes maintenance, explicit reset, private re-auth and the operator-approved
+live validation matrix. Never turn those deployment steps into development tests.

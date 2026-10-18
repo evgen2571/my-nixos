@@ -59,8 +59,8 @@ service restart. Desktop profiles do not declare their old authentication secret
 
 Every launch checks active transport/provider, nft filter, both address-family
 routes, recent WireGuard handshake and isolated resolver. A successful HTTPS
-probe within 90 seconds is also required. The timer probes configured endpoints
-every 30 seconds; a brief failed probe preserves the previous success only until
+probe within 90 seconds is also required. The shared recovery timer requests probes of configured endpoints
+30 seconds after each completed run; a brief failed probe preserves the previous success only until
 it expires. No marker bypasses fresh local checks. Default probes go to GitHub
 and Cloudflare; success does not prove every application API works.
 
@@ -90,3 +90,30 @@ my.system.services.networkNamespaces.applications.mytool = {
 Do not authorize a generic privileged shell as an application. Normal app children
 cannot elevate through sudo/setuid because of `no_new_privs`. For approved host
 inspection/deployment use a separate host terminal, never a namespace bypass.
+
+### Guarded recovery and diagnostic state
+
+On the shared gateway and both clients, use `vpn-status` or `vpn-status --verbose`
+from an ordinary host terminal. It is read-only and works without a desktop
+session or sudo. Failed registered launches print the same summary. See the
+[current recovery policy and reason codes](shared-vpn-gateway.md#resilience-and-day-to-day-diagnosis)
+for retry bounds, maintenance, reset and a separately approved live test matrix.
+
+The shared-role recovery oneshot requests the isolated health service rather
+than probing application traffic from the host. Probe results contain only
+numeric curl exit codes/timestamps; the public status contains fixed diagnoses,
+unit properties and bounded failure history. Provider journal lines, resolver
+contents and secret values are never copied into diagnostics. Client reports
+remain local: inspect the server through the existing authenticated operator
+channel to learn provider-specific evidence.
+
+`/var/lib/network-namespaces-vpn/hold.json` is private root-owned recovery state,
+not a token. The provider's `ExecCondition` respects an unchanged authorization
+or rate-limit hold even across reboot. Review the cause before using
+`sudo /etc/network-namespaces/vpn-recovery-reset`; it clears only the hold and
+repair counters. An explicitly stopped unit still needs an operator start.
+A missing bootstrap, wrong generation or rejected authorization cannot be fixed
+by rebuilding repeatedly or restoring an old seed over a valid mutable token.
+401/403 proves rejection, not expiry; confirm the account/credential state
+privately before following the bootstrap procedure above. The pinned client's
+normal refresh behavior remains the only unattended token refresh mechanism.

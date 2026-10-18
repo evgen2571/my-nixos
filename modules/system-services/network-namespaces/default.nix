@@ -80,8 +80,9 @@ let
         default = null;
         example = "/run/secrets/hide-me-bootstrap";
         description = ''
-          Optional runtime secret path, for example a SOPS-Nix secret. Copied only
-          when persistent state has no token. The client refreshes its writable
+          Optional runtime secret path, for example a SOPS-Nix secret. A changed
+          bootstrap seed replaces the mutable token; unchanged seeds preserve refreshes.
+          The client refreshes its writable
           /var/lib/hide-me-NAME/accessToken.txt, never the bootstrap secret.
         '';
       };
@@ -132,9 +133,11 @@ in
       "wireguard"
       "tun"
     ];
-    environment.systemPackages = lib.optional (lib.any (ns: ns.shared.role != "client") (
-      lib.attrValues active
-    )) (pkgs.callPackage ../../../packages/hide-me { });
+    environment.systemPackages =
+      lib.optional (lib.any (ns: ns.shared.role != "client") (lib.attrValues active)) (
+        pkgs.callPackage ../../../packages/hide-me { }
+      )
+      ++ lib.concatMap (instance: instance.environment.systemPackages) (lib.attrValues instances);
     environment.etc = lib.mkMerge (
       lib.mapAttrsToList (_: instance: instance.environment.etc) instances
     );
