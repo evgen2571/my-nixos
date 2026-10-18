@@ -1,0 +1,19 @@
+--- a/nixos_rebuild/nix.py
++++ b/nixos_rebuild/nix.py
+@@ -638,6 +638,16 @@
+     sudo: bool,
+ ) -> None:
+     "Set a path as the current active Nix profile."
++    # Check the target before changing even the selected system generation.
++    run_wrapper(
++        [
++            "sh", "-c",
++            'if test -x "$1/bin/deployment-preflight"; then exec "$1/bin/deployment-preflight"; fi',
++            "sh", path_to_config,
++        ],
++        remote=target_host,
++        sudo=sudo,
++    )
+     if not os.environ.get(
+         "NIXOS_REBUILD_I_UNDERSTAND_THE_CONSEQUENCES_PLEASE_BREAK_MY_SYSTEM"
+     ):

@@ -1,5 +1,8 @@
 # Public/private migration contract (M01)
 
+Implementation and current commands: [installation and source modes](installation.md).
+The dated M01 inventory below remains the approved contract and audit boundary.
+
 Specification for [issue #28](https://github.com/evgen2571/my-nixos/issues/28),
 revised to follow the [latest PR #34 review](https://github.com/evgen2571/my-nixos/pull/34#issuecomment-6250388864).
 The source inventory and bounded history audit were captured on 2026-10-18 at
