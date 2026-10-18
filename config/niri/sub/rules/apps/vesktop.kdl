@@ -1,4 +1,4 @@
-// Main signatures observed on PC; see docs/niri-window-rules.md for title semantics.
+// Main signatures observed on PC; see docs/archive/niri-window-rules.md for title semantics.
 // shortcut: call names can collide with main titles, revisit when window roles are matchable.
 window-rule {
     match app-id=r#"^(vesktop|Vesktop)$"# title=r#"^((\([0-9]+\) )?Discord( \| .*)?|vesktop|Vesktop)$"#

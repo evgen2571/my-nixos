@@ -15,7 +15,7 @@ first-login, source-policy and deployment-preflight interfaces. Reuse their test
 
 Final review: Standards found no blocking violations; Spec found no remaining
 actionable findings after fresh pre-split/pre-extraction supplemental comparisons.
-Evidence and limitations: [M03 validation](../docs/m03-validation.md).
+Evidence and limitations: [M03 validation](../docs/archive/m03-validation.md).
 
 ## PR #41 documentation revision
 

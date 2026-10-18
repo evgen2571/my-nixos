@@ -1,8 +1,8 @@
 # Host adaptation starting point
 
-The maintainer's PC, laptop and server remain the repository's primary use case.
-This directory supports adapting the same module collection to another machine.
-Follow [New machine without secrets](../../docs/installation.md#new-machine-without-secrets)
+Copy this directory when you're adapting my module collection to your own
+machine. Keep the existing PC, laptop, and server profiles for their original hosts.
+Follow [New machine without secrets](../../docs/getting-started/installation.md#new-machine-without-secrets)
 for copying, hardware generation, registration, first access and installation.
 
 ## Template boundaries
@@ -17,5 +17,5 @@ for copying, hardware generation, registration, first access and installation.
   identity belongs in `my.primaryUser.git`; enable `my.user.dev.git` through
   `my.primaryUser.home.settings` when wanted.
 
-Optional credentials use the existing [SOPS workflow](../../docs/sops.md#single-repository-setup).
+Optional credentials use the existing [SOPS workflow](../../docs/reference/secrets.md#single-repository-setup).
 Do not copy another host's hardware declarations or personal identities.
