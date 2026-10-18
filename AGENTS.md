@@ -55,3 +55,17 @@ visibility before copying sensitive data and keep its commits/PR separate.
 - [Module conventions](docs/modules.md): discovery, scopes, option patterns, and enablement.
 - [Neovim agent guide](docs/agents/neovim.md), [desktop agent guide](docs/agents/desktop.md), [networking agent guide](docs/agents/networking.md): focused subsystem boundaries and checks. Read only the one relevant to the task.
 - Subsystem operational guides in `docs/` remain the detailed source for user-facing workflows and incident procedures.
+
+## Agent skills
+
+### Issue tracker
+
+Use GitHub Issues for specs and tickets. Read [tracker operations](docs/agents/issue-tracker.md) before tracker work.
+
+### Triage labels
+
+Use the canonical category and state labels. Read [label mappings](docs/agents/triage-labels.md) before triaging issues.
+
+### Domain docs
+
+Use a single-context domain layout. Read [domain conventions](docs/agents/domain.md) when exploring domain terms or architectural decisions.
