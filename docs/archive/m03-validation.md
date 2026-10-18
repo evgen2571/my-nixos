@@ -122,7 +122,7 @@ tests intentionally skip their root-only case.
 | Private deployment readiness | [Deployment guards](../guides/deployment.md#deployment-guards), registered guard/source/metadata checks and synthetic VM preflight; target identity remains a separate prerequisite |
 | Paired builds and flag forwarding | Pinned owner builds above, existing helper tests, [reviewed input selection](../guides/deployment.md#select-reviewed-inputs); no personal public-lock override |
 | Fresh/restored bootstrap and rollback | [Operator checklists](../guides/deployment.md): all three targets, guarded installer, identity restoration and `neededForUsers`, independent access, tested-backup requirement, guarded upgrade and generation rollback |
-| Ordinary development | [Ongoing changes](../getting-started/installation.md#ongoing-changes): public modules/profiles/dotfiles, local ciphertext or owner input; one build root |
+| Ordinary development | [Ongoing changes](../getting-started/installation.md#keep-it-working): public modules/profiles/dotfiles, local ciphertext or owner input; one build root |
 
 ## Limits and readiness decision
 
@@ -137,7 +137,7 @@ tested backups are prerequisites, not a claim that backups were restored here.
 Synthetic login/preflight/namespace tests cannot establish those live outcomes.
 Preserve runtime identities, user/application data and persistent desktop provider
 masks. An unavailable private input is never permission to bypass guards.
-[Agent execution rules](../../AGENTS.md#deployment-security-and-data-safety) require
+[Agent execution rules](../../AGENTS.md#live-state-and-sensitive-data) require
 separate authorization for live operations; operator procedures mark their effects
 in the maintainer guide. Issue #31's publication audit remains separate; these
 checks do not authorize a repository visibility change.

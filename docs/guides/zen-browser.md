@@ -10,13 +10,12 @@ Essentials, Sine mods and URL-based workspace routing.
 - `modules/user-apps/zen-browser.nix`: package and optional profile management.
 - `config/zen/profile.nix`: shared spaces, pins, Essentials, routes and Sine.
 - `config/zen/chatgpt-projects.nix`: user-specific ChatGPT project pins
-  (contains the nine project URLs currently provided).
+  (empty in the public source; private host settings supply personal pins).
 - `hosts/pc/profile.nix`, `hosts/laptop/profile.nix`: enable separately per host.
 
 ## Shared workspace layout
 
-- **ChatGPT**: ChatGPT home and nine direct project pins in
-  `chatgpt-projects.nix`.
+- **ChatGPT**: ChatGPT home; optional personal project pins come from host settings.
 - **Development**: folders for Competitive Programming (Codeforces, CSES,
   AtCoder, CP-Algorithms, USACO Guide, LeetCode), Documentation (NixOS, Home
   Manager, C++/Python/Rust/MDN), ML and Research, and Developer Tools.
@@ -27,12 +26,12 @@ Essentials, Sine mods and URL-based workspace routing.
 ### ChatGPT project pins
 
 Direct ChatGPT Project URLs cannot be inferred from project names. To add more
-projects, copy each address from ChatGPT and enter it in
-`config/zen/chatgpt-projects.nix`:
+projects in your own checkout, copy each address from ChatGPT. The shape of
+`config/zen/chatgpt-projects.nix` is:
 
 ```nix
 {
-  "Actline" = {
+  "Example project" = {
     id = "<a new stable UUID (uuidgen)>";
     url = "<the real URL copied from your ChatGPT project>";
     position = 200;
@@ -41,8 +40,10 @@ projects, copy each address from ChatGPT and enter it in
 ```
 
 The placeholders above are documentation only; do not activate them verbatim.
-If this Git repository is public, names/URLs disclose project metadata (though
-private content remains access-controlled).
+Names and URLs disclose project metadata even when the content is access-controlled.
+For private project pins, keep the public map empty and set
+`my.primaryUser.home.settings.programs.zen-browser.profiles.default.spaces.ChatGPT.pins` in a narrow
+private host module. See [metadata ownership](../reference/personal-metadata.md).
 
 ### Layout and keyboard shortcuts
 
@@ -120,14 +121,11 @@ not declared in Nix are preserved (`spaceRouting.force = false`).
    };
    ```
 
-5. Close Zen and execute:
-
-   ```sh
-   sudo nixos-rebuild build --flake .#nixos-pc
-   sudo nixos-rebuild switch --flake .#nixos-pc
-   ```
-
-   Use `nixos-lp` for the laptop, with its own profile directory name.
+5. Keep Zen closed while you build and activate the matching host using
+   [production deployment](deployment.md). This supplies the required explicit
+   private input. For your own host, use [maintenance](maintenance.md) with its
+   selected source mode. Activation writes browser settings and needs operator
+   approval; a build alone doesn't apply them.
 
 Until `profilePath` is set, Zen remains installed as before and none of the
 declarative profile edits are activated.

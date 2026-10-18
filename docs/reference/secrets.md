@@ -1,9 +1,17 @@
 # SOPS secrets and source selection
 
+SOPS encrypts credential documents so you can track ciphertext in Git. sops-nix
+decrypts the selected document into protected runtime files on the target. The
+host's decryption identity stays outside Git and the Nix store.
+
 Use this reference when a host needs credentials. For a new host without secrets,
 start with [installation](../getting-started/installation.md#new-machine-without-secrets). For the
-maintainer's existing hosts, use [builds and deployment](../guides/deployment.md).
-All builds start in public `my-nixos`; a second repository is optional.
+existing production hosts, use [builds and deployment](../guides/deployment.md).
+All builds start in public `my-nixos`; a second repository is optional. Local
+SOPS means you have secrets without a private repository. The `none` mode means
+you have no selected secrets and must leave credential-only services disabled.
+For general SOPS usage, see the [upstream documentation](https://github.com/getsops/sops)
+and [sops-nix](https://github.com/Mic92/sops-nix).
 
 ## Source selection
 
@@ -47,7 +55,10 @@ Moving unchanged ciphertext between repositories needs no decryption or rekey.
 
 For your own host, select `secretSource = "local"` in its `mkHost` call. The
 following steps change protected key files and encrypted checkout files; they do
-not activate services. Never run them over an existing host identity.
+not activate services. Never run them over an existing host identity. Replace `/protected/admin-age.txt`
+with a protected path on your trusted workstation and the `ADMIN_PUBLIC_RECIPIENT`
+and `HOST_PUBLIC_RECIPIENT` placeholders with the actual public recipients you
+derive below. These examples use `my-host` consistently with installation.
 
 ### 1. Provision your own identities
 
@@ -161,5 +172,5 @@ the encrypted diff. Revocation cannot erase historical copies. Plan identity los
 or rotation separately; never replace working identities during this migration.
 
 Existing-host deployment and decryption checks are in the
-[maintainer guide](../guides/deployment.md). Source relocation removes selected
+[deployment guide](../guides/deployment.md). Source relocation removes selected
 material only at HEAD; history remains subject to #31's separate publication audit.

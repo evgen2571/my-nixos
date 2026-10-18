@@ -67,13 +67,21 @@ Noctalia Greeter and greetd use a sequential PAM conversation: they cannot start
 
 ## Deployment and rollback
 
-Avoid applying display-manager changes via `nixos-rebuild switch` from the active graphical session. From the root of this repository on the corresponding host:
+Changing the display manager can end your graphical session. Plan the next boot
+from a console rather than switching from the active desktop. First select and
+build the reviewed input pair using [production deployment](deployment.md).
+With its `private_input` variable set, run only on the corresponding host:
 
 ```sh
-nixos-rebuild build --flake .#nixos-lp # or .#nixos-pc
-sudo nixos-rebuild boot --flake .#nixos-lp # or .#nixos-pc
+# Non-activating build:
+nixos-rebuild build --flake .#nixos-lp --override-input private "$private_input" --no-write-lock-file
+# Selects the next boot generation, then reboots; requires operator approval:
+sudo nixos-rebuild boot --flake .#nixos-lp --override-input private "$private_input" --no-write-lock-file
 sudo reboot
 ```
+
+Use `nixos-pc` for the PC. For your own adapted host, use its output name and
+selected source mode as described in [maintenance](maintenance.md).
 
 At the greeter, select Niri and sign in with the account password. Confirm that the desktop starts, the keyboard works, appearance sync completes, and GNOME Keyring remains unlocked.
 

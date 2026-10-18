@@ -1,7 +1,7 @@
 # Host adaptation starting point
 
-The maintainer's PC, laptop and server remain the repository's primary use case.
-This directory supports adapting the same module collection to another machine.
+Copy this directory when you're adapting my module collection to your own
+machine. Keep the existing PC, laptop, and server profiles for their original hosts.
 Follow [New machine without secrets](../../docs/getting-started/installation.md#new-machine-without-secrets)
 for copying, hardware generation, registration, first access and installation.
 

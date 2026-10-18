@@ -1,8 +1,11 @@
-# Architecture
+# How the configuration fits together
 
-This document is the durable architecture contract for `my-nixos`: what owns each kind of configuration, how modules reach hosts, and which behaviors must be preserved. For actionable task entry points use [docs/task-routing.md](../../.agents/skills/task-routing/SKILL.md); for module implementation patterns use [docs/modules.md](../development/modules.md). [AGENTS.md](../../AGENTS.md) defines the agent workflow, not the system design.
-
-The Nix code is authoritative about current implementation. When documentation and code disagree, inspect the code and amend documentation as part of a scoped fix rather than reproducing an outdated assumption.
+I keep host choices separate from reusable behavior: a host profile selects
+features, modules implement them, and `config/` holds application settings. This
+page explains those boundaries and the state a rebuild can and can't reproduce.
+For a first change, start with [customization](../guides/customization.md); for
+implementation details, use [module conventions](../development/modules.md).
+The Nix source defines current behavior when a description disagrees with it.
 
 ## Configuration flow
 
@@ -75,7 +78,7 @@ Configuration source and live application state are not interchangeable:
 3. **Source configuration:** `config/` is version-controlled input; `lib/config-paths.nix` maps sources to runtime paths and selects machine-specific variants (for example Niri workspace files).
 4. **Mutable runtime state:** Generated colors, accounts/login sessions, application databases, writable agent resources, cached data and certain application-owned files are intentionally outside immutable Nix-store management.
 
-Neovim is a special case: `modules/user-dev/neovim/config.nix` copies `config/nvim/` through a Home Manager activation entry using `rsync`, excluding generated `lua/matugen.lua`. Replacing this with a whole-directory symlink would change the expected state model. Noctalia also combines declarative source config with generated runtime theme/settings. Zen profiles are selected per host; not all browser data is declaratively reproduced. Skillshare agent resources, MCP definitions and settings remain writable at runtime; see [docs/skillshare.md](../guides/skillshare.md).
+Neovim is a special case: `modules/user-dev/neovim/config.nix` copies `config/nvim/` through a Home Manager activation entry using `rsync`, excluding generated `lua/matugen.lua`. Replacing this with a whole-directory symlink would change the expected state model. Noctalia also combines declarative source config with generated runtime theme/settings. Zen profiles are selected per host; not all browser data is declaratively reproduced. Skillshare agent resources, MCP definitions and settings remain writable at runtime; see [Skillshare](../guides/skillshare.md).
 
 NixOS system generations provide system rollback, not a backup of mutable application data or secrets. Activation scripts must be safe on repeated runs and must not erase state they do not own.
 
@@ -94,9 +97,9 @@ Codex or explicit orca-vpn
 
 The **server alone** hosts the Hide.me provider and restricted underlay. Desktop namespaces are clients; they have no local provider or fallback to host networking. Selected applications fail closed when provider, tunnel, DNS or egress validation fails. Normal desktop traffic, host SSH and Docker retain normal networking. The launcher is restricted to registered applications and is not a general privileged shell.
 
-VPN changes must preserve independent namespace firewalling, IPv4/IPv6 routing, isolated DNS, scoped privileges, safe service lifecycle and recovery controls. Read [docs/shared-vpn-gateway.md](../guides/shared-vpn-gateway.md) and [docs/network-namespaces.md](../reference/network-namespaces.md). The earlier implementation plan is archived in `docs/archive/`; operational code, host observations, and current runbooks take precedence.
+VPN changes must preserve independent namespace firewalling, IPv4/IPv6 routing, isolated DNS, scoped privileges, safe service lifecycle and recovery controls. Read [gateway runbook](../guides/shared-vpn-gateway.md) and [namespace reference](../reference/network-namespaces.md). The earlier implementation plan is archived in `docs/archive/`; operational code, host observations, and current runbooks take precedence.
 
-sops-nix decrypts committed encrypted documents into protected runtime secret paths. Host-specific age identities live outside the repository under `/var/lib/sops-nix/key.txt`. Private keys and access tokens must not appear in unencrypted Git files, Nix expressions, derivation arguments, or public documentation. Public SSH/WireGuard/CA keys may be versioned. See [docs/sops.md](../reference/secrets.md).
+sops-nix decrypts committed encrypted documents into protected runtime secret paths. Host-specific age identities live outside the repository under `/var/lib/sops-nix/key.txt`. Private keys and access tokens must not appear in unencrypted Git files, Nix expressions, derivation arguments, or public documentation. Public SSH/WireGuard/CA keys may be versioned. See [SOPS](../reference/secrets.md).
 
 Only PC and laptop select the private development aliases and CA trust through their private host overrides. The certificate is stored at `certs/actline-dev-rootCA.pem` at the private repository root, and referenced from its `hosts/{pc,laptop}.nix` modules. The server does not import this feature. These settings remain NixOS-managed and require activation to change.
 
@@ -104,7 +107,7 @@ Only PC and laptop select the private development aliases and CA trust through t
 
 `modules/server/` owns SSH, Docker foundation, storage and Syncthing. The server profile mounts the data filesystem at `/srv/storage` and configures `/srv/compose`, `/srv/appdata`, `/srv/shared`, `/srv/backups` and `/srv/secrets` separately; those paths are **not implicitly on the storage mount**. Services must explicitly handle storage dependencies and backups. Syncthing replication is not a substitute for backups.
 
-Server sleep/wake logic is in `hosts/server/configuration.nix` and is sensitive to the gateway role. See [docs/server.md](../guides/server.md) before modifying lifecycle or storage.
+Server sleep/wake logic is in `hosts/server/configuration.nix` and is sensitive to the gateway role. See [server operations](../guides/server.md) before modifying lifecycle or storage.
 
 ## Design decisions and non-goals
 
@@ -113,21 +116,14 @@ Server sleep/wake logic is in `hosts/server/configuration.nix` and is sensitive 
 - **Use native NixOS/Home Manager options first.** Custom activation scripts are justified for specific mutable-state constraints, not as a default package manager.
 - **Runtime state is not necessarily reproducible.** Do not claim the flake reconstructs credentials, sessions or all application databases.
 - **Isolation and access recovery take precedence over simplification.** VPN and server code may carry deliberate complexity to preserve security and operational safety.
-- **Documentation has a single owner per question.** This file explains architecture; [docs/modules.md](../development/modules.md) explains module mechanics; [docs/task-routing.md](../../.agents/skills/task-routing/SKILL.md) locates files; `docs/` runbooks describe operational workflows; [AGENTS.md](../../AGENTS.md) directs coding agents.
+- **Documentation has a single owner per question.** This file explains architecture; [module conventions](../development/modules.md) explains module mechanics; [agent task routing](../../.agents/skills/task-routing/SKILL.md) locates files; `docs/` runbooks describe operational workflows; [AGENTS.md](../../AGENTS.md) directs coding agents.
 
 ## Validation and deployment
 
-Use non-activating verification while developing:
+Use [maintenance](../guides/maintenance.md#check-before-activation) for evaluation
+and test selection, and [production deployment](../guides/deployment.md) for the
+explicit private input and host-specific builds. Public evaluation deliberately
+works without credentials; production system builds refuse missing private material.
 
-```sh
-nix develop
-nix fmt
-nix flake check --no-build
-just build-pc
-just build-lp
-just build-server
-```
-
-`nix flake check --no-build` evaluates but does not execute registered tests. Run `nix flake check` for the full flake checks when appropriate. `flake/verification.nix` currently registers network-namespace checks; `tests/neovim/run.sh` is a separate Neovim smoke entry point. Review the changed diff after formatting and build the affected hosts; changes to shared modules may require all three. `justfile` also defines non-activating `dry-*` and explicitly activating `switch-*`/`boot-*` recipes.
-
-Deploy on the matching real host only with explicit authorization. Changes to networking, access control, authentication, boot, storage or secrets need a concrete rollback/recovery plan, not just a successful evaluation.
+Deploy on the matching host only with explicit authorization. Networking, access,
+authentication, boot, storage, and secrets need a recovery plan as well as a build.

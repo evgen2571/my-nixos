@@ -79,7 +79,7 @@ Removing the index is independent of the executable and MCP registration:
 ## Safety
 
 - No Home Manager-managed `~/.codex/config.toml` or `AGENTS.md` is added.
-- This change does not touch Codex login state, plugins, or VPN routing.
+- The module leaves Codex login state, plugins, and VPN routing under their existing owners.
 - CodeGraph also has a separate upstream installer that edits Agent files;
   it is **not** run during Nix activation.
 - The package comes from the existing locked `nixpkgs-unstable` input. Its

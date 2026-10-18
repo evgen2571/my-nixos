@@ -1,8 +1,10 @@
 # KDE Plasma workflow
 
-The Plasma session on `nixos-pc` is configured to use the same keyboard repeat
-as Niri (250 ms delay, 35 repeats/sec) and focus the window under the pointer
-without automatically raising it.
+Plasma is an optional session in this repository; both desktop profiles currently
+leave it disabled. When you enable the system and user Plasma modules, the user
+configuration sets the same keyboard repeat as Niri (250 ms delay, 35 repeats/sec)
+and focuses the window under the pointer without automatically raising it.
+Select it deliberately through your host profile; see [customization](customization.md).
 
 ## Tiling
 

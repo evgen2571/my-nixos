@@ -1,8 +1,16 @@
 # Server-only Hide.me gateway
 
-This is the **current architecture and operational verification guide**, based on the versioned Nix configuration. Git source alone cannot prove the live generation, credentials, connectivity, DNS isolation or whether initial acceptance has been completed. Check running hosts through normal host-networked operator sessions before drawing those conclusions.
+I route selected applications on my PC and laptop through the server's Hide.me
+connection. Ordinary host networking stays separate, so host SSH and other
+applications keep working independently of that route. This guide explains the
+configuration and how to inspect or recover it; the Git files don't establish
+which generation or credentials are live.
 
-For changes to implementation read [agents/networking.md](../../.agents/networking.md). For low-level primitives and private bootstrap procedures see [network-namespaces.md](../reference/network-namespaces.md). The [original rollout plan](../archive/shared-vpn-gateway-implementation-plan.md) and [full initial rollout runbook](../archive/shared-vpn-initial-rollout-runbook.md) are historical snapshots, **not** present-tense execution plans.
+Use a normal host-networked terminal for operator checks. The
+[namespace reference](../reference/network-namespaces.md) covers implementation
+and private bootstrap. The [original plan](../archive/shared-vpn-gateway-implementation-plan.md)
+and [initial rollout](../archive/shared-vpn-initial-rollout-runbook.md) preserve
+historical procedures; don't replay them during routine maintenance.
 
 ## Topology and boundaries
 
@@ -78,16 +86,16 @@ A real leak/failover test, `systemctl restart`, changing DNS in place, blocking 
 
 ## Verification versus deployment
 
-Safe development commands on a capable non-live test host/checkout:
+For non-activating development checks:
 
 ```sh
-nix flake check --no-build
-nix flake check
-nix run .#shared-vpn-test
-nix build --no-link .#nixosConfigurations.nixos-server.config.system.build.toplevel
-nix build --no-link .#nixosConfigurations.nixos-pc.config.system.build.toplevel
-nix build --no-link .#nixosConfigurations.nixos-lp.config.system.build.toplevel
+nix flake check --no-build --no-write-lock-file
+nix flake check --no-write-lock-file
+nix run .#shared-vpn-test --no-write-lock-file
 ```
+
+For production host builds, use the explicit private input and matching targets
+in [deployment](deployment.md#build-without-activation). Build all affected hosts.
 
 The full flake and namespace harness exercise isolated fixtures; they do not replace approved **real-provider** egress, DNS-leak, fault-recovery and client-application acceptance on each host. `--no-build` evaluates checks without executing their test programs. Always report exactly which commands ran.
 

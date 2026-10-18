@@ -1,18 +1,24 @@
 # Neovim development and research
 
-Apply the usual NixOS/Home Manager configuration, then start a new shell.
-The Nix-wrapped Neovim enables the Python provider and includes Molten's host
-dependencies; project kernels still use their own uv environments. The activation
-copies the Kickstart/Lazy config and preserves `lua/matugen.lua`.
-Run `:Lazy restore` to install pinned
-plugins, allow parser installation to finish, then `:UpdateRemotePlugins` and
-restart Neovim. Use `:checkhealth molten`, `:LspInfo`, and `:ConformInfo` to diagnose
-setup. Neovim 0.12.4 was tested; Tree-sitter uses the rewritten `main` APIs.
+I use this editor setup for development and Python research. Nix installs Neovim
+and its Python provider; project kernels still use their own uv environments.
+Home Manager copies the Lazy configuration into a writable directory while
+preserving generated `lua/matugen.lua`.
 
-Noctalia remains the theme owner. Regenerate its palette once after deploying the
-updated template, before opening Neovim. Missing or invalid generated themes use
-Base16 default dark; SIGUSR1 reloads the generated theme with one configuration
-watcher. Generated files are neither committed nor overwritten by activation.
+## Prepare the editor
+
+1. Build and deploy the matching host through [maintenance](maintenance.md) or,
+   for my production machines, [deployment](deployment.md). Start a new shell
+   afterward so it uses the installed tools.
+2. Run `:Lazy restore` in Neovim to install the pinned plugins, then allow parser
+   installation to finish. Run `:UpdateRemotePlugins` and restart Neovim.
+3. Check `:checkhealth molten`, `:LspInfo`, and `:ConformInfo` if setup fails.
+   Neovim 0.12.4 was tested; Tree-sitter uses the rewritten `main` APIs.
+
+Noctalia owns the theme. Regenerate its palette once after deploying an updated
+template, before opening Neovim. Missing or invalid generated themes use Base16
+default dark. SIGUSR1 reloads the theme through one configuration watcher.
+Generated files stay outside Git and activation doesn't overwrite them.
 
 ## Project setup
 
