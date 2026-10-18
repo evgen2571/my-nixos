@@ -51,7 +51,7 @@ resume acceptance remain the documented separately approved operator work.
 - [x] Separate missing host route from uncertain HTTPS/DNS/TLS/destination failures.
 - [x] Report operational application readiness separately from fail-closed routing.
 - [x] Extend CLI and real systemd lifecycle tests, update runbooks, verify all hosts.
-- [ ] Commit on the PR branch, push, and update the existing PR description.
+- [x] Commit on the PR branch, push, and update the existing PR description.
 
 Use fixed service start/stop hooks and per-unit records rather than infer intent
 from historical timestamps. Unknown pre-upgrade stops remain conservative.
@@ -64,3 +64,6 @@ transport recovery without inode replacement, and ordinary-user status. It mocks
 external WAN/Tailscale/HTTPS and ages startup timestamps; real provider/hardware
 acceptance is still separately approved. Scoped Nix formatting, documentation
 paths and whitespace checks pass. No live deployment, restart or secret changes.
+
+Follow-up implementation committed and pushed as `3abb26f`; PR 26 description
+updated with all four fixes, current verification and remaining limitations.
