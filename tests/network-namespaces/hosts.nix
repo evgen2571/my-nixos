@@ -24,6 +24,12 @@ assert lib.all (
   && c.systemd.services.netns-vpn.restartIfChanged
   && correctSecret c
 ) desktops;
+assert lib.all (
+  c:
+  builtins.elem "timers.target" c.systemd.timers.netns-vpn-recovery.wantedBy
+  && c.systemd.services.netns-vpn-recovery.serviceConfig.Type == "oneshot"
+  && lib.any (p: (p.name or "") == "vpn-status") c.environment.systemPackages
+) (desktops ++ [ server ]);
 assert correctSecret server;
 assert server.my.system.services.networkNamespaces.namespaces.vpn.shared.role == "gateway";
 assert
