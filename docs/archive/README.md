@@ -11,6 +11,7 @@ Use the [current guides](../index.md) for installation and maintenance.
 | [M02 validation](m02-validation.md) | Source-selection and private-input implementation evidence |
 | [M02.5 validation](m025-validation.md) | Personal metadata extraction evidence |
 | [M03 validation](m03-validation.md) | Paired-revision builds, bootstrap checks, VM login, and limits |
+| [Shared desktop defaults validation](desktop-host-defaults-validation.md) | Original #17 option comparison and build evidence |
 | [Obsolete configuration audit](obsolete-configuration-audit.md) | October 2026 inventory and deferred retirement decisions |
 | [Niri window rule observations](niri-window-rules.md) | Observed window signatures, validation, and remaining UI checks |
 | [Neovim validation](neovim-validation.md) | Editor test results and outstanding desktop checks |
