@@ -46,7 +46,20 @@ if cmd == 'systemctl':
         load = 'not-found' if reason == 'missing-unit' else 'masked' if reason == 'masked' else 'loaded'
         active = s.get('active', 'active')
         if reason == 'crashed' and unit == 'hide-me-vpn.service': active = 'failed'
-        print(f'LoadState={load}\\nActiveState={active}\\nUnitFileState=enabled\\nResult=success\\nActiveEnterTimestampMonotonic=1\\nInvocationID=test-invocation')
+        if unit == 'hide-me-vpn.service' and (root/'provider-stopped').exists(): active = 'inactive'
+        props = s.get('units', {}).get(unit, {})
+        active = props.get('active', active)
+        load = props.get('load', load)
+        condition = props.get('condition', 'yes')
+        started = props.get('started', '1')
+        print(f'LoadState={load}\\nActiveState={active}\\nUnitFileState=enabled\\nResult=success\\nActiveEnterTimestampMonotonic=1\\nExecMainStartTimestampMonotonic={started}\\nConditionResult={condition}\\nInvocationID=test-invocation')
+    elif args[0] == 'stop' and 'hide-me-vpn.service' in args:
+        (root/'provider-stopped').touch()
+    elif args[0] in ('restart', 'start') and 'hide-me-vpn.service' in args:
+        if s.get('interrupt_repair'):
+            import signal
+            os.kill(os.getppid(), signal.SIGKILL)
+        (root/'provider-stopped').unlink(missing_ok=True)
     elif args[:2] == ['start', 'netns-vpn-health.service']:
         (root/'runtime'/'probes.json').write_text(json.dumps({'checked_at':int(time.time()), 'results':s['probes']}))
         if 0 in s['probes']:
@@ -171,6 +184,7 @@ sys.exit(0)
                                 ('503', 'PROVIDER_API_UNAVAILABLE'), ('timeout', 'EGRESS_UNAVAILABLE')]:
             with self.subTest(code=code):
                 (self.state/'hold.json').unlink(missing_ok=True)
+                (self.root/'provider-stopped').unlink(missing_ok=True)
                 self.scenario.update(probes=[7, 7, 7, 7], log='REST failed: bad HTTP status '+code)
                 self.assertEqual(self.run_doctor()['reason'], expected)
         self.assertNotIn('AUTH_REJECTED', self.run_doctor('status'))
@@ -243,11 +257,12 @@ sys.exit(0)
         self.scenario.update(reason='healthy', probes=[0]*4)
         self.assertEqual(self.run_doctor()['reason'], 'HEALTHY')
 
-    def test_changed_bootstrap_releases_auth_hold_without_reading_token(self):
+    def test_changed_bootstrap_releases_auth_hold_without_reporting_token(self):
         self.scenario.update(probes=[6]*4, log='bad HTTP status 401')
         self.run_doctor()
         self.seed.write_text('fixture-renewed-bootstrap')
         self.scenario.update(log='', probes=[0]*4)
+        (self.root/'provider-stopped').unlink(missing_ok=True)
         self.assertEqual(self.run_doctor()['reason'], 'HEALTHY')
         self.assertFalse((self.state/'hold.json').exists())
 
@@ -291,6 +306,49 @@ sys.exit(0)
         self.run_doctor('provider-allowed', expected=1)
         self.seed.write_text('fixture-changed-seed')
         self.run_doctor('provider-allowed')
+
+    def test_skipped_dns_is_retried_after_late_transport(self):
+        self.prime()
+        self.scenario['units'] = {'netns-vpn-dns.service': {'active':'inactive', 'started':'0', 'condition':'no'}}
+        for _ in range(3): status = self.run_doctor()
+        self.assertEqual(status['reason'], 'DNS_UNAVAILABLE')
+        self.assertEqual(self.repairs(), [['systemctl', 'restart', 'netns-vpn-dns.service']])
+        self.assertIn('DNS_UNAVAILABLE', self.run_doctor('status'))
+
+    def test_changed_credentials_wait_for_wan_before_consuming_budget(self):
+        self.scenario.update(probes=[6]*4, log='bad HTTP status 401')
+        self.run_doctor()
+        self.seed.write_text('fixture-renewed-seed')
+        self.scenario.update(reason='offline', log='', units={'hide-me-vpn.service': {'active':'inactive'}})
+        for _ in range(4):
+            status = self.run_doctor()
+            self.assertEqual(status['reason'], 'HOST_OFFLINE')
+            self.assertEqual(status['attempts'], 0)
+        self.assertIn('HOST_OFFLINE', self.run_doctor('status'))
+
+    def test_missing_unit_wins_over_inactive_later_unit(self):
+        self.scenario['units'] = {'netns-vpn-shared.service': {'load':'not-found'},
+                                  'tailscaled.service': {'active':'inactive'}}
+        self.assertIn('DEPLOYMENT_MISMATCH', self.run_doctor('status'))
+
+    def test_interrupted_repair_keeps_budget_and_cooldown(self):
+        self.prime()
+        self.scenario.update(reason='missing-link', probes=[7]*4, interrupt_repair=True)
+        self.run_doctor()
+        self.run_doctor()
+        self.assertEqual(self.run_doctor(expected=-9)['attempts'], 1)
+        self.scenario['interrupt_repair'] = False
+        self.assertEqual(self.run_doctor()['phase'], 'RECOVERY_COOLDOWN')
+        self.assertEqual(len(self.repairs()), 1)
+
+    def test_identical_sops_rematerialization_preserves_auth_hold(self):
+        self.scenario.update(probes=[6]*4, log='bad HTTP status 401')
+        self.run_doctor()
+        self.seed.unlink()
+        self.seed.write_text('fixture-bootstrap-never-report')
+        self.run_doctor('provider-allowed', expected=1)
+        self.assertEqual(self.run_doctor()['reason'], 'AUTH_REJECTED')
+        self.assertEqual(len(self.repairs()), 1)
 
 
 if __name__ == '__main__':

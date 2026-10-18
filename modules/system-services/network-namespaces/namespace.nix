@@ -266,7 +266,10 @@ in
   systemd.services.${vpn} = lib.mkIf (!isClient) {
     description = "hide.me Free VPN in namespace ${name}";
     wantedBy = [ "multi-user.target" ];
-    requires = [ "${underlay}.service" ];
+    # Keep the provider alive through underlay process restarts; its gate waits
+    # for tap0 at startup, and the monitor repairs failed prerequisites.
+    requires = lib.optional (!shared) "${underlay}.service";
+    wants = lib.optional shared "${underlay}.service";
     after = [ "${underlay}.service" ] ++ lib.optional (config ? sops) "sops-install-secrets.service";
     bindsTo = [ "${netns}.service" ];
     partOf = [ "${netns}.service" ];
