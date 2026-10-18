@@ -53,7 +53,7 @@ in
 
         "server" = {
           HostName = cfg.serverHost;
-          User = "server";
+          User = lib.mkDefault config.home.username;
           IdentitiesOnly = true;
         }
         // lib.optionalAttrs (cfg.serverIdentityFile != null) {
