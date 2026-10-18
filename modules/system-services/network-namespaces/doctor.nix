@@ -47,7 +47,7 @@ let
       wireguard-tools
       tailscale
       curl
-      bind
+      bind.dnsutils
       procps
     ];
     text = ''
