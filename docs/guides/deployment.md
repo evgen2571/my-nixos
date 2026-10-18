@@ -1,6 +1,6 @@
-# Maintainer builds, deployment and recovery
+# Build, deploy, and recover my existing hosts
 
-Start here for the existing `nixos-pc`, `nixos-lp` and `nixos-server`. Run commands
+I use this workflow for `nixos-pc`, `nixos-lp`, and `nixos-server`. Run commands
 from the public `my-nixos` checkout on the matching host, using normal host
 networking. For another machine, use [host adaptation](../getting-started/installation.md#new-machine-without-secrets).
 
@@ -11,14 +11,15 @@ networking. For another machine, use [host adaptation](../getting-started/instal
 | Reinstall/restore a host | [Restore](#restore-an-existing-host) | Writes the mounted target and boot state |
 | Recover after a failed update | [Rollback](#rollback-and-recovery) | Can change the running/booted generation |
 
-**For agents:** live installation, activation, identity changes and rollback require
-separate explicit authorization under [AGENTS.md](../../AGENTS.md#deployment-security-and-data-safety).
-The warnings below describe operational effects for any reader.
+Installation, activation, identity changes, and rollback change real host state.
+Keep recovery access open and review the effects beside each procedure. Agents
+need separate explicit authorization under [AGENTS.md](../../AGENTS.md#live-state-and-sensitive-data).
 
 ## Select reviewed inputs
 
-Use compatible public/private commit IDs, including the post-M02.5 account and
-peer metadata. Run from a clean checkout; `git checkout` changes source files:
+Use reviewed, compatible public/private commit IDs. The private input must
+include the existing account and peer metadata described in
+[metadata ownership](../reference/personal-metadata.md). Run from a clean checkout; `git checkout` changes source files:
 
 ```sh
 git checkout REVIEWED_PUBLIC_COMMIT

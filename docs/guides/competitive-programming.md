@@ -85,7 +85,10 @@ The test redirects the CP workspace to a temporary directory, copies the actual
 personal template, sends representative HTTP payloads to port 27121, and drives
 F6 and the testcase editor through Neovim RPC. Close another receiver first.
 
-Validated on 2026-10-12: isolated full-config startup/Lazy loading; actual TCP
+### Recorded validation (2026-10-12)
+
+The following results are historical, not a fresh run for later documentation edits:
+isolated full-config startup/Lazy loading; actual TCP
 receiver; contest/problemset/Gym paths; full contest batch; fallback names;
 byte-identical templates; sample files; overwrite refusal; F6 compilation and
 reruns; correct/wrong/input-only results and timings; custom add/edit UI;

@@ -1,12 +1,12 @@
 # Personal metadata ownership
 
-Issue #36 changes declarative source ownership only. `my-nixos` retains all real
-hosts, feature selection, Home Manager, dotfiles, networking and deployment logic.
-The optional private input still exports only `nixosModules` and `secretFiles`.
-Build from this repository with the explicit override in [installation](../getting-started/installation.md);
-never record the personal input in the public lock. Merge the coordinated private
-PR before this public change. Deploy reviewed paired revisions; older public
-revisions must keep their previous pinned private input until both PRs land.
+`my-nixos` owns host assembly, feature selection, Home Manager, dotfiles,
+networking, and deployment. My optional private input supplies narrow sensitive
+settings and encrypted files through the two-map
+[private interface](../../templates/private/README.md). Build from this repository
+with an explicit override; never record the personal input in the public lock.
+Use compatible reviewed public/private revisions for existing hosts. Historical
+extraction evidence is in [M02.5](../archive/m025-validation.md).
 
 | Class | Decision |
 | --- | --- |
@@ -22,10 +22,10 @@ builds require an explicit existing account, valid peer/endpoint associations an
 SSH authorization when SSH is enabled. Missing metadata must be corrected in the
 private input; never bypass the deployment guard to install public defaults.
 
-`modules/system-core/user.nix` remains the sole account/HM adapter and now imports
+`modules/system-core/user.nix` remains the sole account/HM adapter and imports
 [home/default.nix](../../home/default.nix). User-specific drive mount paths derive
 from the primary account; the real override keeps their exact previous targets.
-Newcomers choose a username, optional Git identity and safe first login using
+For your own host, choose a username, optional Git identity and safe first login using
 [templates/host](../../templates/host/README.md), with either `none` or local SOPS.
 
 Active Noctalia TOML is parsed into native settings with default priority. Private
@@ -34,7 +34,7 @@ are unchanged. Public paths derive from HM HOME as actual absolute strings, with
 no assumption that TOML expands `$HOME` or `~`. The opt-in v4 rollback JSON uses the same narrow approach through
 `my.user.desktop.noctalia.legacyConfig.settings`; private leaves preserve its
 original paths/location. Its installer remains disabled on production hosts.
-Do not treat this extraction as publication clearance.
+These boundaries do not establish publication clearance; that review belongs to #31.
 
 ### Private development CA
 

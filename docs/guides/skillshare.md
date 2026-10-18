@@ -1,7 +1,6 @@
 # Skillshare on NixOS
 
-Skillshare is packaged **only for this private my-nixos configuration** (currently
-pinned to v0.25.8). The module lives in `modules/user-ai/skillshare.nix`; the
+I package Skillshare in this repository (currently pinned to v0.25.8). The module lives in `modules/user-ai/skillshare.nix`; the
 versioned binary derivation is `pkgs/skillshare.nix`.
 
 Both desktop profiles enable `my.user.ai.skillshare.enable`; the server does
@@ -64,19 +63,12 @@ already-running session.
 ## Build, activate and check
 
 Neither `agent-toolkit` nor Serena is required to evaluate the flake.
-Both inputs and their obsolete lock nodes have been removed.
-
-```sh
-nix build .#nixosConfigurations.nixos-pc.config.system.build.toplevel --no-link
-nix build .#nixosConfigurations.nixos-lp.config.system.build.toplevel --no-link
-
-# On the corresponding host only:
-sudo nixos-rebuild switch --flake .#nixos-pc
-# or, on the laptop:
-sudo nixos-rebuild switch --flake .#nixos-lp
-
-skillshare version
-```
+Their inputs and obsolete lock nodes have been removed. To select Skillshare
+on your own desktop host, enable
+`my.primaryUser.home.settings.my.user.ai.skillshare.enable` in its profile and
+follow [maintenance](maintenance.md). For my PC and laptop, follow
+[production deployment](deployment.md) with the required private input. Build
+first, then activate only on the matching host with approval.
 
 After activation, verify `codex --version` and `codex mcp list`. If Serena
 was also configured independently in writable `~/.codex/config.toml`, remove

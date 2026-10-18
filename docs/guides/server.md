@@ -1,6 +1,9 @@
 # Server operations: nixos-server
 
-This runbook describes the **configuration in Git**, not a live health report. Before changing or deploying the server, inspect the running generation, actual mount points, current services and Tailscale reachability on the host. For VPN design and safety, read [shared VPN gateway](shared-vpn-gateway.md); agents should start with [agents/networking.md](../../.agents/networking.md) for network changes.
+I use `nixos-server` for services, storage, and the shared VPN gateway. This guide
+describes its configuration in Git. Before changing it, check the running
+generation, mounts, services, and Tailscale reachability on the host. For VPN
+changes, also read the [gateway runbook](shared-vpn-gateway.md).
 
 ## Ownership
 
@@ -86,22 +89,24 @@ For gateway troubleshooting, prefer [the VPN runbook](shared-vpn-gateway.md) and
 
 SOPS-encrypted documents under `secrets/` and public recipients/keys may be versioned. Protected runtime paths are consumed by configured services. Never store plaintext access tokens, private age/SSH/WireGuard keys or decrypted secrets in Git, derivations, issue discussions or logs. `/srv/secrets` is only a filesystem interface if a service explicitly needs it.
 
-See [SOPS workflow](../reference/secrets.md) for recipient rotation and provisioning. Missing runtime credentials are an operational deployment condition, **not** permission to invent test or production secret values.
+See [SOPS workflow](../reference/secrets.md) for recipient rotation and provisioning. If runtime credentials are missing, restore the required material through the reviewed SOPS procedure; never invent replacement values.
 
 ## Build and release safety
 
-From a reviewed checkout, first validate without changing the server:
+Follow [production builds and deployment](deployment.md#build-without-activation)
+for `nixos-server`. It supplies the required explicit private input, non-activating
+build, preflight, and host checks. A build doesn't prove remote access, mounted
+storage, secret decryption, or real VPN egress. Shared-module changes also need
+checks for other affected hosts.
 
-```sh
-nix flake check --no-build
-nix build --no-link .#nixosConfigurations.nixos-server.config.system.build.toplevel
-```
+Before activation, keep a working console or independent recovery route, a
+second SSH session, and verified storage backups. Work from normal host
+networking, outside VPN-isolated agent sessions. Use the reviewed command and
+input pair in the deployment guide; don't bypass its guards.
 
-Run full `nix flake check` when the registered checks and build environment are available. Non-activating success does not prove remote access, mounted storage or real VPN egress. For shared-module modifications, evaluate/build other impacted hosts too.
-
-Activation is **not part of normal code review**. Before an explicitly approved deployment, ensure a working console or independent rollback mechanism, a second viable SSH route, and verified storage/backup status. Evaluate server generation changes from a host-networked session, not a VPN-isolated agent. An explicitly authorized operator can use `sudo nixos-rebuild test --flake .#nixos-server` then persist with `switch` only after health and recovery checks.
-
-A boot-menu generation rollback or `nixos-rebuild --rollback` can restore NixOS system configuration. Neither reverts mutable application data nor automatically undoes firewall/mask state maintained outside the generation. Follow the VPN-specific rollback considerations before modifying those units.
+[Generation rollback](deployment.md#rollback-and-recovery) can restore system
+configuration. It doesn't revert application data or persistent provider masks.
+Keep the masks and follow the VPN-specific recovery procedure.
 
 ## First installation and migration history
 

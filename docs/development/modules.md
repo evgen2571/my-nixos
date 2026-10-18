@@ -1,6 +1,9 @@
 # Module conventions
 
-This is the canonical implementation guide for NixOS and Home Manager modules in this repository. For the architectural reasons behind these rules see [../ARCHITECTURE.md](../concepts/architecture.md); for an agent's operating rules see [../AGENTS.md](../../AGENTS.md).
+Use this page when you're adding or changing a module. A module declares options
+and implements a feature; the host profile chooses whether to use it. If you're
+selecting existing features, start with [customization](../guides/customization.md).
+The [architecture](../concepts/architecture.md) explains the ownership decisions.
 
 ## How a feature reaches a host
 
@@ -43,8 +46,9 @@ The current root selection is:
 `secretFile`, `secretSource` and `requirePrivate` as special arguments. Optional
 private host modules join through the existing extra-module list; discovery and
 Home Manager shared modules are unchanged. Guard missing secret declarations
-and their consumers. See [installation](../getting-started/installation.md) for the two-map input
-contract, local SOPS and production deployment guards.
+and their consumers. See [source selection](../reference/secrets.md#source-selection) for source modes,
+the [private template](../../templates/private/README.md) for the two-map interface,
+and [deployment guards](../guides/deployment.md#deployment-guards) for production safety.
 
 ## Choose the correct scope
 

@@ -1,28 +1,63 @@
-# Installation and everyday work
+# Install on your own machine
 
-`my-nixos` manages the maintainer's PC, laptop and server. Independent reuse is
-supported by adapting its choices to your own hardware and services. The existing
-host profiles describe real machines; they are not defaults for a new installation.
+Start with a small host that boots and accepts your SSH key, then add the desktop
+or services you want. I use the full profiles for my own machines; copying one
+of those profiles would also copy its hardware and infrastructure assumptions.
+This walkthrough uses a single checkout and no secrets. If you're updating one
+of my existing hosts, use [production deployment](../guides/deployment.md).
 
-## Choose your starting point
+## Before you start
 
-| What you need | Start here |
-| --- | --- |
-| Rebuild or update the existing PC, laptop or server | [Maintainer builds and deployment](../guides/deployment.md) |
-| Understand the configuration or change an app/module | [Architecture](../concepts/architecture.md), then [task routing](../../.agents/skills/task-routing/SKILL.md) |
-| Adapt the repository to your own machine | [New machine without secrets](#new-machine-without-secrets) below |
-| Add encrypted credentials to your own host | [Single-repository SOPS](../reference/secrets.md#single-repository-setup) |
-| Restore an existing host or recover access | [Restore](../guides/deployment.md#restore-an-existing-host) and [rollback](../guides/deployment.md#rollback-and-recovery) |
+You'll need Git, network access to public flake inputs and package caches, and
+Nix with `nix-command` and `flakes` enabled. For a first installation, boot NixOS
+installation media and keep a local console available. Build on Linux for your
+target architecture; cross-compilation isn't part of this walkthrough.
 
-All builds start in this repository. The input/command syntax was tested with
-Nix 2.34.8; older relative-path lock behavior is unverified. Recorded host and VM
-results are in [M03 validation](../archive/m03-validation.md).
+A **flake** is the repository entry point (`flake.nix`); `flake.lock` pins its
+inputs, including Nixpkgs. A **host** is one system configuration exported by
+that flake. **Home Manager** manages the matching user's packages and settings
+as part of the system build here. You don't need a separate Home Manager flake.
+See the [Nix flakes introduction](https://nix.dev/concepts/flakes.html) and
+[NixOS configuration manual](https://nixos.org/manual/nixos/stable/#sec-configuration-syntax)
+for the general concepts.
+
+The commands use `my-host` as an example name. Use your own name consistently in
+paths, the flake output, and commands. Run checkout commands from the repository
+root. The input syntax was tested with Nix 2.34.8; older relative-path lock
+behavior is unverified. [M03](../archive/m03-validation.md) records earlier
+host and VM tests with their revisions and limitations.
+
+## Choose a configuration
+
+The template starts with no optional features. I recommend keeping it that way
+until boot and first access work.
+
+| Goal | Module profile in `mkHost` | What to add later |
+| --- | --- | --- |
+| Small command-line host or server | `moduleProfiles.server` | Individual services from `modules/server/` and `modules/system-services/` |
+| Desktop or laptop | `moduleProfiles.desktop` | Desktop/session, user applications, and development modules |
+
+The module profile makes options available; it doesn't turn them on. My PC and
+laptop use Niri with Noctalia; the laptop also enables GNOME. Plasma, Hyprland,
+and Cinnamon modules exist as alternatives, but aren't the default starting
+path. See [customization](../guides/customization.md) when you're ready to select
+features. Don't import `hosts/common/desktop.nix` wholesale unless you want its
+full application selection.
+
+You can use `secretSource = "none"` without a private repository or any encrypted
+credentials. Credential-dependent services must stay disabled. If you later
+need credentials, [local SOPS](../reference/secrets.md#single-repository-setup)
+keeps encrypted files in this same checkout. An [optional private input](../../templates/private/README.md)
+is a third choice. **No private repository** doesn't mean **no secrets**:
+local SOPS needs your own protected decryption identity.
 
 ## New machine without secrets
 
-This path uses one checkout and your own host definition. Start by reading the
-[NixOS installation manual](https://nixos.org/manual/nixos/stable/#sec-installation)
-for installation media, networking, partitioning, encryption and mounting.
+Follow the [NixOS installation manual](https://nixos.org/manual/nixos/stable/#sec-installation)
+for installation media, networking, partitioning, encryption, and mounting.
+Disko and nixos-anywhere are separate provisioning work in
+[#32](https://github.com/evgen2571/my-nixos/issues/32) and
+[#33](https://github.com/evgen2571/my-nixos/issues/33); this path doesn't use them.
 
 ### 1. Prepare and copy
 
@@ -50,9 +85,22 @@ machine. Never reuse another host's disk identifiers.
 ### 2. Choose hardware, features and first access
 
 Edit `hosts/my-host/configuration.nix`: choose the hostname, timezone, bootloader,
-networking and primary username. Set NixOS/Home Manager state versions for this
-initial installation. Select features in `hosts/my-host/profile.nix` using
-[the existing modules](../development/modules.md).
+networking, and primary username. The template doesn't choose a bootloader or
+network manager for you. For example, a UEFI machine using systemd-boot and wired
+DHCP might use the following; only use it if it matches your firmware and mounts:
+
+```nix
+boot.loader.systemd-boot.enable = true;
+boot.loader.efi.canTouchEfiVariables = true;
+networking.useDHCP = true;
+time.timeZone = "Etc/UTC";
+```
+
+Set NixOS/Home Manager state versions for this initial installation. These
+versions control compatibility defaults, not the installed Nixpkgs release; keep
+them stable during ordinary upgrades. Select features in
+`hosts/my-host/profile.nix` using [customization](../guides/customization.md).
+For the first build, leave the optional profile empty.
 
 The template uses key-only SSH. Replace its empty `authorizedKeys` list inside
 `my.primaryUser` with your **public** key:
@@ -87,6 +135,9 @@ my-host = mkHost {
 };
 ```
 
+The `host` value also names the ciphertext entry if you later select local or
+private secrets. Keep the three existing production outputs unchanged.
+
 **No activation:** stage the new files so the Git flake sees them, then evaluate
 and build from the checkout:
 
@@ -95,6 +146,11 @@ git add hosts/my-host flake/hosts.nix
 nix flake check --no-build --no-write-lock-file
 nix build --no-link .#nixosConfigurations.my-host.config.system.build.toplevel --no-write-lock-file
 ```
+
+A successful command returns without configuration errors; the build creates a
+system closure in `/nix/store` and `--no-link` avoids a `result` symlink. The
+original three production configurations can evaluate with the empty private
+input, but their system builds deliberately refuse it.
 
 `--no-build` evaluates checks only. Run `nix flake check --no-write-lock-file` to
 execute available checks. A successful build does not test physical boot or SSH.
@@ -109,14 +165,16 @@ sudo nixos-install --root /mnt --flake .#my-host --no-root-passwd --no-write-loc
 ```
 
 Keep a recoverable checkout on the target. After reboot, test a login from your
-client using `ssh -i /protected/client-key YOUR_USER@YOUR_HOST`, then `id`,
+client using `ssh -i /protected/client-key YOUR_USER@YOUR_HOST`. Replace the key
+path, username, and address with your own values; this is your client private
+key, which stays off Git and the Nix store. Then run `id`,
 `sudo -v` and `systemctl --failed`. Verify a second login before releasing the
 console. `--no-root-passwd` leaves root locked and relies on the user access above.
 
-## Ongoing changes
+## Keep it working
 
-Use [Making a change](../../README.md#making-a-change) and
-[task routing](../../.agents/skills/task-routing/SKILL.md) for public modules, host profiles and app dotfiles.
-Build affected hosts before activating changes. Credential editing belongs in the
-[SOPS guide](../reference/secrets.md); existing-host updates and recovery are in the
-[maintainer guide](../guides/deployment.md).
+Once access works, follow [customization](../guides/customization.md) to add
+features and [maintenance](../guides/maintenance.md) for checks, updates, and
+rollback limits. Build before activating. For credentials use the
+[SOPS guide](../reference/secrets.md); for a build or access failure, see
+[troubleshooting](../troubleshooting/common-problems.md).
