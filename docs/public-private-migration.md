@@ -22,9 +22,11 @@ also includes admin-only bootstrap documents. Follow executable declarations.
 flowchart TB
   public["my-nixos: sole build/deployment root; real hosts, profiles, modules, dotfiles, tests"]
   example["templates/private: safe empty default input"]
+  local["Optional single-repo SOPS: user-owned encrypted host files"]
   private["my-nixos-private: optional ciphertext and narrow sensitive overrides"]
   runtime["Protected runtime: identities, decrypted secrets, tokens, app state"]
   public -->|"private input defaults locally"| example
+  public -->|"explicit local secret source"| local
   public -->|"explicit private input override for personal builds"| private
   public -->|"sops-nix; services consume protected paths"| runtime
 ```
@@ -52,7 +54,8 @@ Classifications are policy decisions, not claims that all metadata is secret:
 - **Sensitive personal values:** narrow account/project identifiers or private
   topology facts selected for exclusion. Extract only those declarations into
   private host overrides; keep surrounding host/profile/config source public.
-- **SOPS ciphertext:** encrypted credentials/recovery identities in private Git.
+- **SOPS ciphertext:** maintainer credentials/recovery identities move to private
+  Git; standalone users may keep their own encrypted host files in their fork.
   Recipient metadata is public cryptographic data, but its associations can be
   private. Never decrypt to perform the split.
 - **Runtime-only secrets/state:** identities, plaintext credentials, active
@@ -67,6 +70,9 @@ covers remaining files after specific rows; braces enumerate existing files.
 New paths/templates below are M02 proposals, not files created in M01. Private
 host overrides live in `S: hosts/<host>.nix`; these contain sensitive values only,
 not copies of public host definitions. Audit values without publishing them.
+Ciphertext/recipient moves below describe the maintainer migration; single-repo
+users may retain their own `secrets/hosts/*.yaml` and `.sops.yaml` in P under the
+explicit local source mode. This does not authorize publishing maintainer data.
 
 | Current path | Proposed repository/path | Classification | Justification | Consumer / migration impact |
 | --- | --- | --- | --- | --- |
@@ -198,9 +204,11 @@ No private `nixosConfigurations`, public input or duplicate nixpkgs/Home Manager
 sops-nix lock is needed. Public `flake/hosts.nix` uses its existing `extraModules`
 argument to include `(inputs.private.nixosModules.pc or {})` for PC, analogously
 for laptop/server. Existing `specialArgs.inputs` and HM `extraSpecialArgs` already
-forward the public inputs; public `hosts/<host>/secrets.nix` can select
-`inputs.private.secretFiles.<host> or null` without a new argument framework.
-Import selection must depend on input attributes, never recursively on `config`.
+forward the public inputs. In private mode, public `hosts/<host>/secrets.nix`
+consumes `inputs.private.secretFiles.<host> or null`; local mode uses the tracked
+public-root host ciphertext path. Include private host modules only in private
+mode. Keep source selection at the public host boundary, available before import
+resolution; do not select imports recursively through `config`.
 The real private flake supplies only narrow sensitive declarations and ciphertext
 paths. Public hosts still own all feature selections and their local imports.
 
@@ -222,21 +230,75 @@ mapping in M02 and verify effective targets. Do not repoint entire Niri/Hyprland
 source directories to S. Preserve writable Neovim/Matugen, Noctalia generated
 settings, browser state and Skillshare resources.
 
-### Explicit safe behavior without private material
+### Supported modes and secret-source selection
 
-An empty input is a supported configuration mode, not a source of synthetic
-credentials. All three real public host outputs and public checks must evaluate.
-Public feature intent (desktop clients, server gateway, shared selections) stays
-visible. Missing material makes credential-dependent functions explicitly
-unavailable; it must never relax their security policy to make evaluation pass.
+All three modes use the same public host assembly, consumer declarations and
+protected sops-nix runtime paths. The private interface remains the two maps
+above; local SOPS needs no second flake or repository.
 
-M02 must implement and test the absent-file branch at the consuming declarations:
+| Explicit per-host source | Supported use | Selected ciphertext |
+| --- | --- | --- |
+| `none` | Standalone public configuration, including secretless new-host installation | None; credential-dependent features unavailable |
+| `local` | Single-repository SOPS with user-owned recipients and ciphertext | Public-root `secrets/hosts/<host>.yaml`, with user-managed `.sops.yaml` |
+| `private` | Maintainer's personal setup via explicit private input override | Only `inputs.private.secretFiles.<host>` plus its narrow host module |
+
+Keep the choice explicit in the owning public host configuration using the
+smallest existing host-setting pattern in M02, not a new provider interface.
+`templates/host/` chooses `none`; existing PC/laptop/server choose `private` and
+require private material for deployment. Never infer source from file existence,
+runtime credentials, hostname detection or which repository happens to be nearby.
+
+Missing or unknown source choices are validation errors. Selection is exclusive,
+with no fallback or cross-source merging:
+
+- `none` consumes no ciphertext or private module, even if local files or a
+  populated private input exist. Selecting `none` must be deliberate; it cannot
+  remove the deployment requirement on an existing production output.
+- `local` requires the selected tracked encrypted host file and matching
+  recipient policy; a missing, malformed or incomplete source fails validation.
+  It never fills missing data from the private input.
+- `private` never reads local ciphertext, including stale copies. A missing entry
+  in the safe empty template permits public-only evaluation in the unavailable
+  state below, but fails production deployment preflight. A supplied invalid
+  path, malformed file, missing required field or incomplete personal override
+  fails validation; it cannot select `local` or become an operational `none`.
+- If both sources are present, the explicit choice selects exactly one; the other
+  is ignored and reported as unselected in validation diagnostics without secret
+  values. With no explicit choice, contradictory sources are an error, not a
+  precedence rule. Changing sources requires a reviewed host edit and validation.
+
+### Secretless installation versus production deployment
+
+A new host copied from `templates/host/` must support installation in `none`
+mode without SOPS or a private repository. Before installation, the operator must
+configure and validate a secure first-login route: their own authorized SSH
+**public** key with explicitly configured reachable SSH, or controlled console
+password provisioning outside Git and the Nix store. Refuse installation if no
+usable route is configured. Ship no usable default/empty password, public password
+hash, automatic login or automatic firewall opening. Keep password login locked
+when using key-only access. Do not silently change `users.mutableUsers` on existing
+hosts to enable the new-host workflow.
+
+For `nixos-pc`, `nixos-lp` and `nixos-server`, successful public-only evaluation,
+checks or a non-activating build is not deployment readiness. M02 must enforce a
+preflight that refuses install, switch or boot-generation selection without the
+required private ciphertext, sensitive overrides and protected runtime identity
+(or an explicit secure identity-provisioning step for installation). It must
+reject partial material and source substitution before live state changes,
+including direct deployment commands as well as `just`/Fish helpers; documenting
+an optional wrapper alone is insufficient. A normal invocation cannot activate a
+secretless generation on these outputs. Any deliberate secretless recovery needs
+a separately approved, explicit recovery procedure, not silent fallback or an
+automatically inferred exception.
+
+M02 must implement and test the unavailable-material branch at the consumers:
 
 - Do not evaluate nonexistent SOPS file paths or reference undeclared secrets.
   Keep declarations/key names, owners, modes, `neededForUsers` and restart units
-  unchanged when the real ciphertext file is supplied.
-- Without a password secret, keep the account locked, with no empty/default
-  password or automatic login workaround. Do not introduce fallback SSH access.
+  unchanged when the selected valid source is supplied.
+- Without a password secret on an existing host, keep the account locked, with no
+  empty/default password or fallback SSH access. The new-host first-login method
+  above is an explicit installation choice, not a fallback for existing hosts.
 - Without VPN keys/provider credentials, prevent credential-dependent transport
   and provider services from starting. Retain namespace containment, firewall,
   DNS and selected-app fail-closed behavior, including when credentials disappear
@@ -244,12 +306,12 @@ M02 must implement and test the absent-file branch at the consuming declarations
   fall back to host networking. Missing private endpoints/keys cannot become
   permissive peers or placeholder production credentials.
 - Do not silently disable the namespace security boundary or substitute another
-  provider. Ordinary host networking remains independent. Surface the unavailable
-  features in documentation and diagnostics; a public-safe build is not proof
-  that the maintainer's credentialed deployment is ready.
-- With real private input, restore and compare the exact existing operational
-  behavior for every host. Validate partial/malformed inputs explicitly as well
-  as the fully empty and fully populated cases.
+  provider. Ordinary host networking remains independent. Surface unavailable
+  features in documentation and diagnostics, preserving public feature intent
+  (desktop clients, server gateway and shared selections).
+- With real private input, compare the exact existing operational behavior for
+  every host. Validate missing, partial, malformed and conflicting sources, plus
+  the new-host first-login route and existing-host deployment refusal in isolation.
 
 ### Documented templates
 
@@ -280,6 +342,8 @@ my-nixos-private/               # optional sibling, never the build root
 hardware configuration, choosing identity and explicit state versions, and adding
 a `mkHost` call to existing public assembly with the appropriate catalog profile.
 It must not require maintainer-private modules, keys, recipients or credentials.
+Document `none` as the new-host source, the mandatory first-login preparation,
+and optional `local` SOPS setup in the same checkout.
 `templates/private/README.md` documents the interface, source tracking, encrypted
 file policy, safe empty behavior and public-root override commands below. It may
 show sanitized recipient-rule examples; the default includes no production SOPS
@@ -300,9 +364,11 @@ M02 acceptance matrix (all commands start in public `my-nixos`):
 | Mode | Required evidence |
 | --- | --- |
 | Clean public clone, private checkout absent, no private Git authentication | All three outputs evaluate; default local input resolves; lock unchanged; evaluation and full public checks pass |
-| Real private input override | All three outputs evaluate and build non-activating; public production checks pass; semantic security/HM comparisons match baseline |
-| Partial, invalid or removed private material | Clear invalid-input failure or explicit unavailable service; no fake secrets, login bypass, DNS/firewall weakening or selected-app host-network fallback |
-| Fork/new host from templates/host | Register/evaluate a new host with existing mkHost and no maintainer-private access |
+| Single-repository SOPS (`local`) | Tracked user-owned ciphertext and recipient policy work without private repository access; runtime identity, permissions and source selection validated |
+| Real private input override (`private`) | All three outputs evaluate and build non-activating; public production checks pass; semantic security/HM comparisons match baseline |
+| Missing, partial, malformed or conflicting sources | Exclusive selection, no stale-source fallback; explicit validation failure or safe evaluation-only unavailability; production deployment refused without required private material |
+| Fork/new host from templates/host (`none`) | Register/evaluate/build with existing mkHost; isolated installation proves secure first login without maintainer-private access; missing login configuration refuses installation |
+| Existing hosts without required private material | Public evaluation/checks still work; preflight refuses install/switch/boot via direct commands and helpers before live state changes |
 
 Public-alone commands:
 
@@ -356,14 +422,21 @@ SSH agent/helper, never embedded in URLs, source or lock files.
 2. **Edit an app dotfile:** edit public `config/` and run the subsystem checks.
    Keep public Niri/Noctalia/Zen choices here. Extract only sensitive fields;
    do not create parallel private app trees. A personal build still starts in P.
-3. **Change a secret or private identifier:** edit S, using SOPS from S for
-   encrypted documents (never print decrypted values). Keep recipient policy
+3. **Change a local SOPS secret:** explicitly select `local` for the user's host,
+   manage their own `.sops.yaml` recipients and encrypted
+   `secrets/hosts/<host>.yaml` in P, then stage the ciphertext. Evaluate/check/build
+   from P without a private override. Provision the host age identity separately
+   at its protected runtime path; neither it nor decrypted contents enter Git or
+   the store. Review ciphertext metadata before any public push.
+4. **Change a personal private secret or identifier:** edit S, using SOPS from S
+   for encrypted documents (never print decrypted values). Keep recipient policy
    and recovery restrictions intact. Stage intended files, then evaluate/check/
-   build from P with the explicit override below.
-4. **Fork/add a host:** copy `templates/host/` into `hosts/<new-host>/`, provide
-   hardware and identity, and register it in public `flake/hosts.nix`. Stage
-   files before evaluation. The safe default private input is sufficient; a
-   user's own optional private flake can later implement the same small interface.
+   build from P in `private` mode with the explicit override below.
+5. **Fork/add a host:** copy `templates/host/` into `hosts/<new-host>/`, provide
+   hardware, identity and secure first-login access, and register it in public
+   `flake/hosts.nix`. Stage files before evaluation. Use explicit `none` for
+   secretless installation; later opt into `local` or an optional private flake
+   without changing the public build root.
 
 For local personal development, run these proposed M02 commands from P.
 `git -C` resolves the sibling to an absolute path without broadening the Git
@@ -412,7 +485,8 @@ sudo nixos-rebuild switch --flake .#nixos-lp \
 This is a documented future command, not executed by M01. M02 must verify
 `nixos-rebuild` flag forwarding and privileged access to the source on the target
 host before use; no credentials should be placed in command arguments. Public
-safe-mode evaluation is not authorization to deploy that mode onto a real host.
+safe-mode evaluation cannot bypass the mandatory existing-host deployment
+preflight described above.
 
 ## History audit and publication gate
 
@@ -467,9 +541,9 @@ wiring, all host assembly/selections, safe missing-material handling, tests and
 docs. S owns only encrypted documents and narrow sensitive overrides. Do not
 close M02 with mismatched interfaces or unvalidated personal deployment commands.
 
-1. [ ] Reconcile #29 as listed below before implementing. Record clean/dirty
-   state, exact P baseline and lock hash; verify private S visibility before any
-   sensitive push. Use existing protected backup/recovery procedures without
+1. [ ] Follow the current implementation responsibilities linked below. Record
+   clean/dirty state, exact P baseline and lock hash; verify S visibility before
+   any sensitive push. Use existing protected backup/recovery procedures without
    reading identities or mutable data into audit output.
 2. [ ] Capture all three current hosts' option/derivation snapshots in a mode-0700
    evidence directory outside both repos (`umask 077`). Include Nix versions,
@@ -478,9 +552,10 @@ close M02 with mismatched interfaces or unvalidated personal deployment commands
    activation ownership. Keep raw metadata/private identifiers out of public logs.
 3. [ ] Add tracked templates and the optional input to P; keep all real outputs,
    shared profiles, core imports and catalog discovery. Add small contract tests
-   for the empty interface, host module selection, ciphertext paths and partial/
-   invalid input. Test credential loss after an existing configuration as well
-   as first evaluation. Keep production assertions, not unconditional skips.
+   for all three source modes, exclusive selection, ciphertext paths and partial/
+   invalid/conflicting input. Test credential loss, new-host first login and
+   existing-host deployment preflight through direct commands and helpers. Keep
+   production assertions, not unconditional skips.
 4. [ ] Copy only inventory-selected ciphertext/values to S; verify byte hashes,
    recipients and relative SOPS paths privately. Keep bootstrap documents admin-
    only. Remove corresponding sensitive literals/ciphertext from P's final HEAD
@@ -495,7 +570,8 @@ close M02 with mismatched interfaces or unvalidated personal deployment commands
    paths/modes/restart units, state versions and HM targets/activation. Verify
    no new plaintext credential exposure in closures/units without printing
    secrets. Preserve refreshed tokens, writable app state and provider guard.
-7. [ ] Run public-alone and private-overridden evaluation/full flake checks,
+7. [ ] Run no-secrets, single-repo SOPS and private-overridden evaluation/full
+   flake checks,
    non-activating builds of all affected hosts, applicable Neovim smoke checks
    and dedicated namespace tests. Test unavailable-secret behavior in isolation.
    Document actual failures/skips. Validate new-host template and exact personal
@@ -536,27 +612,23 @@ rollback runbook. Do not roll clients back to historical local-provider behavior
 retain the persistent desktop-provider guard. NixOS rollback does not restore
 mutable tokens/databases or clear masks. Never rewrite history for rollback.
 
-### Requirements in #29 that must change before implementation
+### Current follow-up responsibilities
 
-[Issue #29 (M02)](https://github.com/evgen2571/my-nixos/issues/29) still describes
-the superseded private-owned host model. Update its title/workstream, ownership,
-acceptance and verification requirements together:
+The following issues have been updated to the approved public-first contract:
 
-- Replace “extract private host configuration” / private-owned machine definitions
-  with extracting only ciphertext and sensitive values. Keep all three real
-  hosts, shared profiles, most hardware/dotfiles, tests and docs public.
-- Replace “private flake consumes public assembly and yields real outputs” with
-  public assembly consuming the optional private input. Remove the builder-export
-  requirement; preserve the existing local mkHost/catalog interface.
-- Replace “independent of private inputs” with “defaults to tracked local
-  templates/private; no private URL/access needed in public flake/lock.”
-- Require templates/host and templates/private, clean-clone nested-input/lock
-  tests, safe missing/partial-secret behavior and the public/private test matrix.
-- Replace private-composition evaluation/deployment entry points with checks and
-  builds from P using explicit private overrides and no public lock writes.
-  Keep coordinated commit evidence and the existing security/activation limits.
+- [M02 (#29)](https://github.com/evgen2571/my-nixos/issues/29): implement templates,
+  the unchanged minimal private interface, three source modes, safe consumers and
+  mandatory existing-host deployment preflight, preserving host behavior.
+- [M03 (#30)](https://github.com/evgen2571/my-nixos/issues/30): validate three-host
+  parity, all source modes, first-login/bootstrap/recovery and deployment readiness;
+  document standard standalone installation without requiring disko/nixos-anywhere.
+- [M06 (#33)](https://github.com/evgen2571/my-nixos/issues/33): optional later
+  nixos-anywhere provisioning for the same three modes, with isolated install
+  tests, secure first access and explicit destructive-operation gates.
 
-This section flags the issue changes; M01 does not edit #29 or claim M02 done.
+PR #34 remains documentation-only; implementation belongs to #29. These issues
+provide no authorization for live operations or publication.
+
 Non-goals: broad layout/namespace refactors, exported host frameworks, dependency
 updates, new CI infrastructure, VPN/DNS/provider redesign, storage redesign,
 secret rotation, actual file migration, history rewriting, publication or live
@@ -565,8 +637,9 @@ activation in this PR.
 ## M01 validation boundary
 
 This revision checks documentation links/current inventory paths, Markdown
-structure, requirements consistency and diff whitespace, and performs only the
-disposable input-resolution probe described above. The original bounded history
+structure, requirements consistency and diff whitespace. The earlier disposable
+input-resolution probe remains dated evidence only; this final revision does not
+execute the proposed source-selection or deployment behavior. The bounded history
 audit is retained as dated evidence, not rerun or promoted to publication
 clearance. No production NixOS evaluation/build, VM suite, decrypted-secret
 inspection or runtime health test is implied. M02 must implement the actual
