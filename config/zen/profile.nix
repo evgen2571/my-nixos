@@ -1,6 +1,6 @@
 # Shared declarative Zen profile for PC and laptop.
 # Adopt existing UUIDs before enabling if you want to preserve existing spaces.
-# See docs/guides/zen-browser.md.
+# See docs/apps/zen-browser.md.
 let
   mkPin = id: url: position: { inherit id url position; };
   mkFolder = id: position: pins: {
