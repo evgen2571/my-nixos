@@ -27,6 +27,19 @@ let
 in
 {
   config = lib.mkIf requirePrivate {
+    assertions = lib.optionals available [
+      {
+        assertion = config.my.primaryUser.name != "operator";
+        message = "Production private input must supply the existing primary account metadata.";
+      }
+      {
+        assertion =
+          !config.services.openssh.enable
+          || config.my.primaryUser.authorizedKeys != [ ]
+          || config.my.primaryUser.authorizedKeyFiles != [ ];
+        message = "Production SSH server requires its private authorized-key associations.";
+      }
+    ];
     # This only suppresses NixOS's evaluation-time lockout assertion. Accounts
     # stay locked, and the unavailable closure below cannot be built/deployed.
     users.allowNoPasswordLogin = lib.mkIf (!available) true;

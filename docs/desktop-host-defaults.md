@@ -1,8 +1,8 @@
 # Shared desktop host defaults
 
-PC and laptop explicitly import `hosts/common/desktop.nix` and
-`hosts/common/actline-development.nix` from their local `profile.nix`.
-The server imports neither. These files select existing options; they are outside
+PC and laptop explicitly import `hosts/common/desktop.nix` from their local
+`profile.nix`. Development aliases and trust come from narrow private overrides.
+The server imports neither desktop selection. These files select existing options; they are outside
 the discovered module roots and do not introduce an option interface.
 
 Declarations retain ordinary Nix module priority, including the deferred
@@ -28,7 +28,7 @@ selection, not an added `mkForce`.
 | User apps: Bitwarden, Bruno, Chrome, Notion, osu!lazer, Slack off | Shared stable default | Shared desktop selection |
 | User Niri/Noctalia/screen recorder on; Hyprland/end4 dotfiles off | Shared stable default | Shared desktop selection; profiles still choose workspace/Noctalia variants |
 | FFmpeg/workstation, Dolphin/Yazi on | Shared stable default | Shared desktop selection; bundle implementation unchanged |
-| Actline aliases and public CA | Shared stable default | Separate `hosts/common/actline-development.nix`, explicitly selected by both profiles; same aliases and unchanged public CA content under `hosts/common/certs/`, no server trust expansion |
+| Actline aliases and public CA | Shared stable default | Narrow private desktop overrides; unchanged aliases/CA, no server trust expansion |
 | GNOME, OpenTabletDriver, PC-only Plasma selection | Host override | Local desktop blocks; GNOME differs |
 | Bluetooth, NVIDIA, hardware screen recorder | Intentionally duplicated for clarity/safety | Local hardware blocks, including identical toggles; GPU ownership remains visible |
 | PC Zenless Zone Zero/Sunshine off, laptop Waydroid on; virtualization differs | Host override | Local system blocks |

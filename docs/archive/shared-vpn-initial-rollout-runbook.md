@@ -28,7 +28,7 @@ drop and `no_new_privs`. The launcher does not authorize arbitrary root commands
 
 Profiles select client addresses `.2`/`fd77::2` on PC, `.3`/`fd77::3` on laptop,
 and gateway `.1`/`fd77::1` in `10.77.0.0/24`, `fd77::/64`. MTU is 1280.
-The verified server Tailscale endpoint is `100.96.206.10:51877`. Only this UDP
+The verified server Tailscale endpoint is `192.0.2.10:51877`. Only this UDP
 port is opened on server `tailscale0`; tailnet policy must permit both clients.
 WireGuard additionally authenticates peers and limits their source prefixes.
 Public peer keys live in `hosts/vpn-public-keys.nix`, not mutable runtime files.
@@ -212,7 +212,7 @@ After approval, perform these live checks from host terminals:
   client generation runs. Test server suspend/resume only with a local operator.
 
 The previous read-only audit verified host SSH over Tailscale
-`100.116.169.8 → 100.96.206.10:22`, ordinary host routing, healthy Docker and no
+`100.116.169.8 → 192.0.2.10:22`, ordinary host routing, healthy Docker and no
 server provider. Repeat it before deployment. Authentication and real egress/DNS/
 application/fault acceptance remain pending. No live masks, timers, providers,
 credentials or networking have been changed by implementation/build/test work.

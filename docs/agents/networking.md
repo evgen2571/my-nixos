@@ -14,7 +14,7 @@ Use for network namespaces, Hide.me gateway/client setup, Tailscale transport, D
 | Client applications | `modules/user-ai/codex.nix`, `modules/user-ai/orca.nix` |
 | Server Hide.me packaging | `packages/hide-me/default.nix` |
 | Tailscale service and exposure | `modules/system-services/tailscale.nix`, server SSH module |
-| Public peer declarations | `hosts/vpn-public-keys.nix` (public material only) |
+| Public peer declarations | private host overrides (public keys; private associations) |
 | Tests | `tests/network-namespaces/`, `flake/verification.nix` |
 
 ## Invariants before editing
@@ -22,7 +22,7 @@ Use for network namespaces, Hide.me gateway/client setup, Tailscale transport, D
 - The server is the only Hide.me provider and the desktop hosts are isolated WireGuard clients carried over Tailscale. Never add a desktop provider, route fallback, host-wide VPN default route or implicit privileged shell.
 - Namespace firewall, DNS and host/namespace route separation must remain fail-closed for **both IPv4 and IPv6**. Include existing-connection behavior, reboot and rollback in the threat model.
 - The launcher permits fixed registered commands executed as the authorized normal user; it is **not** a general-purpose sudo escape hatch. Normal Orca uses host networking; the explicit `orca-vpn` wrapper isolates selected sessions.
-- Private WireGuard keys and Hide.me bootstrap/auth values are runtime SOPS secrets. Never print, inspect, decrypt or interpolate them into the Nix store. Public keys are in `hosts/vpn-public-keys.nix`.
+- Private WireGuard keys and Hide.me bootstrap/auth values are runtime SOPS secrets. Never print, inspect, decrypt or interpolate them into the Nix store. Public-key associations are supplied by narrow private host overrides.
 - Systemd restart/stop relationships, persistent desktop provider masks and the private resolver mounts are design constraints, not incidental implementation complexity.
 - The server suspend timer is disabled when its namespace role is `gateway`. Do not accidentally reactivate suspension as a side effect of networking changes.
 

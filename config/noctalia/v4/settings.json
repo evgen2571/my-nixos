@@ -387,7 +387,7 @@
         "animationDisabled": false,
         "animationSpeed": 1,
         "autoStartAuth": false,
-        "avatarImage": "/home/evgen2571/.face",
+        "avatarImage": "",
         "boxRadiusRatio": 1,
         "clockFormat": "hh\\nmm",
         "clockStyle": "custom",
@@ -478,7 +478,7 @@
         "firstDayOfWeek": -1,
         "hideWeatherCityName": false,
         "hideWeatherTimezone": false,
-        "name": "Minsk",
+        "name": "",
         "showCalendarEvents": true,
         "showCalendarWeather": true,
         "showWeekNumberInCalendar": false,
@@ -698,7 +698,7 @@
     },
     "wallpaper": {
         "automationEnabled": false,
-        "directory": "/home/evgen2571/drive/Wallpapers",
+        "directory": "",
         "enableMultiMonitorDirectories": false,
         "enabled": true,
         "favorites": [

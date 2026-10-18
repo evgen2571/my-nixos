@@ -24,7 +24,7 @@ This mechanism provides network isolation for selected processes, not general co
 | Layer | Files |
 | --- | --- |
 | Host selection, client addresses and gateway peer declarations | `hosts/{pc,laptop,server}/profile.nix` |
-| Public WireGuard peer keys | `hosts/vpn-public-keys.nix` |
+| Public WireGuard peer keys | narrow private host overrides |
 | Namespace options, firewall, provider, health | `modules/system-services/network-namespaces/default.nix` and `namespace.nix` |
 | Shared WireGuard transport, DNS and desktop provider guards | `modules/system-services/network-namespaces/shared.nix` and `migration/` |
 | Restricted application registry and entry helper | `modules/system-services/network-namespaces/launcher.nix`, `packages/namespace-launcher/` |
@@ -33,7 +33,7 @@ This mechanism provides network isolation for selected processes, not general co
 | Host runtime secret declarations | `hosts/{pc,laptop,server}/secrets.nix` and `modules/secrets.nix` |
 | Regression checks | `tests/network-namespaces/`, `flake/verification.nix` |
 
-The configuration defines `10.77.0.2/24`, `fd77::2/64` for PC and `10.77.0.3/24`, `fd77::3/64` for laptop. The gateway uses `10.77.0.1/24` and `fd77::1/64`, with client peer prefixes `/32` and `/128`. MTU is configured to 1280. The client endpoint in the current host profiles is `100.96.206.10:51877` over Tailscale. This is a configured address, not a guarantee of present tailnet reachability; recheck it on the hosts when troubleshooting.
+The configuration defines `10.77.0.2/24`, `fd77::2/64` for PC and `10.77.0.3/24`, `fd77::3/64` for laptop. The gateway uses `10.77.0.1/24` and `fd77::1/64`, with client peer prefixes `/32` and `/128`. MTU is configured to 1280. The private desktop overrides supply the real Tailscale endpoint; public host profiles supply no endpoint or peer keys. This is a configured address, not a guarantee of present tailnet reachability; recheck it on the hosts when troubleshooting.
 
 Server runtime authentication comes from protected SOPS-managed paths, including the WireGuard private key and the Hide.me bootstrap token. Each desktop also consumes its own protected private key. **Never** print/decrypt credentials or write them into a Nix expression or PR. The provider retains a protected mutable token for refreshes; changes in the SOPS seed are handled by the existing bootstrap digest mechanism. Secret provisioning cannot be inferred from the Git repository; inspect the health/readiness result instead.
 

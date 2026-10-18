@@ -19,7 +19,7 @@ flake.nix (flake-parts; pinned inputs in flake.lock)
           ├─ modules/secrets.nix (explicit flake import)
           ├─ discovered modules: NixOS/system-* and Home Manager/user-*
           └─ modules/system-core/user.nix (primary-user adapter)
-              └─ home/evgen2571/home.nix and per-host HM settings
+              └─ home/default.nix and per-host HM settings
                   └─ config/ source dotfiles via lib/config-paths.nix
 ```
 
@@ -60,7 +60,7 @@ Application configuration may cross two layers deliberately. For example, the Ni
 | `nixos-lp` | Niri/Noctalia laptop | `hosts/laptop/profile.nix`; desktop catalog |
 | `nixos-server` | Services, storage and server-only VPN gateway | `hosts/server/profile.nix`; server catalog |
 
-The two desktop profiles explicitly import `hosts/common/desktop.nix` for identical feature selections and `hosts/common/actline-development.nix` for development aliases and public CA trust. Host differences and VPN selections remain local. These shared profiles are outside module discovery and retain ordinary declaration priority; see the [selection inventory](docs/desktop-host-defaults.md).
+The two desktop profiles explicitly import `hosts/common/desktop.nix` for identical feature selections. Narrow private desktop modules supply development aliases and CA trust. Host differences and VPN selections remain local. These shared profiles are outside module discovery and retain ordinary declaration priority; see the [selection inventory](docs/desktop-host-defaults.md).
 
 The two desktop hosts enable `my.user.dev.workstation`, a Home Manager bundle that defaults shared terminal, shell, editor and tool features on. Language options and individual applications remain host-selectable. The server has a smaller Home Manager module profile and a separate base system configuration.
 
@@ -98,7 +98,7 @@ VPN changes must preserve independent namespace firewalling, IPv4/IPv6 routing, 
 
 sops-nix decrypts committed encrypted documents into protected runtime secret paths. Host-specific age identities live outside the repository under `/var/lib/sops-nix/key.txt`. Private keys and access tokens must not appear in unencrypted Git files, Nix expressions, derivation arguments, or public documentation. Public SSH/WireGuard/CA keys may be versioned. See [docs/sops.md](docs/sops.md).
 
-Only PC and laptop import `hosts/common/actline-development.nix`, which owns their Actline development host aliases and trust in the existing public root CA under `hosts/common/certs/`. The server does not import this feature. These settings remain NixOS-managed and require activation to change.
+Only PC and laptop select the private development aliases and public CA trust through their private host overrides. The server does not import this feature. These settings remain NixOS-managed and require activation to change.
 
 ## Server data boundaries
 
