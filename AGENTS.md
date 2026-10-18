@@ -1,71 +1,64 @@
 # Agent instructions
 
-This repository configures three real NixOS hosts. Treat changes as operational code, not disposable dotfiles. Follow these rules for work in this repository; use the closest existing implementation as the primary style reference.
+This repository runs my PC, laptop, and server. Treat configuration changes as
+operational work and preserve existing user changes.
 
-## Start small
+## Start here
 
-1. Identify the requested host(s) and subsystem. Use [docs/task-routing.md](docs/task-routing.md) to locate the first files; do **not** read the whole repository for a local change.
-2. Inspect the owning module, the corresponding `config/` source (if any), relevant host profile(s), and only the subsystem documentation needed for this task.
-3. State whether the edit changes declarative configuration, generated files, or mutable runtime state. Preserve existing behavior outside the requested scope.
-4. Reuse the nearest pattern and keep the diff narrow. Do not mix documentation migrations, dependency updates, cleanup, and feature work without a reason.
+1. Inspect the working tree and use the [task-routing skill](.agents/skills/task-routing/SKILL.md)
+   to find the owning module, source dotfiles, host profile, and relevant checks.
+2. Read the source before changing behavior. State whether the change affects
+   declarative configuration, generated files, or mutable runtime state.
+3. Keep changes focused. Reuse nearby patterns and avoid unrelated dependency,
+   formatting, or architecture changes.
 
-For architecture, read [ARCHITECTURE.md](ARCHITECTURE.md). For module mechanics, read [docs/modules.md](docs/modules.md). If these differ from executable Nix code, verify the code and correct documentation only within task scope.
+Load only relevant [agent guidance](.agents/skills/README.md). Human explanations
+live in the [documentation index](docs/index.md), with authoritative
+[architecture](docs/concepts/architecture.md), [module conventions](docs/development/modules.md),
+and [source selection](docs/reference/secrets.md#source-selection).
 
-## Architectural invariants
+## Preserve these boundaries
 
-- `flake/hosts.nix` builds `nixos-pc`, `nixos-lp`, and `nixos-server`; the module catalog determines which module roots are imported for desktop versus server.
-- Put reusable system behavior in NixOS modules and reusable per-user behavior in Home Manager modules. Keep host-specific selection and settings in `hosts/<host>/profile.nix`, machine details in `configuration.nix`.
-- Host-specific Home Manager settings are passed through `my.primaryUser.home.settings`; avoid directly duplicating user module configuration in a host.
-- Module discovery imports individual `.nix` files recursively, **except** a directory containing `default.nix` is treated as one module. Do not manually import discovered modules from host profiles, or turn implementation helpers into unintentionally discovered modules.
-- Preserve existing `my.system.*`, `my.user.*`, `my.desktop.*`, `my.hardware.*`, and `my.server.*` option organization. Before inventing a new option, look for an existing one.
-- NixOS/Home Manager options should own packages and services; `config/` is the source for application dotfiles. Respect `lib/config-paths.nix` adapters and host-specific mappings.
-- Do not replace intentional writable state with immutable links or destructive activation. Neovim's Home Manager activation copies source files while preserving a generated Matugen file; browser profiles, logins, and Skillshare resources also have mutable boundaries.
+- Host profiles select features; reusable NixOS/Home Manager modules implement
+  them. Pass host-specific user settings through `my.primaryUser.home.settings`.
+- Discovery imports individual `.nix` files recursively, except directories with
+  `default.nix`, which are one module. Do not manually import discovered modules
+  or accidentally expose implementation helpers to discovery.
+- Preserve existing `my.*` option organization and `lib/config-paths.nix` adapters.
+  Inspect mutable boundaries before changing activation: Neovim copies preserve
+  generated Matugen files; browser sessions and agent resources remain writable.
+- `my-nixos` is the sole build/deployment root. For source, installation, or
+  deployment work read [installation](docs/getting-started/installation.md),
+  [source selection](docs/reference/secrets.md), and [deployment guards](docs/guides/deployment.md#deployment-guards).
+  Never bypass existing-host private-input guards or commit personal input overrides.
 
-## Sensitive input changes
+## Live state and sensitive data
 
-For source selection, new-host installation or deployment helpers, read
-[docs/installation.md](docs/installation.md) and the
-[migration contract](docs/public-private-migration.md). Keep my-nixos the sole
-build/deployment root; do not bypass existing-host private-material guards or
-commit a personal input override to the public lock. Check private repository
-visibility before copying sensitive data and keep its commits/PR separate.
+- Never install, activate (`switch`, `boot`, or `test`), roll back a live host,
+  restart VPN/networking/SSH/display services, or change firewall routes without
+  explicit authorization. Non-activating evaluations/builds are allowed.
+- Before VPN work read the [gateway runbook](docs/guides/shared-vpn-gateway.md)
+  and [namespace reference](docs/reference/network-namespaces.md). Preserve
+  fail-closed IPv4/IPv6/DNS isolation, provider separation, and recovery guards.
+- Never inspect, print, commit, or interpolate private keys, tokens, credentials,
+  or decrypted secrets into logs or Nix store expressions. Commit only encrypted
+  secret documents and public key/certificate material; follow [SOPS](docs/reference/secrets.md).
+- For server storage, backup, authentication, or boot work read
+  [server operations](docs/guides/server.md) and the Nix definitions. Sibling
+  `/srv/*` paths are not implicitly on `/srv/storage`.
+- Never delete profiles, caches, databases, secrets, or legacy runtime state just
+  because a module no longer references them. Preserve independent recovery access.
 
-## Deployment, security, and data safety
+## Verify and deliver
 
-- **Never** run `nixos-rebuild switch`, `boot`, activate a new generation, restart VPN/networking/SSH/display-manager services, alter firewall routes, or change live host state without explicit authorization. Ordinary non-activating evaluation/builds are allowed.
-- The VPN is security-sensitive: the server is the Hide.me gateway; desktop clients use isolated WireGuard-over-Tailscale routing for selected apps. Preserve fail-closed isolation, DNS handling, provider separation, and recovery/rollback behavior. Read [docs/shared-vpn-gateway.md](docs/shared-vpn-gateway.md) and [docs/network-namespaces.md](docs/network-namespaces.md) before touching it.
-- Commit only SOPS-encrypted secret documents and public key/certificate material. Never inspect, print, commit, or interpolate private keys, bootstrap tokens, credentials, or decrypted secrets into Nix store expressions. See [docs/sops.md](docs/sops.md).
-- Treat server storage mounts, backups, authentication, and boot configuration as high risk. Do not assume all `/srv/*` paths are on `/srv/storage`; check `docs/server.md` and the Nix definitions.
-- Never delete runtime profiles, caches, databases, secrets, or legacy configurations on the assumption that a Nix module no longer references them.
-
-## Validation and delivery
-
-- For documentation-only changes: check links and file paths against the repository, and run `git diff --check` where a checkout is available. Do not claim Nix tests passed unless they ran.
-- For Nix edits: check formatting, perform targeted evaluation and/or a non-activating affected-host build. Broaden to every affected host for shared modules. `nix flake check --no-build` evaluates checks but does not execute them.
-- For Neovim changes: inspect `tests/neovim/run.sh` and run relevant smoke checks when available; for VPN changes, use the dedicated `tests/network-namespaces/` checks and require live-activation approval separately.
-- Running `nix fmt` may change unrelated files: review and discard unrelated formatting. Never silently commit unrelated changes.
-- Do not claim a successful local build, runtime test, or host activation that was not performed. Report exactly what was checked and what needs human verification.
-- Use scoped commits (`type: short description`). Work on a feature branch and open a PR unless the user explicitly requests direct commits to main.
-- After completing a task, summarize changed files, preserved behavior, validations, and any deployment or manual follow-up needed. Avoid broad refactors or creating speculative helpers.
-
-## Where to read next
-
-- [Task-to-file routing](docs/task-routing.md): fastest entry point for common requests.
-- [Architecture](ARCHITECTURE.md): flow, invariants, runtime ownership, host responsibilities.
-- [Module conventions](docs/modules.md): discovery, scopes, option patterns, and enablement.
-- [Neovim agent guide](docs/agents/neovim.md), [desktop agent guide](docs/agents/desktop.md), [networking agent guide](docs/agents/networking.md): focused subsystem boundaries and checks. Read only the one relevant to the task.
-- Subsystem operational guides in `docs/` remain the detailed source for user-facing workflows and incident procedures.
-
-## Agent skills
-
-### Issue tracker
-
-Use GitHub Issues for specs and tickets. Read [tracker operations](docs/agents/issue-tracker.md) before tracker work.
-
-### Triage labels
-
-Use the canonical category and state labels. Read [label mappings](docs/agents/triage-labels.md) before triaging issues.
-
-### Domain docs
-
-Use a single-context domain layout. Read [domain conventions](docs/agents/domain.md) when exploring domain terms or architectural decisions.
+- Documentation: verify links, anchors, and paths; run `git diff --check`.
+- Nix: check formatting and evaluate/build affected hosts without activation.
+  Shared modules need coverage of every affected host. Review `nix fmt` output
+  for unrelated changes. `nix flake check --no-build` evaluates checks; it does not
+  execute them.
+- Neovim: inspect `tests/neovim/run.sh` and run relevant smoke checks when available.
+  VPN: use `tests/network-namespaces/` and keep live acceptance separately authorized.
+- Stay on a feature branch; use scoped, lowercase `type: short description`
+  commits. Open a PR to `main`; never merge without approval.
+- Report changed files, preserved behavior, actual checks, unverified work, and
+  required deployment/manual follow-up. Historical evidence is not a fresh test.

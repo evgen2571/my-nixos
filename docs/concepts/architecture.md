@@ -1,6 +1,6 @@
 # Architecture
 
-This document is the durable architecture contract for `my-nixos`: what owns each kind of configuration, how modules reach hosts, and which behaviors must be preserved. For actionable task entry points use [docs/task-routing.md](docs/task-routing.md); for module implementation patterns use [docs/modules.md](docs/modules.md). [AGENTS.md](AGENTS.md) defines the agent workflow, not the system design.
+This document is the durable architecture contract for `my-nixos`: what owns each kind of configuration, how modules reach hosts, and which behaviors must be preserved. For actionable task entry points use [docs/task-routing.md](../../.agents/skills/task-routing/SKILL.md); for module implementation patterns use [docs/modules.md](../development/modules.md). [AGENTS.md](../../AGENTS.md) defines the agent workflow, not the system design.
 
 The Nix code is authoritative about current implementation. When documentation and code disagree, inspect the code and amend documentation as part of a scoped fix rather than reproducing an outdated assumption.
 
@@ -28,11 +28,11 @@ flake.nix (flake-parts; pinned inputs in flake.lock)
 `flake/hosts.nix` selects `none`, `local` or `private` explicitly before imports;
 only private mode adds narrow modules through `extraModules`. Existing outputs
 require private material and protected identities for deployment; public evaluation
-is deliberately separate. See [installation](docs/installation.md).
+is deliberately separate. See [installation](../getting-started/installation.md).
 
 `flake/hosts.nix` assembles the outputs with Home Manager and sops-nix NixOS modules, passes flake inputs and `configPaths` as special arguments, and assigns either the `desktop` or `server` discovered module profile. The Home Manager modules are supplied through `home-manager.sharedModules`; host user choices are supplied separately.
 
-**Availability is not enablement.** `lib/module-catalog.nix` chooses which module roots are visible to a profile. `lib/module-discovery.nix` finds importable modules. Hosts then enable capabilities via options, generally from `profile.nix`. A directory with `default.nix` is a single discovered module; its other files must be imported by that entry point. See [module conventions](docs/modules.md).
+**Availability is not enablement.** `lib/module-catalog.nix` chooses which module roots are visible to a profile. `lib/module-discovery.nix` finds importable modules. Hosts then enable capabilities via options, generally from `profile.nix`. A directory with `default.nix` is a single discovered module; its other files must be imported by that entry point. See [module conventions](../development/modules.md).
 
 ## Ownership boundaries
 
@@ -60,7 +60,7 @@ Application configuration may cross two layers deliberately. For example, the Ni
 | `nixos-lp` | Niri/Noctalia laptop | `hosts/laptop/profile.nix`; desktop catalog |
 | `nixos-server` | Services, storage and server-only VPN gateway | `hosts/server/profile.nix`; server catalog |
 
-The two desktop profiles explicitly import `hosts/common/desktop.nix` for identical feature selections. Narrow private desktop modules supply development aliases and CA trust. Host differences and VPN selections remain local. These shared profiles are outside module discovery and retain ordinary declaration priority; see the [selection inventory](docs/desktop-host-defaults.md).
+The two desktop profiles explicitly import `hosts/common/desktop.nix` for identical feature selections. Narrow private desktop modules supply development aliases and CA trust. Host differences and VPN selections remain local. These shared profiles are outside module discovery and retain ordinary declaration priority; see the [selection inventory](../reference/desktop-host-defaults.md).
 
 The two desktop hosts enable `my.user.dev.workstation`, a Home Manager bundle that defaults shared terminal, shell, editor and tool features on. Language options and individual applications remain host-selectable. The server has a smaller Home Manager module profile and a separate base system configuration.
 
@@ -75,7 +75,7 @@ Configuration source and live application state are not interchangeable:
 3. **Source configuration:** `config/` is version-controlled input; `lib/config-paths.nix` maps sources to runtime paths and selects machine-specific variants (for example Niri workspace files).
 4. **Mutable runtime state:** Generated colors, accounts/login sessions, application databases, writable agent resources, cached data and certain application-owned files are intentionally outside immutable Nix-store management.
 
-Neovim is a special case: `modules/user-dev/neovim/config.nix` copies `config/nvim/` through a Home Manager activation entry using `rsync`, excluding generated `lua/matugen.lua`. Replacing this with a whole-directory symlink would change the expected state model. Noctalia also combines declarative source config with generated runtime theme/settings. Zen profiles are selected per host; not all browser data is declaratively reproduced. Skillshare agent resources, MCP definitions and settings remain writable at runtime; see [docs/skillshare.md](docs/skillshare.md).
+Neovim is a special case: `modules/user-dev/neovim/config.nix` copies `config/nvim/` through a Home Manager activation entry using `rsync`, excluding generated `lua/matugen.lua`. Replacing this with a whole-directory symlink would change the expected state model. Noctalia also combines declarative source config with generated runtime theme/settings. Zen profiles are selected per host; not all browser data is declaratively reproduced. Skillshare agent resources, MCP definitions and settings remain writable at runtime; see [docs/skillshare.md](../guides/skillshare.md).
 
 NixOS system generations provide system rollback, not a backup of mutable application data or secrets. Activation scripts must be safe on repeated runs and must not erase state they do not own.
 
@@ -94,9 +94,9 @@ Codex or explicit orca-vpn
 
 The **server alone** hosts the Hide.me provider and restricted underlay. Desktop namespaces are clients; they have no local provider or fallback to host networking. Selected applications fail closed when provider, tunnel, DNS or egress validation fails. Normal desktop traffic, host SSH and Docker retain normal networking. The launcher is restricted to registered applications and is not a general privileged shell.
 
-VPN changes must preserve independent namespace firewalling, IPv4/IPv6 routing, isolated DNS, scoped privileges, safe service lifecycle and recovery controls. Read [docs/shared-vpn-gateway.md](docs/shared-vpn-gateway.md) and [docs/network-namespaces.md](docs/network-namespaces.md). The earlier implementation plan is archived in `docs/archive/`; operational code, host observations, and current runbooks take precedence.
+VPN changes must preserve independent namespace firewalling, IPv4/IPv6 routing, isolated DNS, scoped privileges, safe service lifecycle and recovery controls. Read [docs/shared-vpn-gateway.md](../guides/shared-vpn-gateway.md) and [docs/network-namespaces.md](../reference/network-namespaces.md). The earlier implementation plan is archived in `docs/archive/`; operational code, host observations, and current runbooks take precedence.
 
-sops-nix decrypts committed encrypted documents into protected runtime secret paths. Host-specific age identities live outside the repository under `/var/lib/sops-nix/key.txt`. Private keys and access tokens must not appear in unencrypted Git files, Nix expressions, derivation arguments, or public documentation. Public SSH/WireGuard/CA keys may be versioned. See [docs/sops.md](docs/sops.md).
+sops-nix decrypts committed encrypted documents into protected runtime secret paths. Host-specific age identities live outside the repository under `/var/lib/sops-nix/key.txt`. Private keys and access tokens must not appear in unencrypted Git files, Nix expressions, derivation arguments, or public documentation. Public SSH/WireGuard/CA keys may be versioned. See [docs/sops.md](../reference/secrets.md).
 
 Only PC and laptop select the private development aliases and CA trust through their private host overrides. The certificate is stored at `certs/actline-dev-rootCA.pem` at the private repository root, and referenced from its `hosts/{pc,laptop}.nix` modules. The server does not import this feature. These settings remain NixOS-managed and require activation to change.
 
@@ -104,7 +104,7 @@ Only PC and laptop select the private development aliases and CA trust through t
 
 `modules/server/` owns SSH, Docker foundation, storage and Syncthing. The server profile mounts the data filesystem at `/srv/storage` and configures `/srv/compose`, `/srv/appdata`, `/srv/shared`, `/srv/backups` and `/srv/secrets` separately; those paths are **not implicitly on the storage mount**. Services must explicitly handle storage dependencies and backups. Syncthing replication is not a substitute for backups.
 
-Server sleep/wake logic is in `hosts/server/configuration.nix` and is sensitive to the gateway role. See [docs/server.md](docs/server.md) before modifying lifecycle or storage.
+Server sleep/wake logic is in `hosts/server/configuration.nix` and is sensitive to the gateway role. See [docs/server.md](../guides/server.md) before modifying lifecycle or storage.
 
 ## Design decisions and non-goals
 
@@ -113,7 +113,7 @@ Server sleep/wake logic is in `hosts/server/configuration.nix` and is sensitive 
 - **Use native NixOS/Home Manager options first.** Custom activation scripts are justified for specific mutable-state constraints, not as a default package manager.
 - **Runtime state is not necessarily reproducible.** Do not claim the flake reconstructs credentials, sessions or all application databases.
 - **Isolation and access recovery take precedence over simplification.** VPN and server code may carry deliberate complexity to preserve security and operational safety.
-- **Documentation has a single owner per question.** This file explains architecture; [docs/modules.md](docs/modules.md) explains module mechanics; [docs/task-routing.md](docs/task-routing.md) locates files; `docs/` runbooks describe operational workflows; [AGENTS.md](AGENTS.md) directs coding agents.
+- **Documentation has a single owner per question.** This file explains architecture; [docs/modules.md](../development/modules.md) explains module mechanics; [docs/task-routing.md](../../.agents/skills/task-routing/SKILL.md) locates files; `docs/` runbooks describe operational workflows; [AGENTS.md](../../AGENTS.md) directs coding agents.
 
 ## Validation and deployment
 

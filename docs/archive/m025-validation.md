@@ -48,7 +48,7 @@ The inactive Noctalia v4 rollback JSON now composes narrow private identity leav
 its installer remains disabled on production hosts. A sandbox test checks the
 generated JSON and preserved ordinary settings. Hardware
 UUIDs and generic browser workspace IDs remain deliberately public. See the
-[metadata boundary](personal-metadata.md) for classification and rationale.
+[metadata boundary](../reference/personal-metadata.md) for classification and rationale.
 
 No activation, boot selection, install, service/network restart, real login/VPN
 health check, secret decryption, credential rotation, history rewrite, merge or

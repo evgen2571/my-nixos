@@ -1,6 +1,6 @@
 # Archived: first-install server notes
 
-> Historical snapshot of the former `nixos-server` setup guide. Its placeholder hardware configuration, disabled Syncthing, and no-suspend statements are **obsolete** relative to current Nix files. It is preserved for provenance, not as a routine maintenance or installation script. Refer to [current server operations](../server.md) for authoritative configuration ownership and safety checks.
+> Historical snapshot of the former `nixos-server` setup guide. Its placeholder hardware configuration, disabled Syncthing, and no-suspend statements are **obsolete** relative to current Nix files. It is preserved for provenance, not as a routine maintenance or installation script. Refer to [current server operations](../guides/server.md) for authoritative configuration ownership and safety checks.
 
 ---
 
@@ -287,7 +287,7 @@ authentication.
 Plaintext secrets and private age identities are never committed. SOPS-encrypted
 files under `secrets/` and their public age recipients are intended to be
 committed; sops-nix decrypts declared secrets into protected runtime paths.
-See [the SOPS workflow](../sops.md) for host key bootstrap, editing, declaration,
+See [the SOPS workflow](../reference/secrets.md) for host key bootstrap, editing, declaration,
 and rotation.
 
 Some existing services still use separately provisioned runtime interfaces:

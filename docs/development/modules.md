@@ -1,6 +1,6 @@
 # Module conventions
 
-This is the canonical implementation guide for NixOS and Home Manager modules in this repository. For the architectural reasons behind these rules see [../ARCHITECTURE.md](../ARCHITECTURE.md); for an agent's operating rules see [../AGENTS.md](../AGENTS.md).
+This is the canonical implementation guide for NixOS and Home Manager modules in this repository. For the architectural reasons behind these rules see [../ARCHITECTURE.md](../concepts/architecture.md); for an agent's operating rules see [../AGENTS.md](../../AGENTS.md).
 
 ## How a feature reaches a host
 
@@ -12,7 +12,7 @@ flake/hosts.nix
   → hosts/<host>/profile.nix enables/configures the option
 ```
 
-PC and laptop profiles explicitly import `hosts/common/desktop.nix` for identical selections. Narrow private desktop overrides supply development aliases/CA trust. These files sit outside discovered roots; do not also add them to the catalog. Host differences and security-sensitive VPN settings stay local. Shared declarations retain their original priority; the [inventory](desktop-host-defaults.md) records what moved and what deliberately stayed local.
+PC and laptop profiles explicitly import `hosts/common/desktop.nix` for identical selections. Narrow private desktop overrides supply development aliases/CA trust. These files sit outside discovered roots; do not also add them to the catalog. Host differences and security-sensitive VPN settings stay local. Shared declarations retain their original priority; the [inventory](../reference/desktop-host-defaults.md) records what moved and what deliberately stayed local.
 
 A discovered module is **available**, not enabled. Modules typically define a `lib.mkEnableOption` and gate their behavior with `lib.mkIf cfg.enable`.
 
@@ -43,7 +43,7 @@ The current root selection is:
 `secretFile`, `secretSource` and `requirePrivate` as special arguments. Optional
 private host modules join through the existing extra-module list; discovery and
 Home Manager shared modules are unchanged. Guard missing secret declarations
-and their consumers. See [installation](installation.md) for the two-map input
+and their consumers. See [installation](../getting-started/installation.md) for the two-map input
 contract, local SOPS and production deployment guards.
 
 ## Choose the correct scope
@@ -117,7 +117,7 @@ Secrets must be wired as protected runtime paths, typically via sops-nix, never 
 4. For shared, network, auth, storage or systemd changes, broaden checks and document the safe deployment/rollback procedure.
 5. Report checks actually run and any runtime validation not performed. Do not activate a live system without explicit authorization.
 
-Task-specific entry points and relevant existing tests: [task routing](task-routing.md).
+Task-specific entry points and relevant existing tests: [task routing](../../.agents/skills/task-routing/SKILL.md).
 
 ## Deployment ownership inventory (captured before R01 edits)
 

@@ -1,6 +1,6 @@
 # Agent guide: Neovim
 
-Use this guide **only for Neovim/editor tasks**. Begin with the narrowest matching source. The user-facing workflow is in [../neovim-research.md](../neovim-research.md); the recorded test history is in [../neovim-validation.md](../neovim-validation.md).
+Use this guide **only for Neovim/editor tasks**. Begin with the narrowest matching source. The user-facing workflow is in [../neovim-research.md](../docs/guides/neovim-research.md); the recorded test history is in [../neovim-validation.md](../docs/archive/neovim-validation.md).
 
 ## Ownership and entry points
 
@@ -10,12 +10,12 @@ Use this guide **only for Neovim/editor tasks**. Begin with the narrowest matchi
 | Plugin addition or customization | `config/nvim/lua/plugins/` | `config/nvim/lua/plugins/init.lua`, `config/nvim/lazy-lock.json` |
 | Telescope search or hover documentation | `config/nvim/lua/plugins/telescope.lua`, `config/nvim/lua/integrations/hover.lua` | LSP keymaps and shared floating-window logic |
 | LSP, completion or formatting | `config/nvim/lua/plugins/lsp.lua`, `completion.lua`, `conform.lua` | Matching `plugins/` language configuration |
-| Language-specific Python/research | `config/nvim/lua/languages/python.lua`, `plugins/molten-nvim.lua` | `after/ftplugin/python.lua`, [research workflow](../neovim-research.md) |
+| Language-specific Python/research | `config/nvim/lua/languages/python.lua`, `plugins/molten-nvim.lua` | `after/ftplugin/python.lua`, [research workflow](../docs/guides/neovim-research.md) |
 | Install language servers or editor packages | `modules/user-dev/neovim/default.nix` | Host profiles / language bundles |
 | Change how dotfiles are deployed | `modules/user-dev/neovim/config.nix` | `lib/config-paths.nix`, generated theme behavior |
 | Theme integration | `config/nvim/lua/integrations/theme.lua`, `config/nvim/lua/matugen-template.lua` | `config/noctalia/` and SIGUSR1 behavior |
 
-See [the before/after ownership matrix](../neovim-ownership.md) for the full responsibility map and deferred work. `custom.python` is a compatibility alias; edit `languages.python`.
+See [the before/after ownership matrix](../docs/reference/neovim-ownership.md) for the full responsibility map and deferred work. `custom.python` is a compatibility alias; edit `languages.python`.
 
 ## Invariants
 

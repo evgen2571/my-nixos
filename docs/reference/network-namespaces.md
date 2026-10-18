@@ -1,7 +1,7 @@
 # Isolated VPN namespace primitives
 
 Production uses one server Hide.me provider and desktop WireGuard-only clients.
-See [server-only shared gateway](shared-vpn-gateway.md) for SOPS, persistent desktop provider guards, lifecycle, current-state verification and approved deployment. There is
+See [server-only shared gateway](../guides/shared-vpn-gateway.md) for SOPS, persistent desktop provider guards, lifecycle, current-state verification and approved deployment. There is
 no desktop provider or fallback, including when rolling back to old generations.
 
 ## Server provider
@@ -106,7 +106,7 @@ routing policy and scheduler activity. Readiness combines a recent verified
 snapshot, the IPv4 marker and current unit/namespace presence; protected checks
 still run at every launch. Failed registered launches always report BLOCKED,
 even if a cached scheduled check succeeded. See the
-[current recovery policy and reason codes](shared-vpn-gateway.md#resilience-and-day-to-day-diagnosis)
+[current recovery policy and reason codes](../guides/shared-vpn-gateway.md#resilience-and-day-to-day-diagnosis)
 for retry bounds, maintenance, reset and a separately approved live test matrix.
 
 The shared-role recovery oneshot requests the isolated health service rather
