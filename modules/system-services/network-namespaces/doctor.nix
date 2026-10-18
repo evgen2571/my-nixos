@@ -48,6 +48,7 @@ let
       tailscale
       curl
       bind
+      procps
     ];
     text = ''
       exec python3 ${./doctor.py} ${settings} "$@"
