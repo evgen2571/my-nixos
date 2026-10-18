@@ -96,6 +96,14 @@ networking.useDHCP = true;
 time.timeZone = "Etc/UTC";
 ```
 
+Keep flake commands available after installation by adding
+`nix.settings.experimental-features = [ "nix-command" "flakes" ];` to that host
+configuration. On installation media, if a command says these features are
+disabled, pass `--extra-experimental-features "nix-command flakes"` to Nix for
+that command. Keep Git available on the installed system too: add `pkgs` to the
+module arguments and `environment.systemPackages = [ pkgs.git ];` if you need
+to manage the checkout there.
+
 Set NixOS/Home Manager state versions for this initial installation. These
 versions control compatibility defaults, not the installed Nixpkgs release; keep
 them stable during ordinary upgrades. Select features in
