@@ -111,7 +111,7 @@ let
           ];
           ExecStart = lib.getExe start;
           ExecStop = "-${pkgs.iproute2}/bin/ip -n ${name} link delete shared0";
-          ExecStopPost = "${pkgs.coreutils}/bin/rm -f ${runtime}/ready ${runtime}/transport-ready";
+          ExecStopPost = [ "${pkgs.coreutils}/bin/rm -f ${runtime}/ready ${runtime}/transport-ready" ];
           Restart = "on-failure";
           RestartSec = 10;
         };

@@ -248,7 +248,11 @@ in
       ExecStart = "${lib.getExe pkgs.slirp4netns} --configure --disable-host-loopback --disable-dns --enable-seccomp --netns-type=path /run/netns/${name} tap0";
       ExecStartPost = lib.getExe waitUnderlay;
       # Closing the nonpersistent TAP may already have removed the interface.
-      ExecStopPost = "-${pkgs.iproute2}/bin/ip -n ${name} link delete tap0";
+      ExecStopPost =
+        if shared then
+          [ "-${pkgs.iproute2}/bin/ip -n ${name} link delete tap0" ]
+        else
+          "-${pkgs.iproute2}/bin/ip -n ${name} link delete tap0";
       Restart = "always";
       RestartSec = 3;
       ProtectSystem = "strict";
@@ -289,9 +293,13 @@ in
       WorkingDirectory = state;
       UMask = "0077";
       ExecCondition = lib.optional shared doctor.gate;
-      ExecStartPre = lib.getExe prepare;
+      ExecStartPre = if shared then [ (lib.getExe prepare) ] else lib.getExe prepare;
       ExecStart = "${client}/bin/hide.me --firewall-mark 18541 --interface hm0 --tokenFile ${state}/accessToken.txt --kill-switch=true connect ${ns.server}";
-      ExecStopPost = "${pkgs.coreutils}/bin/rm -f ${runtime}/ready";
+      ExecStopPost =
+        if shared then
+          [ "${pkgs.coreutils}/bin/rm -f ${runtime}/ready" ]
+        else
+          "${pkgs.coreutils}/bin/rm -f ${runtime}/ready";
       NetworkNamespacePath = "/run/netns/${name}";
       BindPaths = [ "${runtime}/resolv.conf:/etc/resolv.conf" ];
       BindReadOnlyPaths = [ "${runtime}/nsswitch.conf:/etc/nsswitch.conf" ];
@@ -367,6 +375,7 @@ in
       AccuracySec = 1;
     };
   };
+  systemd.lifecycleServices = lib.mkIf shared doctor.services;
   environment.systemPackages = lib.optional shared doctor.status;
   environment.etc."network-namespaces/${name}-recovery-reset" = lib.mkIf shared {
     source = doctor.reset;

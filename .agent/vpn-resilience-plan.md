@@ -43,3 +43,24 @@ Delivery verification (implementation through 4f0ba31):
 No activation, live restart, remote failure injection or secret changes performed.
 Real Hide.me failover, credential cause, suspend attribution and hardware boot /
 resume acceptance remain the documented separately approved operator work.
+
+## PR 26 review comment 6247492619
+
+- [x] Isolate rejected invocations from renewed-credential attempts, including offline waits.
+- [x] Record explicit/dependency lifecycle stops; wait for namespace/secrets before policy checks.
+- [x] Separate missing host route from uncertain HTTPS/DNS/TLS/destination failures.
+- [x] Report operational application readiness separately from fail-closed routing.
+- [x] Extend CLI and real systemd lifecycle tests, update runbooks, verify all hosts.
+- [ ] Commit on the PR branch, push, and update the existing PR description.
+
+Use fixed service start/stop hooks and per-unit records rather than infer intent
+from historical timestamps. Unknown pre-upgrade stops remain conservative.
+No deployment, live service changes, secret rotation or remote fault injection.
+
+Follow-up validation: all 36 CLI regressions passed; full `nix flake check`,
+`nix run .#shared-vpn-test`, and non-activating top-level builds for all three
+hosts passed. The VM verifies direct-stop protection, namespace-propagated
+transport recovery without inode replacement, and ordinary-user status. It mocks
+external WAN/Tailscale/HTTPS and ages startup timestamps; real provider/hardware
+acceptance is still separately approved. Scoped Nix formatting, documentation
+paths and whitespace checks pass. No live deployment, restart or secret changes.
