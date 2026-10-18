@@ -372,17 +372,21 @@ def reconcile(c):
         phase = 'ACTION_REQUIRED'
         if reason in ('AUTH_REJECTED', 'PROVIDER_RATE_LIMITED'):
             hold_path = Path(c['state']) / 'hold.json'
-            if not hold_path.exists():
-                save(hold_path, {'reason': reason, 'credentials': credentials(c),
-                                 'invocation': details.get('units', {}).get(f'hide-me-{c["name"]}.service', {}).get('InvocationID', '')}, 0o600)
             provider = f'hide-me-{c["name"]}.service'
+            rejected_invocation = details.get('provider_evidence_invocation')
+            new_hold = {'reason': reason, 'credentials': credentials(c),
+                        'invocation': rejected_invocation or details.get('units', {}).get(provider, {}).get('InvocationID', '')}
+            # A renewed credential can fail before the monitor sees a running
+            # process. Replace the old hold using fresh invocation evidence,
+            # even when systemd has already marked the unit failed/inactive.
+            if rejected_invocation or not hold_path.exists():
+                save(hold_path, new_hold, 0o600)
             if details.get('units', {}).get(provider, {}).get('ActiveState') in ('active', 'activating', 'deactivating'):
                 stops = Path(c['state']) / 'stops'
                 stops.mkdir(exist_ok=True)
                 save(stops / provider, dict(intent='recovery', invocation=details['units'][provider].get('InvocationID', ''), boot=boot))
                 command('systemctl', 'stop', provider, timeout=40)
-                save(hold_path, {'reason': reason, 'credentials': credentials(c),
-                                 'invocation': details.get('units', {}).get(f'hide-me-{c["name"]}.service', {}).get('InvocationID', '')}, 0o600)
+                save(hold_path, new_hold, 0o600)
     elif reason == 'DISABLED':
         phase = 'DISABLED'
     elif component and failures >= 3 and now >= grace_until:
