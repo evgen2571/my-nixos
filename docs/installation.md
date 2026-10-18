@@ -1,101 +1,122 @@
-# Installation and sensitive inputs
+# Installation and everyday work
 
-`my-nixos` is the main flake and sole build/deployment root. Real PC, laptop and
-server hosts, profiles, discovery, Home Manager and dotfile layout remain here.
-Tested input syntax requires Nix 2.34.8; older relative-path lock behavior is not
-verified. New installations use [templates/host](../templates/host/README.md).
-Disk partitioning, firmware/bootloader, networking and first access are explicit
-operator choices; this migration does not automate provisioning.
+`my-nixos` manages the maintainer's PC, laptop and server. Independent reuse is
+supported by adapting its choices to your own hardware and services. The existing
+host profiles describe real machines; they are not defaults for a new installation.
 
-## Three explicit source modes
+## Choose your starting point
 
-Each `mkHost` call in `flake/hosts.nix` sets `secretSource` before module import:
+| What you need | Start here |
+| --- | --- |
+| Rebuild or update the existing PC, laptop or server | [Maintainer builds and deployment](deployment-checklist.md) |
+| Understand the configuration or change an app/module | [Architecture](../ARCHITECTURE.md), then [task routing](task-routing.md) |
+| Adapt the repository to your own machine | [New machine without secrets](#new-machine-without-secrets) below |
+| Add encrypted credentials to your own host | [Single-repository SOPS](sops.md#single-repository-setup) |
+| Restore an existing host or recover access | [Restore](deployment-checklist.md#restore-an-existing-host) and [rollback](deployment-checklist.md#rollback-and-recovery) |
 
-| Choice | Material consumed | Missing material |
-| --- | --- | --- |
-| `none` | Neither local ciphertext nor private host modules | New-host bootstrap; requires explicit first-login configuration |
-| `local` | Tracked `secrets/hosts/<host>.yaml` and `.sops.yaml` in this checkout | Error; never substitutes private data |
-| `private` | Only `private.secretFiles.<host>` and optional `private.nixosModules.<host>` | Empty default permits evaluation; existing-host deployment unavailable |
+All builds start in this repository. The input/command syntax was tested with
+Nix 2.34.8; older relative-path lock behavior is unverified. Recorded host and VM
+results are in [M03 validation](m03-validation.md).
 
-There is no detection of sibling directories, runtime identities or stale local
-files, and no merging/fallback. An explicit choice leaves other sources unselected
-and ignored. Unknown choices, invalid paths, null supplied entries, overrides
-without ciphertext and missing encrypted required fields fail. A build check validates encrypted top-level host scalars and age metadata even
-without consumers, and checks local recipient-policy scope. sops-nix additionally
-validates declared secret material at build time; a filename alone is not a valid secret.
+## New machine without secrets
 
-For single-repository SOPS, use your own host copied from the template, select
-`local`, create recipient rules in `.sops.yaml`, and encrypt `secrets/hosts/<host>.yaml`
-with SOPS. Stage both before evaluation. Keep declarations beside consumers and
-use the supplied `secretFile` argument for `sopsFile`. Add `neededForUsers = true`
-for password hashes and consume only protected runtime paths. Keep host/admin
-identities outside Git/store; provision `/var/lib/sops-nix/key.txt` securely before
-installation. No second repository or private override is required. Manage your
-own recipients; never reuse the maintainer's recovery documents or identities.
+This path uses one checkout and your own host definition. Start by reading the
+[NixOS installation manual](https://nixos.org/manual/nixos/stable/#sec-installation)
+for installation media, networking, partitioning, encryption and mounting.
 
-The committed `private` input is the tracked, empty `templates/private` flake. An
-optional private repository exports just two maps, not another host builder.
-See its [guide](../templates/private/README.md) for setup and pinned overrides.
+### 1. Prepare and copy
 
-See [personal metadata ownership](personal-metadata.md) for neutral account defaults,
-private leaf overrides and the deliberately retained metadata boundary.
+**Disk preparation changes the target and can destroy data.** Follow the manual
+for your hardware, mounting its root at `/mnt` and its boot/other filesystems
+under that root. Keep a local console available.
 
-## Existing production hosts
-
-Existing outputs explicitly select `private` and keep `requirePrivate = true`.
-Changing the source to `none` or `local` does **not** clear this requirement. With
-the empty default, all outputs/checks evaluate, desktop accounts stay locked, and
-VPN transport/provider startup is blocked while namespaces, firewall, resolver,
-launcher isolation and desktop-provider guards remain declared. Old `/run/secrets`
-files or mutable provider tokens cannot enable unavailable services.
-
-A production toplevel with missing private input deliberately **fails its build**;
-it cannot be installed, selected by nix-env or activated. This is stronger than a
-pre-switch check and still permits public host/check evaluation. The evaluator's
-`users.allowNoPasswordLogin` lockout assertion is suppressed only for these
-unbuildable locked configurations; it does not enable passwordless login or change
-`users.mutableUsers`. Credentialed configurations keep their original account policy.
-
-With private material, `deployment-preflight` checks the target identity's ownership,
-permissions and successful SOPS decryption to `/dev/null`, without logging values.
-The target's `nixos-rebuild` checks this **before** selecting the system profile;
-normal upstream rebuild re-exec selects this patched tool automatically. Native
-NixOS pre-switch checks also protect direct `switch-to-configuration` calls.
-Never use `--no-reexec`, an old absolute rebuild binary, `NIXOS_NO_CHECK`, manual
-`nix-env --set`, or manual activation to bypass these guards. These are operator
-bypasses, not supported deployment commands. A deliberate secretless recovery
-requires its own reviewed procedure and independent console access.
-
-For installation of an existing production output, use the matching guarded
-installer built from the public flake's `system.build.nixos-install`; generic/old
-installation-media tools do not have its pre-profile check. Provision the target
-identity privately first, with root ownership, mode 0400/0600 and a root-owned
-parent directory not writable by others. The guarded installer checks inside the
-target root before selecting its first generation. It does not provision identities.
-Installation writes disks/boot state and requires separate operator authorization.
-
-## Non-activating development
-
-From the public checkout:
+From installation media, copy the template and generate the target's hardware
+configuration. These commands write checkout files and `/mnt/etc/nixos`; they do
+not install or activate a system:
 
 ```sh
-nix flake show --no-write-lock-file
-nix flake check --no-build --no-write-lock-file
-nix flake check --no-write-lock-file
-private_checkout=$(git -C ../my-nixos-private rev-parse --show-toplevel)
-just build-pc --override-input private "git+file://$private_checkout" --no-write-lock-file
-just build-lp --override-input private "git+file://$private_checkout" --no-write-lock-file
-just build-server --override-input private "git+file://$private_checkout" --no-write-lock-file
+git clone https://github.com/evgen2571/my-nixos.git
+cd my-nixos
+cp -r templates/host hosts/my-host
+sudo nixos-generate-config --root /mnt
+sudo cp /mnt/etc/nixos/hardware-configuration.nix hosts/my-host/hardware-configuration.nix
+sudo chown "$(id -u):$(id -g)" hosts/my-host/hardware-configuration.nix
 ```
 
-`just build/dry/switch/boot HOST` and aliases accept trailing Nix/rebuild flags;
-Fish `nb`, `nd`, `nsw`, `nboot` forward arguments after the host too. Only build
-and dry-build are non-activating. Use the same explicit pinned private override
-for any separately authorized deployment. Root/remote targets must have Git/store
-access to the chosen source. Never embed credentials in URLs or modify the public
-lock to record personal input selection.
+Review the generated mounts, UUIDs, swap and encryption against the target.
+A supported hardware module may replace this declaration if it describes that
+machine. Never reuse another host's disk identifiers.
 
-The split removes selected data only at HEAD. History remains restricted pending
-issue #31's publication audit. No visibility change, secret rotation or history
-rewrite is part of installation or this implementation. Runtime/browser/editor
-state is preserved and is not reconstructed by the flake.
+### 2. Choose hardware, features and first access
+
+Edit `hosts/my-host/configuration.nix`: choose the hostname, timezone, bootloader,
+networking and primary username. Set NixOS/Home Manager state versions for this
+initial installation. Select features in `hosts/my-host/profile.nix` using
+[the existing modules](modules.md).
+
+The template uses key-only SSH. Replace its empty `authorizedKeys` list inside
+`my.primaryUser` with your **public** key:
+
+```nix
+authorizedKeys = [ "YOUR_SSH_PUBLIC_KEY" ];
+```
+
+Then add an explicit reachable SSH port/interface and administration policy. For
+the default SSH port:
+
+```nix
+networking.firewall.allowedTCPPorts = [ 22 ];
+security.sudo.wheelNeedsPassword = false;
+```
+
+The last setting lets your trusted wheel user administer this new host without a
+password. Root and password login remain locked. Keep the matching client key and
+console available; no password or private key belongs in the configuration.
+
+### 3. Register and build
+
+Inside `flake/hosts.nix`'s `flake.nixosConfigurations`, add:
+
+```nix
+my-host = mkHost {
+  host = "my-host";
+  hostModule = ../hosts/my-host/configuration.nix;
+  profile = moduleProfiles.server; # choose desktop for workstation modules
+  system = "x86_64-linux"; # select the target architecture
+  secretSource = "none";
+};
+```
+
+**No activation:** stage the new files so the Git flake sees them, then evaluate
+and build from the checkout:
+
+```sh
+git add hosts/my-host flake/hosts.nix
+nix flake check --no-build --no-write-lock-file
+nix build --no-link .#nixosConfigurations.my-host.config.system.build.toplevel --no-write-lock-file
+```
+
+`--no-build` evaluates checks only. Run `nix flake check --no-write-lock-file` to
+execute available checks. A successful build does not test physical boot or SSH.
+
+### 4. Install and verify access
+
+**Changes the mounted target, system profile and boot state.** Check `lsblk -f`
+and `findmnt -R /mnt` against your disk plan before running:
+
+```sh
+sudo nixos-install --root /mnt --flake .#my-host --no-root-passwd --no-write-lock-file
+```
+
+Keep a recoverable checkout on the target. After reboot, test a login from your
+client using `ssh -i /protected/client-key YOUR_USER@YOUR_HOST`, then `id`,
+`sudo -v` and `systemctl --failed`. Verify a second login before releasing the
+console. `--no-root-passwd` leaves root locked and relies on the user access above.
+
+## Ongoing changes
+
+Use [Making a change](../README.md#making-a-change) and
+[task routing](task-routing.md) for public modules, host profiles and app dotfiles.
+Build affected hosts before activating changes. Credential editing belongs in the
+[SOPS guide](sops.md); existing-host updates and recovery are in the
+[maintainer guide](deployment-checklist.md).
