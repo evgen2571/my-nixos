@@ -1,10 +1,12 @@
 # Public/private migration contract (M01)
 
 Specification for [issue #28](https://github.com/evgen2571/my-nixos/issues/28),
-audited on 2026-10-18 at `5296a1759e6c1f53e22f55b60400b41c1d25bf4c`.
+revised to follow the [latest PR #34 review](https://github.com/evgen2571/my-nixos/pull/34#issuecomment-6250388864).
+The source inventory and bounded history audit were captured on 2026-10-18 at
+`5296a1759e6c1f53e22f55b60400b41c1d25bf4c`.
 This is a proposed migration, not a completed split or permission to publish.
-Only planning documentation changes in M01. Configuration, ciphertext, generated
-files and mutable runtime state stay unchanged.
+M01 changes documentation only. Configuration, ciphertext, generated files and
+mutable runtime state stay unchanged; actual templates and wiring belong to M02.
 
 The [architecture](../ARCHITECTURE.md), [module conventions](modules.md),
 [SOPS guide](sops.md), [server guide](server.md),
@@ -18,261 +20,399 @@ also includes admin-only bootstrap documents. Follow executable declarations.
 
 ```mermaid
 flowchart TB
-  private["my-nixos-private: locked flake, real hosts, personal settings, ciphertext"]
-  public["my-nixos: host builder, catalog, modules, dotfiles, generic checks"]
+  public["my-nixos: sole build/deployment root; real hosts, profiles, modules, dotfiles, tests"]
+  example["templates/private: safe empty default input"]
+  private["my-nixos-private: optional ciphertext and narrow sensitive overrides"]
   runtime["Protected runtime: identities, decrypted secrets, tokens, app state"]
-  private -->|"public input; lib.mkHost"| public
-  private -->|"sops-nix declarations and runtime paths"| runtime
-  public -->|"generic services consume paths; never secret values"| runtime
+  public -->|"private input defaults locally"| example
+  public -->|"explicit private input override for personal builds"| private
+  public -->|"sops-nix; services consume protected paths"| runtime
 ```
 
-The public flake has no dependency on the private repository. The private flake
-owns all three existing `nixosConfigurations` names and consumes public code.
-Public-alone evaluation requires no personal host, SOPS identity or private URL.
-Private source is still copied into the Nix store during evaluation: a private
-Git repository is not a safe place for plaintext credentials.
+Public `my-nixos` remains the complete, understandable, forkable NixOS
+configuration and the only ordinary entry point for `nix build`,
+`nix flake check` and `nixos-rebuild --flake`. It retains
+`nixosConfigurations.{nixos-pc,nixos-lp,nixos-server}`, `flake/hosts.nix`,
+`hosts/{pc,laptop,server,common}/`, feature selection and most hardware/dotfiles.
+The separate private repository supplies optional data/modules as a flake input;
+it does not assemble hosts, export deployment outputs or consume a public builder.
 
-Classifications below are policy decisions, not claims that every private file
-contains a secret:
+The committed public flake and lock reference only the safe local template and
+accessible public dependencies, with no private Git URL or credentials. A public
+clone needs neither the private checkout nor a SOPS identity to evaluate/check.
+Personal builds start in the public checkout with an explicit input override.
+Private flake sources also enter the Nix store: Git privacy does not protect
+plaintext credentials from store exposure.
 
-- **Public:** reusable implementation or synthetic fixtures.
-- **Documented public:** public data or opinionated defaults, with their purpose
-  explained; no credential privileges follow from possession alone.
-- **Private personal:** identity, deployment choices, hardware/topology facts or
-  account metadata; ordinary Nix configuration, not SOPS plaintext.
-- **SOPS ciphertext:** encrypted credential/identity material; keep encrypted in
-  private Git. Recipients and encryption metadata are public cryptographic data.
-- **Runtime-only secret/state:** never tracked in either repository. This includes
-  non-secret mutable databases and recovery state as well as actual credentials.
+Classifications are policy decisions, not claims that all metadata is secret:
+
+- **Public / documented public:** real hosts, selections, reusable code and
+  opinionated dotfiles. Host labels, UUIDs, public keys, locales and display
+  layouts are not automatically private. Review their exposure deliberately.
+- **Sensitive personal values:** narrow account/project identifiers or private
+  topology facts selected for exclusion. Extract only those declarations into
+  private host overrides; keep surrounding host/profile/config source public.
+- **SOPS ciphertext:** encrypted credentials/recovery identities in private Git.
+  Recipient metadata is public cryptographic data, but its associations can be
+  private. Never decrypt to perform the split.
+- **Runtime-only secrets/state:** identities, plaintext credentials, active
+  provider tokens and mutable app data outside both repositories. Never read
+  secrets into Nix expressions, derivation arguments or logs.
 
 ## File migration inventory
 
-`P:` means the public `my-nixos` root; `S:` means `my-nixos-private`.
-`R:` means protected paths on the relevant machine. Same-path destinations retain
-existing layout. A directory row covers its remaining files after more specific
-rows; brace lists enumerate each file with the same decision. New destinations
-are proposals and do not exist yet. Do not copy personal values into examples.
+`P:` is public `my-nixos`; `S:` is optional `my-nixos-private`; `R:` is protected
+runtime state. Same-path destinations retain existing layout. A directory row
+covers remaining files after specific rows; braces enumerate existing files.
+New paths/templates below are M02 proposals, not files created in M01. Private
+host overrides live in `S: hosts/<host>.nix`; these contain sensitive values only,
+not copies of public host definitions. Audit values without publishing them.
 
 | Current path | Proposed repository/path | Classification | Justification | Consumer / migration impact |
 | --- | --- | --- | --- | --- |
-| `flake.nix` | P: same; S: new `flake.nix` | Public / private personal | Public dependencies are reusable; real host assembly belongs to S | P exports builder; S keeps the three output names and pins P |
-| `flake.lock` | P: same; S: independently generated `flake.lock` | Documented public / private personal | Pins public dependencies; private lock also records composition revision | Preserve dependency revisions initially; do not copy stale lock nodes blindly |
-| `flake/hosts.nix` | P: same, export builder; S: `flake/hosts.nix` real host calls | Public / private personal | Existing `mkHost` is the reusable seam | Remove real-host imports from P only after S evaluates |
-| `flake/verification.nix` | P: generic registrations; S: real-host registrations | Public / private personal | Two registrations consume `self.nixosConfigurations` | Move production-profile registrations to S; retain generic tests in P |
-| `flake/{devshells,formatting}.nix` | P: same | Public | Tooling has no personal input | S may reuse P formatter/dev shell outputs |
-| `lib/{module-catalog,module-discovery,config-paths}.nix` | P: same | Public | Reusable discovery and source adapters | Resolve defaults relative to P; preserve directory-with-`default.nix` discovery |
-| `hosts/pc/configuration.nix` | S: same | Private personal | Account/Git identity, boot settings and trust choices | Replace public core imports; preserve stateVersion, groups and partitions |
-| `hosts/pc/hardware-configuration.nix` | S: same | Private personal | Filesystem UUIDs and hardware facts are identifying, not credentials | Move unchanged; never regenerate during split |
-| `hosts/pc/profile.nix` | S: same | Private personal | Feature selection, peer endpoints, profile names | Preserve client role, DNS, app registry and user settings |
-| `hosts/pc/secrets.nix` | S: same | Private personal | Credential declarations/paths, not plaintext | Preserve ownership, modes, neededForUsers and restart units |
-| `hosts/laptop/configuration.nix` | S: same | Private personal | Account/Git identity and machine boot/login choices | Preserve fingerprint/PAM decisions and stateVersion |
-| `hosts/laptop/hardware-configuration.nix` | S: same | Private personal | Hardware facts and filesystem identifiers | Move unchanged |
-| `hosts/laptop/profile.nix` | S: same | Private personal | Client routing and personal app/profile selection | Preserve WireGuard-only client role and per-host HM settings |
-| `hosts/laptop/secrets.nix` | S: same | Private personal | Runtime credential declarations | Preserve password/hash and key paths; no decryption during migration |
-| `hosts/server/configuration.nix` | S: same | Private personal | User authorization and wake/suspend policy | Replace core imports; retain gateway suspend guard and SSH access |
-| `hosts/server/hardware-configuration.nix` | S: same | Private personal | Real hardware/storage identifiers | Move unchanged |
-| `hosts/server/profile.nix` | S: same | Private personal | Storage device, gateway peers and service exposure | Preserve `/srv/*` boundaries, provider and firewall choices |
-| `hosts/server/secrets.nix` | S: same | Private personal | Gateway key/bootstrap declarations | Preserve runtime paths and restart behavior |
-| `hosts/common/desktop.nix` | S: same | Private personal | Shared personal feature selection, not reusable service logic | PC/laptop keep explicit import and original declaration priority |
-| `hosts/common/actline-development.nix` | S: same | Private personal | Development aliases, topology and trust selection | Keep desktop-only import; no server CA trust added |
-| `hosts/common/certs/actline-dev-rootCA.pem` | S: same | Private personal (public certificate) | Public CA certificate reveals private development identity; not a signing key | Preserve desktop trust; CA private key remains outside Git |
-| `hosts/vpn-public-keys.nix` | S: same | Private personal (public keys) | WireGuard public identities expose peer associations, not private keys | Preserve peer bindings on all three hosts |
-| `home/evgen2571/home.nix` | P: `home/default.nix`; S: optional private base module | Public after neutral rename | Contents are generic session path/state defaults; account-specific path is unnecessary | Change `my.primaryUser.home.module` default in P; preserve current home stateVersion |
-| `modules/system-core/user.nix` | P: same | Public | Already parameterizes account, authorization and Git identity | Replace personal home-module default with P `home/default.nix` |
-| `modules/system-core/{common,server}.nix` | P: same; personal locale defaults explicitly retained in S | Documented public | Boot/package/cache policies reusable; locale/timezone are preferences | Neutralize personal timezone/keyboard defaults in P; S restores exact current values |
-| `modules/secrets.nix` | P: same | Public | Generic age runtime path/generation policy, no private identity | Builder retains sops-nix integration; S owns declarations |
-| `modules/user-dev/ssh.nix` | P: generic SSH setup; S: `home/ssh.nix` personal settings | Public / private personal | Host-name branching, private key paths, server alias/user are personal | Remove personal match blocks/agent selection from P; set via host HM settings using native SSH options; preserve keepalive policy |
-| `modules/user-dev/git.nix` | P: same | Public | Identity already comes from options | S supplies current identity and public signing key through primary-user adapter |
-| `modules/system-services/syncthing.nix` | P: same | Public | Paths derive from primary user; no device IDs configured here | Preserve mutable Syncthing databases and device enrollment |
-| `modules/server/` | P: same | Documented public | Reusable SSH, Docker, storage and Syncthing behavior | S supplies storage device/selection; document `/srv/storage` separately from siblings |
-| `modules/system-services/network-namespaces/` except migration bundle below | P: same | Documented public | Reusable isolation/recovery, runtime path interfaces; defaults are not private credentials | Preserve fail-closed routing, IPv4/IPv6, DNS, lifecycle and provider separation |
-| `modules/system-services/network-namespaces/migration/{prepare-rollback,rollback,desktop-provider-guard}.sh` | P: same | Documented public | Guard and reviewed rollback bundle are used by generic VM tests; allowlisted host labels alone are acceptable public examples | Keep bundle intact for VM fixture and compatibility wrapper; S runbooks call pinned P scripts; never execute without live-operation approval |
-| `modules/system-services/vpnbook-wireguard-failover.nix` | P: same | Documented public | Service consumes protected external config files; no embedded provider keys | No connection to shared Hide.me route; preserve separation |
-| Remaining `modules/`, `packages/`, `pkgs/` | P: same | Public | Reusable integrations and pinned packages | Retain `my.*` namespaces, existing dependencies and relative public imports |
-| `config/zen/chatgpt-projects.nix` | S: same | Private personal | Account/project URLs and pin IDs expose metadata, not login credentials | Private profile imports it; no account URLs in P examples |
-| `config/zen/profile.nix` | S: same; P: sanitized same-path default | Private personal / public | Workspaces, project links, routes and profile UUIDs are personal | P keeps only neutral settings; S supplies full `programs.zen-browser.profiles.default` via host HM settings; preserve UUIDs and non-forcing semantics |
-| `modules/user-apps/zen-browser.nix` | P: same | Public | Reusable browser install/profile-path adapter | Default public profile must merge without conflicting with S native profile settings |
-| `config/noctalia/config.toml` | S: same; P: sanitized same-path default | Private personal / public | User, weather/location and local media paths need privacy handling | S uses existing `my.user.desktop.noctalia.configFile`; never reset generated settings |
-| `config/noctalia/v4/{settings.json,plugins.json,user-templates.toml}` | S: same; P: sanitized same-path legacy defaults | Private personal / public | Legacy config still contains user/path/plugin selections | Preserve opt-in legacy installer through private `configPaths` override if used |
-| Remaining `config/noctalia/` | P: same | Documented public | Generic bars, widgets, templates and pruning implementation | Keep PC/laptop variant files as documented examples; S chooses profile |
-| `config/niri/sub/{outputs.kdl,workspaces-pc.kdl,workspaces-laptop.kdl}` | P: sanitized examples; S: same-path originals | Private personal / documented public | Display facts/layout choices, not credentials | Use existing `configPaths.wm.niriConfigDir` and adapter override for exact private layout |
-| `config/hyprland/sub/outputs.conf` | P: neutral fallback; S: same-path original | Private personal / public | Mirrored monitor layout | Override existing Hyprland config-path adapter for S if enabled |
-| Remaining `config/` including `config/sesh/sesh.toml` | P: same | Documented public | Generic app/editor preferences; sesh uses home-relative paths, no real project inventory | Keep behavior; scan future edits for personal URLs/absolute paths |
-| `config/fish/conf.d/openrouter.fish` | P: same | Public | Reads a runtime secret; contains no API key | Keep `/run/secrets` interface; never substitute secret contents during evaluation |
-| `config/fish/conf.d/nixos-hosts.fish` | P: same | Public | Commands accept an explicit host and current checkout | Document execution from S for real hosts |
-| `.sops.yaml` | S: same; P: documentation example only | Private personal (public recipients) | Admin/host recipient associations are metadata | Keep rules and recipient sets unchanged; no rekey needed for same relative paths |
-| `secrets/hosts/pc.yaml` | S: same | SOPS ciphertext | Host credentials encrypted to admin + PC | PC declarations follow file move; no decrypt/re-encrypt |
-| `secrets/hosts/laptop.yaml` | S: same | SOPS ciphertext | Host credentials encrypted to admin + laptop | Laptop declarations follow file move |
-| `secrets/hosts/server.yaml` | S: same | SOPS ciphertext | Gateway credentials encrypted to admin + server | Server declarations follow file move; preserve refreshed runtime token |
-| `secrets/bootstrap/pc.yaml` | S: same | SOPS ciphertext | Recovery identity material, admin-only recipient | Keep recovery separate from host-readable ciphertext |
-| `secrets/bootstrap/laptop.yaml` | S: same | SOPS ciphertext | Recovery identity material, admin-only recipient | Same restriction |
-| `secrets/bootstrap/server.yaml` | S: same | SOPS ciphertext | Recovery identity material, admin-only recipient | Same restriction |
-| `secrets/{README.md,.gitkeep,hosts/.gitkeep}` | P: generic policy/examples; S: matching storage guidance/placeholders | Public | Policy text is useful; current presence claims need correction | P has no personal ciphertext; S guide describes actual files |
-| `keys/users/evgen2571/{pc.pub,laptop.pub}` | S: same | Private personal (public keys) | Public login keys/comments link account and devices | Preserve server authorized-key files; no key rotation merely for relocation |
-| `keys/{README.md,hosts/.gitkeep}` | P: same, examples sanitized | Public | Public-key policy and empty host-key placeholder | No private key should ever be added |
-| `tests/niri/hosts.nix`, `tests/network-namespaces/hosts.nix` | S: same | Private personal | Assertions depend on real production selections | S imports its own configurations; P retains synthetic module coverage |
-| `tests/network-namespaces/activate-laptop.sh` | S: same | Private personal | Live deployment helper bound to the real laptop | Remains approval-only, never a public automated check |
-| `tests/network-namespaces/prepare-shared-rollback.sh` | P: same | Public | Generic caller of rollback support with supplied system paths | Private operational use references the intact pinned P migration bundle |
-| Remaining `tests/`, including `tests/network-namespaces/{systemd.nix,public-keys.nix}` | P: same | Public | VM fixtures use synthetic peers/runtime-generated keys, not deployed identities | Generic VM host labels can remain documented; preserve runtime-only fixture private keys |
-| `justfile` | P: generic recipes without real default host; S: current host aliases/default | Public / private personal | Current recipes target real output names | Real build/deploy commands run from S |
-| `docs/archive/{server-initial-setup-notes,shared-vpn-gateway-implementation-plan,shared-vpn-initial-rollout-runbook}.md` | S: same | Private personal | Historical deployment/topology context survives in docs | Update public incoming links; do not present archives as current operating truth |
-| `.agent/vpn-resilience-plan.md` | S: same | Private personal | Incident and rollout history | No public implementation dependency |
-| `docs/{desktop-host-defaults,obsolete-configuration-audit}.md` | S: same | Private personal | Historical host selections and paths | P retains only reusable architectural explanations elsewhere |
-| `docs/{server,shared-vpn-gateway,network-namespaces,sops,zen-browser}.md` | P: sanitized generic guides; S: `docs/operations/` host-specific extracts | Public / private personal | Instructions useful publicly; real topology, profile IDs and operational evidence private | Update links/import examples for composition; do not duplicate whole guides |
-| `README.md`, `AGENTS.md`, `ARCHITECTURE.md`, `docs/{modules,task-routing}.md`, `docs/agents/` | P: generic guidance; S: host-specific guidance | Public / private personal | Current docs assume three real hosts and personal paths | Update ownership and command entry points in coordinated migration |
-| `docs/public-private-migration.md` | S: same after split; P: short generic composition guide | Private personal | This inventory itself enumerates deployment paths | Keep detailed audit out of eventual public snapshot |
-| Remaining `docs/`, `.gitignore`, `.clang-format` | P: same after example/link review | Documented public | Reusable guidance/tooling | Replace personal usernames in examples; remove dangling private-only links |
-| Git author/committer identities, old paths and deleted revisions | Existing restricted archive; publication decision below | Private personal / possibly credential-bearing history | Deleting HEAD files does not remove history | Gate publication on separate history policy and scan |
-| `/var/lib/sops-nix/key.txt`, admin age identity, private SSH/CA/WireGuard keys | R: existing protected locations | Runtime-only secret | Actual authentication/decryption/signing capability | Never inspect/copy into Nix expressions, either repo or logs |
-| `/run/secrets*`, provider bootstrap/refresh tokens, external VPNBook configs | R: existing protected locations | Runtime-only secret | Decryption output and active credentials | Preserve owners/modes; no token replacement for repository migration |
-| Browser logins/databases, Skillshare resources, Syncthing state, `/srv/*` data, VPN hold/lifecycle state | R: existing locations | Runtime-only secret/state | Machine/app-managed data, not reproducible source | Back up privately where appropriate; never delete because imports moved |
+| `flake.nix` | P: same; S: new data-only flake.nix | Public / sensitive values | P owns inputs and all host outputs | Add optional private input defaulting to templates/private; no reverse dependency |
+| `flake.lock` | P: same | Public | P pins public packages and local template | Preserve dependency revisions; never commit personal input override; S needs no dependency lock with the proposed input-free interface |
+| `flake/hosts.nix` | P: same | Public | Existing mkHost owns all three hosts | Use extraModules for per-host private module; keep catalog and assembly local |
+| `flake/verification.nix` | P: same | Public | Production and synthetic checks belong with public hosts | Test safe default and private-backed variants without moving registrations |
+| `flake/{devshells,formatting}.nix` | P: same | Public | Shared development tooling | Run from P |
+| `lib/{module-catalog,module-discovery,config-paths}.nix` | P: same | Public | Discovery and source adapters remain authoritative | Preserve default.nix boundary and public-root source resolution |
+| `hosts/pc/configuration.nix` | P: same; sensitive identity values only in S: hosts/pc.nix | Public / sensitive values | Real PC definition remains public | Retain boot, stateVersion, groups and core imports |
+| `hosts/pc/hardware-configuration.nix` | P: same | Documented public | Hardware facts and filesystem UUIDs are not credentials | Keep real hardware; review exposure, never regenerate for the split |
+| `hosts/pc/profile.nix` | P: same; narrow sensitive endpoints/IDs in S: hosts/pc.nix | Public / sensitive values | PC feature selection remains public | Preserve client role, DNS, application registry and primary-user HM settings |
+| `hosts/pc/secrets.nix` | P: same; file supplied by S: secrets/hosts/pc.yaml | Public / SOPS ciphertext | Secret consumers and runtime-path declarations are public | Guard absent file safely; retain ownership, modes, neededForUsers and restart units with private input |
+| `hosts/laptop/configuration.nix` | P: same; sensitive identity values only in S: hosts/laptop.nix | Public / sensitive values | Laptop definition remains public | Preserve fingerprint/PAM, boot and stateVersion |
+| `hosts/laptop/hardware-configuration.nix` | P: same | Documented public | Most hardware configuration stays public | Keep current filesystem/hardware configuration |
+| `hosts/laptop/profile.nix` | P: same; narrow sensitive endpoints/IDs in S: hosts/laptop.nix | Public / sensitive values | Laptop feature selection remains public | Preserve client-only routing and primary-user HM settings |
+| `hosts/laptop/secrets.nix` | P: same; file supplied by S: secrets/hosts/laptop.yaml | Public / SOPS ciphertext | Declarations stay near consumers | Preserve private-backed password/key paths; safe missing-secret branch required |
+| `hosts/server/configuration.nix` | P: same; sensitive authorization values only in S: hosts/server.nix | Public / sensitive values | Server lifecycle and host ownership stay public | Preserve gateway suspend guard and private-backed SSH authorization |
+| `hosts/server/hardware-configuration.nix` | P: same | Documented public | Storage/hardware identifiers are reviewed metadata | Keep real mount definitions; no storage redesign |
+| `hosts/server/profile.nix` | P: same; narrow sensitive endpoints/IDs in S: hosts/server.nix | Public / sensitive values | Gateway, storage and service selections stay public | Preserve /srv/* boundaries, provider placement and firewall policy |
+| `hosts/server/secrets.nix` | P: same; file supplied by S: secrets/hosts/server.yaml | Public / SOPS ciphertext | Public consumers declare gateway credentials | Preserve runtime paths/restarts; missing credentials must not start provider |
+| `hosts/common/desktop.nix` | P: same | Documented public | Shared desktop selections are part of complete public configuration | Retain explicit PC/laptop imports and declaration priority |
+| `hosts/common/actline-development.nix` | P: same; sensitive aliases only in S host overrides | Public / sensitive values | Shared development feature/trust selection stays public | Keep desktop-only scope; extract only private topology literals |
+| `hosts/common/certs/actline-dev-rootCA.pem` | P: same after exposure review | Documented public certificate | Public trust anchor is not a signing key | Retain desktop trust; signing key stays outside Git; sensitive certificate identity would require a narrow private path override |
+| `hosts/vpn-public-keys.nix` | P: same after exposure review; sensitive peer associations only in S host overrides | Documented public keys / sensitive values | Public keys do not grant private-key capability | Keep peer bindings identical for personal builds; no rotation for relocation |
+| `home/evgen2571/home.nix` | P: same | Documented public | Generic session/state defaults need no migration rename | Preserve home stateVersion and existing module default |
+| `modules/system-core/user.nix` | P: same | Public | Primary-user adapter already supports host values | Keep my.primaryUser.home.settings contract |
+| `modules/system-core/{common,server}.nix` | P: same | Documented public | Locale/timezone and package defaults may remain opinionated | No neutralization merely because defaults are personal preferences |
+| `modules/secrets.nix` | P: same | Public | Generic protected age identity path | Keep sops-nix integration exactly once; never package identity contents |
+| `modules/user-dev/ssh.nix` | P: same; sensitive match-block values in S host HM settings | Public / sensitive values | Generic SSH setup remains public | Use native options through primary-user adapter; preserve keepalive and runtime key paths |
+| `modules/user-dev/git.nix` | P: same | Public | Identity already parameterized | Sensitive identity/signing metadata supplied through narrow host override when needed |
+| `modules/system-services/syncthing.nix` | P: same | Public | No configured device IDs here | Preserve mutable databases and device enrollment |
+| `modules/server/` | P: same | Documented public | Server services and storage implementation remain public | Preserve /srv/storage distinction from sibling paths |
+| `modules/system-services/network-namespaces/` except migration bundle below | P: same | Documented public | Isolation/recovery are public security behavior | Preserve fail-closed IPv4/IPv6, DNS, lifecycle and role separation |
+| `modules/system-services/network-namespaces/migration/{prepare-rollback,rollback,desktop-provider-guard}.sh` | P: same | Documented public | Reviewed rollback bundle supports public tests and operations | Keep intact; execute only with live-operation approval |
+| `modules/system-services/vpnbook-wireguard-failover.nix` | P: same | Documented public | Consumes external protected config files | Preserve separation from shared Hide.me route |
+| Remaining `modules/`, `packages/`, `pkgs/` | P: same | Public | Reusable integrations and pinned packages | Keep namespaces, relative imports and dependency pins |
+| `config/zen/chatgpt-projects.nix` | S: same; P: safe empty example at same path | Sensitive values / public example | Account/project URLs and IDs can expose private metadata | Supply only private pins/project additions via host HM settings |
+| `config/zen/profile.nix` | P: same; sensitive fields only in S host HM settings | Public / sensitive values | Keep workspaces and general browser configuration public | Do not duplicate full profile; preserve private-backed UUIDs and non-forcing semantics |
+| `modules/user-apps/zen-browser.nix` | P: same | Public | Public browser integration | Merge narrow profile settings without conflicting definitions |
+| `config/noctalia/config.toml` | P: same; sensitive location/path fields only in S | Public / sensitive values | Most shell configuration stays public | Use existing configFile only if needed for a minimally derived source; no whole-tree private copy |
+| `config/noctalia/v4/{settings.json,plugins.json,user-templates.toml}` | P: same after sensitive-field review | Public / sensitive values | Legacy app config need not move wholesale | Extract only sensitive fields if present; retain opt-in installer and generated-state boundary |
+| Remaining `config/noctalia/` | P: same | Documented public | Bars, widgets, templates and pruning are public | Keep PC/laptop variants and selections public |
+| `config/niri/sub/{outputs.kdl,workspaces-pc.kdl,workspaces-laptop.kdl}` | P: same | Documented public | Display layout/workspace preferences stay public by default | Extract only demonstrated sensitive literals; never copy full Niri directory to S |
+| `config/hyprland/sub/outputs.conf` | P: same | Documented public | Monitor configuration may remain public | Keep existing adapter and source |
+| Remaining `config/` including `config/sesh/sesh.toml` | P: same | Documented public | Most dotfiles remain public; sesh uses home-relative paths | Review future URLs/absolute paths for sensitive content |
+| `config/fish/conf.d/openrouter.fish` | P: same | Public | Reads runtime API secret, contains no key | Preserve protected runtime path; never substitute credential contents |
+| `config/fish/conf.d/nixos-hosts.fish` | P: same | Public | Build/deployment helpers operate from P | Document explicit private override; do not silently send personal deployment through empty default |
+| `.sops.yaml` | S: same; P: templates/private/README.md policy example | Sensitive recipient associations | Recipient rules accompany private ciphertext | Keep rules/recipients unchanged; no rekey for same paths |
+| `secrets/hosts/pc.yaml` | S: same | SOPS ciphertext | Admin + PC recipients | Public declaration uses private input file path; no decrypt/re-encrypt |
+| `secrets/hosts/laptop.yaml` | S: same | SOPS ciphertext | Admin + laptop recipients | Public declaration uses private input file path |
+| `secrets/hosts/server.yaml` | S: same | SOPS ciphertext | Admin + server recipients | Preserve refreshed runtime provider token |
+| `secrets/bootstrap/pc.yaml` | S: same | SOPS ciphertext | Admin-only recovery identity material | Do not expose to host recipients or include in host secret-file map |
+| `secrets/bootstrap/laptop.yaml` | S: same | SOPS ciphertext | Admin-only recovery identity material | Keep recovery separate |
+| `secrets/bootstrap/server.yaml` | S: same | SOPS ciphertext | Admin-only recovery identity material | Keep recovery separate |
+| `secrets/{README.md,.gitkeep,hosts/.gitkeep}` | P: policy/placeholders; S: ciphertext storage guidance | Public | Policy stays useful publicly | Correct file-location claims; P no longer carries personal ciphertext at HEAD |
+| `keys/users/evgen2571/{pc.pub,laptop.pub}` | P: same after exposure review; sensitive associations only in S | Documented public keys / sensitive values | Public login keys are not private keys | Preserve server authorization exactly with private input; no rotation for relocation |
+| `keys/{README.md,hosts/.gitkeep}` | P: same | Public | Public-key policy and placeholder | No private key added |
+| `tests/niri/hosts.nix`, `tests/network-namespaces/hosts.nix` | P: same | Public | Real-host behavior remains publicly owned/tested | Keep production assertions with private input; explicitly test safe absent-material mode too |
+| `tests/network-namespaces/activate-laptop.sh` | P: same after sensitive-literal review | Documented public | Operational helper need not move with secrets | Approval-only; adapt explicit private override before future use |
+| `tests/network-namespaces/prepare-shared-rollback.sh` | P: same | Public | Generic rollback caller | Preserve intact public migration bundle and runtime paths |
+| Remaining `tests/` including `tests/network-namespaces/{systemd.nix,public-keys.nix}` | P: same | Public | Synthetic VM coverage stays public | Fixture private keys remain runtime-generated, never production credentials |
+| `justfile` | P: same | Public | Real build/deploy entry point stays public | Keep real host aliases; document/forward explicit override without implicit private discovery |
+| `docs/archive/{server-initial-setup-notes,shared-vpn-gateway-implementation-plan,shared-vpn-initial-rollout-runbook}.md` | P: same after sensitive-literal review; private extracts only in S: docs/ | Public / sensitive values | Operational history need not disappear from public | Keep useful history, redact narrowly and fix links; archives are not current truth |
+| `.agent/vpn-resilience-plan.md` | P: same after sensitive-literal review | Public / sensitive values | Planning history is not inherently private | Extract only sensitive incident facts; no implementation dependency |
+| `docs/{desktop-host-defaults,obsolete-configuration-audit}.md` | P: same after sensitive-literal review | Documented public | Host selection and architecture remain public | Preserve useful inventories and links |
+| `docs/{server,shared-vpn-gateway,network-namespaces,sops,zen-browser}.md` | P: same; sensitive operational values only in S: docs/ | Public / sensitive values | Daily workflows and public host operations stay documented | Commands run from P; do not duplicate guides privately |
+| `README.md`, `AGENTS.md`, `ARCHITECTURE.md`, `docs/{modules,task-routing}.md`, `docs/agents/` | P: same | Public | Public repository remains the complete configuration | M02 documents optional input, templates and unchanged entry point |
+| `docs/public-private-migration.md` | P: same after final exposure review | Public contract | Ownership and migration design should be understandable publicly | Keep contract; extract any sensitive audit evidence rather than moving entire inventory |
+| Remaining `docs/`, `.gitignore`, `.clang-format` | P: same after link/value review | Documented public | Guidance/tooling remains public | No blanket username replacement or documentation migration |
+| New `templates/host/{configuration.nix,profile.nix,README.md}` | P: new in M02 | Public examples | Forkable host through existing assembly | Use caller hardware/identity, explicit state versions and safe credential defaults |
+| New `templates/private/{flake.nix,README.md,hosts/}` | P: new in M02 | Public examples | Tracked nested flake is default private input | Empty maps by default; optional empty/narrow host override example, no ciphertext or fake production credentials |
+| Git author/committer identities, old paths and deleted revisions | Existing restricted history until publication decision | Metadata / possibly credential-bearing history | Deleting HEAD files does not erase history | Apply separate history scan and publication gate |
+| `/var/lib/sops-nix/key.txt`, admin age identity, private SSH/CA/WireGuard keys | R: existing protected locations | Runtime-only secrets | Actual decryption/authentication capability | Never inspect/copy into Nix expressions, source or logs |
+| `/run/secrets*`, provider bootstrap/refresh tokens, external VPNBook configs | R: existing protected locations | Runtime-only secrets | Decryption output and active credentials | Preserve owners/modes; no token replacement for repository split |
+| Browser logins/databases, Skillshare resources, Syncthing state, `/srv/*` data, VPN hold/lifecycle state | R: existing locations | Runtime-only state/secrets | Mutable app/host data is not source | Back up privately where appropriate; never delete because imports moved |
 
 ## Minimal composition contract for M02
 
-**Choose exported host builder plus catalog profiles.** Keep the existing
-`mkHost { hostModule; profile; system ? "x86_64-linux"; extraModules ? [];
-extraSpecialArgs ? {}; }` signature. Export it as `lib.mkHost` and export
-`lib.moduleProfiles.{desktop,server}` from public `flake/hosts.nix`. Keep
-flake-parts `withSystem` and the captured **public** inputs. Do not rebuild the
-assembler in S or pass S's inputs as the builder's `inputs` argument.
+Keep the existing local `mkHost` function in `flake/hosts.nix` and
+its desktop/server catalog profiles. No exported builder, core-module aliases,
+private wrapper host assembly or new host-definition framework is required.
+The public flake adds one input (proposed syntax tested below):
 
-Also export direct aliases to existing core files:
-`nixosModules.{common,server,primaryUser}` for
-`modules/system-core/{common,server,user}.nix`. These roots are intentionally
-outside catalog discovery. The builder continues importing `modules/secrets.nix`,
-Home Manager and sops-nix exactly once. All other module roots retain catalog
-ownership; hosts must not manually import discovered files.
+```nix
+inputs.private.url = "path:./templates/private";
+```
 
-Private flake outline (proposed API, not available on the audited revision):
+Use two small data outputs from that input:
+
+- `nixosModules`: optional modules keyed by existing source host names
+  (`pc`, `laptop`, `server`); absent entries mean an empty module.
+- `secretFiles`: optional SOPS ciphertext paths keyed by the same host names;
+  absent entries mean no private credentials. Bootstrap documents are not exposed
+  through this map. A provided path must exist and be encrypted; invalid supplied
+  material must fail validation, not silently fall back to empty mode.
+
+The safe `templates/private/flake.nix` has no dependencies or host outputs:
 
 ```nix
 {
-  inputs.public.url = "github:evgen2571/my-nixos";
-  outputs = { public, ... }: {
-    nixosConfigurations = {
-      nixos-pc = public.lib.mkHost {
-        hostModule = ./hosts/pc/configuration.nix;
-        profile = public.lib.moduleProfiles.desktop;
-        extraSpecialArgs.public = public;
-      };
-      nixos-lp = public.lib.mkHost {
-        hostModule = ./hosts/laptop/configuration.nix;
-        profile = public.lib.moduleProfiles.desktop;
-        extraSpecialArgs.public = public;
-      };
-      nixos-server = public.lib.mkHost {
-        hostModule = ./hosts/server/configuration.nix;
-        profile = public.lib.moduleProfiles.server;
-        extraSpecialArgs.public = public;
-      };
+  outputs = { self }: {
+    nixosModules = {};
+    secretFiles = {};
+  };
+}
+```
+
+A real private flake implements exactly that interface, for example:
+
+```nix
+{
+  outputs = { self }: {
+    nixosModules = {
+      pc = ./hosts/pc.nix;
+      laptop = ./hosts/laptop.nix;
+      server = ./hosts/server.nix;
+    };
+    secretFiles = {
+      pc = ./secrets/hosts/pc.yaml;
+      laptop = ./secrets/hosts/laptop.yaml;
+      server = ./secrets/hosts/server.yaml;
     };
   };
 }
 ```
 
-Private host modules accept `{ public, ... }` and replace relative public core
-imports with `public.nixosModules.common` (desktops) or `.server`, plus
-`.primaryUser`. Hardware/profile/secrets imports remain relative inside S.
-Keep host user settings under `my.primaryUser.home.settings`; private modules
-such as `home/ssh.nix` are imported there. Secret declarations keep relative
-SOPS file paths wholly within S. No runtime key is needed for evaluation.
+No private `nixosConfigurations`, public input or duplicate nixpkgs/Home Manager/
+sops-nix lock is needed. Public `flake/hosts.nix` uses its existing `extraModules`
+argument to include `(inputs.private.nixosModules.pc or {})` for PC, analogously
+for laptop/server. Existing `specialArgs.inputs` and HM `extraSpecialArgs` already
+forward the public inputs; public `hosts/<host>/secrets.nix` can select
+`inputs.private.secretFiles.<host> or null` without a new argument framework.
+Import selection must depend on input attributes, never recursively on `config`.
+The real private flake supplies only narrow sensitive declarations and ciphertext
+paths. Public hosts still own all feature selections and their local imports.
 
-`specialArgs` are available while resolving NixOS imports. The existing builder
-also forwards them through `home-manager.extraSpecialArgs`; catalog home modules
-stay in `home-manager.sharedModules`. This is why a private `public` source
-argument works in both contexts without `_module.args` import recursion.
-`inputs`, `inputs'`, `self'` and default `configPaths` retain public scope.
-Reserve those names; override only `configPaths` deliberately, never `inputs`.
+The public builder continues importing Home Manager, sops-nix and
+`modules/secrets.nix` exactly once. Core modules retain explicit public host
+imports; discovered NixOS/HM roots retain catalog ownership and
+`home-manager.sharedModules`. Preserve all `my.*` namespaces and
+`my.primaryUser.home.settings`. Do not use `mkForce` wholesale to cover duplicate
+host/profile definitions: extract individual sensitive declarations from P and
+supply them once in S, retaining public defaults only where safe and useful.
 
-Where exact private dotfile content must differ, use existing native options
-first (Noctalia `configFile`, Zen profile definitions). For directory adapters,
-pass one private `extraSpecialArgs.configPaths` made from
-`import (public.outPath + "/lib/config-paths.nix") { root = public.outPath;
-lib = public.inputs.nixpkgs.lib; }`, updating only needed `wm` paths and
-`dotfileAdapters.niri`/`.hyprland` defaults together. These adapter closures
-capture their original paths: overriding `wm` alone does not redirect them.
-Private Niri/Hyprland directories must contain the full required source tree;
-keep reusable siblings from the pinned P source, never reference `../my-nixos`
-implicitly or duplicate service/module code. Do not introduce a generic overlay
-framework. Retain writable Neovim/Matugen, browser and Skillshare boundaries.
+For dotfiles, keep public content and host variants in `config/`. Use existing
+native HM options for small private additions (for example private Zen pins), or
+a narrowly derived file through an existing config-path option where an app
+requires a whole file (for example Noctalia `configFile`). Compose that file from
+public source plus sensitive fields; do not maintain a private copy of the public
+configuration tree. If a leaf mapping needs adjustment, change only the affected
+mapping in M02 and verify effective targets. Do not repoint entire Niri/Hyprland
+source directories to S. Preserve writable Neovim/Matugen, Noctalia generated
+settings, browser state and Skillshare resources.
 
-Alternatives considered:
+### Explicit safe behavior without private material
 
-| Alternative | Decision against current assembly |
+An empty input is a supported configuration mode, not a source of synthetic
+credentials. All three real public host outputs and public checks must evaluate.
+Public feature intent (desktop clients, server gateway, shared selections) stays
+visible. Missing material makes credential-dependent functions explicitly
+unavailable; it must never relax their security policy to make evaluation pass.
+
+M02 must implement and test the absent-file branch at the consuming declarations:
+
+- Do not evaluate nonexistent SOPS file paths or reference undeclared secrets.
+  Keep declarations/key names, owners, modes, `neededForUsers` and restart units
+  unchanged when the real ciphertext file is supplied.
+- Without a password secret, keep the account locked, with no empty/default
+  password or automatic login workaround. Do not introduce fallback SSH access.
+- Without VPN keys/provider credentials, prevent credential-dependent transport
+  and provider services from starting. Retain namespace containment, firewall,
+  DNS and selected-app fail-closed behavior, including when credentials disappear
+  after a previously configured generation. A failed selected-app launch cannot
+  fall back to host networking. Missing private endpoints/keys cannot become
+  permissive peers or placeholder production credentials.
+- Do not silently disable the namespace security boundary or substitute another
+  provider. Ordinary host networking remains independent. Surface the unavailable
+  features in documentation and diagnostics; a public-safe build is not proof
+  that the maintainer's credentialed deployment is ready.
+- With real private input, restore and compare the exact existing operational
+  behavior for every host. Validate partial/malformed inputs explicitly as well
+  as the fully empty and fully populated cases.
+
+### Documented templates
+
+M02 creates one public `templates/` directory:
+
+```text
+my-nixos/                       # sole build/check/deployment root
+  flake.nix  flake/hosts.nix
+  hosts/{pc,laptop,server,common}/
+  modules/  config/  lib/  tests/  docs/
+  templates/
+    host/
+      configuration.nix
+      profile.nix
+      README.md
+    private/
+      flake.nix                 # empty interface above; committed default input
+      README.md
+      hosts/                    # optional empty/narrow module example
+my-nixos-private/               # optional sibling, never the build root
+  flake.nix
+  hosts/                        # sensitive overrides only
+  secrets/                      # SOPS ciphertext only
+  .sops.yaml
+```
+
+`templates/host/README.md` documents copying into `hosts/<new-host>/`, supplying
+hardware configuration, choosing identity and explicit state versions, and adding
+a `mkHost` call to existing public assembly with the appropriate catalog profile.
+It must not require maintainer-private modules, keys, recipients or credentials.
+`templates/private/README.md` documents the interface, source tracking, encrypted
+file policy, safe empty behavior and public-root override commands below. It may
+show sanitized recipient-rule examples; the default includes no production SOPS
+file, account secret or private Git URL. Git does not track empty directories:
+track any example module deliberately. Do not create `private-example/`.
+
+## Public-alone validation and personal composition
+
+Keep all existing check registrations in P, including `niri-host-profiles` and
+`shared-vpn-host-profiles`. Preserve their current production assertions when
+private input is supplied; add explicit missing-material assertions for the safe
+default, rather than skipping the VPN checks or deleting secret-path assertions.
+Keep synthetic namespace/systemd/launcher/recovery tests, runtime-generated test
+keys, config-path tests and Neovim smoke sources public. No extra CI framework.
+
+M02 acceptance matrix (all commands start in public `my-nixos`):
+
+| Mode | Required evidence |
 | --- | --- |
-| Export only NixOS/HM modules | Technically valid, but S must duplicate catalog, arguments, HM and SOPS wiring; reject as primary contract |
-| Extend exported real hosts with `extendModules` | NixOS supports it, but base real hosts keep private data in P; generic bases add override/removal complexity; reject |
-| Private input in public flake, or impure sibling imports | Breaks public-alone evaluation/purity; reject |
+| Clean public clone, private checkout absent, no private Git authentication | All three outputs evaluate; default local input resolves; lock unchanged; evaluation and full public checks pass |
+| Real private input override | All three outputs evaluate and build non-activating; public production checks pass; semantic security/HM comparisons match baseline |
+| Partial, invalid or removed private material | Clear invalid-input failure or explicit unavailable service; no fake secrets, login bypass, DNS/firewall weakening or selected-app host-network fallback |
+| Fork/new host from templates/host | Register/evaluate a new host with existing mkHost and no maintainer-private access |
 
-The builder contract was checked against the locked NixOS `specialArgs`/
-`extendModules` and HM `extraSpecialArgs`/`sharedModules` implementation. A
-scratch evaluation exports the current builder without changing repository Nix
-files and composes synthetic desktop/server users with a caller-supplied source
-argument. This verifies the seam; it does not validate a completed two-repo split.
-
-## Public-alone usability and checks
-
-P exports `lib.mkHost`, `lib.moduleProfiles`, the three core module aliases,
-formatter, dev shell, generic checks and existing generic test app. It exports
-**no real hosts and no deployable default host**. Document a small synthetic
-consumer in the public README, with fake username, caller-owned hardware/base
-module, explicit state versions and all personal services disabled. An empty
-`nixosConfigurations` set is acceptable; evaluating the builder consumer is part
-of acceptance so empty outputs cannot hide a broken API.
-
-A fresh authenticated-free public clone must pass:
+Public-alone commands:
 
 ```sh
 nix flake show --no-write-lock-file
 nix flake check --no-build --no-write-lock-file
 nix flake check --no-write-lock-file
+nix eval --raw .#nixosConfigurations.nixos-lp.config.system.build.toplevel.drvPath \
+  --no-write-lock-file
 ```
 
-The second command only evaluates checks; the third executes/builds registered
-checks including the VM tests where supported. Keep synthetic VPN/systemd,
-launcher/recovery, config-path checks and Neovim smoke sources public. S owns
-`niri-host-profiles` and `shared-vpn-host-profiles`, importing the moved tests
-with S's `nixosConfigurations` and P's pinned nixpkgs. Keep their assertions;
-do not simply delete production coverage. No new CI phase is required.
-Neovim smoke checks remain a separately provisioned local check.
+Repeat the last command for PC and server. The second command evaluates checks;
+the third executes/builds registered checks including supported VM tests.
+Neovim smoke tests remain a separately provisioned local check. Test the actual
+tracked nested template and public lock in a clean clone on supported Nix
+versions; no absolute local paths, private lock nodes or inaccessible remote
+fetches are permitted. Offline input-resolution tests may use a populated public
+package cache; distinguish public dependency downloads from private access.
 
-## Local development and reproducible inputs
+### Input-resolution probe performed for M01
 
-Create S as a private sibling checkout, not a subdirectory or submodule of P.
-Before any push, verify its exact owner/name and `isPrivate`/`visibility` using
+A disposable Git fixture on Nix 2.34.8 used the literal
+`path:./templates/private` input above and an input-free nested flake. After
+committing the template and generated root lock, a clean clone passed offline
+`nix eval` of the empty interface and `nix flake check --no-write-lock-file`.
+The lock recorded `path = "./templates/private"` and `type = "path"` in both
+original/locked records, with `parent = []` on the private input node.
+An explicit `--override-input private git+file:///ABSOLUTE/PRIVATE/CHECKOUT
+--no-write-lock-file` selected a different tracked host-module map and passed
+evaluation/checks; the root lock stayed byte-identical and Git status stayed
+clean. Repeating evaluation/checks with `?rev=COMMIT` pinned to the fixture
+private commit also passed without changing the root lock. This tests path
+resolution and override selection, not NixOS composition,
+service behavior, production checks or compatibility with older Nix versions.
+M02 must repeat against the real tracked layout and declare/test its supported
+Nix version; do not generalize the probe into migration completion evidence.
+
+## Daily development and reproducible inputs
+
+Use a private sibling checkout only when sensitive material is needed. Before
+any private push, verify owner/name and visibility with
 `gh repo view OWNER/my-nixos-private --json nameWithOwner,isPrivate,visibility`.
-The current origin was verified PRIVATE during M01; S does not yet exist as part
-of this task. Repository creation, visibility changes and live deployment are
-separate operations outside this phase.
+The original repository was verified PRIVATE during the initial audit; no new
+repository or visibility change is made in M01. Use Git credentials through an
+SSH agent/helper, never embedded in URLs, source or lock files.
 
-Commit S's `flake.lock` against an accessible remote P revision exporting the
-contract. Once P is public, downstream users need no credentials for it; before
-then collaborators need access to both repositories. Cloning S always needs
-authorized Git credentials. Use an SSH agent/credential helper, never credentials
-in URLs, flake inputs or lock files. Keep P's existing dependency pins initially;
-S need not independently declare nixpkgs or Home Manager. Private tests use
-`public.inputs.nixpkgs` to avoid unintended duplicate dependency versions.
+1. **Add a module and enable it on PC:** edit `modules/...` in P using the nearest
+   module pattern; enable its existing `my.*` option in public
+   `hosts/pc/profile.nix`. Discovery imports it through the existing catalog;
+   no private edit is needed unless the feature needs new sensitive values.
+2. **Edit an app dotfile:** edit public `config/` and run the subsystem checks.
+   Keep public Niri/Noctalia/Zen choices here. Extract only sensitive fields;
+   do not create parallel private app trees. A personal build still starts in P.
+3. **Change a secret or private identifier:** edit S, using SOPS from S for
+   encrypted documents (never print decrypted values). Keep recipient policy
+   and recovery restrictions intact. Stage intended files, then evaluate/check/
+   build from P with the explicit override below.
+4. **Fork/add a host:** copy `templates/host/` into `hosts/<new-host>/`, provide
+   hardware and identity, and register it in public `flake/hosts.nix`. Stage
+   files before evaluation. The safe default private input is sufficient; a
+   user's own optional private flake can later implement the same small interface.
 
-For an uncommitted public change, run from S:
+For local personal development, run these proposed M02 commands from P.
+`git -C` resolves the sibling to an absolute path without broadening the Git
+source filter to untracked files:
 
 ```sh
+private_checkout=$(git -C ../my-nixos-private rev-parse --show-toplevel)
 nix eval --raw .#nixosConfigurations.nixos-lp.config.system.build.toplevel.drvPath \
-  --override-input public ../my-nixos --no-write-lock-file
+  --override-input private "git+file://$private_checkout" --no-write-lock-file
+nix flake check --no-build \
+  --override-input private "git+file://$private_checkout" --no-write-lock-file
+nix flake check \
+  --override-input private "git+file://$private_checkout" --no-write-lock-file
 nix build --no-link .#nixosConfigurations.nixos-lp.config.system.build.toplevel \
-  --override-input public ../my-nixos --no-write-lock-file
+  --override-input private "git+file://$private_checkout" --no-write-lock-file
 ```
 
-A local Git flake includes tracked modifications, but not untracked/ignored
-files; stage intended new files before evaluation. Review `git status` in both
-repos. A deliberate `path:../my-nixos` override copies the directory source more
-broadly, including untracked files; avoid it for repositories with private local
-material. Do not use `--impure` to reach a sibling from Nix code. Explicit CLI
-input overrides preserve the dependency boundary; `--no-write-lock-file` keeps
-local paths out of the committed lock. Before delivery, commit P, update only
-S's public lock node to that revision (`nix flake update public`), review the
-lock diff, and repeat validation without overrides. Never claim a local override
-is the reproducible release input. If a branch URL is temporarily needed before
-merge, pin/review it and repin S to the merged public revision before release.
+Repeat for `nixos-server` and `nixos-pc`. Local Git flakes include tracked edits
+but omit untracked/ignored files; stage new templates, modules and ciphertext.
+Avoid `path:` overrides of personal checkouts because they copy untracked files
+more broadly. Do not use impure sibling imports or auto-detect private checkouts.
+Public source remains the current P checkout; it needs no input override of its
+own. Existing `just` aliases and Fish helpers stay public; until explicit private
+flag forwarding is implemented/tested in M02, use these direct commands for
+personal builds/deployment. Never assume an alias selected the personal input.
+
+For a reproducible release, commit both trees, record the P commit and exact S
+commit privately, and repeat checks/builds with
+`--override-input private "git+file://$private_checkout?rev=PRIVATE_COMMIT"` and
+`--no-write-lock-file`. Replace `PRIVATE_COMMIT` with the reviewed commit hash;
+keep it available in the private checkout. P's committed lock stays on the local
+empty template; do not run `nix flake update private` to record the personal
+source. Review `git status` and `git diff -- flake.lock` before every public
+commit. Private input revisions belong in protected release evidence, not a
+public lock or a second deployment flake.
+
+Only after separate live-activation authorization, the deployment command also
+starts from the reviewed P checkout and selects the same private revision:
+
+```sh
+sudo nixos-rebuild switch --flake .#nixos-lp \
+  --override-input private "git+file://$private_checkout?rev=PRIVATE_COMMIT" \
+  --no-write-lock-file
+```
+
+This is a documented future command, not executed by M01. M02 must verify
+`nixos-rebuild` flag forwarding and privileged access to the source on the target
+host before use; no credentials should be placed in command arguments. Public
+safe-mode evaluation is not authorization to deploy that mode onto a real host.
 
 ## History audit and publication gate
 
@@ -296,81 +436,84 @@ exposure classes. Moving HEAD files does not hide any historical versions.
 Historical `secrets/vpn/*.yaml` and older public-key paths also need history policy.
 Do not reintroduce those obsolete paths during the move.
 
-Recommended publication policy: retain the original full history in a restricted
-archive and publish a reviewed, sanitized new-root snapshot as P, with provenance
-that omits private values. If preserving P's existing history is required, agree
-an explicit `git filter-repo` path/content/author cleanup and force-push/reclone
-plan first. Both options need a separate decision and publication approval; M01
-does neither. Include branch/tag/PR refs, release attachments, GitHub issues,
-actions artifacts/logs and cached copies in that follow-up audit. This plan and
-its private inventory should remain in the restricted archive/S.
+Keep the existing `my-nixos` repository identity and public build ownership.
+Before changing visibility, review every retained metadata class deliberately,
+including the public host/hardware/key choices in this inventory. Extracting
+ciphertext and a few values at HEAD does not sanitize older commits. The revised
+contract/inventory can remain public after exposure review; raw audit evidence
+and private release records stay restricted.
 
-If a later scan finds an actual credential, stop publication and report only its
-location/type via the owner's private channel; never paste its value or raw scan
-output into Git, issues or PRs. Privately revoke/rotate the credential and assess
-use first. History cleanup is separate and cannot revoke copied credentials.
-Public keys/certificates alone do not require rotation; loss of a private key does.
-Recipient changes require SOPS rekey review and cannot revoke old ciphertext.
+Decide history policy separately: retain reviewed existing history only after
+an adequate full-ref audit, or authorize a scoped history cleanup with restricted
+backup and a force-push/reclone plan. A new-root snapshot is another option only
+with explicit owner approval; it is not a prerequisite or an automatic repository
+replacement. No history rewrite, visibility change or publication is authorized
+by M01/M02. Include branches/tags/PR refs, release attachments, issues, actions
+artifacts/logs and cached copies in the follow-up audit. Check the eventual public
+flake/lock for private paths/URLs and the full public snapshot for sensitive
+values, without removing public host ownership to avoid the review.
 
-## M02 implementation checklist, evidence and rollback
+If an actual credential is found, stop publication and report only location/type
+through a private channel; never paste values/raw matches into Git/issues/PRs.
+Privately revoke/rotate and assess use first. History cleanup cannot revoke
+copied credentials. Public keys/certificates alone do not require rotation;
+loss of a private key does. Recipient changes require SOPS rekey review and cannot
+revoke old ciphertext. Relocation itself requires neither rotation nor rekeying.
 
-One migration owner coordinates the pair of PRs; a security/operations reviewer
-checks privacy, access and storage/VPN invariants. P's PR owns exports,
-neutral defaults, generic tests and public docs. S's PR owns host/data moves,
-production-profile checks, lock update and private runbooks. Review together;
-merge the additive P API first, pin S to that commit, and validate S before
-removing P's real-host outputs/data. Keep both repositories restricted until the
-separate publication gate passes. Do not close implementation on a half-migrated
-pair of branches.
+## M02 implementation, validation and rollback
 
-1. [ ] Record exact P baseline, lock hash and clean/dirty state; create/verify
-   private S and branches. Back up protected identities and mutable data using
-   the existing private recovery workflow; never read them into audit output.
-2. [ ] Capture before snapshots for **all three hosts**, in a mode-0700 directory
-   outside both repos with `umask 077`. Use the commands below for derivation
-   paths and selected option comparisons; keep raw results private. Record
-   unavailable inputs/evaluation failures rather than replacing values.
-3. [ ] Export the builder/catalog/core aliases additively, neutralize private
-   defaults, and add a synthetic consumer assertion covering both profiles,
-   a non-personal primary user and HM argument forwarding. Preserve existing
-   tests. This is the suitable TDD seam for M02; M01 introduces no executable
-   behavior to test-drive.
-4. [ ] Copy the inventory's private files/ciphertext unchanged into S; verify
-   byte hashes privately, recipient sets, relative SOPS paths, modes and user
-   declarations. Stage new files for Nix source tracking. No re-encryption,
-   recipient changes or runtime credential operations for relocation.
-5. [ ] Compose/evaluate **server first**: verify gateway-only provider, peers,
-   SOPS paths, SSH authorization, storage mount identity, directories and sleep
-   guard. Build non-activating. Keep the active gateway generation untouched.
-6. [ ] Compose/evaluate **laptop next** with the same pinned P input; verify
-   client-only transport, identity paths, display/login choices, browser UUIDs,
-   Noctalia and HM state. Build non-activating; no local provider may appear.
-7. [ ] Compose/evaluate **PC last**, checking its boot partitions, NVIDIA,
-   monitor mapping, identities and client-only routing. Build non-activating.
-   This order validates the shared gateway dependency before either client;
-   it is an evaluation order, not authorization to activate any machine.
-8. [ ] Compare all three before/after snapshots. Identical derivation paths are
-   desirable but source-path relocation may legitimately change them. For every
-   difference, compare generated systemd/SSH/firewall/DNS, HM activation and
-   credential **path** settings; account for source-only changes explicitly.
-   Never diff decrypted contents or publish raw host snapshots/store paths.
-9. [ ] Move the two production checks to S; adjust P checks/docs, helpers and
-   incoming links. Remove personal data/real-host outputs from P only after S
-   is verified. Run formatter/diff checks, all registered flake checks in both
-   repos, synthetic consumer evaluation, all-host builds, applicable Neovim
-   smoke checks and namespace checks. No broad dependency update or extra CI.
-10. [ ] Commit/merge P; pin S's remote lock, validate without local overrides,
-    review/merge S and record both hashes privately. Check a fresh P clone
-    without S or private authentication. Keep original restricted checkout and
-    baseline generations available; no repository visibility change here.
-11. [ ] Obtain separate approval for any live migration. Require console/host
-    SSH recovery, verified backups and VPN rollback controls before activation.
-    An approved rollout may use the same server → laptop → PC order with
-    per-host health gates and a second SSH session; stop on any isolation,
-    mount, authentication or ordinary networking regression.
+Coordinate public and private changes on feature branches. P owns template/input
+wiring, all host assembly/selections, safe missing-material handling, tests and
+docs. S owns only encrypted documents and narrow sensitive overrides. Do not
+close M02 with mismatched interfaces or unvalidated personal deployment commands.
 
-Non-activating snapshot/build commands, run from the relevant old or new flake
-checkout for each of `nixos-server`, `nixos-lp`, `nixos-pc`:
+1. [ ] Reconcile #29 as listed below before implementing. Record clean/dirty
+   state, exact P baseline and lock hash; verify private S visibility before any
+   sensitive push. Use existing protected backup/recovery procedures without
+   reading identities or mutable data into audit output.
+2. [ ] Capture all three current hosts' option/derivation snapshots in a mode-0700
+   evidence directory outside both repos (`umask 077`). Include Nix versions,
+   primary user, state versions, boot/mounts, service selection, namespace roles,
+   firewall/DNS, public-key bindings, secret paths/permissions and HM leaf targets/
+   activation ownership. Keep raw metadata/private identifiers out of public logs.
+3. [ ] Add tracked templates and the optional input to P; keep all real outputs,
+   shared profiles, core imports and catalog discovery. Add small contract tests
+   for the empty interface, host module selection, ciphertext paths and partial/
+   invalid input. Test credential loss after an existing configuration as well
+   as first evaluation. Keep production assertions, not unconditional skips.
+4. [ ] Copy only inventory-selected ciphertext/values to S; verify byte hashes,
+   recipients and relative SOPS paths privately. Keep bootstrap documents admin-
+   only. Remove corresponding sensitive literals/ciphertext from P's final HEAD
+   only when a compatible S revision exists. Do not re-encrypt or touch live state.
+5. [ ] From P with explicit private override, evaluate/build **server first**
+   (gateway-only provider, storage boundaries, sleep guard, SSH, runtime paths),
+   **laptop next** (client-only transport, PAM/login, HM/browser identities), then
+   **PC** (client-only transport, boot/NVIDIA, displays and HM). This is a
+   non-activating validation order; keep the live gateway untouched.
+6. [ ] Compare snapshots semantically. Store/source hashes may change; account
+   for every change in generated units, firewall/DNS, SSH, mounts, credentials'
+   paths/modes/restart units, state versions and HM targets/activation. Verify
+   no new plaintext credential exposure in closures/units without printing
+   secrets. Preserve refreshed tokens, writable app state and provider guard.
+7. [ ] Run public-alone and private-overridden evaluation/full flake checks,
+   non-activating builds of all affected hosts, applicable Neovim smoke checks
+   and dedicated namespace tests. Test unavailable-secret behavior in isolation.
+   Document actual failures/skips. Validate new-host template and exact personal
+   commands, including pinned private revision and rebuild flag forwarding.
+8. [ ] Commit compatible S first and record its revision privately; validate P
+   against it with explicit override and unchanged public lock. Merge coordinated
+   changes only with a usable intermediate state (prepare S before P starts
+   relying on it). Retain original restricted checkout and baseline generations.
+   Test a fresh P clone with S absent and no private authentication; inspect its
+   lock for local template resolution and no accidental private dependency.
+9. [ ] Live rollout requires separate approval, console/SSH recovery, backups
+   and VPN rollback controls. If approved, use per-host health gates and a second
+   SSH session; stop on isolation, authentication, storage or ordinary networking
+   regressions. Publication remains a separate gate.
+
+Before/after commands run from P for each existing output; after extraction,
+append the explicit private override and `--no-write-lock-file` from the daily
+workflow. Redirect snapshot stdout/stderr to the protected evidence directory:
 
 ```sh
 nix eval --raw .#nixosConfigurations.HOST.config.system.build.toplevel.drvPath
@@ -380,31 +523,52 @@ nix eval --json .#nixosConfigurations.HOST.config.sops.secrets
 nix build --no-link .#nixosConfigurations.HOST.config.system.build.toplevel
 ```
 
-Replace `HOST` with one listed output name. Redirect snapshot stdout/stderr into
-the protected evidence directory, not CI/issue logs. Also compare host identity,
-primary user/Git/authorized **public** keys, filesystems, boot loaders, SSH/firewall,
-server storage/suspend policy, HM stateVersion, source mappings and browser profile
-IDs. The namespace options and SOPS declarations may include metadata/store paths;
-they must contain only runtime secret references, never secret contents.
+Replace `HOST` with `nixos-server`, `nixos-lp` or `nixos-pc`. Namespace/SOPS
+metadata must contain runtime references only, never secret contents. Do not
+publish raw snapshots or use derivation-path equality as the only check.
 
-Before activation, rollback means repinning S to the last compatible P commit,
-or returning to the original restricted checkout/lock. Do not remove its secrets
-or runtime state. After separately authorized activation, restore the saved known
-good generation from independent host SSH/console following the existing VPN
+Before activation, rollback means returning P to the last known-good commit/lock
+and selecting its compatible S revision explicitly, or using the original
+restricted checkout. The build root stays P. Do not remove private ciphertext,
+identities or runtime state. After separately authorized activation, restore the
+saved known-good generation from independent host SSH/console using the VPN
 rollback runbook. Do not roll clients back to historical local-provider behavior:
-retain the persistent desktop-provider guard. A NixOS rollback does not restore
-mutable token/database state or clear masks; leave those intact and investigate
-privately. Never rewrite history as an operational rollback.
+retain the persistent desktop-provider guard. NixOS rollback does not restore
+mutable tokens/databases or clear masks. Never rewrite history for rollback.
 
-Non-goals: broad module/directory restructuring, changing option namespaces,
-VPN routes/DNS isolation/provider placement, dependency refreshes, extra CI phases,
-disko/nixos-anywhere, new storage layouts, secret rotation, history rewriting,
-repository publication or live activation in this issue.
+### Requirements in #29 that must change before implementation
+
+[Issue #29 (M02)](https://github.com/evgen2571/my-nixos/issues/29) still describes
+the superseded private-owned host model. Update its title/workstream, ownership,
+acceptance and verification requirements together:
+
+- Replace “extract private host configuration” / private-owned machine definitions
+  with extracting only ciphertext and sensitive values. Keep all three real
+  hosts, shared profiles, most hardware/dotfiles, tests and docs public.
+- Replace “private flake consumes public assembly and yields real outputs” with
+  public assembly consuming the optional private input. Remove the builder-export
+  requirement; preserve the existing local mkHost/catalog interface.
+- Replace “independent of private inputs” with “defaults to tracked local
+  templates/private; no private URL/access needed in public flake/lock.”
+- Require templates/host and templates/private, clean-clone nested-input/lock
+  tests, safe missing/partial-secret behavior and the public/private test matrix.
+- Replace private-composition evaluation/deployment entry points with checks and
+  builds from P using explicit private overrides and no public lock writes.
+  Keep coordinated commit evidence and the existing security/activation limits.
+
+This section flags the issue changes; M01 does not edit #29 or claim M02 done.
+Non-goals: broad layout/namespace refactors, exported host frameworks, dependency
+updates, new CI infrastructure, VPN/DNS/provider redesign, storage redesign,
+secret rotation, actual file migration, history rewriting, publication or live
+activation in this PR.
 
 ## M01 validation boundary
 
-M01 checks documentation links/current paths, inventory coverage, diff whitespace,
-tracked-source/history structure and the scratch builder evaluation described
-above. No production host build, VM suite, decrypted-secret inspection or runtime
-health test is implied. M02 must produce its own before/after snapshots, full
-checks and non-activating builds before anyone considers deployment/publication.
+This revision checks documentation links/current inventory paths, Markdown
+structure, requirements consistency and diff whitespace, and performs only the
+disposable input-resolution probe described above. The original bounded history
+audit is retained as dated evidence, not rerun or promoted to publication
+clearance. No production NixOS evaluation/build, VM suite, decrypted-secret
+inspection or runtime health test is implied. M02 must implement the actual
+templates/wiring and produce its own clean-clone, semantic comparison, full-check
+and non-activating build evidence before deployment/publication is considered.
