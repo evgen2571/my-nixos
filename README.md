@@ -1,65 +1,66 @@
 # my-nixos
 
-I use this repository for my PC, laptop, and server. It keeps their NixOS system
-settings, Home Manager configuration, and application dotfiles together, with
-shared modules for the features each machine needs.
+My NixOS configuration for a desktop PC, laptop, and server. The desktops use Niri
+and Noctalia; the server runs self-hosted services and a VPN gateway. This is my
+working infrastructure. You can borrow parts or adapt it to your own hardware.
 
-You can adapt it to your own machines without my private repository, credentials,
-or network services. Start with your own host definition: my existing profiles
-contain hardware and service choices for real machines.
+## Find what you need
 
-## Quick start
+| Task | Guide |
+| --- | --- |
+| Use or customize the desktop | [Niri](docs/apps/niri.md), [Noctalia](docs/apps/noctalia.md), [Kitty](docs/apps/kitty.md) |
+| Work in the editor | [Neovim](docs/apps/neovim.md), [competitive programming](docs/apps/competitive-programming.md) |
+| Configure the browser | [Zen](docs/apps/zen-browser.md) |
+| Manage agent tools | [Skillshare](docs/apps/skillshare.md), [CodeGraph](docs/apps/codegraph.md) |
+| Find the file to edit | [Configuration map](docs/reference/configuration.md), [customization](docs/operations/customization.md) |
+| Build, update, or recover a host | [Deployment](docs/operations/deployment.md), [maintenance](docs/operations/maintenance.md) |
+| Manage server data or VPN access | [Server](docs/operations/server.md), [VPN](docs/operations/vpn.md) |
+| Handle credentials and private settings | [Secrets and private inputs](docs/operations/secrets.md) |
 
-For a guided walkthrough, follow [installation on your own machine](docs/getting-started/installation.md).
-If you already use NixOS, the short path is below. You'll need Git, Nix with
-`nix-command` and `flakes` enabled, network access to public inputs, and a Linux
-build environment for your target. The recorded command syntax uses Nix 2.34.8.
+[All guides](docs/README.md) include login/greeter and troubleshooting.
+[Architecture](docs/reference/architecture.md) explains how the pieces fit together;
+[module conventions](docs/reference/modules.md) cover adding or changing features.
+
+## Setup and installation
+
+You need Nix with flakes enabled. Clone the repository and enter its development
+shell:
 
 ```sh
 git clone https://github.com/evgen2571/my-nixos.git
 cd my-nixos
-cp -r templates/host hosts/my-host
+nix develop
+nix flake check --no-build --no-write-lock-file
 ```
 
-Before evaluating, [prepare the host](docs/getting-started/installation.md#2-choose-hardware-features-and-first-access):
-add its hardware configuration, choose boot/network settings, and configure your
-username, SSH public key, firewall access, and administration policy. Then
-[register `my-host`](docs/getting-started/installation.md#3-register-and-build)
-in `flake/hosts.nix` with `secretSource = "none"` and the appropriate module profile.
+The last command evaluates checks; it does not run their test programs. A clean
+clone can evaluate the three existing hosts, but building or deploying them
+requires the maintainer's private input. Their hardware and accounts describe
+real machines. To install on another machine, follow [installation](docs/operations/installation.md)
+and start from [the host template](templates/host/README.md).
+
+For a maintainer build, explicitly select the private checkout:
 
 ```sh
-git add hosts/my-host flake/hosts.nix
-nix flake check --no-build --no-write-lock-file
-nix build --no-link .#nixosConfigurations.my-host.config.system.build.toplevel --no-write-lock-file
+private_checkout=$(git -C ../my-nixos-private rev-parse --show-toplevel)
+nix build .#nixosConfigurations.nixos-pc.config.system.build.toplevel \
+  --override-input private "git+file://$private_checkout" --no-write-lock-file --no-link
 ```
 
-These commands evaluate checks and build your system without activating it.
-`--no-build` doesn't execute test programs. The template deliberately refuses an
-incomplete first-access configuration; a successful build still doesn't prove
-that your hardware boots or SSH works. Continue with the guide before installing.
-For my existing three hosts, use the separate [production build and deployment workflow](docs/guides/deployment.md).
+Use `nixos-lp` or `nixos-server` for the other hosts. This builds without activating.
+Read [deployment](docs/operations/deployment.md) before switching a real host;
+networking, boot, credentials, and storage changes need a recovery path.
 
-## What's included
+## Hosts
 
-| Host | What I use it for | Host choices |
+| Output | Machine | Feature selection |
 | --- | --- | --- |
-| `nixos-pc` | Niri/Noctalia development desktop, applications, and games | [PC profile](hosts/pc/profile.nix) |
-| `nixos-lp` | Niri/Noctalia laptop, with laptop-specific hardware and power settings | [Laptop profile](hosts/laptop/profile.nix) |
-| `nixos-server` | Self-hosted services, storage, and the shared VPN gateway | [Server profile](hosts/server/profile.nix) |
+| `nixos-pc` | Desktop workstation | [PC profile](hosts/pc/profile.nix) |
+| `nixos-lp` | Laptop | [Laptop profile](hosts/laptop/profile.nix) |
+| `nixos-server` | Services and shared VPN gateway | [Server profile](hosts/server/profile.nix) |
 
-The module collection includes a Fish/tmux/Kitty workflow, Neovim development and
-research tools, Zen Browser workspaces, and optional AI tools. The VPN routes
-selected applications through an isolated server gateway; ordinary host traffic
-keeps its own networking. You don't need to adopt all of these choices.
+Select features in `hosts/<host>/profile.nix`, implement them in `modules/`, and
+edit application sources in `config/`. Some applications keep generated themes,
+logins, or other writable state; check their guide before changing deployment.
 
-## Documentation
-
-Start at the [documentation index](docs/index.md), or go directly to:
-
-- [Installation](docs/getting-started/installation.md) and [customization](docs/guides/customization.md)
-- [Maintenance and validation](docs/guides/maintenance.md)
-- [Architecture](docs/concepts/architecture.md) and [module conventions](docs/development/modules.md)
-- [Secrets and optional private inputs](docs/reference/secrets.md)
-- [Troubleshooting](docs/troubleshooting/common-problems.md)
-
-Coding agents start with [AGENTS.md](AGENTS.md).
+For coding agents, [AGENTS.md](AGENTS.md) routes tasks to repository skills.
