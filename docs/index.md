@@ -37,7 +37,6 @@ need my private repository or services.
 - [Competitive programming](guides/competitive-programming.md)
 - [Zen Browser profiles and workspaces](guides/zen-browser.md)
 - [Noctalia greeter, appearance, and keyring](guides/noctalia-greeter.md)
-- [Optional KDE Plasma workflow](guides/kde-plasma.md)
 - [Skillshare and writable agent resources](guides/skillshare.md)
 - [CodeGraph package, indexes, and MCP setup](guides/codegraph.md)
 

@@ -40,12 +40,4 @@ assert (adapters.kitty { })."kitty/kitty.conf".source == paths.dev.kitty.configF
 assert lib.hasSuffix "font_size        13.0\n"
   (adapters.kitty { fontSize = "13.0"; })."kitty/kitty.conf".text;
 assert (adapters.starship { })."starship.toml".source == paths.dev.starship.configFile;
-assert (adapters.hyprland { })."hypr/sub".recursive;
-assert (adapters.hyprland { })."hypr/sub".source == paths.wm.hyprlandConfigDir + "/sub";
-assert
-  builtins.attrNames (adapters.kdeplasma { }) == [
-    "kcminputrc"
-    "kwinrc"
-    "kxkbrc"
-  ];
 true

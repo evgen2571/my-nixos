@@ -140,20 +140,15 @@ user modules, so it deploys none of the listed application files.
 | Noctalia theme generator | `niri/noctalia.kdl`, optional `niri/noctalia-dropdown.kdl`, Kitty/theme outputs | same | Mutable/generated state; never owned by the Niri adapter |
 | `config/noctalia/config.toml`, common TOML and dropdown template | matching `noctalia/` files | same | Static sources via Noctalia HM options and explicit file links |
 | `config/noctalia/{bar,widgets}-{pc,laptop}.toml` | `noctalia/{bar,widgets}.toml` from PC sources | same targets from laptop sources | Host-selected static file links |
-| Noctalia runtime settings | `~/.local/state/noctalia/settings.toml` | same | Mutable state; existing stale-settings pruning stays unchanged; v4 copy installer disabled |
+| Noctalia runtime settings | `~/.local/state/noctalia/settings.toml` | same | Mutable state; existing stale-settings pruning stays unchanged |
 | `config/nvim/` | `nvim/` | same | Activation-time rsync copy with writable permissions; preserves generated `lua/matugen.lua` |
 | tmux HM options / `config/sesh/sesh.toml` | `tmux/tmux.conf`, `sesh/sesh.toml` | same | Generated text; sesh substitutes the packaged executable path |
 | `config/zen/profile.nix` via Zen HM module | private-selected Zen profile | private-selected Zen profile | Managed profile settings alongside application-owned sessions, logins and databases; never link the whole profile |
-| `config/hyprland/{hyprland.conf,sub/}` | disabled | disabled | Static file links at `hypr/hyprland.conf`, `hypr/sub/*` when enabled |
-| `config/kdeplasma/{kcminputrc,kwinrc,kxkbrc}` | disabled | disabled | Static file links at XDG root when enabled; explicit names avoid owning unrelated desktop state |
-| end4 Hyprland installer | disabled | disabled | Existing opt-in activation-time installation; outside the static adapter |
 
-The safe simplifications are automatic discovery of Niri source leaves (excluding
-workspace variants before assigning the selected alias) and recursive linking of
-Hyprland's static `sub/` tree. Fish is already recursive. Kitty, Noctalia, sesh,
-Neovim and Zen retain their purposeful host/generated/writable boundaries. No new
-activation cleanup or migration is needed: existing effective leaf targets stay
-identical, and no currently unmanaged file is removed.
+The Niri adapter discovers source leaves automatically, excluding workspace
+variants before assigning the selected alias. Fish is recursive. Kitty, Noctalia,
+sesh, Neovim, and Zen retain their host/generated/writable boundaries. Removing
+unused adapters doesn't remove existing runtime files or require activation cleanup.
 
 ### Adding a source file or host override
 
@@ -164,12 +159,8 @@ identical, and no currently unmanaged file is removed.
   becomes `niri/sub/workspaces.kdl`; the other variants are not deployed. Keep
   generated `noctalia*.kdl` files out of this source tree. The adapter owns leaves,
   not the live directory, so generated siblings remain writable.
-- **Hyprland:** add static includes under `config/hyprland/sub/`; Home Manager
-  recursively links them. Keep generated files outside that source subtree.
 - **Fish:** add loaded snippets/functions to the existing recursive directories.
-  **Starship/KDE:** retain the clear explicit file mappings; add an explicit target
-  if a new file is actually needed. KDE's files live directly in the XDG root,
-  which must never be linked as a whole.
+  **Starship:** keep its explicit file mapping; add a target only when needed.
 - **Host variants:** use the existing host profile options (`workspaceProfile`,
   Kitty `fontSize`, Noctalia `profile`/`configFile`). For a new exceptional target,
   exclude its ordinary source from discovery before declaring its selected alias;
@@ -178,7 +169,7 @@ identical, and no currently unmanaged file is removed.
 - **Writable/generated applications:** change the owning module deliberately.
   Do not extend static discovery into Neovim, Noctalia's runtime outputs, Zen
   profiles or Skillshare resources. Noctalia's explicit template/common/profile
-  links avoid importing its v4 reference files, scripts and runtime state.
+  links avoid importing scripts and runtime state.
 
 `tests/config-paths/` checks automatic nested-file deployment and the existing
 workspace/terminal adapter contracts; it is registered as the `config-paths`

@@ -46,13 +46,6 @@ in
       ];
       description = "Host-specific Noctalia bar and widget configuration.";
     };
-
-    legacyConfig.enable = lib.mkEnableOption "legacy Noctalia v4 JSON/plugins/template config installation";
-    legacyConfig.settings = lib.mkOption {
-      type = (pkgs.formats.json { }).type;
-      default = { };
-      description = "Narrow overrides for the optional legacy Noctalia v4 JSON settings.";
-    };
   };
 
   config = lib.mkIf cfg.enable {
