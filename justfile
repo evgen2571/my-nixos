@@ -1,4 +1,5 @@
 set positional-arguments
+set shell := ["bash", "-uc"]
 
 host := "nixos-pc"
 
@@ -11,41 +12,41 @@ fmt:
 check:
     nix flake check
 
-build host=host:
-    nix build .#nixosConfigurations/{{host}}.config.system.build.toplevel
+build host=host *flags:
+    nix build ".#nixosConfigurations.$1.config.system.build.toplevel" "${@:2}"
 
-dry host=host:
-    sudo nixos-rebuild dry-build --flake .#{{host}}
+dry host=host *flags:
+    sudo nixos-rebuild dry-build --flake ".#$1" "${@:2}"
 
-switch host=host:
-    sudo nixos-rebuild switch --flake .#{{host}}
+switch host=host *flags:
+    sudo nixos-rebuild switch --flake ".#$1" "${@:2}"
 
-boot host=host:
-    sudo nixos-rebuild boot --flake .#{{host}}
+boot host=host *flags:
+    sudo nixos-rebuild boot --flake ".#$1" "${@:2}"
 
-build-pc:
-    just build nixos-pc
+build-pc *flags:
+    just build nixos-pc "$@"
 
-dry-pc:
-    just dry nixos-pc
+dry-pc *flags:
+    just dry nixos-pc "$@"
 
-switch-pc:
-    just switch nixos-pc
+switch-pc *flags:
+    just switch nixos-pc "$@"
 
-build-lp:
-    just build nixos-lp
+build-lp *flags:
+    just build nixos-lp "$@"
 
-dry-lp:
-    just dry nixos-lp
+dry-lp *flags:
+    just dry nixos-lp "$@"
 
-switch-lp:
-    just switch nixos-lp
+switch-lp *flags:
+    just switch nixos-lp "$@"
 
-build-server:
-    just build nixos-server
+build-server *flags:
+    just build nixos-server "$@"
 
-dry-server:
-    just dry nixos-server
+dry-server *flags:
+    just dry nixos-server "$@"
 
-switch-server:
-    just switch nixos-server
+switch-server *flags:
+    just switch nixos-server "$@"

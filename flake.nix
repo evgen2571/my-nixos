@@ -2,6 +2,8 @@
   description = "Eugene's NixOS configuration";
 
   inputs = {
+    private.url = "path:./templates/private";
+
     flake-parts.url = "github:hercules-ci/flake-parts";
 
     nixpkgs.url = "nixpkgs/nixos-26.05";

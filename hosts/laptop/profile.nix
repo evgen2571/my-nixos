@@ -31,7 +31,9 @@
             enable = true;
             shared = {
               role = "client";
-              privateKeyFile = config.sops.secrets.vpn-wireguard-private-key.path;
+              privateKeyFile = (
+                config.sops.secrets.vpn-wireguard-private-key.path or "/run/my-nixos-unavailable/wireguard"
+              );
               endpoint = "100.96.206.10:51877";
               address = "10.77.0.3/24";
               address6 = "fd77::3/64";

@@ -21,6 +21,15 @@ For architecture, read [ARCHITECTURE.md](ARCHITECTURE.md). For module mechanics,
 - NixOS/Home Manager options should own packages and services; `config/` is the source for application dotfiles. Respect `lib/config-paths.nix` adapters and host-specific mappings.
 - Do not replace intentional writable state with immutable links or destructive activation. Neovim's Home Manager activation copies source files while preserving a generated Matugen file; browser profiles, logins, and Skillshare resources also have mutable boundaries.
 
+## Sensitive input changes
+
+For source selection, new-host installation or deployment helpers, read
+[docs/installation.md](docs/installation.md) and the
+[migration contract](docs/public-private-migration.md). Keep my-nixos the sole
+build/deployment root; do not bypass existing-host private-material guards or
+commit a personal input override to the public lock. Check private repository
+visibility before copying sensitive data and keep its commits/PR separate.
+
 ## Deployment, security, and data safety
 
 - **Never** run `nixos-rebuild switch`, `boot`, activate a new generation, restart VPN/networking/SSH/display-manager services, alter firewall routes, or change live host state without explicit authorization. Ordinary non-activating evaluation/builds are allowed.

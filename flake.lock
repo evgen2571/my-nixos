@@ -274,6 +274,17 @@
         "type": "github"
       }
     },
+    "private": {
+      "locked": {
+        "path": "./templates/private",
+        "type": "path"
+      },
+      "original": {
+        "path": "./templates/private",
+        "type": "path"
+      },
+      "parent": []
+    },
     "root": {
       "inputs": {
         "aagl": "aagl",
@@ -284,6 +295,7 @@
         "nixpkgs-unstable": "nixpkgs-unstable",
         "noctalia": "noctalia",
         "noctalia-greeter": "noctalia-greeter",
+        "private": "private",
         "sops-nix": "sops-nix",
         "voxtype": "voxtype",
         "zen-browser": "zen-browser"

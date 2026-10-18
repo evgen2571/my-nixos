@@ -47,7 +47,7 @@ CLIENT_STORE_PATH/bin/hide.me --tokenFile "$PWD/accessToken.txt" token free-nl
 
 Enter credentials only at the interactive prompts. Confirm a nonempty private
 token file; upstream may return zero on failure. For a genuinely unprovisioned server, privately put that token into
-`hide_me_bootstrap_token` using `sops secrets/vpn/server.yaml` with the admin age
+`hide_me_bootstrap_token` using `sops secrets/hosts/server.yaml` with the admin age
 identity. Commit only the encrypted document, and remove the temporary bootstrap
 copy afterward. Never print the token or pass it as an argument/Nix value.
 

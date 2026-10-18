@@ -1,11 +1,16 @@
-{ config, ... }:
+{
+  config,
+  lib,
+  secretFile,
+  ...
+}:
 
 let
   user = config.my.primaryUser.name;
-  file = ../../secrets/hosts/laptop.yaml;
+  file = secretFile;
 in
 {
-  sops.secrets = {
+  sops.secrets = lib.mkIf (file != null) {
     vpn-wireguard-private-key = {
       sopsFile = file;
       key = "wireguard_private_key";
@@ -48,5 +53,13 @@ in
 
   users.mutableUsers = false;
 
-  users.users.${user}.hashedPasswordFile = config.sops.secrets.user-password.path;
+  users.users.${user} =
+    if file != null then
+      {
+        hashedPasswordFile = config.sops.secrets.user-password.path;
+      }
+    else
+      {
+        hashedPassword = "!";
+      };
 }

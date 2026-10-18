@@ -14,15 +14,16 @@ if status is-interactive
             return 1
         end
 
+        set -l flags $argv[3..-1]
         switch $action
             case build
-                command nix build "$repo#nixosConfigurations.$host.config.system.build.toplevel"
+                command nix build "$repo#nixosConfigurations.$host.config.system.build.toplevel" $flags
             case dry
-                command sudo nixos-rebuild dry-build --flake "$repo#$host"
+                command sudo nixos-rebuild dry-build --flake "$repo#$host" $flags
             case switch
-                command sudo nixos-rebuild switch --flake "$repo#$host"
+                command sudo nixos-rebuild switch --flake "$repo#$host" $flags
             case boot
-                command sudo nixos-rebuild boot --flake "$repo#$host"
+                command sudo nixos-rebuild boot --flake "$repo#$host" $flags
             case '*'
                 echo "unknown action: $action" >&2
                 return 1
@@ -30,18 +31,18 @@ if status is-interactive
     end
 
     function nb --description 'Build a NixOS host toplevel from the current repo'
-        _nixos_flake_cmd build $argv[1]
+        _nixos_flake_cmd build $argv
     end
 
     function nd --description 'Dry-build a NixOS host from the current repo'
-        _nixos_flake_cmd dry $argv[1]
+        _nixos_flake_cmd dry $argv
     end
 
     function nsw --description 'Switch a NixOS host from the current repo'
-        _nixos_flake_cmd switch $argv[1]
+        _nixos_flake_cmd switch $argv
     end
 
     function nboot --description 'Build a NixOS boot generation from the current repo'
-        _nixos_flake_cmd boot $argv[1]
+        _nixos_flake_cmd boot $argv
     end
 end
