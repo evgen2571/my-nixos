@@ -56,7 +56,7 @@ in
 
       module = lib.mkOption {
         type = lib.types.path;
-        default = ../../home/operator/home.nix;
+        default = ../../home/default.nix;
         description = "Base Home Manager module for the selected primary user.";
       };
 

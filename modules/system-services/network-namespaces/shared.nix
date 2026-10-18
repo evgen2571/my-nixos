@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  specialArgs,
   ...
 }:
 let
@@ -42,7 +43,7 @@ let
           wg set "$transport" private-key ${lib.escapeShellArg ns.shared.privateKeyFile} ${lib.optionalString gateway "listen-port 51877"}
           ${lib.concatMapStringsSep "\n" (peer: ''
             wg set "$transport" peer ${lib.escapeShellArg peer.publicKey} allowed-ips ${lib.escapeShellArg (lib.concatStringsSep "," peer.allowedIPs)} ${
-              lib.optionalString (!gateway) "endpoint ${ns.shared.endpoint} persistent-keepalive 25"
+              lib.optionalString (!gateway) "endpoint ${toString ns.shared.endpoint} persistent-keepalive 25"
             }
           '') ns.shared.peers}
           ip link set "$transport" netns ${name}
@@ -77,11 +78,14 @@ let
       assertions = [
         {
           assertion =
-            lib.hasPrefix "/" ns.shared.privateKeyFile
-            && !lib.hasPrefix "/nix/store/" ns.shared.privateKeyFile
-            && ns.shared.peers != [ ]
-            && (gateway || (builtins.length ns.shared.peers == 1 && ns.shared.endpoint != null))
-            && lib.all (p: p.allowedIPs != [ ]) ns.shared.peers;
+            ((specialArgs.requirePrivate or false) && (specialArgs.secretFile or null) == null)
+            || (
+              lib.hasPrefix "/" ns.shared.privateKeyFile
+              && !lib.hasPrefix "/nix/store/" ns.shared.privateKeyFile
+              && ns.shared.peers != [ ]
+              && (gateway || (builtins.length ns.shared.peers == 1 && ns.shared.endpoint != null))
+              && lib.all (p: p.allowedIPs != [ ]) ns.shared.peers
+            );
           message = "Shared VPN ${name} requires a runtime private key, declarative public keys and allowed IPs (one peer and an endpoint for clients).";
         }
       ];

@@ -1,4 +1,9 @@
-{ config, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
   imports = [
@@ -13,20 +18,11 @@
 
   my.primaryUser = {
     enable = true;
-    name = "server";
+    name = lib.mkDefault "operator";
     extraGroups = [
       "networkmanager"
       "wheel"
     ];
-    authorizedKeyFiles = [
-      
-      
-    ];
-
-    git = {
-      userEmail = "150374952+evgen2571@users.noreply.github.com";
-      signingKey = "~/.ssh/id_ed25519_github";
-    };
   };
 
   services.tailscale = {

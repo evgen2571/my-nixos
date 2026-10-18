@@ -50,22 +50,6 @@
             config.sops.secrets.vpn-wireguard-private-key.path or "/run/my-nixos-unavailable/wireguard"
           );
           role = "gateway";
-          peers = [
-            {
-              publicKey = (import ../vpn-public-keys.nix).pc;
-              allowedIPs = [
-                "10.77.0.2/32"
-                "fd77::2/128"
-              ];
-            }
-            {
-              publicKey = (import ../vpn-public-keys.nix).laptop;
-              allowedIPs = [
-                "10.77.0.3/32"
-                "fd77::3/128"
-              ];
-            }
-          ];
         };
       };
     };

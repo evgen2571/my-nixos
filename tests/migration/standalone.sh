@@ -36,7 +36,7 @@ ssh-keygen -q -t ed25519 -N '' -f "$scratch/login"
 export TEST_PUBLIC_KEY="$scratch/login.pub"
 python3 - <<'PY'
 import os, pathlib
-p=pathlib.Path('hosts/fixture/configuration.nix');s=p.read_text().replace('"replace-me";', '"fixture";',1)
+p=pathlib.Path('hosts/fixture/configuration.nix');s=p.read_text().replace('"replace-me";', '"fixture";',1).replace('name = "operator";', 'name = "newcomer";')
 s=s.replace('authorizedKeys = [ ];','authorizedKeys = [ '+__import__('json').dumps(pathlib.Path(os.environ['TEST_PUBLIC_KEY']).read_text().strip())+' ];')
 s=s.replace('services.openssh = {','security.sudo.wheelNeedsPassword = false;\n  networking.firewall.allowedTCPPorts = [ 22 ];\n  services.openssh = {')
 p.write_text(s)
@@ -65,8 +65,8 @@ if [[ -r /dev/kvm && -w /dev/kvm ]]; then
   connected=false
   for ((attempt = 0; attempt < 120; attempt++)); do
     if ssh -i "$scratch/login" -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=no \
-      -o UserKnownHostsFile=/dev/null -o ConnectTimeout=2 -p "$port" operator@127.0.0.1 \
-      'test "$(id -un)" = operator' > "$scratch/ssh.log" 2>&1; then connected=true; break; fi
+      -o UserKnownHostsFile=/dev/null -o ConnectTimeout=2 -p "$port" newcomer@127.0.0.1 \
+      'test "$(id -un)" = newcomer' > "$scratch/ssh.log" 2>&1; then connected=true; break; fi
     kill -0 "$vm_pid" 2>/dev/null || { echo 'Disposable VM exited before first login' >&2; exit 1; }
     sleep 1
   done
@@ -97,7 +97,7 @@ rm /var/lib/sops-nix/key.txt
 if bash /tmp/preflight; then echo 'Missing identity accepted'; exit 1; fi
 GUEST
   } | ssh -i "$scratch/login" -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=no \
-      -o UserKnownHostsFile=/dev/null -p "$port" operator@127.0.0.1 'sudo bash -s'
+      -o UserKnownHostsFile=/dev/null -p "$port" newcomer@127.0.0.1 'sudo bash -s'
   kill "$vm_pid"; wait "$vm_pid" || true
   vm_pid=
   echo 'Disposable template VM key-only SSH first login passed'

@@ -15,7 +15,7 @@ This runbook describes the **configuration in Git**, not a live health report. B
 | Runtime credentials | `hosts/server/secrets.nix`, `modules/secrets.nix`, [SOPS guide](sops.md) |
 | Client SSH aliases | `modules/user-dev/ssh.nix` and host profiles |
 
-The flake output is `nixos-server`; the normal user is `server`. `modules/server/` is imported only into the server catalog profile. Some system service modules are imported by both server and desktop profiles, but their features are enabled per host.
+The flake output is `nixos-server`; the private override retains the existing normal user. `modules/server/` is imported only into the server catalog profile. Some system service modules are imported by both server and desktop profiles, but their features are enabled per host.
 
 ## Current declarative state
 
@@ -30,7 +30,7 @@ These statements describe the Nix files and not whether a particular configurati
 
 ## SSH and access recovery
 
-The server uses normal OpenSSH, **not** Tailscale SSH. `my.server.ssh.openOnLan = false` configures port 22 for `tailscale0`, not a general host firewall opening. Root login and password-based SSH authentication are disabled. SSH public keys from `keys/users/operator/pc.pub` and `keys/users/operator/laptop.pub` are authorized for `server` by `hosts/server/configuration.nix`.
+The server uses normal OpenSSH, **not** Tailscale SSH. `my.server.ssh.openOnLan = false` configures port 22 for `tailscale0`, not a general host firewall opening. Root login and password-based SSH authentication are disabled. The private server override supplies the existing primary account and its SSH public-key associations. Public defaults authorize no personal keys.
 
 Desktop clients use host-specific private identities through a Home Manager SSH alias. After confirming tailnet access, `ssh server` is the intended client workflow. For a key change, keep a working session and console open, build the server without activating it, deploy only with authorization, and verify a **second** SSH session before closing the first. Removing the last working key can lock out administration.
 

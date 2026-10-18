@@ -1,7 +1,7 @@
 # SSH Public Keys
 
 This directory contains only SSH public keys (`.pub`). Private keys never belong
-in Git.
+in Git. Maintainer login-key associations are supplied only by the optional private input.
 
 ## Layout
 
@@ -32,7 +32,7 @@ Keeping user keys namespaced by account also scales better than placing every
 
 - **Only public keys** may be stored here.
 - **Never commit** private keys, age keys, or any secret material.
-- Key-line comments (for example `operator-pc`) may reveal a device name or
+- Key-line comments (for example `example-device`) may reveal a device name or
   email address, so keep comments descriptive but appropriate.
 
 ## Adding a login key
@@ -50,8 +50,8 @@ Keeping user keys namespaced by account also scales better than placing every
 3. Run formatting and a build:
 
    ```bash
-   nix fmt
-   nix build .#nixosConfigurations.nixos-server.config.system.build.toplevel
+   nix fmt hosts/my-host/configuration.nix
+   nix build --no-link .#nixosConfigurations.my-host.config.system.build.toplevel
    ```
 
 4. Keep the current SSH session open.

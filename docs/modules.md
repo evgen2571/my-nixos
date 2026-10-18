@@ -12,7 +12,7 @@ flake/hosts.nix
   → hosts/<host>/profile.nix enables/configures the option
 ```
 
-PC and laptop profiles explicitly import `hosts/common/desktop.nix` for identical selections and `hosts/common/example-development.nix` for scoped development aliases/CA trust. These files sit outside discovered roots; do not also add them to the catalog. Host differences and security-sensitive VPN settings stay local. Shared declarations retain their original priority; the [inventory](desktop-host-defaults.md) records what moved and what deliberately stayed local.
+PC and laptop profiles explicitly import `hosts/common/desktop.nix` for identical selections. Narrow private desktop overrides supply development aliases/CA trust. These files sit outside discovered roots; do not also add them to the catalog. Host differences and security-sensitive VPN settings stay local. Shared declarations retain their original priority; the [inventory](desktop-host-defaults.md) records what moved and what deliberately stayed local.
 
 A discovered module is **available**, not enabled. Modules typically define a `lib.mkEnableOption` and gate their behavior with `lib.mkIf cfg.enable`.
 
@@ -139,7 +139,7 @@ user modules, so it deploys none of the listed application files.
 | Noctalia runtime settings | `~/.local/state/noctalia/settings.toml` | same | Mutable state; existing stale-settings pruning stays unchanged; v4 copy installer disabled |
 | `config/nvim/` | `nvim/` | same | Activation-time rsync copy with writable permissions; preserves generated `lua/matugen.lua` |
 | tmux HM options / `config/sesh/sesh.toml` | `tmux/tmux.conf`, `sesh/sesh.toml` | same | Generated text; sesh substitutes the packaged executable path |
-| `config/zen/profile.nix` via Zen HM module | selected `zen/vrrqsw0h.operator` profile | selected `zen/it4r6j1f.operator` profile | Managed profile settings alongside application-owned sessions, logins and databases; never link the whole profile |
+| `config/zen/profile.nix` via Zen HM module | private-selected Zen profile | private-selected Zen profile | Managed profile settings alongside application-owned sessions, logins and databases; never link the whole profile |
 | `config/hyprland/{hyprland.conf,sub/}` | disabled | disabled | Static file links at `hypr/hyprland.conf`, `hypr/sub/*` when enabled |
 | `config/kdeplasma/{kcminputrc,kwinrc,kxkbrc}` | disabled | disabled | Static file links at XDG root when enabled; explicit names avoid owning unrelated desktop state |
 | end4 Hyprland installer | disabled | disabled | Existing opt-in activation-time installation; outside the static adapter |

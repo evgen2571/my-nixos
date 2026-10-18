@@ -22,7 +22,7 @@ refresh_minutes = 5
     [calendar.account.personal_google]
     calendars = []
     color = ""
-    name = "operator"
+    name = ""
     provider = ""
     server_url = ""
     type = "google"
@@ -138,7 +138,7 @@ up = [ "Up" ]
 validate = [ "Return", "KP_Enter" ]
 
 [location]
-address = "Example City, Example Country"
+address = ""
 auto_locate = false
 sunrise = ""
 sunset = ""
@@ -219,7 +219,6 @@ ui_scale = 1.0
 
 [shell]
 app_icon_colorize = false
-avatar_path = "/home/operator/Pictures/Avatars/Untitled5.jpg"
 clipboard_auto_paste = "auto"
 clipboard_confirm_clear_history = true
 clipboard_enabled = true
@@ -279,7 +278,6 @@ time_format = "{:%H:%M}"
     [shell.screenshot]
     confirm_region = false
     copy_to_clipboard = true
-    directory = "/home/operator/screenshots"
     filename_pattern = ""
     freeze_screen = true
     pipe_command = ""
@@ -388,7 +386,6 @@ wallpaper_scheme = "m3-content"
         output_path = "$XDG_CONFIG_HOME/niri/noctalia-dropdown.kdl"
 
 [wallpaper]
-directory = "/home/operator/drive/Wallpapers"
 directory_dark = ""
 directory_light = ""
 edge_smoothness = 0.30000001192092896

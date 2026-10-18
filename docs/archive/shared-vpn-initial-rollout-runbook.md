@@ -28,10 +28,13 @@ drop and `no_new_privs`. The launcher does not authorize arbitrary root commands
 
 Profiles select client addresses `.2`/`fd77::2` on PC, `.3`/`fd77::3` on laptop,
 and gateway `.1`/`fd77::1` in `10.77.0.0/24`, `fd77::/64`. MTU is 1280.
-The verified server Tailscale endpoint is `192.0.2.11:51877`. Only this UDP
-port is opened on server `tailscale0`; tailnet policy must permit both clients.
-WireGuard additionally authenticates peers and limits their source prefixes.
-Public peer keys live in `hosts/vpn-public-keys.nix`, not mutable runtime files.
+The endpoint `192.0.2.10:51877` is a **redacted documentation placeholder**, not
+an actual or verified Tailscale endpoint. Get the operational endpoint from the
+current private host overrides before diagnosing or deploying the gateway. The
+server's `tailscale0` firewall and tailnet policy must permit the actual peer
+traffic. WireGuard additionally authenticates peers and limits source prefixes.
+Peer-key associations now live in the private host overrides; the former
+`hosts/vpn-public-keys.nix` was removed by the personal-metadata split.
 
 | Host | Encrypted SOPS file | Runtime secret |
 | --- | --- | --- |
@@ -211,8 +214,10 @@ After approval, perform these live checks from host terminals:
   units must stay masked/inactive; selected apps remain unavailable until a valid
   client generation runs. Test server suspend/resume only with a local operator.
 
-The previous read-only audit verified host SSH over Tailscale
-`192.0.2.10 → 192.0.2.11:22`, ordinary host routing, healthy Docker and no
-server provider. Repeat it before deployment. Authentication and real egress/DNS/
-application/fault acceptance remain pending. No live masks, timers, providers,
+The previous read-only audit recorded host SSH over Tailscale, ordinary host
+routing, Docker and provider state. Its endpoint addresses are redacted here:
+`192.0.2.10` is **documentation-only**, not an operational host address. Consult
+the private host configuration and independently verify actual addresses and
+connectivity before deployment. Authentication and real egress/DNS/application/
+fault acceptance remain pending. No live masks, timers, providers,
 credentials or networking have been changed by implementation/build/test work.

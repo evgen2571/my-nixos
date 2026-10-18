@@ -3,7 +3,6 @@
 {
   imports = [
     ../common/desktop.nix
-    ../common/example-development.nix
   ];
 
   my = {
@@ -35,18 +34,8 @@
               privateKeyFile = (
                 config.sops.secrets.vpn-wireguard-private-key.path or "/run/my-nixos-unavailable/wireguard"
               );
-              endpoint = "192.0.2.11:51877";
               address = "10.77.0.2/24";
               address6 = "fd77::2/64";
-              peers = [
-                {
-                  publicKey = (import ../vpn-public-keys.nix).server;
-                  allowedIPs = [
-                    "0.0.0.0/0"
-                    "::/0"
-                  ];
-                }
-              ];
             };
           };
         };
@@ -70,9 +59,6 @@
 
     apps = {
       krita.enable = true;
-      zenBrowser = {
-        profilePath = "vrrqsw0h.operator";
-      };
     };
 
     desktop = {
@@ -86,8 +72,6 @@
     };
 
     dev = {
-      ssh.serverIdentityFile = "~/.ssh/id_ed25519_nixos_pc";
-
       languages = {
         cpp.enable = true;
         java.enable = false;

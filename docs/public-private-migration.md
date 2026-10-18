@@ -1,7 +1,8 @@
 # Public/private migration contract (M01)
 
 Implementation and current commands: [installation and source modes](installation.md).
-The dated M01 inventory below remains the approved contract and audit boundary.
+The dated M01 inventory below remains the historical contract and audit boundary.
+[Personal metadata extraction](personal-metadata.md) records the M02.5 ownership changes, neutral Home Manager base and retained/deferred metadata.
 
 Specification for [issue #28](https://github.com/evgen2571/my-nixos/issues/28),
 revised to follow the [latest PR #34 review](https://github.com/evgen2571/my-nixos/pull/34#issuecomment-6250388864).
@@ -98,10 +99,10 @@ explicit local source mode. This does not authorize publishing maintainer data.
 | `hosts/server/profile.nix` | P: same; narrow sensitive endpoints/IDs in S: hosts/server.nix | Public / sensitive values | Gateway, storage and service selections stay public | Preserve /srv/* boundaries, provider placement and firewall policy |
 | `hosts/server/secrets.nix` | P: same; file supplied by S: secrets/hosts/server.yaml | Public / SOPS ciphertext | Public consumers declare gateway credentials | Preserve runtime paths/restarts; missing credentials must not start provider |
 | `hosts/common/desktop.nix` | P: same | Documented public | Shared desktop selections are part of complete public configuration | Retain explicit PC/laptop imports and declaration priority |
-| `hosts/common/example-development.nix` | P: same; sensitive aliases only in S host overrides | Public / sensitive values | Shared development feature/trust selection stays public | Keep desktop-only scope; extract only private topology literals |
-| `hosts/common/certs/example-dev-rootCA.pem` | P: same after exposure review | Documented public certificate | Public trust anchor is not a signing key | Retain desktop trust; signing key stays outside Git; sensitive certificate identity would require a narrow private path override |
-| `hosts/vpn-public-keys.nix` | P: same after exposure review; sensitive peer associations only in S host overrides | Documented public keys / sensitive values | Public keys do not grant private-key capability | Keep peer bindings identical for personal builds; no rotation for relocation |
-| `home/operator/home.nix` | P: same | Documented public | Generic session/state defaults need no migration rename | Preserve home stateVersion and existing module default |
+| `hosts/common/example-development.nix` (historical M01 path, removed by M02.5) | S: narrow host overrides | Private development metadata | Desktop-only aliases and trust stay enabled by private host modules | Do not reintroduce the removed public import |
+| `hosts/common/certs/example-dev-rootCA.pem` (historical M01 path, removed by M02.5) | S: root-level `certs/example-dev-rootCA.pem` | Private certificate metadata | Same example CA trust on PC/laptop only | Private `hosts/{pc,laptop}.nix` reference `../certs/example-dev-rootCA.pem`; signing key never enters Git |
+| `hosts/vpn-public-keys.nix` (historical M01 path, removed by M02.5) | S: narrow private host overrides | Identifying peer associations | Public keys do not grant private-key capability | Keep peer bindings identical for personal builds; no rotation for relocation |
+| `home/default.nix` | P: same | Documented public | Generic session/state defaults need no migration rename | Preserve home stateVersion and existing module default |
 | `modules/system-core/user.nix` | P: same | Public | Primary-user adapter already supports host values | Keep my.primaryUser.home.settings contract |
 | `modules/system-core/{common,server}.nix` | P: same | Documented public | Locale/timezone and package defaults may remain opinionated | No neutralization merely because defaults are personal preferences |
 | `modules/secrets.nix` | P: same | Public | Generic protected age identity path | Keep sops-nix integration exactly once; never package identity contents |
@@ -132,7 +133,7 @@ explicit local source mode. This does not authorize publishing maintainer data.
 | `secrets/bootstrap/laptop.yaml` | S: same | SOPS ciphertext | Admin-only recovery identity material | Keep recovery separate |
 | `secrets/bootstrap/server.yaml` | S: same | SOPS ciphertext | Admin-only recovery identity material | Keep recovery separate |
 | `secrets/{README.md,.gitkeep,hosts/.gitkeep}` | P: policy/placeholders; S: ciphertext storage guidance | Public | Policy stays useful publicly | Correct file-location claims; P no longer carries personal ciphertext at HEAD |
-| `keys/users/operator/{pc.pub,laptop.pub}` | P: same after exposure review; sensitive associations only in S | Documented public keys / sensitive values | Public login keys are not private keys | Preserve server authorization exactly with private input; no rotation for relocation |
+| `keys/users/example-user/{pc.pub,laptop.pub}` | P: same after exposure review; sensitive associations only in S | Documented public keys / sensitive values | Public login keys are not private keys | Preserve server authorization exactly with private input; no rotation for relocation |
 | `keys/{README.md,hosts/.gitkeep}` | P: same | Public | Public-key policy and placeholder | No private key added |
 | `tests/niri/hosts.nix`, `tests/network-namespaces/hosts.nix` | P: same | Public | Real-host behavior remains publicly owned/tested | Keep production assertions with private input; explicitly test safe absent-material mode too |
 | `tests/network-namespaces/activate-laptop.sh` | P: same after sensitive-literal review | Documented public | Operational helper need not move with secrets | Approval-only; adapt explicit private override before future use |

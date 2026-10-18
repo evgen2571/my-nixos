@@ -27,7 +27,7 @@ class DoctorTest(unittest.TestCase):
         self.config = dict(name='vpn', role='gateway', host='test-server',
                            runtime=str(self.runtime), state=str(self.state), namespace_path=str(self.root/'netns'),
                            key=str(self.key), bootstrap=str(self.seed),
-                           token=str(self.key), endpoint='192.0.2.11',
+                           token=str(self.key), endpoint='192.0.2.10',
                            peers=['expected-peer'], urls=['https://one.test/', 'https://two.test/'])
         (self.root/'netns').touch()
         self.config['dependencies'] = {'netns-vpn.service': [], 'netns-vpn-shared.service': ['netns-vpn.service'],

@@ -12,7 +12,11 @@
   system.stateVersion = "26.05";
   my.primaryUser = {
     enable = true;
-    name = "operator";
+    name = "operator"; # Choose your own login name; HOME and HM follow it.
+    # Optional Git identity (enable my.user.dev.git in profile.nix):
+    # git.userName = "Example Person";
+    # git.userEmail = "person@example.invalid";
+    # git.signingKey = "~/.ssh/id_ed25519_signing.pub";
     extraGroups = [ "wheel" ];
     home.settings.home.stateVersion = "26.05";
     # Supply your own SSH PUBLIC key before evaluation/installation.

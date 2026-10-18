@@ -109,11 +109,6 @@ in
         };
 
         "Developer Tools" = mkFolder "6bf10a3c-fb4f-43e6-94a9-2ba12d222fdc" 400 {
-          "my-nixos" =
-            mkPin "8fcf5a5e-b4ad-4f6f-87e7-0ec9526f65c6" "https://github.com/evgen2571/my-nixos"
-              100;
-          "example" = mkPin "40568883-6ecd-4bfa-9855-eb93fe5b2353" "https://github.com/evgen2571/example" 200;
-          "Vestra" = mkPin "8dde8226-e4ad-41b6-8e44-094bd4a77fc2" "https://github.com/evgen2571/vestra" 300;
           "Docker Docs" = mkPin "ab801123-a9df-42a5-827f-7166e43d3ae5" "https://docs.docker.com/" 400;
           "crates.io" = mkPin "12bf767c-8c52-40fb-856d-0ab2d68ab203" "https://crates.io/" 500;
           "PyPI" = mkPin "ea268bfd-fc11-4068-8cca-8316f0394152" "https://pypi.org/" 600;

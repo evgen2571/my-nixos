@@ -87,7 +87,7 @@ To add another application, use the existing registry and launcher:
 ```nix
 my.system.services.networkNamespaces.applications.mytool = {
   namespace = "vpn";
-  user = "operator";
+  user = config.my.primaryUser.name;
   package = pkgs.mytool;
 };
 # Wrapper: exec ${lib.getExe config.my.system.services.networkNamespaces.launcherPackage} mytool "$@"

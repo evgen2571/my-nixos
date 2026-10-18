@@ -31,7 +31,7 @@
     fsType = "ext4";
   };
 
-  fileSystems."/home/operator/drive" = {
+  fileSystems."/home/${config.my.primaryUser.name}/drive" = {
     device = "/dev/disk/by-label/MY-NIXOS-LAPTOP-DRIVE-REPLACE-ME";
     fsType = "ext4";
   };
