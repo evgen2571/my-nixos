@@ -2,6 +2,19 @@
 
 Personal, multi-host NixOS configuration built with flakes and Home Manager. The same repository manages a desktop PC, a laptop, and a server; each host selects reusable features instead of maintaining an independent configuration.
 
+## Project direction
+
+Improve documentation and repository accessibility for my-nixos, a personal
+multi-host NixOS infrastructure configuration. Preserve the maintainer's existing
+workflows and architecture while allowing interested users to understand, adapt,
+and independently reuse the configuration without requiring private infrastructure.
+
+The maintainer's desktop, laptop, and server remain the primary use case. Reuse
+starts with understanding the existing choices and adapting them to your own
+hardware and services; the existing host profiles are not installation defaults
+for other machines. See [installation and source modes](docs/installation.md) for
+independent use without the maintainer's private repository or services.
+
 ## Hosts
 
 | Flake output | Purpose | Entry point |
