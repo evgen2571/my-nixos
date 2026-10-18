@@ -28,7 +28,7 @@ selection, not an added `mkForce`.
 | User apps: Bitwarden, Bruno, Chrome, Notion, osu!lazer, Slack off | Shared stable default | Shared desktop selection |
 | User Niri/Noctalia/screen recorder on; Hyprland/end4 dotfiles off | Shared stable default | Shared desktop selection; profiles still choose workspace/Noctalia variants |
 | FFmpeg/workstation, Dolphin/Yazi on | Shared stable default | Shared desktop selection; bundle implementation unchanged |
-| Actline aliases and public CA | Shared stable default | Narrow private desktop overrides; unchanged aliases/CA, no server trust expansion |
+| Actline development aliases and CA trust | Private desktop override | Private host modules reference `../certs/actline-dev-rootCA.pem` in the private repository; the same trust is applied on PC/laptop only, never server |
 | GNOME, OpenTabletDriver, PC-only Plasma selection | Host override | Local desktop blocks; GNOME differs |
 | Bluetooth, NVIDIA, hardware screen recorder | Intentionally duplicated for clarity/safety | Local hardware blocks, including identical toggles; GPU ownership remains visible |
 | PC Zenless Zone Zero/Sunshine off, laptop Waydroid on; virtualization differs | Host override | Local system blocks |
@@ -55,7 +55,7 @@ Steam enabled on both desktop hosts. The comparison evaluates
 Home Manager `my.user` (the result of `my.primaryUser.home.settings`), plus
 `networking.extraHosts`, public CA content hashes, greetd settings,
 display-manager default session/packages, Niri and greetd/sudo PAM settings.
-Derivations are represented by their derivation paths; public certificate paths
+Derivations are represented by their derivation paths; certificate paths
 are compared by content hash. No private key or secret contents are read.
 
 The temporary matrix expression used for both captures was:
@@ -98,7 +98,7 @@ cmp /tmp/my-nixos-17/before.json /tmp/my-nixos-17/after.json
 Validation completed without live activation:
 
 - `cmp /tmp/my-nixos-17/before.json /tmp/my-nixos-17/after.json`: identical for all three hosts.
-- `nix fmt hosts/common/desktop.nix hosts/common/actline-development.nix hosts/pc/profile.nix hosts/laptop/profile.nix hosts/pc/configuration.nix hosts/laptop/configuration.nix`: passed. Bare `nix fmt` failed because this formatter expects file arguments.
+- Historical formatting result: `nix fmt` passed with explicit files. The former `hosts/common/actline-development.nix` was subsequently removed by M02.5; rerun formatting against currently tracked files, not that archived command.
 - `nix flake check --no-build`: passed (evaluation only).
 - `nix flake check`: passed (all registered flake checks).
 - `nix build .#nixosConfigurations.nixos-pc.config.system.build.toplevel .#nixosConfigurations.nixos-lp.config.system.build.toplevel --no-link`: passed for both desktops.
