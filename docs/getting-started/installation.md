@@ -38,9 +38,7 @@ until boot and first access work.
 | Desktop or laptop | `moduleProfiles.desktop` | Desktop/session, user applications, and development modules |
 
 The module profile makes options available; it doesn't turn them on. My PC and
-laptop use Niri with Noctalia; the laptop also enables GNOME. Plasma, Hyprland,
-and Cinnamon modules exist as alternatives, but aren't the default starting
-path. See [customization](../guides/customization.md) when you're ready to select
+laptop use Niri with Noctalia; the laptop also enables GNOME. See [customization](../guides/customization.md) when you're ready to select
 features. Don't import `hosts/common/desktop.nix` wholesale unless you want its
 full application selection.
 

@@ -1,6 +1,0 @@
-[Keyboard]
-# Match config/niri/sub/input.kdl so terminal and Neovim receive the same
-# physical key repeat timings in either session.
-KeyRepeat=repeat
-RepeatDelay=250
-RepeatRate=35

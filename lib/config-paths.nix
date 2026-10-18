@@ -7,8 +7,6 @@ let
     value.source = source;
   };
 
-  mkXdgSourceSet = entries: listToAttrs (map (entry: mkXdgSource entry.target entry.source) entries);
-
   paths = rec {
     dev = {
       fish.configDir = root + "/config/fish";
@@ -18,8 +16,6 @@ let
     };
 
     wm = {
-      hyprlandConfigDir = root + "/config/hyprland";
-      kdeplasmaConfigDir = root + "/config/kdeplasma";
       niriConfigDir = root + "/config/niri";
       noctaliaConfigDir = root + "/config/noctalia";
     };
@@ -92,37 +88,6 @@ let
         // {
           "niri/sub/workspaces.kdl".source = configDir + "/sub/${workspacesFile}";
         };
-
-      hyprland =
-        {
-          configDir ? wm.hyprlandConfigDir,
-        }:
-        {
-          "hypr/hyprland.conf".source = configDir + "/hyprland.conf";
-          "hypr/sub" = {
-            source = configDir + "/sub";
-            recursive = true;
-          };
-        };
-
-      kdeplasma =
-        {
-          configDir ? wm.kdeplasmaConfigDir,
-        }:
-        mkXdgSourceSet [
-          {
-            target = "kcminputrc";
-            source = configDir + "/kcminputrc";
-          }
-          {
-            target = "kwinrc";
-            source = configDir + "/kwinrc";
-          }
-          {
-            target = "kxkbrc";
-            source = configDir + "/kxkbrc";
-          }
-        ];
     };
   };
 in

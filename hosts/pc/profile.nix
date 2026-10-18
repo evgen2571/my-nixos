@@ -7,7 +7,6 @@
 
   my = {
     desktop = {
-      kdeplasma.enable = false;
       gnome.enable = false;
       opentabletdriver.enable = true;
     };
@@ -20,7 +19,6 @@
 
     system = {
       apps = {
-        zenlessZoneZero.enable = false;
       };
 
       services = {
@@ -61,7 +59,6 @@
     };
 
     desktop = {
-      kdeplasmaConfig.enable = false;
       niriConfig = {
         workspaceProfile = "pc";
       };
