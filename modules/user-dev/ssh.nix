@@ -2,20 +2,11 @@
   config,
   lib,
   pkgs,
-  osConfig,
   ...
 }:
 
 let
   cfg = config.my.user.dev.ssh;
-
-  agentIdentity =
-    if osConfig.networking.hostName == "nixos-pc" then
-      "~/.ssh/id_ed25519_nixos_pc"
-    else if osConfig.networking.hostName == "nixos-lp" then
-      "~/.ssh/id_ed25519_nixos_lp"
-    else
-      null;
 in
 {
   options.my.user.dev.ssh = {
@@ -57,13 +48,6 @@ in
           HostName = "github.com";
           User = "git";
           IdentityFile = "~/.ssh/id_ed25519_github";
-          IdentitiesOnly = true;
-        };
-
-        "agent" = {
-          HostName = "100.126.39.112";
-          User = "agent";
-          IdentityFile = agentIdentity;
           IdentitiesOnly = true;
         };
 

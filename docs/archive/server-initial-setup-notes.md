@@ -52,14 +52,14 @@ Public keys live in `keys/`:
 keys/
 ├── README.md
 ├── users/
-│   └── evgen2571/
+│   └── example-user/
 │       ├── pc.pub       (main PC)
 │       └── laptop.pub   (laptop)
 └── hosts/               (reserved for SSH host identity/trust public keys)
 ```
 
-- `users/evgen2571/pc.pub` belongs to the main PC.
-- `users/evgen2571/laptop.pub` belongs to the laptop.
+- `users/example-user/pc.pub` belongs to the main PC.
+- `users/example-user/laptop.pub` belongs to the laptop.
 - Only public keys are committed. Private keys remain on their respective
   devices.
 - Both keys authenticate as user `server`.
@@ -70,8 +70,8 @@ They are declared in `hosts/server/configuration.nix`:
 
 ```nix
 my.primaryUser.authorizedKeyFiles = [
-  ../../keys/users/evgen2571/pc.pub
-  ../../keys/users/evgen2571/laptop.pub
+  ../../keys/users/example-user/pc.pub
+  ../../keys/users/example-user/laptop.pub
 ];
 ```
 
@@ -92,7 +92,7 @@ my.primaryUser.authorizedKeyFiles = [
 4. Verify the revoked key no longer authenticates.
 
 > Public keys are not private credentials, but the comment field (e.g.
-> `evgen2571-pc`) may reveal a device name or email address. Choose
+> `example-device`) may reveal a device name or email address. Choose
 > appropriately.
 
 ## 6. Hardware configuration

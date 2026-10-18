@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ lib, pkgs, ... }:
 
 {
   imports = [
@@ -26,8 +26,7 @@
 
   my.primaryUser = {
     enable = true;
-    name = "evgen2571";
-    description = "Eugene A";
+    name = lib.mkDefault "operator";
     shell = pkgs.fish;
     extraGroups = [
       "networkmanager"
@@ -36,11 +35,6 @@
       "input"
       "git"
     ];
-
-    git = {
-      userEmail = "evgen.10.02.2008.83@gmail.com";
-      signingKey = "~/.ssh/id_ed25519_github";
-    };
   };
 
   swapDevices = [

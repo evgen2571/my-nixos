@@ -14,6 +14,10 @@
     in
     {
       checks = {
+        personal-metadata = import ../tests/migration/metadata.nix {
+          inherit pkgs;
+          configurations = inputs.self.nixosConfigurations;
+        };
         migration-sources =
           assert import ../tests/migration/sources.nix;
           pkgs.runCommand "migration-source-checks"

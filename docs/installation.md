@@ -37,6 +37,9 @@ The committed `private` input is the tracked, empty `templates/private` flake. A
 optional private repository exports just two maps, not another host builder.
 See its [guide](../templates/private/README.md) for setup and pinned overrides.
 
+See [personal metadata ownership](personal-metadata.md) for neutral account defaults,
+private leaf overrides and the deliberately retained metadata boundary.
+
 ## Existing production hosts
 
 Existing outputs explicitly select `private` and keep `requirePrivate = true`.

@@ -5,7 +5,10 @@
    `nixos-generate-config --root /mnt` from installation media). Do not reuse a
    maintainer host's UUIDs. Review mounts, swap, firmware/bootloader, CPU/graphics
    firmware, network interface/DHCP or NetworkManager, timezone and disk encryption.
-2. Set the hostname and primary user. Keep system/Home Manager state versions
+2. Set the hostname and your own primary username; the shared `home/default.nix`
+   adapter derives Home Manager identity and HOME. Optional Git name/email/signing
+   selection belongs in `my.primaryUser.git`; enable `my.user.dev.git` through
+   `my.primaryUser.home.settings` in the profile. Keep system/Home Manager state versions
    explicit and appropriate to the initial installation. Supply your SSH **public**
    key and an explicit firewall rule reaching the configured SSH port/interface.
    Passwords and root SSH stay locked. Test reachability from your console before
