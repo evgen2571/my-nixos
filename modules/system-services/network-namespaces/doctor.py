@@ -322,10 +322,17 @@ def inspect(c, old, now):
         recoverable = fresh and len(c['urls']) >= 2 and results and all(r in (6, 7, 28) for r in results)
         return ('DNS_UNAVAILABLE' if dns_failure else 'EGRESS_UNAVAILABLE'), (provider if not client and recoverable else None), details
     if c['role'] == 'gateway':
-        # Only restart relay after upstream egress/DNS has passed.
+        # The relay query runs in the isolated health unit, not through
+        # ip netns exec in this host-side recovery service. The latter can
+        # fail for sandbox/mount reasons unrelated to live DNS connectivity.
         dns = f'{prefix}-dns.service'
-        rc, answer = inside('dig', '+short', '+time=1', '+tries=1', '@10.77.0.1', 'api.github.com')
-        if rc or not answer.strip() or units[dns].get('ActiveState') not in ('active', 'activating'):
+        relay = probe.get('relay_dns')
+        if (not isinstance(relay, dict) or not isinstance(relay.get('exit_code'), int)
+                or relay['exit_code'] == 125):
+            # Absent/failed diagnostic evidence must never restart a working relay.
+            return 'UNKNOWN', None, details
+        if (relay['exit_code'] != 0 or not relay.get('answered')
+                or units[dns].get('ActiveState') not in ('active', 'activating')):
             return 'DNS_UNAVAILABLE', dns, details
     return ('HEALTHY' if all(r == 0 for r in results) else 'EGRESS_DEGRADED'), None, details
 
@@ -525,7 +532,14 @@ def probe(c):
             results.append(rc)
     now = int(time.time())
     runtime = Path(c['runtime'])
-    save(runtime / 'probes.json', dict(checked_at=now, results=results))
+    snapshot = dict(checked_at=now, results=results)
+    if c['role'] == 'gateway':
+        # systemd has already entered /run/netns/vpn and mounted the private
+        # resolver. Record only an exit code and boolean, never response data.
+        rc, answer = command('dig', '+short', '+time=2', '+tries=1',
+                             '@10.77.0.1', 'api.github.com', 'A', timeout=5)
+        snapshot['relay_dns'] = dict(exit_code=rc, answered=bool(answer.strip()))
+    save(runtime / 'probes.json', snapshot)
     # Preserve the original IPv4 readiness contract; IPv6-only success is degradation.
     if 0 in results[:len(c['urls'])]:
         tmp = runtime / 'ready.new'

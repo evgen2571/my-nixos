@@ -47,7 +47,8 @@ let
       wireguard-tools
       tailscale
       curl
-      bind
+      bind.dnsutils
+      procps
     ];
     text = ''
       exec python3 ${./doctor.py} ${settings} "$@"

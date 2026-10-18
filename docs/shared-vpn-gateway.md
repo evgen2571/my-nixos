@@ -118,6 +118,14 @@ evidence says UNKNOWN; partial probe success says DEGRADED while IPv4 readiness
 remains fresh. Scheduler activity is reported separately: stopping the recovery
 timer does not invalidate a still-fresh successful readiness check.
 
+For the gateway, the isolated health oneshot also tests the shared DNS relay at
+`10.77.0.1` and stores only `relay_dns.exit_code` and `relay_dns.answered`
+in `probes.json`. Recovery consumes the same probe snapshot instead of
+running a separate `ip netns exec ... dig` from its host-side systemd sandbox.
+Missing or non-executable DNS diagnostics produce `UNKNOWN` without consuming
+the DNS restart budget. A confirmed failed relay probe may still trigger bounded
+relay recovery once isolated upstream HTTPS has succeeded.
+
 The restricted launcher's readiness failure prints this same diagnosis before
 refusing entry. It retains fresh local interface, IPv4/IPv6 route, firewall,
 handshake and resolver checks, plus the original 90-second **IPv4** HTTPS marker

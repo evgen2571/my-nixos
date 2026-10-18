@@ -129,7 +129,7 @@ let
     systemd.services.netns-vpn-health.serviceConfig.ExecStart = lib.mkForce (
       pkgs.writeShellScript "test-isolated-probes" ''
         now=$(${pkgs.coreutils}/bin/date +%s)
-        echo "{\"checked_at\":$now,\"results\":[0,0,0,0]}" > /run/network-namespaces/vpn/probes.json
+        echo "{\"checked_at\":$now,\"results\":[0,0,0,0],\"relay_dns\":{\"exit_code\":0,\"answered\":true}}" > /run/network-namespaces/vpn/probes.json
         echo "$now" > /run/network-namespaces/vpn/ready
       ''
     );

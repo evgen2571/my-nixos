@@ -70,7 +70,12 @@ if cmd == 'systemctl':
         (root/'invocation').write_text('new-invocation')
     elif args[:2] == ['start', 'netns-vpn-health.service']:
         if s.get('restart_during_probe'): (root/'invocation').write_text('new-invocation')
-        (root/'runtime'/'probes.json').write_text(json.dumps({'checked_at':int(time.time()), 'results':s['probes']}))
+        snapshot = {'checked_at':int(time.time()), 'results':s['probes']}
+        if not s.get('client'):
+            snapshot['relay_dns'] = s.get('relay_dns', {
+                'exit_code': 9 if reason == 'dns-relay' else 125 if reason == 'dns-diagnostic' else 0,
+                'answered': reason not in ('dns-relay', 'dns-diagnostic')})
+        (root/'runtime'/'probes.json').write_text(json.dumps(snapshot))
         if 0 in s['probes'][:2]:
             (root/'runtime'/'ready').write_text(str(int(time.time())))
     sys.exit(0)
@@ -80,6 +85,11 @@ if cmd == 'tailscale':
 if cmd == 'journalctl':
     scope = next((x.split('=',1)[1] for x in args if x.startswith('_SYSTEMD_INVOCATION_ID=')), '')
     print(s.get('logs', {}).get(scope, s.get('log','') if scope == 'test-invocation' else ''))
+    sys.exit(0)
+if cmd == 'dig':
+    if reason == 'dns-diagnostic': sys.exit(125)
+    if reason == 'dns-relay': sys.exit(9)
+    print('192.0.2.1')
     sys.exit(0)
 if cmd == 'curl':
     if '--silent' in args:
@@ -110,7 +120,7 @@ if cmd == 'ip':
 sys.exit(0)
 '''.replace('PYTHON_EXECUTABLE', sys.executable))
         stub.chmod(0o755)
-        for name in ['systemctl', 'tailscale', 'journalctl', 'curl', 'ip']:
+        for name in ['systemctl', 'tailscale', 'journalctl', 'curl', 'ip', 'dig']:
             (self.root / name).symlink_to(stub)
         self.env = dict(os.environ, PATH=str(self.root) + ':' + os.environ['PATH'], VPN_TEST_ROOT=str(self.root))
         (self.runtime / 'resolv.conf').write_text('nameserver 10.0.0.1\n')
@@ -241,6 +251,37 @@ sys.exit(0)
         for _ in range(3): status = self.run_doctor()
         self.assertEqual(status['reason'], 'DNS_UNAVAILABLE')
         self.assertEqual(self.repairs(), [['systemctl', 'restart', 'netns-vpn-dns.service']])
+
+    def test_gateway_relay_probe_is_recorded_in_isolated_health_snapshot(self):
+        self.run_doctor('probe')
+        snapshot = json.loads((self.runtime/'probes.json').read_text())
+        self.assertEqual(snapshot['relay_dns'], {'exit_code': 0, 'answered': True})
+        calls = [json.loads(x) for x in (self.root/'calls').read_text().splitlines()]
+        self.assertTrue(any(x[0] == 'dig' and '@10.77.0.1' in x for x in calls))
+        self.assertFalse(any(x[0] == 'ip' and 'dig' in x for x in calls))
+        self.scenario['reason'] = 'dns-relay'
+        self.run_doctor('probe')
+        snapshot = json.loads((self.runtime/'probes.json').read_text())
+        self.assertEqual(snapshot['relay_dns'], {'exit_code': 9, 'answered': False})
+
+    def test_dns_diagnostic_failure_never_consumes_recovery_budget(self):
+        self.prime()
+        self.scenario['reason'] = 'dns-diagnostic'
+        for _ in range(4):
+            status = self.run_doctor()
+            self.assertEqual(status['reason'], 'UNKNOWN')
+            self.assertEqual(status['details']['probes']['relay_dns']['exit_code'], 125)
+        self.assertEqual(status['attempts'], 0)
+        self.assertEqual(self.repairs(), [])
+        self.scenario['reason'] = 'healthy'
+        self.assertEqual(self.run_doctor()['reason'], 'HEALTHY')
+
+    def test_missing_relay_probe_evidence_never_restarts_dns(self):
+        self.prime()
+        self.scenario['relay_dns'] = None
+        for _ in range(4):
+            self.assertEqual(self.run_doctor()['reason'], 'UNKNOWN')
+        self.assertEqual(self.repairs(), [])
 
     def test_stale_status_and_last_failure_survive_success(self):
         self.scenario['reason'] = 'offline'
