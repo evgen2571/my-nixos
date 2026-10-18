@@ -64,9 +64,11 @@ in
     # Retain the namespace/firewall and app isolation, but never start stale transports.
     systemd.services = lib.mkIf (!available) {
       netns-vpn-shared.serviceConfig.ExecCondition = lib.mkBefore [ "${pkgs.coreutils}/bin/false" ];
-      hide-me-vpn = lib.mkIf (config.networking.hostName == "nixos-server") {
-        serviceConfig.ExecCondition = lib.mkBefore [ "${pkgs.coreutils}/bin/false" ];
-      };
+      hide-me-vpn =
+        lib.mkIf (config.my.system.services.networkNamespaces.namespaces.vpn.shared.role == "gateway")
+          {
+            serviceConfig.ExecCondition = lib.mkBefore [ "${pkgs.coreutils}/bin/false" ];
+          };
     };
   };
 }

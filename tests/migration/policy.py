@@ -3,19 +3,33 @@
 
 from pathlib import Path
 import subprocess
+import json
 import sys
 import tempfile
 import unittest
 
-SCRIPT = Path(__file__).resolve().parents[2] / "lib/check-sops-policy.py"
+SCRIPT = Path(__file__).resolve().parents[2] / "lib/check-sops-source.py"
 
 
 class Policy(unittest.TestCase):
     def run_policy(self, policy, host="fixture"):
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)
+            encrypted = "ENC[AES256_GCM,data:AA==,iv:AA==,tag:AA==,type:str]"
+            wrapped = "-----BEGIN AGE ENCRYPTED FILE-----\nfixture-only\n-----END AGE ENCRYPTED FILE-----"
             (root / "cipher.yaml").write_text(
-                "sops:\n  age:\n    - recipient: fixture-admin\n    - recipient: fixture-host\n"
+                json.dumps(
+                    {
+                        "example": encrypted,
+                        "sops": {
+                            "mac": encrypted,
+                            "age": [
+                                {"recipient": name, "enc": wrapped}
+                                for name in ["fixture-admin", "fixture-host"]
+                            ],
+                        },
+                    }
+                )
             )
             (root / "policy.yaml").write_text(policy)
             return subprocess.run(
@@ -28,6 +42,40 @@ class Policy(unittest.TestCase):
                 ],
                 capture_output=True,
             )
+
+    def test_source_without_consumers_still_requires_encryption(self):
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / "source.yaml"
+            for text in ["example: plaintext", "sops: {}", "[]", "invalid: ["]:
+                source.write_text(text)
+                result = subprocess.run(
+                    [sys.executable, str(SCRIPT), str(source), "-", "fixture"],
+                    capture_output=True,
+                )
+                self.assertNotEqual(result.returncode, 0)
+                self.assertNotIn(b"plaintext", result.stderr)
+
+    def test_private_source_without_consumers_rejects_malformed_age(self):
+        encrypted = "ENC[AES256_GCM,data:AA==,iv:AA==,tag:AA==,type:str]"
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / "source.yaml"
+            for age in [
+                "garbage",
+                [None],
+                [{}],
+                [{"recipient": "fixture-host", "enc": "plaintext"}],
+            ]:
+                source.write_text(
+                    json.dumps(
+                        {"example": encrypted, "sops": {"mac": encrypted, "age": age}}
+                    )
+                )
+                result = subprocess.run(
+                    [sys.executable, str(SCRIPT), str(source), "-", "fixture"],
+                    capture_output=True,
+                )
+                self.assertNotEqual(result.returncode, 0)
+                self.assertNotIn(b"garbage", result.stderr)
 
     def test_matching_host_policy_accepts_same_recipients(self):
         result = self.run_policy(

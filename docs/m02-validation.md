@@ -26,7 +26,7 @@ force policies and mutable state ownership remain unchanged.
 
 - Public `nix flake show` and `nix flake check --no-build`; all three toplevel
   derivation evaluations without a private checkout input or age identity.
-- Full public registered flake checks, including existing namespace/systemd VM,
+- Full public and private-input registered flake checks, including existing namespace/systemd VM,
   scripts, recovery, synthetic module, Niri and config-path checks.
 - Credentialed non-activating PC/laptop/server toplevel builds.
 - Patched nixos-rebuild package build with 62 passing upstream/regression tests;
@@ -46,8 +46,14 @@ force policies and mutable state ownership remain unchanged.
   unsafe permissions, a wrong identity and a missing identity. No real host key
   or credential was used. Normal local metadata tests skip their root-only case;
   the guest exercises that boundary.
-- Local recipient-policy tests reject unmatched/malformed policy and broadened or
-  reduced recipient scope without including document values in diagnostics.
+- Selected-source validation runs independently of consumers; negative tests reject
+  plaintext, malformed age metadata and missing encrypted data even with no secret
+  declarations. Local policy tests reject unmatched/malformed policy and broadened
+  or reduced recipient scope without including document values in diagnostics.
+- Standards/spec reviews identified host-name branching and missing source-level
+  validation for zero consumers; both were corrected and regression-checked.
+- Clean committed public clone evaluates all hosts without private access. Pinned
+  git+file private override evaluates successfully and public lock stays byte-identical.
 - Changed Nix files formatted; changed documentation links and `git diff --check`.
 
 ## Operational limits
