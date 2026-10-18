@@ -167,7 +167,13 @@ let
         if isClient then "netns-${name}-shared" else vpn
       }.service || reject SERVICE_UNAVAILABLE
       for chain in output input forward; do
-        ip netns exec ${name} nft list chain inet agent_workspace "$chain" | grep -q 'policy drop;' || reject FIREWALL_ERROR
+        # Read the complete chain before checking it. With pipefail, nft |
+        # grep -q can report a broken pipe even when the drop policy exists.
+        # Use an immutable nft executable instead of relying on the caller PATH.
+        chain_rules=$(ip netns exec ${name} ${pkgs.nftables}/bin/nft list chain inet agent_workspace "$chain") ||
+          reject "FIREWALL_ERROR ($chain chain unreadable)"
+        [[ "$chain_rules" == *"policy drop;"* ]] ||
+          reject "FIREWALL_ERROR ($chain chain has no drop policy)"
       done
       ip -n ${name} -4 route get 1.1.1.1 | grep -q 'dev ${
         if isClient then "shared0" else "hm0"
