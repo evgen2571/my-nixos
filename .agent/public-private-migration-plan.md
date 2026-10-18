@@ -15,7 +15,15 @@ Only declarative source, encrypted documents and narrow metadata move. No activa
 - [x] Evaluate all three modes and template host; compare credentialed semantics.
   Run focused/full registered checks and non-activating host builds where supported.
 - [x] Review standards and spec independently; correct both findings and commit fixes.
-- [ ] Open separate public/private PRs after final checks.
+- [x] Open separate main/private PRs after final checks:
+  [my-nixos #35](https://github.com/evgen2571/my-nixos/pull/35) and
+  [private #1](https://github.com/evgen2571/my-nixos-private/pull/1).
+
+Evidence: docs/m02-validation.md. Final standalone none/local builds, VM key-only
+login and synthetic guard cases passed; all three credentialed builds, full
+public/private checks, clean-clone evaluation and pinned-input lock checks passed.
+No activation, visibility change or history rewrite. Live install/provider/recovery
+acceptance and the publication audit remain operator follow-ups.
 
 Watch: direct rebuild profile mutation precedes upstream pre-switch checks;
 missing identity and source material must not silently deploy. No secret reading,
