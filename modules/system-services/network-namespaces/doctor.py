@@ -1,5 +1,6 @@
 """Local VPN diagnosis and bounded recovery. Never accepts application commands."""
 import fcntl
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -34,17 +35,23 @@ def save(path, value, mode=0o644):
 
 def unit(name):
     rc, out = command('systemctl', 'show', name, '-p',
-                      'LoadState,ActiveState,UnitFileState,Result,ActiveEnterTimestampMonotonic,InvocationID', timeout=2)
+                      'LoadState,ActiveState,UnitFileState,Result,ActiveEnterTimestampMonotonic,ExecMainStartTimestampMonotonic,ConditionResult,InvocationID', timeout=2)
     return dict(line.split('=', 1) for line in out.splitlines() if '=' in line) if not rc else {}
 
 
+def deliberately_stopped(s):
+    return (s.get('ActiveState') == 'inactive' and s.get('Result') == 'success'
+            and s.get('ConditionResult') != 'no'
+            and int(s.get('ExecMainStartTimestampMonotonic', '0') or 0) > 0)
+
+
 def credentials(c):
-    # Metadata only: never read or hash private token contents into public status.
+    # Private fingerprints survive SOPS /run re-materialization across reboot.
+    # Only hold.json (0600) contains them; status/journal never does.
     result = []
     for path in (c.get('bootstrap'), c.get('token')):
         try:
-            s = Path(path).stat() if path else None
-            result.append([s.st_ino, s.st_mtime_ns, s.st_size] if s else None)
+            result.append(hashlib.sha256(Path(path).read_bytes()).hexdigest() if path else None)
         except OSError:
             result.append(None)
     return result
@@ -119,7 +126,7 @@ def inspect(c, old, now):
     if not client:
         expected += [f'{prefix}-underlay.service', provider, f'{prefix}-dns.service']
     units = {u: unit(u) for u in expected}
-    details = {'units': units}
+    details = {'units': units, 'generation': str(Path('/run/current-system').resolve())}
     for u, s in units.items():
         if s.get('LoadState') == 'not-found' or not s:
             return 'DEPLOYMENT_MISMATCH', None, details
@@ -128,10 +135,10 @@ def inspect(c, old, now):
     hold = read_json(Path(c['state']) / 'hold.json')
     if hold and hold.get('credentials') == credentials(c):
         return hold['reason'], None, details
-    if hold and units[provider].get('ActiveState') != 'active':
-        return 'PROVIDER_UNHEALTHY', provider, details
+    released_hold = bool(hold)
+    details['provider_reauth_pending'] = released_hold
     for u, s in units.items():
-        if s.get('ActiveState') == 'inactive' and s.get('Result') == 'success':
+        if deliberately_stopped(s) and not (u == provider and released_hold):
             return ('TAILSCALE_OFFLINE' if u == 'tailscaled.service' else 'DISABLED'), None, details
     for path in [c['key']] + ([c['bootstrap']] if c.get('bootstrap') and not client else []):
         try:
@@ -144,12 +151,15 @@ def inspect(c, old, now):
     def inside(*args):
         return command('ip', 'netns', 'exec', name, *args)
     # Independent host probes are diagnosis only, never an app/DNS fallback.
-    if all(command('curl', '--noproxy', '*', '-4', '-fsS', '--connect-timeout', '2',
-                   '--max-time', '4', '--output', '/dev/null', u)[0] for u in c['urls']):
+    if all(command('curl', '--noproxy', '*', family, '-fsS', '--connect-timeout', '2',
+                   '--max-time', '4', '--output', '/dev/null', u)[0]
+           for family in ('-4', '-6') for u in c['urls']):
         return 'HOST_OFFLINE', None, details
     rc, tail = command('tailscale', 'status', '--json')
     try:
-        running = not rc and json.loads(tail).get('BackendState') == 'Running'
+        backend = json.loads(tail).get('BackendState') if not rc else None
+        details['tailscale'] = backend if backend in ('Running', 'Stopped', 'NeedsLogin', 'NeedsMachineAuth', 'Starting') else 'unavailable'
+        running = backend == 'Running'
     except ValueError:
         running = False
     if not running:
@@ -166,7 +176,7 @@ def inspect(c, old, now):
         if rc or 'masquerade' not in nat or rc2 or forwarding.split() != ['1', '1']:
             return 'FIREWALL_ERROR', None, details
     transport = f'{prefix}-shared.service'
-    if ip('link', 'show', 'shared0')[0] or units[transport].get('ActiveState') == 'failed':
+    if ip('link', 'show', 'shared0')[0] or units[transport].get('ActiveState') not in ('active', 'activating'):
         return 'TRANSPORT_MISSING', transport, details
     _, peers = inside('wg', 'show', 'shared0', 'peers')
     if set(peers.split()) != set(c['peers']):
@@ -190,10 +200,10 @@ def inspect(c, old, now):
             return evidence, provider if evidence == 'PROVIDER_API_UNAVAILABLE' else None, details
     if not client:
         underlay = f'{prefix}-underlay.service'
-        if (ip('link', 'show', 'tap0')[0] or units[underlay].get('ActiveState') == 'failed'
+        if (ip('link', 'show', 'tap0')[0] or units[underlay].get('ActiveState') not in ('active', 'activating')
                 or 'via 10.0.2.2 dev tap0' not in ip('-4', 'route', 'show', 'table', 'main', 'default')[1]):
             return 'UNDERLAY_UNAVAILABLE', underlay, details
-        if ip('link', 'show', 'hm0')[0] or units[provider].get('ActiveState') == 'failed':
+        if ip('link', 'show', 'hm0')[0] or units[provider].get('ActiveState') not in ('active', 'activating'):
             return 'PROVIDER_UNHEALTHY', provider, details
     interface = 'shared0' if client else 'hm0'
     for family, address in [('-4', '1.1.1.1'), ('-6', '2606:4700:4700::1111')]:
@@ -225,7 +235,7 @@ def inspect(c, old, now):
         # Only restart relay after upstream egress/DNS has passed.
         dns = f'{prefix}-dns.service'
         rc, answer = inside('dig', '+short', '+time=1', '+tries=1', '@10.77.0.1', 'api.github.com')
-        if rc or not answer.strip() or units[dns].get('ActiveState') == 'failed':
+        if rc or not answer.strip() or units[dns].get('ActiveState') not in ('active', 'activating'):
             return 'DNS_UNAVAILABLE', dns, details
     return ('HEALTHY' if all(r == 0 for r in results) else 'EGRESS_DEGRADED'), None, details
 
@@ -269,24 +279,31 @@ def reconcile(c):
             hold_path = Path(c['state']) / 'hold.json'
             if not hold_path.exists():
                 save(hold_path, {'reason': reason, 'credentials': credentials(c)}, 0o600)
-                command('systemctl', 'stop', f'hide-me-{c["name"]}.service', timeout=40)
+            provider = f'hide-me-{c["name"]}.service'
+            if details.get('units', {}).get(provider, {}).get('ActiveState') in ('active', 'activating', 'deactivating'):
+                command('systemctl', 'stop', provider, timeout=40)
+                save(hold_path, {'reason': reason, 'credentials': credentials(c)}, 0o600)
     elif component and failures >= 3 and now >= grace_until:
         if attempts >= 3 or now < retry_at:
             phase = 'RECOVERY_COOLDOWN'
         else:
             # Recheck a concurrent deliberate stop before issuing a repair.
             current = unit(component)
-            if current.get('ActiveState') == 'inactive' and current.get('Result') == 'success' and not read_json(Path(c['state']) / 'hold.json'):
+            if deliberately_stopped(current) and not read_json(Path(c['state']) / 'hold.json'):
                 component = None
                 reason, phase = 'DISABLED', 'DISABLED'
             else:
                 attempts += 1
                 retry_at = now + (120, 300, 900)[attempts - 1]
                 phase = 'VERIFYING'
+                # Persist budget before a blocking repair, including monitor interruption.
+                save(state_path, dict(old, attempts=attempts, retry_at=retry_at, phase=phase,
+                                      reason=reason, message=MESSAGES[reason][0],
+                                      failures=failures, recovery_pending=True, last_component=component))
                 command('systemctl', 'reset-failed', component)
                 targets = [component]
                 if component == f'netns-{c["name"]}-underlay.service':
-                    # Requires= propagates an explicit underlay restart to provider stop.
+                    # Restore both coupled components after repairing a broken provider underlay.
                     targets.append(f'hide-me-{c["name"]}.service')
                 command('systemctl', 'restart', *targets, timeout=150)
             # Restart completion is NOT success. Next isolated check must verify it.
@@ -321,10 +338,13 @@ def status(c, verbose=False, entry_failed=False):
         expected += [f'hide-me-{c["name"]}.service', f'netns-{c["name"]}-underlay.service', f'netns-{c["name"]}-dns.service']
     for u in expected:
         info = unit(u)
+        managed_stop = (u == f'hide-me-{c["name"]}.service' and s.get('details', {}).get('provider_reauth_pending'))
+        stopped = (deliberately_stopped(info) or (u.endswith('.timer') and info.get('ActiveState') == 'inactive')) and not managed_stop
         if info.get('LoadState') == 'not-found':
             s.update(reason='DEPLOYMENT_MISMATCH', phase='ACTION_REQUIRED',
                      message=MESSAGES['DEPLOYMENT_MISMATCH'][0], next_action=MESSAGES['DEPLOYMENT_MISMATCH'][1])
-        elif info.get('LoadState') == 'masked' or (info.get('ActiveState') == 'inactive' and s.get('reason') not in ('AUTH_REJECTED', 'PROVIDER_RATE_LIMITED')):
+            break
+        elif s.get('reason') != 'DEPLOYMENT_MISMATCH' and (info.get('LoadState') == 'masked' or (stopped and s.get('reason') not in ('AUTH_REJECTED', 'PROVIDER_RATE_LIMITED'))):
             s.update(reason='DISABLED', phase='DISABLED', message=MESSAGES['DISABLED'][0],
                      next_action=MESSAGES['DISABLED'][1])
     if entry_failed and s.get('reason') in ('HEALTHY', 'EGRESS_DEGRADED'):
@@ -340,7 +360,9 @@ def status(c, verbose=False, entry_failed=False):
               'DEPLOYMENT_MISMATCH': 'active system generation'}
     print(f'Layer: {layers.get(s.get("reason"), "local VPN / egress")}')
     print(f'Reason: {s.get("reason", "UNKNOWN")} — {s.get("message", MESSAGES["UNKNOWN"][0])}')
-    print(f'App traffic: fail-closed; last successful check: {s.get("last_success", "never")}; status age: {age}s')
+    last_success = s.get('last_success', 0)
+    success_age = f'{int(time.time()) - last_success}s ago' if last_success else 'never'
+    print(f'App traffic: fail-closed; last successful check: {success_age}; status age: {age}s')
     print(f'Recovery: attempts {s.get("attempts", 0)}/3; next retry no earlier than {s.get("retry_at", 0)}')
     print(f'Next: {s.get("next_action", MESSAGES["UNKNOWN"][1])}')
     if verbose:
@@ -381,7 +403,10 @@ def main():
     # ExecCondition must not wait on a lock held by the restarting monitor.
     if mode == 'provider-allowed':
         hold = read_json(state / 'hold.json')
-        sys.exit(1 if hold and hold.get('credentials') == credentials(c) else 0)
+        if hold and hold.get('credentials') == credentials(c):
+            sys.exit(1)
+        _, route = command('ip', '-4', 'route', 'show', 'table', 'main', 'default')
+        sys.exit(0 if 'via 10.0.2.2 dev tap0' in route else 1)
     state.mkdir(parents=True, exist_ok=True, mode=0o755)
     # Serialize timer and manual resets.
     with (state / 'lock').open('a') as lock:

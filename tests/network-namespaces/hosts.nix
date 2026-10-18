@@ -35,6 +35,8 @@ assert server.my.system.services.networkNamespaces.namespaces.vpn.shared.role ==
 assert
   server.my.system.services.networkNamespaces.namespaces.vpn.bootstrapTokenFile
   == server.sops.secrets.hide-me-bootstrap-token.path;
+assert server.systemd.services.hide-me-vpn.requires == [ ];
+assert builtins.elem "netns-vpn-underlay.service" server.systemd.services.hide-me-vpn.wants;
 assert server.systemd.services ? hide-me-vpn;
 assert server.systemd.services ? netns-vpn-underlay;
 pkgs.runCommand "shared-vpn-host-profile-checks" { } "touch $out"

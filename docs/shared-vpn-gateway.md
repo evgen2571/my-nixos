@@ -136,7 +136,7 @@ Recovery policy:
   observation resets the failure debounce, but ten healthy minutes are needed
   to replenish the repair budget, preventing flapping from resetting it.
 - Repair a missing/failed local `shared0` transport; on the gateway, repair a
-  missing/failed `tap0`, provider interface, provider routes or stale provider
+  missing/failed `tap0` (including its main-table route), provider interface, provider routes or stale provider
   handshake. Do not recreate a client interface solely for a stale handshake:
   keys/endpoint/UDP policy need inspection if it persists.
 - An active provider with sustained independent DNS/connect/timeout failures on
@@ -148,6 +148,11 @@ Recovery policy:
   120/300/900-second backoff. Successful `systemctl restart` means `VERIFYING`,
   never recovery success; a later isolated check must pass. Exhaustion stays in
   `RECOVERY_COOLDOWN` until sustained health or an explicit operator reset.
+  The provider wants/orders after the underlay and gates startup on its route;
+  it stays alive through underlay process failures instead of being stranded by
+  dependency-stop propagation. An explicit guarded underlay repair starts both
+  components in one ordered transaction. Never-started/condition-skipped units
+  are distinguished from an explicit stop after a successful start.
   Each auto-restarting component also has a three-start/300-second systemd
   limit; the guarded monitor can rearm failed components after prerequisites
   return. Late SOPS provisioning is ordered before transport/provider startup.
@@ -179,6 +184,7 @@ The main reason codes are:
 | `AUTH_REJECTED` | Current provider logged HTTP 401/403; follow private credential verification below. |
 | `PROVIDER_RATE_LIMITED`, `PROVIDER_API_UNAVAILABLE` | Observed HTTP 429 or 5xx, distinct from rejected credentials. |
 | `DNS_UNAVAILABLE` | Private DNS failed; never substitute host/public DNS. |
+| `CLOCK_ERROR` | Future handshake/backwards clock evidence; verify time before repair. |
 | `FIREWALL_ERROR`, `ROUTE_ERROR` | Inspect namespace filtering/forwarding/NAT or family routes. |
 | `EGRESS_UNAVAILABLE`, `EGRESS_DEGRADED` | All or some HTTPS checks failed; inspect individual results before assigning cause. |
 
@@ -209,7 +215,9 @@ sudo /etc/network-namespaces/vpn-recovery-reset
 This does not start deliberately stopped units or bypass readiness/isolation.
 Start a deliberately stopped provider explicitly only under approved maintenance.
 An unchanged bootstrap seed preserves the provider's refreshed mutable token.
-A changed seed or mutable token's file metadata releases an authorization hold;
+Changed seed/token contents release an authorization hold; private fingerprints
+keep an identical SOPS seed re-materialized at boot from clearing it. Fingerprints
+are stored only in the root-readable hold, never in public status or journals;
 the existing prepare script alone decides when a changed bootstrap replaces the
 mutable token. The hold survives monitor restarts and reboot. A manual budget
 reset never copies or removes token files.
