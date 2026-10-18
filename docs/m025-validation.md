@@ -33,6 +33,10 @@ The private remote was verified PRIVATE before copying selected metadata.
 - Missing-private production build refuses with the existing deployment guard.
 - Changed Nix formatting, local documentation links and both Git whitespace checks.
 
+Independent Standards and Spec reviews reported no actionable findings.
+Delivery: [public PR](https://github.com/evgen2571/my-nixos/pull/37) and
+[private PR](https://github.com/evgen2571/my-nixos-private/pull/2), both targeting main.
+
 ## Intentional differences and limits
 
 Only source locations/hashes, Noctalia serialization and public-default metadata
