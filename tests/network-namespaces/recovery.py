@@ -385,6 +385,57 @@ sys.exit(0)
         self.assertEqual(self.run_doctor()['attempts'], 0)
         self.assertEqual(self.run_doctor()['attempts'], 1)
 
+    def test_fast_provider_auth_exit_still_requires_action(self):
+        # The monitor may run after the provider has already exited on HTTP 401.
+        for state in ('failed', 'inactive'):
+            with self.subTest(provider_state=state):
+                self.scenario.update(
+                    probes=[6]*4,
+                    log='Rest: [ERR] Bad HTTP response ( 401 )',
+                    units={'hide-me-vpn.service': {'active': state}},
+                )
+                if state == 'inactive':
+                    # ExecStopPost records that a failed process was not
+                    # deliberately stopped by the operator.
+                    self.env['SERVICE_RESULT'] = 'exit-code'
+                    self.run_doctor('lifecycle-stop', args=('hide-me-vpn.service',))
+                    self.env.pop('SERVICE_RESULT')
+                status = self.run_doctor()
+                self.assertEqual(status['reason'], 'AUTH_REJECTED')
+                self.assertEqual(status['phase'], 'ACTION_REQUIRED')
+                self.assertTrue((self.state/'hold.json').exists())
+                self.assertEqual(self.repairs(), [])
+                (self.state/'hold.json').unlink()
+                (self.state/'status.json').unlink()
+                (self.state/'stops'/'hide-me-vpn.service').unlink(missing_ok=True)
+
+    def test_skipped_provider_does_not_replay_old_authentication_log(self):
+        self.scenario.update(
+            probes=[6]*4, log='bad HTTP status 401',
+            units={'hide-me-vpn.service': {'active': 'inactive', 'started': '0', 'condition': 'no'}},
+        )
+        self.assertEqual(self.run_doctor()['reason'], 'PROVIDER_UNHEALTHY')
+        self.assertFalse((self.state/'hold.json').exists())
+
+    def test_renewal_does_not_replay_failed_old_invocation_401(self):
+        self.prime()
+        self.scenario.update(
+            probes=[6]*4, log='bad HTTP status 401',
+            units={'hide-me-vpn.service': {'active': 'failed'}},
+        )
+        self.assertEqual(self.run_doctor()['reason'], 'AUTH_REJECTED')
+        self.seed.write_text('fixture-renewed-credentials')
+        # The completed old invocation is still present in systemd and journal.
+        for _ in range(2):
+            self.assertEqual(self.run_doctor()['reason'], 'PROVIDER_UNHEALTHY')
+        status = self.run_doctor()
+        self.assertEqual(status['phase'], 'VERIFYING')
+        self.assertEqual(self.repairs(), [['systemctl', 'start', 'hide-me-vpn.service']])
+        # Only a new failed attempt may establish a new authorization hold.
+        self.scenario['units'] = {'hide-me-vpn.service': {'active': 'failed'}}
+        self.scenario['logs'] = {'new-invocation': 'bad HTTP status 401'}
+        self.assertEqual(self.run_doctor()['reason'], 'AUTH_REJECTED')
+
     def test_renewal_never_reuses_rejected_invocation_after_offline_wait(self):
         self.prime()
         self.scenario.update(probes=[6]*4, log='bad HTTP status 401')
