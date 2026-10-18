@@ -107,7 +107,7 @@ def authorization(log):
 MESSAGES = {
     'HEALTHY': ('VPN egress and local checks succeeded.', 'No action required.'),
     'AUTH_REJECTED': ('Provider authorization rejected (HTTP 401/403); exact cause unknown.',
-                      'Use the private re-auth/bootstrap procedure in docs/network-namespaces.md; then reset recovery.'),
+                      'Use the private re-auth/bootstrap procedure in docs/reference/network-namespaces.md; then reset recovery.'),
     'DEPLOYMENT_MISMATCH': ('Required unit is absent from the active generation.',
                             'Compare /run/current-system and the expected generation; deploy only with operator approval.'),
     'DISABLED': ('A required unit is masked, disabled or deliberately stopped.',

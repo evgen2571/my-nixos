@@ -8,7 +8,6 @@
   my = {
     desktop = {
       kdeplasma.enable = false;
-      # Niri and Plasma remain selectable in the graphical greeter.
       gnome.enable = false;
       opentabletdriver.enable = true;
     };

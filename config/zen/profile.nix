@@ -1,6 +1,6 @@
 # Shared declarative Zen profile for PC and laptop.
 # Adopt existing UUIDs before enabling if you want to preserve existing spaces.
-# See docs/zen-browser.md.
+# See docs/guides/zen-browser.md.
 let
   mkPin = id: url: position: { inherit id url position; };
   mkFolder = id: position: pins: {
@@ -23,7 +23,7 @@ in
     "browser.tabs.allow_transparent_browser" = true;
   };
 
-  # Zen 1.22.2b ships keyboard shortcuts schema 20.
+  # Keep synchronized with Zen's zen.keyboard.shortcuts.version.
   # Ctrl+` toggles compact mode; other bindings remain browser defaults.
   keyboardShortcutsVersion = 21;
   keyboardShortcuts = [
