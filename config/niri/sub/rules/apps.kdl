@@ -23,7 +23,7 @@ window-rule {
 
 // Other chat applications retain their existing policy.
 window-rule {
-    match app-id=r#"^(discord|Discord|Slack|slack)$"#
+    match app-id=r#"^(discord|Discord)$"#
     open-maximized-to-edges true
     open-on-workspace "chats"
 }

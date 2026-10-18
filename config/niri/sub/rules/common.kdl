@@ -127,17 +127,6 @@ window-rule {
     open-on-workspace "code"
 }
 
-// Password manager
-window-rule {
-    match app-id=r#"^(Bitwarden|bitwarden|com\.bitwarden\.desktop)$"#
-    open-floating true
-    open-focused true
-    default-column-width { proportion 0.40; }
-    default-window-height { proportion 0.70; }
-}
-
-
-
 // Video players
 window-rule {
     match app-id=r#"^(mpv|io\.mpv\.Mpv)$"#

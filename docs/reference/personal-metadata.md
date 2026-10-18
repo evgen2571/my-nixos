@@ -31,9 +31,10 @@ For your own host, choose a username, optional Git identity and safe first login
 Active Noctalia TOML is parsed into native settings with default priority. Private
 modules override only selected leaves; public bars/widgets and generated settings
 are unchanged. Public paths derive from HM HOME as actual absolute strings, with
-no assumption that TOML expands `$HOME` or `~`. The opt-in v4 rollback JSON uses the same narrow approach through
-`my.user.desktop.noctalia.legacyConfig.settings`; private leaves preserve its
-original paths/location. Its installer remains disabled on production hosts.
+no assumption that TOML expands `$HOME` or `~`. The retired Noctalia v4 installer
+and its `legacyConfig` options are removed. Private host modules must also remove
+obsolete `my.user.desktop.noctalia.legacyConfig.settings` declarations before
+building this revision; keep the active `programs.noctalia.settings` overrides.
 These boundaries do not establish publication clearance; that review belongs to #31.
 
 ### Private development CA

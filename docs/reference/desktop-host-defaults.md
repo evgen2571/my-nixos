@@ -19,22 +19,22 @@ selection, not an added `mkForce`.
 
 | Settings | Classification | Owner / rationale |
 | --- | --- | --- |
-| Niri on, Hyprland/Cinnamon off, Noctalia greeter on | Shared stable default | `hosts/common/desktop.nix` |
-| System apps: AAGL/KDE Connect off; Steam/OBS/Vesktop on | Shared stable default | Shared desktop selection; Steam remains enabled on both |
+| Niri and Noctalia greeter on | Shared stable default | `hosts/common/desktop.nix` |
+| System apps: Steam/OBS/Vesktop on | Shared stable default | Shared desktop selection; Steam remains enabled on both |
 | System Docker/Fish on, Thunar off | Shared stable default | Shared desktop selection |
 | LAN Mouse, Ollama, Tailscale, Blueman, Syncthing on | Shared stable default | Shared desktop selection; no service implementation changes |
 | User OpenCode, Skillshare, CodeGraph on | Shared stable default | Shared desktop selection |
 | User apps: Anki, mpv, Obsidian, Prism Launcher, qimgv, Telegram, YouTube Music, Voxtype, Zen on | Shared stable default | Shared desktop selection |
-| User apps: Bitwarden, Bruno, Chrome, Notion, osu!lazer, Slack off | Shared stable default | Shared desktop selection |
-| User Niri/Noctalia/screen recorder on; Hyprland/end4 dotfiles off | Shared stable default | Shared desktop selection; profiles still choose workspace/Noctalia variants |
+| User apps: Bruno, Chrome, osu!lazer off | Shared stable default | Shared desktop selection |
+| User Niri/Noctalia/screen recorder on | Shared stable default | Shared desktop selection; profiles still choose workspace/Noctalia variants |
 | FFmpeg/workstation, Dolphin/Yazi on | Shared stable default | Shared desktop selection; bundle implementation unchanged |
 | example development aliases and CA trust | Private desktop override | Private host modules reference `../certs/example-dev-rootCA.pem` in the private repository; the same trust is applied on PC/laptop only, never server |
-| GNOME, OpenTabletDriver, PC-only Plasma selection | Host override | Local desktop blocks; GNOME differs |
+| GNOME and OpenTabletDriver | Host override | Local desktop blocks; GNOME differs |
 | Bluetooth, NVIDIA, hardware screen recorder | Intentionally duplicated for clarity/safety | Local hardware blocks, including identical toggles; GPU ownership remains visible |
-| PC Zenless Zone Zero/Sunshine off, laptop Waydroid on; virtualization differs | Host override | Local system blocks |
+| PC Sunshine off, laptop Waydroid on; virtualization differs | Host override | Local system blocks |
 | Entire networkNamespaces block and Codex/Orca enablement plus namespace | Intentionally duplicated for clarity/safety | Local profiles preserve transport, peer, key path, routing and fail-closed selection together |
 | Zen profile path, Niri workspace profile, Noctalia profile, SSH identity | Host override | Local user blocks |
-| PC Krita on, KDE dotfiles off; laptop PyCharm off, Kitty font size | Host override | Local user preferences |
+| PC Krita on; laptop PyCharm off, Kitty font size | Host override | Local user preferences |
 | Language selections (including identical C++/Python/Rust) | Intentionally duplicated for clarity | Local language blocks keep each host's toolchain choices observable; Java differs, PC Godot/Unity off |
 | Primary-user enable/name/description/shell/Git identity | Intentionally duplicated for clarity | Local `configuration.nix`; account ownership stays explicit alongside differing supplementary groups |
 | Swapfile and size, system state version | Intentionally duplicated for clarity/safety | Local machine storage and lifecycle settings |

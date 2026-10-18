@@ -28,18 +28,6 @@ let
       ];
       specialArgs.secretFile = ./fixtures/valid.yaml;
     }).config;
-  legacy =
-    (desktop.extendModules {
-      modules = [
-        ({ lib, ... }: {
-          my.primaryUser.home.settings.my.user.desktop.noctalia.legacyConfig = {
-            enable = true;
-            settings.location.name = lib.mkForce "Example City";
-          };
-        })
-      ];
-    }).config;
-  legacyHome = legacy.home-manager.users.${legacy.my.primaryUser.name};
   missingKeys =
     (configurations.nixos-server.extendModules {
       specialArgs.secretFile = ./fixtures/valid.yaml;
@@ -79,15 +67,4 @@ assert lib.all (c: c.system.preSwitchChecks ? privateMaterial) (
     "nixos-server"
   ]
 );
-pkgs.runCommand "personal-metadata-checks" { nativeBuildInputs = [ pkgs.python3 ]; } ''
-    export HOME="$TMPDIR/home"
-    mkdir -p "$HOME"
-    ${legacyHome.home.activation.installLegacyNoctaliaConfig.data}
-    python3 - <<'PYTEST'
-  import json, os, pathlib
-  settings = json.loads((pathlib.Path(os.environ['HOME']) / '.config/noctalia/settings.json').read_text())
-  assert settings['location']['name'] == 'Example City'
-  assert settings['wallpaper']['enabled']
-  PYTEST
-    touch $out
-''
+pkgs.runCommand "personal-metadata-checks" { } "touch $out"
