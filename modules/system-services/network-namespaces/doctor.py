@@ -28,8 +28,9 @@ def read_json(path):
 
 def save(path, value, mode=0o644):
     tmp = Path(str(path) + '.new')
-    tmp.write_text(json.dumps(value, sort_keys=True) + '\n')
+    tmp.touch(mode=mode)
     tmp.chmod(mode)
+    tmp.write_text(json.dumps(value, sort_keys=True) + '\n')
     tmp.replace(path)
 
 
