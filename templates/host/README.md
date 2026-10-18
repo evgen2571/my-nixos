@@ -1,43 +1,21 @@
-# Add a standalone host
+# Host adaptation starting point
 
-1. Copy this directory into `hosts/<name>/` in my-nixos. Generate
-   `hardware-configuration.nix` for the target disks/hardware (for example with
-   `nixos-generate-config --root /mnt` from installation media). Do not reuse a
-   maintainer host's UUIDs. Review mounts, swap, firmware/bootloader, CPU/graphics
-   firmware, network interface/DHCP or NetworkManager, timezone and disk encryption.
-2. Set the hostname and your own primary username; the shared `home/default.nix`
-   adapter derives Home Manager identity and HOME. Optional Git name/email/signing
-   selection belongs in `my.primaryUser.git`; enable `my.user.dev.git` through
-   `my.primaryUser.home.settings` in the profile. Keep system/Home Manager state versions
-   explicit and appropriate to the initial installation. Supply your SSH **public**
-   key and an explicit firewall rule reaching the configured SSH port/interface.
-   Passwords and root SSH stay locked. Test reachability from your console before
-   relying on remote access. For key-only administration, explicitly choose a sudo
-   policy (e.g. `security.sudo.wheelNeedsPassword = false` for your trusted wheel
-   user), or provision a console password privately. No password/hash belongs in Git.
-3. Register the host in `flake/hosts.nix` alongside the existing outputs:
+The maintainer's PC, laptop and server remain the repository's primary use case.
+This directory supports adapting the same module collection to another machine.
+Follow [New machine without secrets](../../docs/installation.md#new-machine-without-secrets)
+for copying, hardware generation, registration, first access and installation.
 
-   ```nix
-   my-host = mkHost {
-     host = "my-host";
-     hostModule = ../hosts/my-host/configuration.nix;
-     profile = moduleProfiles.server; # or desktop
-     secretSource = "none";
-   };
-   ```
+## Template boundaries
 
-   Existing catalog discovery and Home Manager wiring apply. Select features in
-   your copied `profile.nix`; this template enables no maintainer VPN or credentials.
-4. Stage new files. Evaluate `.#nixosConfigurations.my-host.config.system.build.toplevel.drvPath`,
-   then build `.#nixosConfigurations.my-host.config.system.build.toplevel` without
-   activation. The template refuses evaluation until explicit SSH access is chosen.
-5. Install only after reviewing target disks, console/recovery access and the
-   resulting configuration. Installation is a separate destructive operator step;
-   no disko/nixos-anywhere or private repository is needed. For controlled console
-   provisioning instead of SSH, replace the SSH assertion with your own validated
-   provisioning procedure; do not enable empty passwords or automatic login.
+- [configuration.nix](configuration.nix) imports your generated
+  `hardware-configuration.nix` and defines the account/access requirements.
+  It refuses evaluation until you choose a hostname, SSH public key and reachable
+  SSH firewall policy. Root and password login are locked.
+- [profile.nix](profile.nix) is where you select features through existing `my.*`
+  options. No maintainer-specific credentials or VPN are enabled by default.
+- The primary-user adapter derives Home Manager identity and HOME. Optional Git
+  identity belongs in `my.primaryUser.git`; enable `my.user.dev.git` through
+  `my.primaryUser.home.settings` when wanted.
 
-To adopt single-repository SOPS later, choose `secretSource = "local"`, add your
-own tracked `.sops.yaml` and `secrets/hosts/my-host.yaml`, and declare consumers
-using the supplied `secretFile` module argument. Preserve locked-password
-behavior when absent. See [installation](../../docs/installation.md).
+Optional credentials use the existing [SOPS workflow](../../docs/sops.md#single-repository-setup).
+Do not copy another host's hardware declarations or personal identities.
