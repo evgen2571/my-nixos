@@ -74,6 +74,12 @@ on the host; this is networking isolation, not a sandbox against the machine own
 
 Use `codex login --device-auth` for new authentication: a host browser cannot
 reach a namespace-loopback OAuth callback. Existing Codex state remains mutable.
+VPN-isolated Codex uses a wrapper-level HTTP Responses provider by default
+(`my.user.ai.codex.httpOnly = true`) instead of WebSockets, because the default
+streaming connection repeatedly reconnected over the shared gateway while HTTPS
+worked. The option defaults to true only when `networkNamespace` is set; set it
+to false to restore upstream transport selection. Authentication, MCP configuration,
+normal CLI arguments and namespace fail-closed checks are unchanged.
 Normal Orca stays on the host for SSH; `orca-vpn` selects the isolated namespace.
 
 To add another application, use the existing registry and launcher:
