@@ -23,6 +23,13 @@ flake.nix (flake-parts; pinned inputs in flake.lock)
                   └─ config/ source dotfiles via lib/config-paths.nix
 ```
 
+`my-nixos` remains the sole build/deployment root. Its tracked empty
+`templates/private` input exports optional `nixosModules` and `secretFiles` maps.
+`flake/hosts.nix` selects `none`, `local` or `private` explicitly before imports;
+only private mode adds narrow modules through `extraModules`. Existing outputs
+require private material and protected identities for deployment; public evaluation
+is deliberately separate. See [installation](docs/installation.md).
+
 `flake/hosts.nix` assembles the outputs with Home Manager and sops-nix NixOS modules, passes flake inputs and `configPaths` as special arguments, and assigns either the `desktop` or `server` discovered module profile. The Home Manager modules are supplied through `home-manager.sharedModules`; host user choices are supplied separately.
 
 **Availability is not enablement.** `lib/module-catalog.nix` chooses which module roots are visible to a profile. `lib/module-discovery.nix` finds importable modules. Hosts then enable capabilities via options, generally from `profile.nix`. A directory with `default.nix` is a single discovered module; its other files must be imported by that entry point. See [module conventions](docs/modules.md).
@@ -38,7 +45,7 @@ flake.nix (flake-parts; pinned inputs in flake.lock)
 | `modules/system-*`, `modules/desktops/`, `modules/hardware/`, `modules/server/` | System packages, services, hardware, security, desktop/session plumbing | User application dotfile contents |
 | `modules/user-*` | Home Manager packages, application integration, user services and XDG mappings | Host boot and global network policy |
 | `config/` | Source dotfiles, editor/plugin config, window manager rules, browser profile definitions | OS service ownership or secrets |
-| `secrets/`, `keys/` | Encrypted SOPS documents and public key material | Plaintext authentication material |
+| `secrets/`, `keys/`, optional private input | User-owned local ciphertext, public keys; private input owns maintainer ciphertext/narrow overrides | Plaintext authentication material |
 | `tests/` | Automated behavior checks and smoke tests | Deployment authorization |
 
 Custom options normally follow `my.system.*`, `my.user.*`, `my.desktop.*`, `my.hardware.*`, or `my.server.*`. `modules/system-core/user.nix` bridges `my.primaryUser.home.settings` to the selected `home-manager.users` entry, keeping user feature selection in the host profile.

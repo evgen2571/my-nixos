@@ -14,6 +14,31 @@
     in
     {
       checks = {
+        migration-sources =
+          assert import ../tests/migration/sources.nix;
+          pkgs.runCommand "migration-source-checks"
+            {
+              nativeBuildInputs = [
+                (pkgs.python3.withPackages (ps: [ ps.pyyaml ]))
+                pkgs.just
+                pkgs.fish
+              ];
+            }
+            ''
+              mkdir -p lib
+              cp ${../lib/check-sops-source.py} lib/check-sops-source.py
+              mkdir -p config/fish/conf.d
+              cp ${../config/fish/conf.d/nixos-hosts.fish} config/fish/conf.d/nixos-hosts.fish
+              cp ${../justfile} justfile
+              mkdir -p tests
+              cp -r ${../tests/migration} tests/migration
+              mkdir -p modules/deployment
+              cp ${../modules/deployment/preflight.sh} modules/deployment/preflight.sh
+              python3 tests/migration/preflight.py
+              python3 tests/migration/helpers.py
+              python3 tests/migration/policy.py
+              touch $out
+            '';
         niri-host-profiles = import ../tests/niri/hosts.nix {
           inherit pkgs;
           configurations = inputs.self.nixosConfigurations;

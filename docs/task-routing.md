@@ -21,7 +21,8 @@ Use this page to identify the **smallest relevant slice** of the repository. Ope
 | Change Zen workspaces/profile | `config/zen/profile.nix` | `config/zen/chatgpt-projects.nix`, `modules/user-apps/zen-browser.nix`, [Zen guide](zen-browser.md) |
 | Change Codex/Orca or CodeGraph integration | `modules/user-ai/` | [Skillshare](skillshare.md), [CodeGraph](codegraph.md), VPN runbook when routing changes |
 | Change VPN namespace/gateway/launchers | `modules/system-services/network-namespaces/` | [Networking agent guide](agents/networking.md), [Gateway](shared-vpn-gateway.md), [primitives](network-namespaces.md), `tests/network-namespaces/` |
-| Change secrets/recipients | `modules/secrets.nix`, `hosts/<host>/secrets.nix` | [.sops.yaml](../.sops.yaml), [SOPS guide](sops.md) |
+| Source modes, templates, deployment preflight | `flake/hosts.nix`, `lib/secret-source.nix`, `modules/deployment/` | [Installation](installation.md), `tests/migration/` |
+| Change secrets/recipients | `modules/secrets.nix`, `hosts/<host>/secrets.nix` | selected repository recipient policy, [SOPS guide](sops.md) |
 | Change server Docker, SSH, storage, Syncthing | `modules/server/`, `hosts/server/profile.nix` | [Server operations](server.md), storage and access safety |
 | Change flake checks or test harness | `flake/verification.nix`, `tests/` | `justfile`, target test fixtures |
 
@@ -53,7 +54,8 @@ The `just` command needs to be installed separately if absent. Do not assume the
 
 For the proposed public/private repository split, see the
 [M01 migration contract](public-private-migration.md). It is planning guidance,
-not the current repository layout or deployment authorization.
+the approved contract; implemented workflows are in [installation](installation.md).
+Neither document authorizes deployment or publication.
 
 ## Documentation ownership
 

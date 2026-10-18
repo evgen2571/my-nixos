@@ -1,0 +1,15 @@
+--- a/nixos-install.sh
++++ b/nixos-install.sh
+@@ -288,6 +288,12 @@
+ fi
+ 
+ 
++# Check within the target root, before selecting its first system generation.
++# Do not use nixos-enter here: it runs activation before executing the command.
++if [[ -x "$mountPoint$system/bin/deployment-preflight" ]]; then
++    chroot "$mountPoint" "$system/bin/deployment-preflight"
++fi
++
+ # Set the system profile to point to the configuration. TODO: combine
+ # this with the previous step once we have a nix-env replacement with
+ # a progress bar.

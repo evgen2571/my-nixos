@@ -8,14 +8,23 @@ let
   mkHost =
     {
       hostModule,
+      host,
+      secretSource,
       profile,
       system ? "x86_64-linux",
       extraModules ? [ ],
       extraSpecialArgs ? { },
+      requirePrivate ? false,
     }:
     withSystem system (
       { inputs', self', ... }:
       let
+        selected = import ../lib/secret-source.nix {
+          root = ../.;
+          private = inputs.private;
+          inherit host;
+          source = secretSource;
+        };
         sharedSpecialArgs = {
           inherit
             inputs
@@ -23,6 +32,8 @@ let
             self'
             configPaths
             ;
+          secretFile = selected.file;
+          inherit secretSource requirePrivate host;
         }
         // extraSpecialArgs;
       in
@@ -34,9 +45,11 @@ let
           inputs.home-manager.nixosModules.home-manager
           inputs.sops-nix.nixosModules.sops
           ../modules/secrets.nix
+          ../modules/deployment
         ]
         ++ profile.systemModules
         ++ extraModules
+        ++ selected.modules
         ++ [
           {
             home-manager.backupFileExtension = "backup";
@@ -53,16 +66,25 @@ in
   flake.nixosConfigurations = {
     nixos-pc = mkHost {
       hostModule = ../hosts/pc/configuration.nix;
+      host = "pc";
+      secretSource = "private";
+      requirePrivate = true;
       profile = moduleProfiles.desktop;
     };
 
     nixos-lp = mkHost {
       hostModule = ../hosts/laptop/configuration.nix;
+      host = "laptop";
+      secretSource = "private";
+      requirePrivate = true;
       profile = moduleProfiles.desktop;
     };
 
     nixos-server = mkHost {
       hostModule = ../hosts/server/configuration.nix;
+      host = "server";
+      secretSource = "private";
+      requirePrivate = true;
       profile = moduleProfiles.server;
     };
   };

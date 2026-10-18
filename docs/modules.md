@@ -37,6 +37,15 @@ The current root selection is:
 
 `modules/system-core/common.nix`, `modules/system-core/server.nix`, and `modules/system-core/user.nix` are imported explicitly by applicable host configurations. `modules/secrets.nix` is explicitly imported by `flake/hosts.nix`. These are not discovered catalog roots.
 
+## Host sensitive inputs
+
+`flake/hosts.nix` selects an explicit source before module imports and passes
+`secretFile`, `secretSource` and `requirePrivate` as special arguments. Optional
+private host modules join through the existing extra-module list; discovery and
+Home Manager shared modules are unchanged. Guard missing secret declarations
+and their consumers. See [installation](installation.md) for the two-map input
+contract, local SOPS and production deployment guards.
+
 ## Choose the correct scope
 
 - **NixOS module:** systemd system services, hardware, boot, networking, firewall, system-wide package integration, display manager and session plumbing. Pick the nearest relevant system root.

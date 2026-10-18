@@ -1,9 +1,9 @@
-{ ... }:
+{ lib, secretFile, ... }:
 let
-  file = ../../secrets/hosts/server.yaml;
+  file = secretFile;
 in
 {
-  sops.secrets = {
+  sops.secrets = lib.mkIf (file != null) {
     vpn-wireguard-private-key = {
       sopsFile = file;
       key = "wireguard_private_key";

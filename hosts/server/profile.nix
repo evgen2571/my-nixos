@@ -42,9 +42,13 @@
       namespaces.vpn = {
         enable = true;
         server = "free-de";
-        bootstrapTokenFile = config.sops.secrets.hide-me-bootstrap-token.path;
+        bootstrapTokenFile = (
+          config.sops.secrets.hide-me-bootstrap-token.path or "/run/my-nixos-unavailable/bootstrap"
+        );
         shared = {
-          privateKeyFile = config.sops.secrets.vpn-wireguard-private-key.path;
+          privateKeyFile = (
+            config.sops.secrets.vpn-wireguard-private-key.path or "/run/my-nixos-unavailable/wireguard"
+          );
           role = "gateway";
           peers = [
             {
