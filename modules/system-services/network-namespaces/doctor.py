@@ -269,8 +269,15 @@ def inspect(c, old, now):
     if not client:
         units[provider] = unit(provider)
     invocation = units.get(provider, {}).get('InvocationID', '')
-    current_attempt = (not client and units[provider].get('ActiveState') in ('active', 'activating')
-                       and invocation and (not released_hold or invocation != hold.get('invocation')))
+    provider_state = units.get(provider, {}).get('ActiveState')
+    # A rejected login can terminate before the next monitor tick. In that
+    # case systemd retains the completed invocation even if the unit is failed
+    # or inactive. Never inspect logs for a condition-skipped/unstarted unit.
+    provider_started = int(units.get(provider, {}).get('ExecMainStartTimestampMonotonic', '0') or 0) > 0
+    current_attempt = (not client and invocation
+                       and (provider_state in ('active', 'activating')
+                            or (provider_state in ('failed', 'inactive') and provider_started))
+                       and (not released_hold or invocation != hold.get('invocation')))
     if current_attempt and not any_success:
         # Inactive units retain InvocationID; changed credentials must get a new attempt.
         _, log = command('journalctl', '--no-pager', '-o', 'cat', '-n', '200',
