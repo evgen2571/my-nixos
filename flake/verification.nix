@@ -26,7 +26,7 @@
             }
             ''
               mkdir -p lib
-              cp ${../lib/check-sops-policy.py} lib/check-sops-policy.py
+              cp ${../lib/check-sops-source.py} lib/check-sops-source.py
               mkdir -p config/fish/conf.d
               cp ${../config/fish/conf.d/nixos-hosts.fish} config/fish/conf.d/nixos-hosts.fish
               cp ${../justfile} justfile

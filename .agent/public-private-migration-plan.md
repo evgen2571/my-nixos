@@ -14,7 +14,8 @@ Only declarative source, encrypted documents and narrow metadata move. No activa
 - [x] Add safe host/private templates and guides; forward deployment helper flags.
 - [x] Evaluate all three modes and template host; compare credentialed semantics.
   Run focused/full registered checks and non-activating host builds where supported.
-- [ ] Review standards and spec independently, commit separately and open PRs.
+- [x] Review standards and spec independently; correct both findings and commit fixes.
+- [ ] Open separate public/private PRs after final checks.
 
 Watch: direct rebuild profile mutation precedes upstream pre-switch checks;
 missing identity and source material must not silently deploy. No secret reading,

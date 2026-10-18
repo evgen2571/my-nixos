@@ -20,8 +20,9 @@ Each `mkHost` call in `flake/hosts.nix` sets `secretSource` before module import
 There is no detection of sibling directories, runtime identities or stale local
 files, and no merging/fallback. An explicit choice leaves other sources unselected
 and ignored. Unknown choices, invalid paths, null supplied entries, overrides
-without ciphertext and missing encrypted required fields fail. sops-nix additionally
-validates the document at build time; a filename alone is not a valid secret.
+without ciphertext and missing encrypted required fields fail. A build check validates encrypted top-level host scalars and age metadata even
+without consumers, and checks local recipient-policy scope. sops-nix additionally
+validates declared secret material at build time; a filename alone is not a valid secret.
 
 For single-repository SOPS, use your own host copied from the template, select
 `local`, create recipient rules in `.sops.yaml`, and encrypt `secrets/hosts/<host>.yaml`

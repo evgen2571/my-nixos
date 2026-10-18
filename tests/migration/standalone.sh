@@ -63,7 +63,7 @@ if [[ -r /dev/kvm && -w /dev/kvm ]]; then
     NIX_DISK_IMAGE="$scratch/disk.qcow2" "$scratch/vm/bin/run-fixture-vm" > "$scratch/vm.log" 2>&1 &
   vm_pid=$!
   connected=false
-  for attempt in $(seq 1 120); do
+  for ((attempt = 0; attempt < 120; attempt++)); do
     if ssh -i "$scratch/login" -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=no \
       -o UserKnownHostsFile=/dev/null -o ConnectTimeout=2 -p "$port" operator@127.0.0.1 \
       'test "$(id -un)" = operator' > "$scratch/ssh.log" 2>&1; then connected=true; break; fi

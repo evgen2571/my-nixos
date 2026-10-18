@@ -21,13 +21,15 @@ in
     assertion = secretFile != null && hasEncryptedKey secret.key;
     message = "Selected SOPS host source is missing an encrypted required field (check hosts/<host>/secrets.nix).";
   }) config.sops.secrets;
-  system.checks = lib.optional (secretSource == "local" && secretFile != null) (
-    pkgs.runCommand "local-sops-policy-${host}"
+  system.checks = lib.optional (secretFile != null) (
+    pkgs.runCommand "sops-host-source-${host}"
       {
         nativeBuildInputs = [ (pkgs.python3.withPackages (ps: [ ps.pyyaml ])) ];
       }
       ''
-        python3 ${../lib/check-sops-policy.py} ${secretFile} ${../.sops.yaml} ${lib.escapeShellArg host}
+        python3 ${../lib/check-sops-source.py} ${secretFile} ${
+          if secretSource == "local" then ../.sops.yaml else "-"
+        } ${lib.escapeShellArg host}
         touch $out
       ''
   );
