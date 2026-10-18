@@ -97,7 +97,8 @@ let
         after = [
           "netns-${name}.service"
           "tailscaled.service"
-        ];
+        ]
+        ++ lib.optional (config ? sops) "sops-install-secrets.service";
         bindsTo = [ "netns-${name}.service" ];
         partOf = [ "netns-${name}.service" ];
         serviceConfig = {
@@ -110,11 +111,14 @@ let
           ];
           ExecStart = lib.getExe start;
           ExecStop = "-${pkgs.iproute2}/bin/ip -n ${name} link delete shared0";
-          ExecStopPost = "${pkgs.coreutils}/bin/rm -f ${runtime}/ready ${runtime}/transport-ready";
+          ExecStopPost = [ "${pkgs.coreutils}/bin/rm -f ${runtime}/ready ${runtime}/transport-ready" ];
           Restart = "on-failure";
           RestartSec = 10;
         };
-        unitConfig.StartLimitIntervalSec = 0;
+        unitConfig = {
+          StartLimitIntervalSec = 300;
+          StartLimitBurst = 3;
+        };
       };
       systemd.services."netns-${name}-dns" = lib.mkIf gateway {
         description = "VPN-only DNS for shared clients";
@@ -122,7 +126,11 @@ let
         after = [ "${unit}.service" ];
         bindsTo = [ "netns-${name}.service" ];
         # Depending on an auto-restarting transport would bypass its retry delay.
-        unitConfig.ConditionPathExists = "${runtime}/transport-ready";
+        unitConfig = {
+          ConditionPathExists = "${runtime}/transport-ready";
+          StartLimitIntervalSec = 300;
+          StartLimitBurst = 3;
+        };
         partOf = [ "${unit}.service" ];
         serviceConfig = {
           ExecStart = "${pkgs.dnsmasq}/bin/dnsmasq --keep-in-foreground --conf-file=/dev/null --interface=shared0 --bind-interfaces --listen-address=10.77.0.1 --resolv-file=${runtime}/resolv.conf --no-hosts --cache-size=0 --pid-file=";

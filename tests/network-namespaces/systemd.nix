@@ -61,6 +61,7 @@ let
       nftables
       bind
       curl
+      python3
     ];
     environment.etc."vpn-migration".source = migration;
     systemd.services.tailscaled = {
@@ -74,7 +75,67 @@ let
       enable = true;
       namespaces.vpn.enable = true;
     };
+    # Stub external WAN/Tailscale/HTTPS and age startup timestamps to exercise
+    # debounce without a two-minute wait. Keep real systemd, namespaces,
+    # transport, firewall, handshake and lifecycle hooks.
+    environment.etc."vpn-test-tools/curl".source = pkgs.writeShellScript "test-host-https" "exit 0";
+    environment.etc."vpn-test-tools/tailscale".source = pkgs.writeShellScript "test-tailnet" ''
+      echo '{"BackendState":"Running"}'
+    '';
+    environment.etc."vpn-test-tools/systemctl".source = pkgs.writeShellScript "test-systemctl" ''
+      if [ "$1" = show ]; then
+        ${pkgs.systemd}/bin/systemctl "$@" | ${pkgs.gnused}/bin/sed 's/^ActiveEnterTimestampMonotonic=.*/ActiveEnterTimestampMonotonic=0/'
+      else
+        exec ${pkgs.systemd}/bin/systemctl "$@"
+      fi
+    '';
+    environment.etc."vpn-test-doctor.json".text = builtins.toJSON {
+      name = "vpn";
+      host = config.networking.hostName;
+      role = config.my.system.services.networkNamespaces.namespaces.vpn.shared.role;
+      runtime = "/run/network-namespaces/vpn";
+      state = "/var/lib/network-namespaces-vpn";
+      namespace_path = "/run/netns/vpn";
+      key = "/run/secrets/vpn-wireguard-private-key";
+      bootstrap = null;
+      token = "/var/lib/hide-me-vpn/accessToken.txt";
+      endpoint = "192.168.1.254";
+      peers = map (
+        p: p.publicKey
+      ) config.my.system.services.networkNamespaces.namespaces.vpn.shared.peers;
+      urls = [
+        "https://one.test/"
+        "https://two.test/"
+      ];
+      dependencies = {
+        "netns-vpn.service" = [ ];
+        "netns-vpn-shared.service" = [ "netns-vpn.service" ];
+      };
+    };
+    systemd.services.netns-vpn-recovery.serviceConfig.ExecStart = lib.mkForce (
+      pkgs.writeShellScript "test-reconcile" ''
+        export PATH=/etc/vpn-test-tools:${
+          lib.makeBinPath [
+            pkgs.systemd
+            pkgs.iproute2
+            pkgs.wireguard-tools
+            pkgs.nftables
+            pkgs.bind
+          ]
+        }
+        exec ${pkgs.python3}/bin/python3 ${../../modules/system-services/network-namespaces/doctor.py} /etc/vpn-test-doctor.json reconcile
+      ''
+    );
+    systemd.services.netns-vpn-health.serviceConfig.ExecStart = lib.mkForce (
+      pkgs.writeShellScript "test-isolated-probes" ''
+        now=$(${pkgs.coreutils}/bin/date +%s)
+        echo "{\"checked_at\":$now,\"results\":[0,0,0,0]}" > /run/network-namespaces/vpn/probes.json
+        echo "$now" > /run/network-namespaces/vpn/ready
+      ''
+    );
     systemd.timers.netns-vpn-health.wantedBy = lib.mkForce [ ];
+    # No external HTTPS/provider/Tailscale dependency in this isolated LAN fixture.
+    systemd.timers.netns-vpn-recovery.wantedBy = lib.mkForce [ ];
   };
   mockProvider = {
     wantedBy = [ "multi-user.target" ];
@@ -217,6 +278,7 @@ pkgs.testers.runNixOSTest {
     };
   };
   testScript = ''
+    import json
     client.start(allow_reboot=True)
     server.start()
     laptop.start(allow_reboot=True)
@@ -252,6 +314,11 @@ pkgs.testers.runNixOSTest {
             print(machine.succeed("ip -brief address; ip route; ip -n vpn route show table all; ip netns exec vpn wg show shared0 public-key; ip netns exec vpn wg show shared0 endpoints; ip netns exec vpn wg show shared0 latest-handshakes; ip netns exec vpn nft list table inet agent_workspace"))
         raise
     client.wait_until_succeeds(dns + " | grep -x 203.0.113.1")
+    # A fresh marker must never bypass fresh independent filter checks.
+    client.succeed("date +%s > /run/network-namespaces/vpn/ready; /etc/network-namespaces/vpn-check")
+    client.succeed("ip netns exec vpn nft 'chain inet agent_workspace forward { policy accept; }'")
+    client.fail("/etc/network-namespaces/vpn-check")
+    client.succeed("ip netns exec vpn nft 'chain inet agent_workspace forward { policy drop; }'")
     assert server.succeed("systemctl show netns-vpn-dns -p User --value").strip() == "dnsmasq"
     # DNS follows provider resolver changes and has no cached fallback.
     server.succeed("printf 'nameserver 203.0.113.3\\n' > /run/network-namespaces/vpn/resolv.conf")
@@ -265,6 +332,33 @@ pkgs.testers.runNixOSTest {
     server.wait_until_succeeds("systemctl is-active --quiet netns-vpn-dns.service")
     client.wait_until_succeeds(probe)
     client.wait_until_succeeds(dns + " | grep -x 203.0.113.3")
+    # A direct stop is protected even without a recent public snapshot.
+    client.succeed("systemctl stop netns-vpn-shared")
+    intent_path = "/var/lib/network-namespaces-vpn/stops/netns-vpn-shared.service"
+    assert json.loads(client.succeed(f"cat {intent_path}"))["intent"] == "manual"
+    client.succeed("systemctl start netns-vpn-recovery.service")
+    client.fail("systemctl is-active --quiet netns-vpn-shared")
+    client.succeed("vpn-status | grep 'Applications: BLOCKED'")
+    client.succeed("systemctl start netns-vpn-shared")
+    client.wait_until_succeeds(probe)
+    # A namespace stop propagates to shared0; it is not a direct transport stop.
+    client.succeed("systemctl stop netns-vpn")
+    assert json.loads(client.succeed(f"cat {intent_path}"))["intent"] == "dependency"
+    client.succeed("systemctl start netns-vpn")
+    namespace_inode = client.succeed("stat -Lc %i /run/netns/vpn").strip()
+    boot = client.succeed("cat /proc/sys/kernel/random/boot_id").strip()
+    checkpoint = json.dumps(dict(boot=boot, grace_until=0))
+    client.succeed(f"echo '{checkpoint}' > /var/lib/network-namespaces-vpn/status.json")
+    for _ in range(3):
+        client.succeed("systemctl start netns-vpn-recovery.service")
+    recovery = json.loads(client.succeed("cat /var/lib/network-namespaces-vpn/status.json"))
+    assert recovery["phase"] == "VERIFYING", recovery
+    client.wait_for_unit("netns-vpn-shared.service")
+    client.wait_until_succeeds(probe)
+    assert client.succeed("stat -Lc %i /run/netns/vpn").strip() == namespace_inode
+    client.succeed("systemctl start netns-vpn-recovery.service")
+    client.succeed("vpn-status | grep 'Applications: READY'")
+    client.succeed("su nobody -s /bin/sh -c 'vpn-status --verbose' | grep 'Applications: READY'")
     # Namespace restart must propagate to the client transport and private DNS.
     client.succeed("systemctl restart netns-vpn")
     client.wait_for_unit("netns-vpn-shared.service")
@@ -296,6 +390,9 @@ pkgs.testers.runNixOSTest {
     # Normal client reboot automatically decrypts SOPS and starts only the overlay.
     laptop.reboot()
     laptop.wait_for_unit("netns-vpn-shared.service")
+    laptop.succeed("systemctl start netns-vpn-recovery.service")
+    laptop.succeed("vpn-status --verbose | grep 'VPN:'")
+    laptop.succeed("test -s /var/lib/network-namespaces-vpn/status.json")
     laptop.wait_until_succeeds(probe)
     for unit in ["hide-me-vpn.service", "netns-vpn-underlay.service"]:
         assert laptop.succeed(f"systemctl show {unit} -p LoadState --value").strip() == "masked"

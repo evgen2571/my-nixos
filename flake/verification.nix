@@ -34,6 +34,20 @@
         };
         shared-vpn-module = builtins.deepSeq shared.system shared.fixtures;
         standalone-vpn-module = builtins.deepSeq standalone.system standalone.launcher;
+        shared-vpn-recovery =
+          pkgs.runCommand "shared-vpn-recovery-checks"
+            {
+              nativeBuildInputs = [ pkgs.python3 ];
+            }
+            ''
+              mkdir -p modules/system-services/network-namespaces
+              cp ${../modules/system-services/network-namespaces/doctor.py} modules/system-services/network-namespaces/doctor.py
+              # Keep the same repository-relative CLI test boundary in the sandbox.
+              mkdir -p tests/network-namespaces
+              cp ${../tests/network-namespaces/recovery.py} tests/network-namespaces/recovery.py
+              python3 tests/network-namespaces/recovery.py
+              touch $out
+            '';
         shared-vpn-scripts =
           pkgs.runCommand "shared-vpn-script-checks" { nativeBuildInputs = [ pkgs.shellcheck ]; }
             ''

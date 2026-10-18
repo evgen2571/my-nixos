@@ -6,6 +6,15 @@
   ns,
 }:
 let
+  doctor = import ./doctor.nix {
+    inherit
+      config
+      lib
+      pkgs
+      name
+      ns
+      ;
+  };
   shared = ns.shared.role != "standalone";
   isClient = ns.shared.role == "client";
   runtime = "/run/network-namespaces/${name}";
@@ -153,15 +162,22 @@ let
     name = "${netns}-local-check";
     runtimeInputs = tools;
     text = ''
-      systemctl is-active --quiet ${if isClient then "netns-${name}-shared" else vpn}.service
-      ip netns exec ${name} nft list table inet agent_workspace >/dev/null
-      ip -n ${name} -4 route get 1.1.1.1 | grep -q 'dev ${if isClient then "shared0" else "hm0"}'
+      reject() { echo "VPN local readiness: $1" >&2; exit 1; }
+      systemctl is-active --quiet ${
+        if isClient then "netns-${name}-shared" else vpn
+      }.service || reject SERVICE_UNAVAILABLE
+      for chain in output input forward; do
+        ip netns exec ${name} nft list chain inet agent_workspace "$chain" | grep -q 'policy drop;' || reject FIREWALL_ERROR
+      done
+      ip -n ${name} -4 route get 1.1.1.1 | grep -q 'dev ${
+        if isClient then "shared0" else "hm0"
+      }' || reject IPV4_ROUTE_ERROR
       ip -n ${name} -6 route get 2606:4700:4700::1111 | grep -q 'dev ${
         if isClient then "shared0" else "hm0"
-      }'
+      }' || reject IPV6_ROUTE_ERROR
       ip netns exec ${name} wg show ${if isClient then "shared0" else "hm0"} latest-handshakes |
-        awk -v now="$(date +%s)" '$2 > 0 && now >= $2 && now - $2 < 180 { ok = 1 } END { exit !ok }'
-      awk '$1 == "nameserver" && $2 != "127.0.0.1" && $2 != "::1" { ok = 1 } END { exit !ok }' ${runtime}/resolv.conf
+        awk -v now="$(date +%s)" '$2 > 0 && now >= $2 && now - $2 < 180 { ok = 1 } END { exit !ok }' || reject WG_HANDSHAKE_STALE
+      awk '$1 == "nameserver" && $2 != "127.0.0.1" && $2 != "::1" { ok = 1 } END { exit !ok }' ${runtime}/resolv.conf || reject DNS_UNAVAILABLE
     '';
   };
   # Agent entry requires both local tunnel readiness and a recent HTTPS probe.
@@ -170,39 +186,19 @@ let
     name = "${netns}-check";
     runtimeInputs = [ pkgs.coreutils ];
     text = ''
-      ${lib.getExe localCheck}
-      [[ -s ${runtime}/ready ]] || exit 1
-      read -r checkedAt < ${runtime}/ready
-      [[ "$checkedAt" =~ ^[0-9]+$ ]] || exit 1
+      diagnose() {
+        ${lib.optionalString shared "${lib.getExe doctor.status} --entry-failed >&2"}
+        exit 1
+      }
+      ${lib.getExe localCheck} || diagnose
+      [[ -s ${runtime}/ready ]] || diagnose
+      read -r checkedAt < ${runtime}/ready || diagnose
+      [[ "$checkedAt" =~ ^[0-9]+$ ]] || diagnose
       now=$(date +%s)
-      (( now >= checkedAt && now - checkedAt <= 90 ))
+      (( now >= checkedAt && now - checkedAt <= 90 )) || diagnose
     '';
   };
-  health = pkgs.writeShellApplication {
-    name = "${netns}-health";
-    runtimeInputs = [
-      pkgs.coreutils
-      pkgs.curl
-      pkgs.systemd
-    ];
-    text = ''
-      # Keep the last success during a probe or brief failure. The launcher
-      # independently enforces the 90-second TTL and fresh tunnel checks;
-      # removing this file here would block launches during each probe.
-      systemctl is-active --quiet ${if isClient then "netns-${name}-shared" else vpn}.service || exit 1
-      # This service runs inside the VPN namespace with its own resolver.
-      # The independent output filter prevents host-network fallback.
-      for url in ${lib.escapeShellArgs ns.egressProbeUrls}; do
-        if curl --noproxy '*' --fail --silent --ipv4 --connect-timeout 4 --max-time 8 "$url" >/dev/null; then
-          date +%s > ${runtime}/ready.new
-          mv -f ${runtime}/ready.new ${runtime}/ready
-          exit 0
-        fi
-      done
-      echo 'No configured HTTPS egress probe succeeded through VPN' >&2
-      exit 1
-    '';
-  };
+
 in
 {
   systemd.services.${netns} = {
@@ -232,6 +228,10 @@ in
 
   systemd.services.${underlay} = lib.mkIf (!isClient) {
     description = "Restricted userspace underlay for ${name}";
+    unitConfig = {
+      StartLimitIntervalSec = 300;
+      StartLimitBurst = 3;
+    };
     wantedBy = [ "multi-user.target" ];
     requires = [ "${netns}.service" ];
     after = [
@@ -248,7 +248,11 @@ in
       ExecStart = "${lib.getExe pkgs.slirp4netns} --configure --disable-host-loopback --disable-dns --enable-seccomp --netns-type=path /run/netns/${name} tap0";
       ExecStartPost = lib.getExe waitUnderlay;
       # Closing the nonpersistent TAP may already have removed the interface.
-      ExecStopPost = "-${pkgs.iproute2}/bin/ip -n ${name} link delete tap0";
+      ExecStopPost =
+        if shared then
+          [ "-${pkgs.iproute2}/bin/ip -n ${name} link delete tap0" ]
+        else
+          "-${pkgs.iproute2}/bin/ip -n ${name} link delete tap0";
       Restart = "always";
       RestartSec = 3;
       ProtectSystem = "strict";
@@ -266,10 +270,17 @@ in
   systemd.services.${vpn} = lib.mkIf (!isClient) {
     description = "hide.me Free VPN in namespace ${name}";
     wantedBy = [ "multi-user.target" ];
-    requires = [ "${underlay}.service" ];
-    after = [ "${underlay}.service" ];
+    # Keep the provider alive through underlay process restarts; its gate waits
+    # for tap0 at startup, and the monitor repairs failed prerequisites.
+    requires = lib.optional (!shared) "${underlay}.service";
+    wants = lib.optional shared "${underlay}.service";
+    after = [ "${underlay}.service" ] ++ lib.optional (config ? sops) "sops-install-secrets.service";
     bindsTo = [ "${netns}.service" ];
     partOf = [ "${netns}.service" ];
+    unitConfig = {
+      StartLimitIntervalSec = 300;
+      StartLimitBurst = 3;
+    };
     # Underlay restart should not force namespace teardown. The client's DPD
     # handles short outages and retries; systemd handles a crashed client.
     serviceConfig = {
@@ -281,9 +292,14 @@ in
       StateDirectoryMode = "0700";
       WorkingDirectory = state;
       UMask = "0077";
-      ExecStartPre = lib.getExe prepare;
+      ExecCondition = lib.optional shared doctor.gate;
+      ExecStartPre = if shared then [ (lib.getExe prepare) ] else lib.getExe prepare;
       ExecStart = "${client}/bin/hide.me --firewall-mark 18541 --interface hm0 --tokenFile ${state}/accessToken.txt --kill-switch=true connect ${ns.server}";
-      ExecStopPost = "${pkgs.coreutils}/bin/rm -f ${runtime}/ready";
+      ExecStopPost =
+        if shared then
+          [ "${pkgs.coreutils}/bin/rm -f ${runtime}/ready" ]
+        else
+          "${pkgs.coreutils}/bin/rm -f ${runtime}/ready";
       NetworkNamespacePath = "/run/netns/${name}";
       BindPaths = [ "${runtime}/resolv.conf:/etc/resolv.conf" ];
       BindReadOnlyPaths = [ "${runtime}/nsswitch.conf:/etc/nsswitch.conf" ];
@@ -309,7 +325,7 @@ in
     after = [ "${if isClient then "netns-${name}-shared" else vpn}.service" ];
     serviceConfig = {
       Type = "oneshot";
-      ExecStart = lib.getExe health;
+      ExecStart = doctor.probe;
       NetworkNamespacePath = "/run/netns/${name}";
       BindReadOnlyPaths = [
         "${runtime}/resolv.conf:/etc/resolv.conf"
@@ -322,16 +338,47 @@ in
       ReadWritePaths = [ runtime ];
       NoNewPrivileges = true;
       CapabilityBoundingSet = [ ];
-      TimeoutStartSec = 25;
+      TimeoutStartSec = 60;
     };
   };
   systemd.timers."${netns}-health" = {
-    wantedBy = [ "timers.target" ];
+    wantedBy = lib.optional (!shared) "timers.target";
     timerConfig = {
       OnBootSec = 15;
       OnUnitActiveSec = 30;
       AccuracySec = 1;
     };
+  };
+  systemd.services."${netns}-recovery" = lib.mkIf shared {
+    description = "Diagnose and cautiously recover VPN ${name}";
+    after = [ "network-online.target" ];
+    wants = [ "network-online.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = doctor.reconcile;
+      StateDirectory = "network-namespaces-${name}";
+      StateDirectoryMode = "0755";
+      UMask = "0022";
+      ProtectSystem = "strict";
+      ProtectHome = true;
+      PrivateTmp = true;
+      NoNewPrivileges = true;
+      ReadWritePaths = [ "-${runtime}" ];
+      TimeoutStartSec = 240;
+    };
+  };
+  systemd.timers."${netns}-recovery" = lib.mkIf shared {
+    wantedBy = [ "timers.target" ];
+    timerConfig = {
+      OnBootSec = 15;
+      OnUnitInactiveSec = 30;
+      AccuracySec = 1;
+    };
+  };
+  systemd.lifecycleServices = lib.mkIf shared doctor.services;
+  environment.systemPackages = lib.optional shared doctor.status;
+  environment.etc."network-namespaces/${name}-recovery-reset" = lib.mkIf shared {
+    source = doctor.reset;
   };
   # Used by the restricted entry helper; never a user-selectable command path.
   environment.etc."network-namespaces/${name}-check".source = lib.getExe check;
