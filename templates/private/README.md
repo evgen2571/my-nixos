@@ -38,6 +38,6 @@ files; avoid a broad `path:` override of private working directories. For a
 reproducible build, commit both repositories and append `?rev=COMMIT` to the
 private URL. Never write this personal override into the public lock.
 
-See [source selection and single-repository SOPS](../../docs/reference/secrets.md#source-selection)
-and [maintainer builds/deployment](../../docs/guides/deployment.md) for the
+See [source selection and single-repository SOPS](../../docs/operations/secrets.md#source-selection)
+and [maintainer builds/deployment](../../docs/operations/deployment.md) for the
 corresponding workflows and production readiness checks.

@@ -2,7 +2,7 @@
 
 Copy this directory when you're adapting my module collection to your own
 machine. Keep the existing PC, laptop, and server profiles for their original hosts.
-Follow [New machine without secrets](../../docs/getting-started/installation.md#new-machine-without-secrets)
+Follow [New machine without secrets](../../docs/operations/installation.md#new-machine-without-secrets)
 for copying, hardware generation, registration, first access and installation.
 
 ## Template boundaries
@@ -17,5 +17,5 @@ for copying, hardware generation, registration, first access and installation.
   identity belongs in `my.primaryUser.git`; enable `my.user.dev.git` through
   `my.primaryUser.home.settings` when wanted.
 
-Optional credentials use the existing [SOPS workflow](../../docs/reference/secrets.md#single-repository-setup).
+Optional credentials use the existing [SOPS workflow](../../docs/operations/secrets.md#single-repository-setup).
 Do not copy another host's hardware declarations or personal identities.
