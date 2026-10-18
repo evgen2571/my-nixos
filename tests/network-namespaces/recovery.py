@@ -424,6 +424,7 @@ sys.exit(0)
             units={'hide-me-vpn.service': {'active': 'failed'}},
         )
         self.assertEqual(self.run_doctor()['reason'], 'AUTH_REJECTED')
+        first_hold = json.loads((self.state/'hold.json').read_text())
         self.seed.write_text('fixture-renewed-credentials')
         # The completed old invocation is still present in systemd and journal.
         for _ in range(2):
@@ -434,6 +435,13 @@ sys.exit(0)
         # Only a new failed attempt may establish a new authorization hold.
         self.scenario['units'] = {'hide-me-vpn.service': {'active': 'failed'}}
         self.scenario['logs'] = {'new-invocation': 'bad HTTP status 401'}
+        self.assertEqual(self.run_doctor()['reason'], 'AUTH_REJECTED')
+        renewed_hold = json.loads((self.state/'hold.json').read_text())
+        self.assertEqual(renewed_hold['invocation'], 'new-invocation')
+        self.assertNotEqual(renewed_hold['credentials'], first_hold['credentials'])
+        # An exited provider with newly rejected credentials must not be
+        # permitted another unattended authentication attempt.
+        self.run_doctor('provider-allowed', expected=1)
         self.assertEqual(self.run_doctor()['reason'], 'AUTH_REJECTED')
 
     def test_renewal_never_reuses_rejected_invocation_after_offline_wait(self):
