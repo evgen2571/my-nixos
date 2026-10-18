@@ -8,8 +8,8 @@ no activation, live failure injection, secret changes, or host routing changes.
 - [x] Add bounded component recovery, prerequisite waits, maintenance and resume handling.
 - [x] Exercise authorization rejection, DNS/transport/egress failures and retry limits.
 - [x] Update operator runbooks and approved live-validation matrix.
-- [ ] Run focused tests, flake checks, namespace harness and all three host builds.
-- [ ] Review against issue and repository standards, commit and open PR to main.
+- [x] Run focused tests, flake checks, namespace harness and all three host builds.
+- [x] Review against issue and repository standards, commit and open PR to main.
 
 Use the existing isolated health service for probe execution; root-owned public
 status contains only fixed reason codes, counters, timestamps and probe results.
@@ -31,3 +31,15 @@ Final debounce regression: prerequisite outages do not count toward three
 verified failures at a newly failing layer. Maintenance also suppresses a repair
 if its flag arrives while a probe is in flight. Nix formatting, documentation
 paths and git diff whitespace checks pass; final full checks/builds follow.
+
+Delivery verification (implementation through 4f0ba31):
+- `nix flake check`: passed, including recovery CLI and systemd VM checks.
+- `nix run .#shared-vpn-test`: passed real disposable namespace harness.
+- Non-activating top-level builds: nixos-server, nixos-pc, nixos-lp all passed.
+- 26 simulated CLI tests passed; private-hold permission checks also passed.
+- Changed Nix formatting, documentation link paths and git diff checks passed.
+- PR opened to main: https://github.com/evgen2571/my-nixos/pull/26
+
+No activation, live restart, remote failure injection or secret changes performed.
+Real Hide.me failover, credential cause, suspend attribution and hardware boot /
+resume acceptance remain the documented separately approved operator work.
