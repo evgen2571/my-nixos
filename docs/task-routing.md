@@ -51,6 +51,10 @@ bash tests/neovim/run.sh    # requires locally provisioned Neovim/plugins
 
 The `just` command needs to be installed separately if absent. Do not assume the Neovim smoke script or all test dependencies are available in a fresh development shell. `nix fmt` may format files outside task scope: inspect the diff.
 
+For the proposed public/private repository split, see the
+[M01 migration contract](public-private-migration.md). It is planning guidance,
+not the current repository layout or deployment authorization.
+
 ## Documentation ownership
 
 - [README](../README.md): project introduction, hosts and human quick start.
