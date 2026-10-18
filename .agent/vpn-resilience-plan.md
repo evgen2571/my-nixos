@@ -22,7 +22,12 @@ private DNS, desktop provider masks and mutable refreshed Hide.me tokens.
 Review: standards and issue-spec reviews identified dependency/condition-skipped
 startup, credential-change prerequisite ordering and status-priority issues;
 fixed them and added regressions. Final re-review reported no remaining blocker.
-25 CLI scenarios pass, including interruption-safe repair budgets and unchanged
+26 CLI scenarios pass, including interruption-safe repair budgets and unchanged
 SOPS content re-materialization preserving the private authorization hold.
 Original server journal unavailable: hostname resolution failed and configured
 Tailscale IP SSH timed out. No live services or runtime secrets were changed.
+
+Final debounce regression: prerequisite outages do not count toward three
+verified failures at a newly failing layer. Maintenance also suppresses a repair
+if its flag arrives while a probe is in flight. Nix formatting, documentation
+paths and git diff whitespace checks pass; final full checks/builds follow.
