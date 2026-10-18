@@ -98,7 +98,7 @@ VPN changes must preserve independent namespace firewalling, IPv4/IPv6 routing, 
 
 sops-nix decrypts committed encrypted documents into protected runtime secret paths. Host-specific age identities live outside the repository under `/var/lib/sops-nix/key.txt`. Private keys and access tokens must not appear in unencrypted Git files, Nix expressions, derivation arguments, or public documentation. Public SSH/WireGuard/CA keys may be versioned. See [docs/sops.md](docs/sops.md).
 
-Only PC and laptop select the private development aliases and public CA trust through their private host overrides. The server does not import this feature. These settings remain NixOS-managed and require activation to change.
+Only PC and laptop select the private development aliases and CA trust through their private host overrides. The certificate is stored at `certs/actline-dev-rootCA.pem` at the private repository root, and referenced from its `hosts/{pc,laptop}.nix` modules. The server does not import this feature. These settings remain NixOS-managed and require activation to change.
 
 ## Server data boundaries
 

@@ -36,6 +36,10 @@ no assumption that TOML expands `$HOME` or `~`. The opt-in v4 rollback JSON uses
 original paths/location. Its installer remains disabled on production hosts.
 Do not treat this extraction as publication clearance.
 
+### Private development CA
+
+Keep the Actline development root CA certificate at `my-nixos-private/certs/actline-dev-rootCA.pem`, at the root of the **private** repository rather than under its `hosts/` directory. The narrow `hosts/pc.nix` and `hosts/laptop.nix` private modules refer to `../certs/actline-dev-rootCA.pem` via `security.pki.certificateFiles`; `hosts/server.nix` must not gain that trust. Preserve the certificate bytes and effective trust store when relocating it. The public repository contains neither that certificate nor a duplicate public copy. The signing key must never be committed.
+
 Hardware UUIDs/device selectors and browser workspace/pin UUIDs are retained
 intentionally: they are identifiers, not authentication material, and moving them
 adds boot/storage or browser migration risk without improving this boundary.
