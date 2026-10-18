@@ -269,7 +269,10 @@ sys.exit(0)
     def test_maintenance_never_repairs(self):
         (self.state/'maintenance').touch()
         self.scenario.update(reason='missing-link', probes=[7]*4)
-        for _ in range(4): self.assertEqual(self.run_doctor()['reason'], 'DISABLED')
+        for _ in range(4):
+            status = self.run_doctor()
+            self.assertEqual(status['reason'], 'DISABLED')
+            self.assertEqual(status['phase'], 'DISABLED')
         self.assertEqual(self.repairs(), [])
 
     def test_http_and_tls_endpoint_failures_do_not_restart_provider(self):
@@ -349,6 +352,15 @@ sys.exit(0)
         self.run_doctor('provider-allowed', expected=1)
         self.assertEqual(self.run_doctor()['reason'], 'AUTH_REJECTED')
         self.assertEqual(len(self.repairs()), 1)
+
+    def test_prerequisite_failures_do_not_satisfy_provider_debounce(self):
+        self.prime()
+        self.scenario['reason'] = 'offline'
+        for _ in range(4): self.run_doctor()
+        self.scenario.update(reason='missing-link', probes=[7]*4)
+        self.assertEqual(self.run_doctor()['attempts'], 0)
+        self.assertEqual(self.run_doctor()['attempts'], 0)
+        self.assertEqual(self.run_doctor()['attempts'], 1)
 
 
 if __name__ == '__main__':

@@ -259,7 +259,7 @@ def reconcile(c):
         if started and 0 <= time.monotonic() - started < 120:
             grace_until = max(grace_until, now + int(120 - (time.monotonic() - started)))
     healthy = reason in ('HEALTHY', 'EGRESS_DEGRADED')
-    failures = 0 if healthy else old.get('failures', 0) + 1
+    failures = 0 if healthy else (old.get('failures', 0) + 1 if old.get('reason') == reason else 1)
     attempts = old.get('attempts', 0)
     retry_at = old.get('retry_at', 0)
     phase = ('HEALTHY' if reason == 'HEALTHY' else 'DEGRADED') if healthy else 'WAITING'
@@ -283,13 +283,16 @@ def reconcile(c):
             if details.get('units', {}).get(provider, {}).get('ActiveState') in ('active', 'activating', 'deactivating'):
                 command('systemctl', 'stop', provider, timeout=40)
                 save(hold_path, {'reason': reason, 'credentials': credentials(c)}, 0o600)
+    elif reason == 'DISABLED':
+        phase = 'DISABLED'
     elif component and failures >= 3 and now >= grace_until:
         if attempts >= 3 or now < retry_at:
             phase = 'RECOVERY_COOLDOWN'
         else:
             # Recheck a concurrent deliberate stop before issuing a repair.
             current = unit(component)
-            if deliberately_stopped(current) and not read_json(Path(c['state']) / 'hold.json'):
+            if ((Path(c['state']) / 'maintenance').exists()
+                    or (deliberately_stopped(current) and not read_json(Path(c['state']) / 'hold.json'))):
                 component = None
                 reason, phase = 'DISABLED', 'DISABLED'
             else:
