@@ -95,7 +95,11 @@ inspection/deployment use a separate host terminal, never a namespace bypass.
 
 On the shared gateway and both clients, use `vpn-status` or `vpn-status --verbose`
 from an ordinary host terminal. It is read-only and works without a desktop
-session or sudo. Failed registered launches print the same summary. See the
+session or sudo. It reports application readiness separately from the fail-closed
+routing policy and scheduler activity. Readiness combines a recent verified
+snapshot, the IPv4 marker and current unit/namespace presence; protected checks
+still run at every launch. Failed registered launches always report BLOCKED,
+even if a cached scheduled check succeeded. See the
 [current recovery policy and reason codes](shared-vpn-gateway.md#resilience-and-day-to-day-diagnosis)
 for retry bounds, maintenance, reset and a separately approved live test matrix.
 
@@ -111,9 +115,22 @@ channel to learn provider-specific evidence.
 not a token. The provider's `ExecCondition` respects an unchanged authorization
 or rate-limit hold even across reboot. Review the cause before using
 `sudo /etc/network-namespaces/vpn-recovery-reset`; it clears only the hold and
-repair counters. An explicitly stopped unit still needs an operator start.
+repair counters. A recorded operator stop still needs an explicit start; a
+provider stopped by the doctor can resume through bounded recovery. Renewed
+credentials must be tried in a fresh invocation: retained errors from the rejected
+invocation cannot re-create the hold. The new invocation can establish a new
+hold if it reports rejection. Unchanged seeds still preserve refreshed tokens.
 A missing bootstrap, wrong generation or rejected authorization cannot be fixed
 by rebuilding repeatedly or restoring an old seed over a valid mutable token.
 401/403 proves rejection, not expiry; confirm the account/credential state
 privately before following the bootstrap procedure above. The pinned client's
 normal refresh behavior remains the only unattended token refresh mechanism.
+
+Managed service hooks record running, direct-stop, dependency-stop and recovery
+intent in root-owned per-unit `stops/` files tagged with the boot ID. They do not
+rely on old start timestamps to identify an operator stop. A legacy inactive unit
+without a record is conservatively `STOP_INTENT_UNKNOWN`; verify intent before
+starting it. Use the explicit maintenance flag during concurrent operations.
+Namespace/secrets startup waits have their own diagnoses, and firewall damage is
+classified only after namespace readiness. Host HTTPS failure with a valid or
+unknown route is `HOST_CONNECTIVITY_UNVERIFIED`, not proof of a WAN outage.

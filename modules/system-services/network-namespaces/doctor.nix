@@ -7,9 +7,22 @@
   ns,
 }:
 let
+  dependencies = {
+    "netns-${name}.service" = [ ];
+    "netns-${name}-shared.service" = [ "netns-${name}.service" ];
+  }
+  // lib.optionalAttrs (ns.shared.role == "gateway") {
+    "netns-${name}-underlay.service" = [ "netns-${name}.service" ];
+    "hide-me-${name}.service" = [ "netns-${name}.service" ];
+    "netns-${name}-dns.service" = [
+      "netns-${name}.service"
+      "netns-${name}-shared.service"
+    ];
+  };
   settings = pkgs.writeText "netns-${name}-doctor.json" (
     builtins.toJSON {
-      inherit name;
+      inherit name dependencies;
+      namespace_path = "/run/netns/${name}";
       host = config.networking.hostName;
       role = ns.shared.role;
       runtime = "/run/network-namespaces/${name}";
@@ -48,6 +61,16 @@ let
 in
 {
   inherit command;
+  services = lib.mapAttrs' (
+    unit: _:
+    lib.nameValuePair (lib.removeSuffix ".service" unit) {
+      serviceConfig = {
+        # Fixed root-only hooks record lifecycle cause outside the service sandbox.
+        ExecStartPre = lib.mkBefore [ "+${lib.getExe command} lifecycle-start ${unit}" ];
+        ExecStopPost = lib.mkAfter [ "+${lib.getExe command} lifecycle-stop ${unit}" ];
+      };
+    }
+  ) dependencies;
   probe = wrapper "probe" "probe";
   reconcile = wrapper "reconcile" "reconcile";
   gate = wrapper "provider-allowed" "provider-allowed";

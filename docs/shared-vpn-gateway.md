@@ -108,6 +108,16 @@ same command on the gateway through your existing authenticated host session.
 Remote evidence is unavailable until you do so; a reachable Tailscale peer is
 not proof of a WireGuard handshake or working Hide.me egress.
 
+Status separates `Applications: READY`, `BLOCKED`, `DEGRADED` or `UNKNOWN`
+from `Routing policy: fail-closed`. READY requires a fresh successful snapshot,
+the unexpired IPv4 marker, the namespace and currently active required VPN units.
+It describes recent verified readiness, not a privileged real-time policy audit:
+entry still rechecks routes/filter/handshake/resolver. A failed entry always says
+BLOCKED, even if the previous scheduled snapshot was healthy. Stale/unavailable
+evidence says UNKNOWN; partial probe success says DEGRADED while IPv4 readiness
+remains fresh. Scheduler activity is reported separately: stopping the recovery
+timer does not invalidate a still-fresh successful readiness check.
+
 The restricted launcher's readiness failure prints this same diagnosis before
 refusing entry. It retains fresh local interface, IPv4/IPv6 route, firewall,
 handshake and resolver checks, plus the original 90-second **IPv4** HTTPS marker
@@ -151,8 +161,20 @@ Recovery policy:
   The provider wants/orders after the underlay and gates startup on its route;
   it stays alive through underlay process failures instead of being stranded by
   dependency-stop propagation. An explicit guarded underlay repair starts both
-  components in one ordered transaction. Never-started/condition-skipped units
-  are distinguished from an explicit stop after a successful start.
+  components in one ordered transaction. Fixed root-only start/stop hooks record
+  each managed unit's lifecycle under `stops/` in the state directory. Direct
+  successful stops with healthy dependencies are recorded as manual; stops while
+  namespace/transport dependency jobs are pending are recorded as propagated.
+  A later start clears manual intent. Records apply only to the current boot.
+  Never-started, condition-skipped and dependency-stopped services may recover;
+  historical timestamps alone never establish operator intent. A pre-upgrade
+  inactive service without lifecycle evidence yields `STOP_INTENT_UNKNOWN` and
+  requires a verified explicit start. Pending jobs are allowed to finish.
+  A missing namespace yields `NAMESPACE_UNAVAILABLE`, not a firewall diagnosis;
+  failed/inactive namespace startup can be retried with **start**, never teardown.
+  Once the namespace is ready, damaged nft policy still requires operator action.
+  Missing secrets yield `SECRETS_UNAVAILABLE` until provisioning returns; empty or
+  unreadable secrets remain configuration errors.
   Each auto-restarting component also has a three-start/300-second systemd
   limit; the guarded monitor can rearm failed components after prerequisites
   return. Late SOPS provisioning is ordered before transport/provider startup.
@@ -164,7 +186,7 @@ Recovery policy:
   Retry-After evidence, a 429 hold deliberately requires operator review rather
   than guessing the provider's retry interval. HTTP 5xx receives bounded
   backoff; generic timeouts never become an authentication diagnosis.
-- Missing units, bad peer declarations, unavailable secrets and broken firewall
+- Missing units, bad peer declarations, invalid secrets and broken firewall
   or forwarding checks require action. There is no auto-rebuild, unmask, secret
   replacement, namespace teardown or firewall repair. Ordinary host networking
   and SSH are not modified.
@@ -175,8 +197,12 @@ The main reason codes are:
 | --- | --- |
 | `DEPLOYMENT_MISMATCH` | Required unit absent; compare the installed generation and approved deployment. |
 | `DISABLED` | Mask, explicit stop or maintenance; recovery does not fight it. |
-| `CONFIGURATION_ERROR` | Check named secret paths, SOPS and declared public peers privately. |
-| `HOST_OFFLINE` | Host HTTPS checks failed; inspect WAN/LAN, DHCP, routes and clock. Probe blocking is also possible. |
+| `CONFIGURATION_ERROR` | Check empty/unreadable secret paths, SOPS and declared public peers privately. |
+| `SECRETS_UNAVAILABLE` | Runtime secret not yet provisioned; wait and inspect SOPS privately. |
+| `NAMESPACE_UNAVAILABLE` | Namespace startup/dependency is not ready; no firewall conclusion yet. |
+| `STOP_INTENT_UNKNOWN` | Old inactive service lacks lifecycle evidence; verify intent and start explicitly. |
+| `HOST_OFFLINE` | Neither family has a usable host route/interface and all host HTTPS checks failed. |
+| `HOST_CONNECTIVITY_UNVERIFIED` | HTTPS failed with usable or unknown routes; DNS, TLS, filtering, captive portal or endpoint failure remain possible. |
 | `TAILSCALE_OFFLINE` | Check host Tailscale state/authentication without restarting it blindly. |
 | `GATEWAY_UNREACHABLE` | Peer did not respond; power/uplink/Tailscale are possible causes, provider state unknown. |
 | `TRANSPORT_MISSING`, `WG_HANDSHAKE_STALE` | Inspect shared interface, endpoint, peer keys and UDP filtering. |
@@ -188,7 +214,13 @@ The main reason codes are:
 | `FIREWALL_ERROR`, `ROUTE_ERROR` | Inspect namespace filtering/forwarding/NAT or family routes. |
 | `EGRESS_UNAVAILABLE`, `EGRESS_DEGRADED` | All or some HTTPS checks failed; inspect individual results before assigning cause. |
 
-Probe results are ordered IPv4 URLs then IPv6 URLs in configured order. Common
+Host route/interface observations and per-family HTTPS outcomes are recorded
+separately. `Host probes: IPv4 passed; IPv6 unverified` describes the probes,
+not a conclusion that the whole IPv6 uplink is down. A successful family permits
+continued diagnosis; all failed host probes make recovery wait without tearing
+down VPN components, even when the underlying Internet cause remains unknown.
+
+Isolated probe results are ordered IPv4 URLs then IPv6 URLs in configured order. Common
 curl exit codes: `0` success, `6` DNS, `7` connection, `22` HTTP response error,
 `28` timeout, `35`/`60` TLS/verification. TLS failure alone cannot distinguish
 clock skew from certificate or endpoint problems. Snapshots are observations,
@@ -196,7 +228,8 @@ not proof of every nft rule, peer's state or application API's availability.
 
 ### Maintenance, reset and credential rejection
 
-Stopping a required unit deliberately is respected. For a maintenance window
+A recorded direct stop of a required unit is respected. For concurrent service
+operations, use the explicit maintenance flag so intent is unambiguous. For a maintenance window
 that also covers a partially failed/auto-restarting unit, set a persistent flag
 **before** stopping it:
 
@@ -212,15 +245,22 @@ After examining the cause, an operator can reset the budget/authorization hold:
 sudo /etc/network-namespaces/vpn-recovery-reset
 ```
 
-This does not start deliberately stopped units or bypass readiness/isolation.
-Start a deliberately stopped provider explicitly only under approved maintenance.
+The reset itself does not start units or bypass readiness/isolation. Subsequent
+checks can recover a provider previously stopped by the doctor; a recorded
+operator stop still requires an explicit start under approved maintenance.
 An unchanged bootstrap seed preserves the provider's refreshed mutable token.
 Changed seed/token contents release an authorization hold; private fingerprints
 keep an identical SOPS seed re-materialized at boot from clearing it. Fingerprints
 are stored only in the root-readable hold, never in public status or journals;
 the existing prepare script alone decides when a changed bootstrap replaces the
-mutable token. The hold survives monitor restarts and reboot. A manual budget
-reset never copies or removes token files.
+mutable token. Reauthorization keeps the rejected invocation excluded while
+prerequisites return, then permits a bounded fresh provider start. An inactive
+unit's retained InvocationID is never fresh authorization evidence. The provider
+invocation is refreshed after probes and rechecked before acting: the old 401
+cannot re-latch the hold after renewal, while a new attempt's 401 can. Holds from
+earlier versions are upgraded using their saved invocation evidence. Health,
+not start completion, clears the released hold. The hold survives monitor
+restarts and reboot. A manual budget reset never copies or removes token files.
 
 For confirmed invalid credentials, use the [private bootstrap procedure](network-namespaces.md#private-server-authentication).
 First verify account status privately with Hide.me; payment/account renewal and

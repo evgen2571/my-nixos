@@ -142,7 +142,13 @@ in
       lib.mapAttrsToList (_: instance: instance.environment.etc) instances
     );
     systemd.services = lib.mkMerge (
-      lib.mapAttrsToList (_: instance: instance.systemd.services) instances
+      lib.mapAttrsToList (
+        _: instance:
+        lib.mkMerge [
+          instance.systemd.services
+          instance.systemd.lifecycleServices
+        ]
+      ) instances
     );
     systemd.timers = lib.mkMerge (lib.mapAttrsToList (_: instance: instance.systemd.timers) instances);
   };
