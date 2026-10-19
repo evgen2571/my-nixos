@@ -9,6 +9,8 @@ let
       modules = [
         ({ lib, ... }: {
           my.primaryUser.name = lib.mkForce "fixture-user";
+          time.timeZone = lib.mkForce "Etc/GMT+3";
+          my.primaryUser.home.settings.programs.ssh.settings.server.User = lib.mkForce "fixture-remote";
           my.primaryUser.home.settings.programs.noctalia.settings.location.address =
             lib.mkForce "Example City";
         })
@@ -50,6 +52,12 @@ let
   rejects = prefix: c: lib.any (a: !a.assertion && lib.hasPrefix prefix a.message) c.assertions;
 in
 assert !public || desktop.config.my.primaryUser.name == "operator";
+assert !public || lib.all (c: c.config.time.timeZone == "UTC") (builtins.attrValues configurations);
+assert
+  !public
+  || desktop.config.home-manager.users.operator.programs.ssh.settings.server.data.User == "operator";
+assert renamed.time.timeZone == "Etc/GMT+3";
+assert home.programs.ssh.settings.server.data.User == "fixture-remote";
 assert home.home.username == "fixture-user";
 assert home.home.homeDirectory == "/home/fixture-user";
 assert renamed.fileSystems ? "/home/fixture-user/drive";

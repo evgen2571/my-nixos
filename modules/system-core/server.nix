@@ -1,4 +1,4 @@
-{ ... }:
+{ lib, ... }:
 
 {
   boot.loader.systemd-boot.enable = true;
@@ -7,7 +7,7 @@
 
   networking.networkmanager.enable = true;
 
-  time.timeZone = "UTC";
+  time.timeZone = lib.mkDefault "UTC";
   i18n.defaultLocale = "en_US.UTF-8";
 
   nix.settings = {
