@@ -170,5 +170,51 @@ the encrypted diff. Revocation cannot erase historical copies. Plan identity los
 or rotation separately; never replace working identities while relocating source files.
 
 Existing-host deployment and decryption checks are in the
-[maintainer guide](deployment.md). Removing material from the current checkout does not remove it from Git history.
-Review history separately before publication.
+[maintainer guide](deployment.md).
+
+## Before making the repository public
+
+Removing or moving material does not remove earlier snapshots. Review the exact
+publication commit and every branch and tag that would become public, including
+commit identities/messages, deleted files, ciphertext recipient associations,
+personal/work settings and network endpoints. Run a secret scanner with redacted
+output and manually review metadata; a clean scan alone is not clearance. Keep
+sensitive findings and recovery copies in protected storage outside this checkout.
+
+Classify findings separately: credentials needing revocation/rotation, metadata
+needing an owner privacy decision, deliberately accepted public material, and
+false positives. Review retained disk, hardware and browser identifiers
+individually. Disk identifiers select real mounts; browser IDs preserve existing
+spaces and pins. Neither role makes disclosure automatically acceptable. Prefer
+the existing private overrides for personal values; verify effective host settings
+before changing their source, without changing generated or writable state.
+
+If history needs redaction, prepare this procedure for **separate owner approval**:
+
+1. Record the affected remote/local refs and old object IDs, sensitive paths or
+   patterns in protected review material, and a proposed old-to-new ref mapping.
+   Inventory tags, open/closed PR links, forks, mirrors and other clones. Arrange
+   a protected recovery copy and stop concurrent pushes before any approved rewrite.
+2. Decide credential revocation/rotation independently of history cleanup. Removing
+   a credential from Git does not revoke it; encrypted historical documents still
+   expose metadata and remain decryptable to anyone holding a matching identity.
+3. Rehearse the proposed filtering in a disposable protected clone. Review every
+   affected ref, tag/signature and PR reference, rerun redacted scans and metadata
+   checks, and compare the intended tree. Obtain approval for the exact rewrite
+   and remote ref updates before applying them; never force-push automatically.
+4. After approved cleanup, coordinate clone replacement and fork/mirror owners,
+   address cached GitHub views or PR refs through the hosting provider where
+   needed, and verify the remote again. External copies may survive rewriting;
+   deleting branches or files cannot guarantee erasure.
+
+At the final candidate revision, repeat documented public-only checks in an
+isolated clone without private inputs or maintainer credentials, verify internal
+documentation links and the unchanged public lock, and record tool versions,
+audited refs, results and limitations. Attribute older host-parity/bootstrap
+evidence to its actual public/private revisions; evaluation is not a build or a
+live test. Keep production deployment on its reviewed private-backed path.
+
+Publication requires an explicit go/no-go decision covering current source,
+history, public-only checks, documentation, accepted disclosures and unresolved
+owner actions. Auditing authorizes none of credential changes, history rewriting,
+force-pushes, live activation or repository visibility changes.
