@@ -50,15 +50,40 @@ def capture(root, output):
                     if (root / '.git').exists() else 'archive (verify separately)'}, indent=2) + '\n')
 
 
-def compare(baseline, candidate, mapping_path):
+def compare(baseline, candidate, mapping_path, migrations_path=None):
     before = json.loads((baseline / 'catalog.json').read_text())['profiles']
     after = json.loads((candidate / 'catalog.json').read_text())['profiles']
+    migrated_explicit = []
     if mapping_path:
         inventory = json.loads(mapping_path.read_text())
-        before = mapped_profiles(before, {entry['path']: entry['target'] for entry in inventory['entries']})
+        mapping = {entry['path']: entry['target'] for entry in inventory['entries']}
+        if migrations_path:
+            migrations = json.loads(migrations_path.read_text())
+            migrated = migrations['entries']
+            migrated_explicit = migrations.get('explicit', [])
+            if set(migrated_explicit) - inventory.get('explicit', {}).keys():
+                raise SystemExit('FAIL: unknown explicit migration entry')
+            if set(migrated) - mapping.keys():
+                raise SystemExit('FAIL: unknown migration entry')
+            mapping = {path: target if path in migrated else path for path, target in mapping.items()}
+        before = mapped_profiles(before, mapping)
+        if not migrations_path:
+            migrated_explicit = list(inventory.get('explicit', {}))
     if before != after:
         raise SystemExit('FAIL: ordered catalog scope/profile inventories differ')
-    if (baseline / 'hosts.json').read_bytes() != (candidate / 'hosts.json').read_bytes():
+    before_hosts = json.loads((baseline / 'hosts.json').read_text())
+    after_hosts = json.loads((candidate / 'hosts.json').read_text())
+    if 'home/default.nix' in migrated_explicit:
+        old = '<repository>/home/default.nix'
+        new = '<repository>/' + inventory['explicit']['home/default.nix']
+        # Only these two fields describe the relocated module; commands and store paths stay strict.
+        for host in before_hosts.values():
+            if host['homeWiring']['module'] == old:
+                host['homeWiring']['module'] = new
+            option = host['options']['primaryUser']['home']['module']
+            if option['default'] == old:
+                option['default'] = new
+    if before_hosts != after_hosts:
         raise SystemExit('FAIL: host evidence differs; diff hosts.json and investigate every change')
     print('PASS: ordered catalog inventories and all three host/Home Manager projections match')
 
@@ -73,11 +98,14 @@ def main():
     comp.add_argument('baseline', type=Path)
     comp.add_argument('candidate', type=Path)
     comp.add_argument('--mapping', type=Path)
+    comp.add_argument('--migrations', type=Path, help='Explicit subset of inventory entries already moved')
     args = parser.parse_args()
     if args.command == 'capture':
         capture(args.root, args.output)
     else:
-        compare(args.baseline, args.candidate, args.mapping)
+        if args.migrations and not args.mapping:
+            parser.error('--migrations requires --mapping')
+        compare(args.baseline, args.candidate, args.mapping, args.migrations)
 
 
 if __name__ == '__main__':

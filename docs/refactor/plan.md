@@ -33,3 +33,24 @@ ready-for-review transition, merge or activation.
   final #55 must remove legacy discovery/table after all migrations.
 - [x] Run focused fixtures, formatting/dead-code checks, full flake checks and
   public assembled-host comparison. Review standards/spec and commit changes.
+
+## Ordinary features and baselines (#52)
+
+Approved spec: [#52](https://github.com/evgen2571/my-nixos/issues/52).
+Continue inline on `refactor/feature-first-modules`; retain draft PR #57.
+The agreed catalog and three assembled-host seams remain authoritative.
+
+- [x] Record the 68 assigned discovered entries and four explicit baselines in
+  `migrations.json`, referencing the original inventory without changing it.
+  Exclude Niri system/home, Noctalia shell/greeter, Neovim, tmux, namespaces,
+  secrets and deployment for #53/#54.
+- [x] Extend the existing catalog-equivalence assertion/comparator for explicit
+  partial migrations; verify mixed ordering and rejection at the agreed seam.
+- [x] Move assigned inventory assets, consolidate only Fish/Kitty, repair relative
+  paths and baseline callers/templates, and update current documentation links.
+  Keep frozen discovery/catalog/compatibility rules untouched.
+- [x] Compare inventories, source bytes/modes and public assembled hosts against
+  #50; investigate any differences, including the relocated primary-user module
+  path. Run focused and full checks plus available private non-activating builds.
+- [x] Record exact mapping, boundaries and verification in a stage handoff;
+  review Standards/Spec, commit, update issue checkboxes, and retain draft status.

@@ -23,7 +23,7 @@ bindings override earlier scroll bindings for the same Up/Down combinations.
 ## Configuration and graphics
 
 Edit [kitty.conf](../../config/kitty/kitty.conf) for terminal behavior. The
-[Kitty module](../../modules/user-dev/kitty) installs it through
+[Kitty module](../../modules/dev/kitty.home.nix) installs it through
 [config-paths.nix](../../lib/config-paths.nix), including the host's
 `my.user.dev.kitty.fontSize`. Colors come from the included Noctalia theme.
 

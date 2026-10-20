@@ -38,7 +38,7 @@ from host profiles.
 Core baselines, primary-user/Home Manager baseline wiring, secrets and deployment
 are explicitly assembled. `modules/core`, `modules/system-core`,
 `modules/deployment` and `modules/secrets.nix` stay outside optional discovery.
-Host shared profiles remain outside discovery too. Optional `server/base` stays
+Host shared profiles remain outside discovery too. Optional `server/base.nixos.nix` stays
 separate from the explicit server baseline.
 
 ### Temporary legacy compatibility
@@ -69,7 +69,8 @@ The ordered baseline must never be refreshed simply to accept a new sort order.
 
 Run `python3 tests/module-catalog/test_catalog.py` for extendable directory
 fixtures and `nix build .#checks.x86_64-linux.module-catalog --no-link` for the
-sandboxed check. `module-equivalence` checks untouched ordered inventories;
+sandboxed check. `module-equivalence` applies the explicit [migration ledger](../refactor/migrations.json)
+to the frozen ordered inventory;
 [the comparison contract](../refactor/README.md) covers assembled hosts.
 
 ## Add or select a feature

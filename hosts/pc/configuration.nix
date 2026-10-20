@@ -5,8 +5,8 @@
     ./hardware-configuration.nix
     ./profile.nix
     ./secrets.nix
-    ../../modules/system-core/common.nix
-    ../../modules/system-core/user.nix
+    ../../modules/core/desktop-baseline.nixos.nix
+    ../../modules/core/primary-user.nixos.nix
   ];
 
   # This machine uses a separate EFI System Partition and XBOOTLDR partition.

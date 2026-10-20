@@ -40,7 +40,7 @@ git.userEmail = "person@example.invalid";
 ```
 
 Replace these example values before using Git. The adapter passes them to the
-Git module. Inspect `modules/user-dev/git.nix` for its other defaults before
+Git module. Inspect `modules/dev/git.home.nix` for its other defaults before
 turning it on. For system features, set their system option in the profile
 instead; for example `my.system.services.tailscale.enable = true` enables the
 Tailscale service, but enrollment remains a separate runtime task.
@@ -85,7 +85,7 @@ it isn't needed for ordinary server or desktop use.
 ## Edit an application's configuration
 
 Find the owning module first. For example, `modules/user-dev/neovim/config.nix`
-deploys `config/nvim/`, and `modules/user-apps/zen-browser.nix` uses the Zen
+deploys `config/nvim/`, and `modules/apps/zen-browser.home.nix` uses the Zen
 profile source. Check the module to see which source file actually reaches your
 host, then edit that file and build again.
 

@@ -26,8 +26,9 @@ flowchart TD
 | `hosts/<host>/configuration.nix` | Hardware, boot, machine identity, base imports |
 | `hosts/<host>/profile.nix` | Feature selection and machine-specific settings |
 | `hosts/common/desktop.nix` | Shared PC/laptop selections, explicitly imported by both profiles |
-| `modules/system-*`, `modules/desktops`, `modules/hardware`, `modules/server` | System behavior |
-| `modules/user-*` | Home Manager packages, settings, files, and user services |
+| `modules/{ai,apps,desktop,dev,files,hardware,server,services}` | Feature categories with typed NixOS/Home Manager entries |
+| `modules/core` | Explicit desktop/server and primary-user/Home Manager baselines |
+| Legacy `modules/desktops`, `modules/user-*`, namespace and deployment entries | Remaining #53/#54 migrations; see [refactor progress](../refactor/ordinary-features.md) |
 | `config/` | Program-native source configuration |
 | `lib/config-paths.nix` | Source-to-runtime mappings, including host variants |
 | `tests/` | Automated checks and smoke tests |
@@ -37,9 +38,9 @@ The module catalog supplies system modules and `home-manager.sharedModules` for
 either a desktop or server profile. Discovery makes a module available; the
 host still chooses whether to enable its feature. See [modules](modules.md).
 
-The primary-user adapter in `modules/system-core/user.nix` imports
-`home/default.nix` and applies `my.primaryUser.home.settings` to the selected
-Home Manager user. Keep host-specific user selections at that boundary.
+The primary-user adapter in `modules/core/primary-user.nixos.nix` imports
+`modules/core/primary-user.home.nix` and applies
+`my.primaryUser.home.settings` to the selected Home Manager user. Keep host-specific user selections at that boundary.
 
 Shared desktop declarations retain ordinary Nix priority. If a selection stops
 being common to both machines, move it back to the profiles or choose an explicit

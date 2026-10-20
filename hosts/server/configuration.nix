@@ -10,8 +10,8 @@
     ./hardware-configuration.nix
     ./profile.nix
     ./secrets.nix
-    ../../modules/system-core/server.nix
-    ../../modules/system-core/user.nix
+    ../../modules/core/server-baseline.nixos.nix
+    ../../modules/core/primary-user.nixos.nix
   ];
 
   networking.hostName = "nixos-server";

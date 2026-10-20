@@ -1,5 +1,6 @@
 {
   config,
+  configPaths,
   pkgs,
   lib,
   ...
@@ -9,10 +10,6 @@ let
   cfg = config.my.user.dev.kitty;
 in
 {
-  imports = [
-    ./config.nix
-  ];
-
   options.my.user.dev.kitty = {
     enable = lib.mkEnableOption "Kitty terminal";
 
@@ -24,6 +21,10 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    xdg.configFile = configPaths.dotfileAdapters.kitty {
+      inherit (cfg) fontSize;
+    };
+
     home.packages = with pkgs; [
       kitty
     ];

@@ -47,6 +47,59 @@ class EquivalenceTests(unittest.TestCase):
             with self.assertRaisesRegex(SystemExit, 'ordered catalog'):
                 compare.compare(baseline, candidate, None)
 
+    def test_partial_migration_keeps_unmigrated_slots(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            baseline, candidate = root / 'baseline', root / 'candidate'
+            for directory, paths in [(baseline, ['old-a', 'old-b']),
+                                     (candidate, ['new-a', 'old-b'])]:
+                directory.mkdir()
+                (directory / 'catalog.json').write_text(json.dumps({'profiles': {
+                    'desktop': {'home': paths, 'system': []}}}))
+                (directory / 'hosts.json').write_text('{}')
+            mapping = root / 'inventory.json'
+            mapping.write_text(json.dumps({'entries': [
+                {'path': 'old-a', 'target': 'new-a'},
+                {'path': 'old-b', 'target': 'new-b'}]}))
+            migrations = root / 'migrations.json'
+            migrations.write_text(json.dumps({'entries': ['old-a']}))
+            compare.compare(baseline, candidate, mapping, migrations)
+            migrations.write_text(json.dumps({'entries': ['old-a'], 'explicit': ['unknown']}))
+            with self.assertRaisesRegex(SystemExit, 'unknown explicit migration'):
+                compare.compare(baseline, candidate, mapping, migrations)
+            migrations.write_text(json.dumps({'entries': ['old-a', 'unknown']}))
+            with self.assertRaisesRegex(SystemExit, 'unknown migration'):
+                compare.compare(baseline, candidate, mapping, migrations)
+            migrations.write_text(json.dumps({'entries': ['old-a']}))
+            (candidate / 'catalog.json').write_text(json.dumps({'profiles': {
+                'desktop': {'home': ['old-b', 'new-a'], 'system': []}}}))
+            with self.assertRaisesRegex(SystemExit, 'ordered catalog'):
+                compare.compare(baseline, candidate, mapping, migrations)
+
+    def test_only_declared_home_module_references_are_relocated(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            baseline, candidate = root / 'baseline', root / 'candidate'
+            old, new = '<repository>/home/default.nix', '<repository>/modules/core/primary-user.home.nix'
+            for directory, module in [(baseline, old), (candidate, new)]:
+                directory.mkdir()
+                (directory / 'catalog.json').write_text(json.dumps({'profiles': {}}))
+                (directory / 'hosts.json').write_text(json.dumps({'host': {
+                    'homeWiring': {'module': module},
+                    'options': {'primaryUser': {'home': {'module': {'default': module}}}},
+                    'command': old}}))
+            mapping = root / 'inventory.json'
+            mapping.write_text(json.dumps({'entries': [], 'explicit': {
+                'home/default.nix': 'modules/core/primary-user.home.nix'}}))
+            migrations = root / 'migrations.json'
+            migrations.write_text(json.dumps({'entries': [], 'explicit': ['home/default.nix']}))
+            compare.compare(baseline, candidate, mapping, migrations)
+            changed = json.loads((candidate / 'hosts.json').read_text())
+            changed['host']['command'] = new
+            (candidate / 'hosts.json').write_text(json.dumps(changed))
+            with self.assertRaisesRegex(SystemExit, 'host evidence differs'):
+                compare.compare(baseline, candidate, mapping, migrations)
+
     def test_catalog_mapping_preserves_order_and_scope(self):
         baseline = {'desktop': {'home': ['old-a', 'old-b'], 'system': []}}
         mapping = {'old-a': 'new-a', 'old-b': 'new-b'}

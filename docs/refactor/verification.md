@@ -178,3 +178,60 @@ explicit mapping as paths move, without refreshing the original fixture.
 Final #55 must remove legacy discovery and the temporary table while retaining
 an explicit typed ordering contract. Draft PR #57 was neither replaced nor marked
 ready; no PR was created and nothing was merged.
+
+## Ordinary features and baselines (#52)
+
+Stage begins at `631294b`, with clean working tree on
+`refactor/feature-first-modules`. The [stage handoff](ordinary-features.md) and
+[migration ledger](migrations.json) specify the exact 68 discovered entries and
+four explicit baselines; the original #50 inventory and fixtures are unchanged.
+The compatibility table/catalog/discovery are unchanged, preserving serialized
+ownership and all original slots. Seven discovered entries and secrets/deployment
+explicit assembly remain for #53/#54.
+
+| Verification | Result |
+| --- | --- |
+| `python3 tests/module-catalog/test_catalog.py` | 7 tests passed; all four original orders/eligibilities remain mapped in place |
+| `python3 tests/module-equivalence/test_compare.py` | 6 tests passed; partial migration and scoped module-reference tests first failed before implementation |
+| `module-equivalence` Nix assertion | Initially failed against unmoved modules, passed after the 68 moves; compares complete catalog metadata and four ordered lists, plus explicit baseline existence/exclusion |
+| Public assembled host capture and comparison | Passed against exact #50 baseline, using approved inventory plus explicit migration ledger |
+| Raw public host diff | Exactly six source-module strings changed: configured Home Manager module and its default on each host; every other field identical |
+| Package/derivation, source deployment and activation review | No changed package/output/derivation identities; Fish/Kitty file/source/text metadata, SSH, agent/Zen ownership, activation DAGs, system/user units and guard fields match |
+| Source bytes and modes | All 230 mapped baseline assets present, executable bits preserved; 218 byte-identical, 9 reviewed #52 exceptions and 3 pre-existing #51 exceptions |
+| #52 source exceptions | Fish's two constituents, Kitty's two constituents, primary-user module's relative home reference, three host import lists, new-host template import |
+| `nixfmt --check` and `deadnix --fail` | Passed over all modules and the modified Nix equivalence assertion |
+| `nix flake check --no-write-lock-file` | Exit 0; all three hosts and check outputs evaluated; three changed checks executed, remaining outputs reused |
+| Explicit build of all registered checks | Exit 0; all 14 check outputs built/reused, including catalog, equivalence, module style, config-paths, host profiles, deployment/source, shell and namespace/VM checks |
+| `python3 tests/niri/window-titles.py` | 2 tests passed |
+| Three private-backed non-activating host builds | Exit 0 for PC/laptop/server, using PRIVATE repository revision `70c2c843dba1ee03812bbf42ae5f85f89162d0a8` |
+
+The source audit compared all inventory assets, not just moved entries. The three
+pre-existing #51 byte differences are `lib/module-catalog.nix`,
+`lib/module-discovery.nix` and `flake/verification.nix`; these are unchanged in #52.
+Every other implementation is a byte-identical move except the two approved
+consolidations and the primary-user relative reference. No package-source,
+lockfile, native application source, packaging source or host-profile selection
+changed. Catalog counts remain desktop system/home 23/47, server 12/23.
+
+The comparator retains exact source-root normalization. It additionally maps only
+the two reviewed Home Manager module-reference fields through the approved
+explicit inventory, as described in the stage handoff. No arbitrary store hash,
+command, destination, option value or derivation is stripped.
+
+Private visibility and the audited revision were reconfirmed before builds.
+The same private input and public root were used without writing lockfiles.
+A separate local-only private projection attempt failed already on the **baseline**:
+the upstream Zen profile's `bookmarks.meta.doc` option has no defined value when
+traversed by the generic projection. Consequently a full private behavior snapshot
+comparison is unavailable; private build success is reported separately and does
+not establish private behavioral equality. The public exporter and all its
+private-material guards remain unchanged. No private snapshots/values were
+published, no decrypted material or key files were read, and the private checkout
+was not changed.
+
+The previously recorded Neovim compact-hover failure and missing `pynvim` check
+were not rerun: their owning modules and native sources remain for #53. Existing
+VM outputs were reused; no new live namespace exercise was needed for these
+byte-identical source moves. GUI appearance, physical boot/login, storage mounts,
+production decryption and real VPN egress remain manual checks. No activation,
+service restart, runtime migration, route/firewall change or data deletion occurred.
