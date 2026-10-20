@@ -235,3 +235,17 @@ VM outputs were reused; no new live namespace exercise was needed for these
 byte-identical source moves. GUI appearance, physical boot/login, storage mounts,
 production decryption and real VPN egress remain manual checks. No activation,
 service restart, runtime migration, route/firewall change or data deletion occurred.
+
+Final integrated validation after the comparator/ledger changes passed again:
+`nix flake check --no-write-lock-file` exited 0 (two changed checks executed;
+others reused), and the explicit build of all 14 registered check outputs exited
+0. All 232 relative documentation links/anchors and both staged/unstaged
+`git diff --check` passed. Stale-path review found only documented historical
+references, frozen compatibility registrations and synthetic legacy fixtures.
+
+Independent reviews of `631294b...132d5c1`: **Standards: 0 actionable findings;
+Spec: 0 findings**. The Spec reviewer independently reran all six comparator and
+seven catalog tests successfully. Implementation commit: `132d5c1`.
+Issue #52's ten acceptance checkboxes and four Agent Brief checkboxes are updated
+with this stage's delivery. Integration remains on the existing draft PR #57;
+no ready-for-review transition, merge or activation is authorized by this stage.
