@@ -20,7 +20,6 @@
       files.thunar.enable = false;
       services = {
         lanMouse.enable = true;
-        ollama.enable = true;
         tailscale.enable = true;
         blueman.enable = true;
         syncthing.enable = true;

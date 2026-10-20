@@ -22,7 +22,6 @@ return {
   { import = 'plugins.lazygit' },
   { import = 'plugins.linting' },
   { import = 'plugins.markdown' },
-  { import = 'plugins.minuet-ai' },
   { import = 'plugins.molten-nvim' },
   { import = 'plugins.neotest' },
   { import = 'plugins.notify' },
