@@ -1,5 +1,6 @@
 set positional-arguments
 set shell := ["bash", "-uc"]
+set dotenv-load
 
 host := "nixos-pc"
 
@@ -9,20 +10,20 @@ default:
 fmt:
     nix fmt
 
-check:
-    nix flake check
+check *flags:
+    bash lib/nixos-command.sh check "$@"
 
 build host=host *flags:
-    nix build ".#nixosConfigurations.$1.config.system.build.toplevel" "${@:2}"
+    bash lib/nixos-command.sh build "$@"
 
 dry host=host *flags:
-    sudo nixos-rebuild dry-build --flake ".#$1" "${@:2}"
+    bash lib/nixos-command.sh dry "$@"
 
 switch host=host *flags:
-    sudo nixos-rebuild switch --flake ".#$1" "${@:2}"
+    bash lib/nixos-command.sh switch "$@"
 
 boot host=host *flags:
-    sudo nixos-rebuild boot --flake ".#$1" "${@:2}"
+    bash lib/nixos-command.sh boot "$@"
 
 build-pc *flags:
     just build nixos-pc "$@"

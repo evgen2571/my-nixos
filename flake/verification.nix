@@ -26,11 +26,14 @@
                 (pkgs.python3.withPackages (ps: [ ps.pyyaml ]))
                 pkgs.just
                 pkgs.fish
+                pkgs.git
+                pkgs.shellcheck
               ];
             }
             ''
               mkdir -p lib
               cp ${../lib/check-sops-source.py} lib/check-sops-source.py
+              cp ${../lib/nixos-command.sh} lib/nixos-command.sh
               mkdir -p config/fish/conf.d
               cp ${../config/fish/conf.d/nixos-hosts.fish} config/fish/conf.d/nixos-hosts.fish
               cp ${../justfile} justfile
@@ -40,6 +43,7 @@
               cp ${../modules/deployment/preflight.sh} modules/deployment/preflight.sh
               python3 tests/migration/preflight.py
               python3 tests/migration/helpers.py
+              shellcheck lib/nixos-command.sh
               python3 tests/migration/policy.py
               touch $out
             '';
