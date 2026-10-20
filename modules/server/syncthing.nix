@@ -13,8 +13,10 @@ in
         assertion = storage.enable;
         message = "my.server.syncthing requires my.server.storage.enable to be true.";
       }
+
       {
         assertion = storage.device != null;
+
         message = ''
           my.server.syncthing requires my.server.storage.device to be set to a
           stable device path. Without a dedicated storage disk, Syncthing would
@@ -81,6 +83,7 @@ in
         8384
         22000
       ];
+
       allowedUDPPorts = [
         22000
       ];

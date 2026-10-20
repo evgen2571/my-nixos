@@ -1,14 +1,13 @@
 {
   config,
   lib,
-  pkgs,
   inputs,
+  packageSources,
   ...
 }:
 
 let
   cfg = config.my.user.apps.voxtype;
-  system = pkgs.stdenv.hostPlatform.system;
 in
 {
   imports = [
@@ -21,18 +20,14 @@ in
     programs.voxtype = {
       enable = true;
 
-      # Whisper with Vulkan acceleration.
-      package = inputs.voxtype.packages.${system}.vulkan;
+      package = packageSources.voxtype;
 
-      # Declaratively downloaded during rebuild.
       model.name = "small";
 
-      # Start Voxtype automatically with the graphical session.
       service.enable = true;
 
       settings = {
-        # Niri will manage the keyboard shortcut.
-        # This avoids requiring access to /dev/input.
+        # Niri handles the shortcut, so Voxtype needs no access to /dev/input.
         hotkey.enabled = false;
 
         whisper = {

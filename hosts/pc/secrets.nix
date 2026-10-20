@@ -17,6 +17,7 @@ in
       mode = "0400";
       restartUnits = [ "netns-vpn-shared.service" ];
     };
+
     ssh-github-private-key = {
       sopsFile = file;
       key = "ssh_github_private_key";

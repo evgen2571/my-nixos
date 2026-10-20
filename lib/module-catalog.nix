@@ -1,4 +1,5 @@
 { root }:
+
 let
   inherit (builtins)
     concatLists
@@ -10,68 +11,82 @@ let
 
   discovery = import ./module-discovery.nix { inherit root; };
 
+  # Keep system modules and Home Manager modules in their own profiles.
   profileRoots = [
     {
       scope = "system";
       relPath = "/modules/desktops";
       profiles = [ "desktop" ];
     }
+
     {
       scope = "system";
       relPath = "/modules/server";
       profiles = [ "server" ];
     }
+
     {
       scope = "system";
       relPath = "/modules/system-services";
+
       profiles = [
         "desktop"
         "server"
       ];
     }
+
     {
       scope = "system";
       relPath = "/modules/hardware";
       profiles = [ "desktop" ];
     }
+
     {
       scope = "system";
       relPath = "/modules/system-apps";
       profiles = [ "desktop" ];
     }
+
     {
       scope = "system";
       relPath = "/modules/system-dev";
       profiles = [ "desktop" ];
     }
+
     {
       scope = "system";
       relPath = "/modules/system-files";
       profiles = [ "desktop" ];
     }
+
     {
       scope = "home";
       relPath = "/modules/user-ai";
       profiles = [ "desktop" ];
     }
+
     {
       scope = "home";
       relPath = "/modules/user-apps";
       profiles = [ "desktop" ];
     }
+
     {
       scope = "home";
       relPath = "/modules/user-desktop";
       profiles = [ "desktop" ];
     }
+
     {
       scope = "home";
       relPath = "/modules/user-dev";
+
       profiles = [
         "desktop"
         "server"
       ];
     }
+
     {
       scope = "home";
       relPath = "/modules/user-files";

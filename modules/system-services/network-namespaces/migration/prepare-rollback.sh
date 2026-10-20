@@ -10,6 +10,7 @@ case "$host" in nixos-server|nixos-pc|nixos-lp) ;; *) echo 'Unexpected host' >&2
 [[ "$2" =~ ^[0-9a-fA-F:.]+$ ]]
 old=$(readlink -f /run/current-system)
 [[ "$old" == /nix/store/* && -x "$old/bin/switch-to-configuration" ]]
+
 # Refuse to replace an already armed rollback.
 if systemctl is-active --quiet shared-vpn-rollback.timer; then
   echo 'Rollback already armed' >&2; exit 1
@@ -24,6 +25,7 @@ ip rule show > "$snapshot/rules4"
 ip -6 rule show > "$snapshot/rules6"
 ip route get "$2" > "$snapshot/ssh-route"
 sha256sum /etc/resolv.conf > "$snapshot/resolver"
+
 # Keep the old system rooted even if garbage collection runs during the test.
 nix-store --add-root "$snapshot/old-root" --indirect -r "$old" >/dev/null
 source_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)

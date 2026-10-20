@@ -1,6 +1,5 @@
 {
   config,
-  pkgs,
   lib,
   ...
 }:
@@ -11,7 +10,7 @@ in
 {
   options.my.system.dev.fish.enable = lib.mkEnableOption "Fish shell system integration";
 
-  config = lib.mkIf cfg.enable ({
+  config = lib.mkIf cfg.enable {
     programs.fish.enable = true;
-  });
+  };
 }

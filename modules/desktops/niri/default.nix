@@ -105,25 +105,26 @@ in
       };
     };
 
-    # Portal services can be D-Bus activated before Niri has finished
-    # publishing the Wayland session. In that state OBS and Chromium-based
-    # apps see a portal, but the ScreenCast session cannot be subscribed to.
-    # Re-run the same initialization that fixes it manually, once the desktop
-    # session is fully up.
+    # Portals started before Niri publishes its Wayland session cannot share
+    # the screen in OBS or Chromium. Restart them once the session is ready.
     systemd.user.services.niri-portal-init = {
       description = "Initialize Niri screen-sharing portals";
       wantedBy = [ "graphical-session.target" ];
+
       wants = [
         "xdg-desktop-portal.service"
         "xdg-desktop-portal-gnome.service"
       ];
+
       after = [
         "graphical-session.target"
         "xdg-desktop-portal.service"
         "xdg-desktop-portal-gnome.service"
       ];
+
       serviceConfig = {
         Type = "oneshot";
+
         ExecStart = pkgs.writeShellScript "niri-portal-init" ''
           set -eu
           ${pkgs.systemd}/bin/systemctl --user restart \

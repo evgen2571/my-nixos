@@ -13,6 +13,7 @@ roles, and machine-specific settings.
 | Which features the machine uses | `hosts/my-host/profile.nix` | A profile selects existing options |
 | Application settings or keybindings | The corresponding source under `config/` | The owning Home Manager module deploys those files |
 | How a feature installs packages or runs services | Its module under `modules/` | Modules implement behavior shared across hosts |
+| Which package source an exception uses | `lib/package-sources.nix` | [Package selections](../reference/modules.md#package-sources) are shared by NixOS and Home Manager |
 | Available module roots or flake outputs | `lib/module-catalog.nix` or `flake/hosts.nix`, only when needed | Assembly and discovery already handle ordinary module files |
 
 Home Manager is integrated through `my.primaryUser`: it derives the user's name

@@ -1,7 +1,6 @@
 {
   lib,
   config,
-  pkgs,
   ...
 }:
 
@@ -11,7 +10,7 @@ in
 {
   options.my.hardware.nvidia.enable = lib.mkEnableOption "NVIDIA graphics support";
 
-  config = lib.mkIf cfg.enable ({
+  config = lib.mkIf cfg.enable {
     services.xserver.videoDrivers = [ "nvidia" ];
 
     hardware.graphics = {
@@ -29,5 +28,5 @@ in
     boot.kernelParams = [ "nvidia-drm.modeset=1" ];
 
     programs.xwayland.enable = true;
-  });
+  };
 }

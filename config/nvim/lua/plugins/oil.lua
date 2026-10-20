@@ -1,6 +1,7 @@
 return {
 	"stevearc/oil.nvim",
 	dependencies = { { "nvim-mini/mini.icons", opts = {} } },
+
 	config = function()
 		require("oil").setup({
 			default_file_explorer = true,
@@ -9,13 +10,16 @@ return {
 			columns = { "icon" },
 			keymaps = { ["<C-h>"] = false },
 			watch_for_changes = true,
+
 			view_options = {
 				show_hidden = true,
 				natural_order = true,
+
 				is_always_hidden = function(name, _)
 					return name == ".." or name == ".git" or name == ".cache" or name == "compile_commands.json"
 				end,
 			},
+
 			win_options = {
 				wrap = true,
 			},

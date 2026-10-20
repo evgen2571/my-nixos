@@ -1,7 +1,9 @@
 # Niri's built-in XWayland integration requires satellite on the session PATH.
 { configurations, pkgs }:
+
 let
   lib = pkgs.lib;
+
   desktops = map (name: configurations.${name}.config) [
     "nixos-pc"
     "nixos-lp"

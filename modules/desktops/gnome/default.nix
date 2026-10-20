@@ -12,10 +12,10 @@ in
   options.my.desktop.gnome.enable = lib.mkEnableOption "GNOME desktop environment";
 
   config = lib.mkIf cfg.enable {
-
     services = {
       desktopManager.gnome.enable = true;
       displayManager.gdm.enable = false;
+
       gnome = {
         core-apps.enable = false;
         core-developer-tools.enable = false;

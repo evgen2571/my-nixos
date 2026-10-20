@@ -9,6 +9,8 @@ return {
   require 'plugins.autopairs',
   require 'plugins.gitsigns',
   require 'plugins.treesitter',
+
+  -- Feature specs keep their existing loading order.
   { import = 'plugins.base16' },
   { import = 'plugins.cmake-tools' },
   { import = 'plugins.codediff' },
@@ -22,7 +24,6 @@ return {
   { import = 'plugins.lazygit' },
   { import = 'plugins.linting' },
   { import = 'plugins.markdown' },
-  { import = 'plugins.minuet-ai' },
   { import = 'plugins.molten-nvim' },
   { import = 'plugins.neotest' },
   { import = 'plugins.notify' },

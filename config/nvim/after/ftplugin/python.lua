@@ -1,18 +1,23 @@
 local py = require("languages.python")
+
 local function map(lhs, fn, desc)
 	vim.keymap.set("n", lhs, fn, { buffer = true, desc = desc })
 end
+
 map("<leader>pr", function()
 	vim.cmd.update()
 	py.run({ "python", vim.fn.expand("%:p") })
 end, "Python: run script")
+
 map("<leader>pt", function()
 	py.run({ "python", "-m", "pytest" })
 end, "Python: project pytest")
+
 map("<leader>pm", function()
 	vim.cmd.update()
 	py.run({ "python", "-m", "mypy", "." })
 end, "Python: deep type check")
+
 map("<leader>pj", function()
 	py.run({ "python", "-m", "jupyterlab" })
 end, "Python: JupyterLab / DataFrames")

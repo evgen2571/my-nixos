@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 # Exercise the real generated service scripts in disposable user/net/mount namespaces.
 set -euo pipefail
+
 if [[ ${1:-} != --inside ]]; then
   [[ $# == 4 ]] || { echo "Usage: $0 TOOLS INIT PREPARE CLEANUP" >&2; exit 2; }
   export PATH="$1/bin:$PATH"
   exec unshare --user --map-auto --map-root-user --mount --net bash "$0" --inside "$@"
 fi
+
 shift
 tools=$1 init=$2 prepare=$3 cleanup=$4
 export PATH="$tools/bin:$PATH"

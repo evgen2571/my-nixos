@@ -17,6 +17,7 @@ class Policy(unittest.TestCase):
             root = Path(d)
             encrypted = "ENC[AES256_GCM,data:AA==,iv:AA==,tag:AA==,type:str]"
             wrapped = "-----BEGIN AGE ENCRYPTED FILE-----\nfixture-only\n-----END AGE ENCRYPTED FILE-----"
+
             (root / "cipher.yaml").write_text(
                 json.dumps(
                     {
@@ -31,7 +32,9 @@ class Policy(unittest.TestCase):
                     }
                 )
             )
+
             (root / "policy.yaml").write_text(policy)
+
             return subprocess.run(
                 [
                     sys.executable,
@@ -46,6 +49,7 @@ class Policy(unittest.TestCase):
     def test_source_without_consumers_still_requires_encryption(self):
         with tempfile.TemporaryDirectory() as directory:
             source = Path(directory) / "source.yaml"
+
             for text in ["example: plaintext", "sops: {}", "[]", "invalid: ["]:
                 source.write_text(text)
                 result = subprocess.run(
@@ -57,8 +61,10 @@ class Policy(unittest.TestCase):
 
     def test_private_source_without_consumers_rejects_malformed_age(self):
         encrypted = "ENC[AES256_GCM,data:AA==,iv:AA==,tag:AA==,type:str]"
+
         with tempfile.TemporaryDirectory() as directory:
             source = Path(directory) / "source.yaml"
+
             for age in [
                 "garbage",
                 [None],

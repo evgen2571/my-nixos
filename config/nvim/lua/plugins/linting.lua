@@ -1,6 +1,7 @@
 return {
 	"mfussenegger/nvim-lint",
 	event = { "BufReadPost", "BufNewFile" },
+
 	config = function()
 		local lint = require("lint")
 
@@ -30,6 +31,7 @@ return {
 
 		vim.api.nvim_create_autocmd({ "BufWritePost" }, {
 			group = vim.api.nvim_create_augroup("custom-lint", { clear = true }),
+
 			callback = function()
 				lint.try_lint()
 			end,

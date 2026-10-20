@@ -1,40 +1,53 @@
 # Native evaluation and real service-script fixtures; no credentials or activation.
 { nixpkgs }:
+
 let
   lib = nixpkgs.lib;
+
   eval = import (nixpkgs + "/nixos/lib/eval-config.nix") {
     system = "x86_64-linux";
+
     modules = [
       ../../modules/system-services/network-namespaces
+
       ({ pkgs, ... }: {
         system.stateVersion = "26.05";
         boot.loader.grub.enable = false;
+
         fileSystems."/" = {
           device = "/dev/test";
           fsType = "ext4";
         };
+
         my.system.services.networkNamespaces = {
           enable = true;
+
           namespaces = {
             auth = {
               enable = true;
               bootstrapTokenFile = "/run/mock-hide-me-token";
             };
+
             gateway = {
               enable = true;
+
               shared = {
                 role = "gateway";
                 privateKeyFile = "/var/lib/netns-gateway-shared/private-key";
+
                 peers = [
                   {
                     publicKey = (import ./public-keys.nix).pc;
+
                     allowedIPs = [
                       "10.77.0.2/32"
                       "fd77::2/128"
                     ];
                   }
+
                   {
                     publicKey = (import ./public-keys.nix).laptop;
+
                     allowedIPs = [
                       "10.77.0.3/32"
                       "fd77::3/128"
@@ -46,15 +59,18 @@ let
           }
           // lib.genAttrs [ "pc" "laptop" ] (name: {
             enable = true;
+
             shared = {
               role = "client";
               privateKeyFile = "/var/lib/netns-${name}-shared/private-key";
               address = if name == "pc" then "10.77.0.2/24" else "10.77.0.3/24";
               address6 = if name == "pc" then "fd77::2/64" else "fd77::3/64";
               endpoint = "127.0.0.1:51877";
+
               peers = [
                 {
                   publicKey = (import ./public-keys.nix).gateway;
+
                   allowedIPs = [
                     "0.0.0.0/0"
                     "::/0"
@@ -67,12 +83,15 @@ let
       })
     ];
   };
+
   c = eval.config;
   pkgs = eval.pkgs;
+
   clients = [
     "pc"
     "laptop"
   ];
+
   services = c.systemd.services;
 in
 assert lib.all (
@@ -102,6 +121,7 @@ assert lib.all (
 ) clients;
 {
   system = c.system.build.toplevel.drvPath;
+
   fixtures = pkgs.runCommand "shared-vpn-fixtures" { } (
     ''
       mkdir -p $out/bin
@@ -113,8 +133,10 @@ assert lib.all (
       ln -s ${services."netns-${name}-shared".serviceConfig.ExecStart} $out/bin/${name}-start
     '') ([ "gateway" ] ++ clients)
   );
+
   tools = pkgs.buildEnv {
     name = "shared-vpn-test-tools";
+
     paths = with pkgs; [
       bash
       coreutils

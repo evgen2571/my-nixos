@@ -67,6 +67,7 @@ function M.show()
     end
 
     local chunks = {}
+
     for id, response in pairs(responses) do
       if not response.err and response.result and response.result.contents then
         local content = response.result.contents
@@ -90,14 +91,17 @@ function M.show()
     end)
     local markdown = #chunks > 1 or not chunks[1].plain
     local lines = {}
+
     for _, chunk in ipairs(chunks) do
       if #lines > 0 then
         lines[#lines + 1] = ""
       end
+
       if #chunks > 1 then
         local client = vim.lsp.get_client_by_id(chunk.id)
         lines[#lines + 1] = "**" .. (client and client.name or "LSP") .. "**"
       end
+
       if #chunks > 1 and chunk.plain then
         lines[#lines + 1] = "```text"
       end

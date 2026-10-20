@@ -1,12 +1,13 @@
+
 --[[
 --
 -- This file is not required for your own configuration,
 -- but helps people determine if their system is setup correctly.
 --
 --]]
-
 local check_version = function()
   local verstr = tostring(vim.version())
+
   if not vim.version.ge then
     vim.health.error(string.format("Neovim out of date: '%s'. Upgrade to latest stable or nightly", verstr))
     return
@@ -23,6 +24,7 @@ local check_external_reqs = function()
   -- Basic utils: `git`, `make`, `unzip`
   for _, exe in ipairs { 'git', 'make', 'unzip', 'rg' } do
     local is_executable = vim.fn.executable(exe) == 1
+
     if is_executable then
       vim.health.ok(string.format("Found executable: '%s'", exe))
     else

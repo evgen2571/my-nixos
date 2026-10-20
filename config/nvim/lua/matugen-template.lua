@@ -40,20 +40,24 @@ function M.setup()
 		bg = "NONE",
 		fg = "{{colors.on_surface_variant.default.hex}}",
 	})
+
 	vim.api.nvim_set_hl(0, "HarpoonActive", {
 		bg = "NONE",
 		fg = "{{colors.on_surface.default.hex}}",
 		bold = true,
 	})
+
 	vim.api.nvim_set_hl(0, "HarpoonNumberActive", {
 		bg = "NONE",
 		fg = "{{colors.primary.default.hex}}",
 		bold = true,
 	})
+
 	vim.api.nvim_set_hl(0, "HarpoonNumberInactive", {
 		bg = "NONE",
 		fg = "{{colors.primary.default.hex}}",
 	})
+
 	vim.api.nvim_set_hl(0, "TabLineFill", {
 		bg = "NONE",
 		fg = "{{colors.on_surface.default.hex}}",
@@ -65,14 +69,17 @@ function M.setup()
 	vim.api.nvim_set_hl(0, "RenderMarkdownCode", {
 		bg = "{{colors.surface_container.default.hex}}",
 	})
+
 	vim.api.nvim_set_hl(0, "RenderMarkdownCodeInfo", {
 		fg = "{{colors.primary.default.hex}}",
 		bg = "{{colors.surface_container.default.hex}}",
 	})
+
 	vim.api.nvim_set_hl(0, "RenderMarkdownCodeBorder", {
 		fg = "{{colors.surface_container_highest.default.hex}}",
 		bg = "{{colors.surface_container.default.hex}}",
 	})
+
 	vim.api.nvim_set_hl(0, "RenderMarkdownCodeInline", {
 		fg = "{{colors.on_surface.default.hex}}",
 		bg = "{{colors.surface_container_high.default.hex}}",

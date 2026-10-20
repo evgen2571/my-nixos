@@ -19,15 +19,18 @@ original = path.read_text()
 lines = original.splitlines(keepends=True)
 result = []
 skip = False
+
 for line in lines:
     if line.lstrip().startswith("["):
         heading = line.strip()
+
         skip = bool(
             re.match(r"^\[+plugin_settings\.", heading)
             and "noctalia/screen_recorder" in heading
             or re.match(r"^\[+desktop_widgets\.widget\.", heading)
             and "desktop-widget-0000000000000003" in heading
         )
+
     if skip or re.match(r"^\s*launcher_session_search\s*=", line):
         continue
     result.append(line)

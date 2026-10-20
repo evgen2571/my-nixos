@@ -11,9 +11,9 @@ in
 {
   options.my.user.apps.prismLauncher.enable = lib.mkEnableOption "Prism Launcher";
 
-  config = lib.mkIf cfg.enable ({
+  config = lib.mkIf cfg.enable {
     home.packages = with pkgs; [
       prismlauncher
     ];
-  });
+  };
 }

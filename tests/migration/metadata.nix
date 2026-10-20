@@ -1,9 +1,11 @@
 # Evaluate the public module interfaces; no real identity or runtime state needed.
 { configurations, pkgs }:
+
 let
   lib = pkgs.lib;
   desktop = configurations.nixos-pc;
   public = !(desktop.config.sops.secrets ? user-password);
+
   renamed =
     (desktop.extendModules {
       modules = [
@@ -11,16 +13,20 @@ let
           my.primaryUser.name = lib.mkForce "fixture-user";
           time.timeZone = lib.mkForce "Etc/GMT+3";
           my.primaryUser.home.settings.programs.ssh.settings.server.User = lib.mkForce "fixture-remote";
+
           my.primaryUser.home.settings.programs.noctalia.settings.location.address =
             lib.mkForce "Example City";
         })
       ];
     }).config;
+
   home = renamed.home-manager.users.fixture-user;
+
   partial =
     (desktop.extendModules {
       specialArgs.secretFile = ./fixtures/valid.yaml;
     }).config;
+
   missingPeer =
     (desktop.extendModules {
       modules = [
@@ -28,11 +34,14 @@ let
           my.system.services.networkNamespaces.namespaces.vpn.shared.peers = lib.mkForce [ ];
         })
       ];
+
       specialArgs.secretFile = ./fixtures/valid.yaml;
     }).config;
+
   missingKeys =
     (configurations.nixos-server.extendModules {
       specialArgs.secretFile = ./fixtures/valid.yaml;
+
       modules = [
         ({ lib, ... }: {
           my.primaryUser = {
@@ -43,12 +52,14 @@ let
         })
       ];
     }).config;
+
   conflicting = desktop.extendModules {
     modules = [
       { my.primaryUser.name = "first-user"; }
       { my.primaryUser.name = "second-user"; }
     ];
   };
+
   rejects = prefix: c: lib.any (a: !a.assertion && lib.hasPrefix prefix a.message) c.assertions;
 in
 assert !public || desktop.config.my.primaryUser.name == "operator";

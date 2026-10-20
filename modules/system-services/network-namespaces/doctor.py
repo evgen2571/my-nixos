@@ -64,10 +64,12 @@ def lifecycle(c, name, event):
     path = stops / name
     own = unit(name)
     intent = 'running'
+
     if event == 'stop':
         # A stopped dependency may still be active while its stop job is queued.
         dependencies = [unit(d) for d in c['dependencies'][name]]
         old = read_json(path)
+
         if old.get('intent') == 'recovery' and old.get('invocation') == own.get('InvocationID'):
             intent = 'recovery'
         elif (os.environ.get('SERVICE_RESULT') != 'success'
@@ -77,6 +79,7 @@ def lifecycle(c, name, event):
             intent = 'dependency'
         else:
             intent = 'manual'
+
     save(path, dict(intent=intent, invocation=own.get('InvocationID', ''),
                     boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip()))
 
@@ -105,54 +108,80 @@ def authorization(log):
 
 
 MESSAGES = {
+
     'HEALTHY': ('VPN egress and local checks succeeded.', 'No action required.'),
+
     'AUTH_REJECTED': ('Provider authorization rejected (HTTP 401/403); exact cause unknown.',
                       'Use the private re-auth/bootstrap procedure in docs/operations/network-namespaces.md; then reset recovery.'),
+
     'DEPLOYMENT_MISMATCH': ('Required unit is absent from the active generation.',
                             'Compare /run/current-system and the expected generation; deploy only with operator approval.'),
+
     'DISABLED': ('A required unit is masked, disabled or deliberately stopped.',
                  'Check maintenance state and systemctl show; recovery will not unmask or fight a stop.'),
+
     'CONFIGURATION_ERROR': ('A required runtime secret or declared WireGuard peer is missing/incorrect.',
                             'Check declared secret paths, SOPS provisioning and public peer configuration privately.'),
+
     'NAMESPACE_UNAVAILABLE': ('VPN namespace is not ready; policy cannot yet be inspected.',
                               'Wait for netns-NAME.service; inspect its dependencies if this persists.'),
+
     'SECRETS_UNAVAILABLE': ('A runtime secret is not provisioned yet.',
                             'Check SOPS provisioning and named secret paths privately; recovery waits.'),
+
     'STOP_INTENT_UNKNOWN': ('An inactive service has no current lifecycle record; stop intent is unknown.',
                             'Verify maintenance intent, then explicitly start the required unit if appropriate.'),
+
     'HOST_OFFLINE': ('No usable host IPv4/IPv6 route and all host HTTPS checks failed.',
                      'Check host WAN, LAN/DHCP, routing and clock; recovery waits for connectivity.'),
+
     'HOST_CONNECTIVITY_UNVERIFIED': ('Host HTTPS checks failed despite route evidence; Internet availability is unverified.',
                                       'Inspect per-family DNS/TLS/HTTP results and WAN/LAN; recovery waits without restarting VPN.'),
+
     'TAILSCALE_OFFLINE': ('Tailscale is stopped, unavailable or requires authentication.',
                          'Check tailscale status on the host; authenticate privately if requested.'),
+
     'GATEWAY_UNREACHABLE': ('Gateway Tailscale peer did not respond; remote provider state is unknown.',
                            'Check gateway power/uplink/Tailscale from an ordinary host terminal.'),
+
     'TRANSPORT_MISSING': ('Local shared0 interface or failed transport needs recovery.',
                           'Inspect netns-NAME-shared.service and the runtime key path.'),
+
     'WG_HANDSHAKE_STALE': ('WireGuard handshake is missing/stale despite reachable prerequisites.',
                            'Check peer keys, endpoint and UDP filtering; Tailscale ping alone does not prove WireGuard.'),
+
     'PROVIDER_UNHEALTHY': ('Provider is missing, failed or functionally unhealthy despite its process state.',
                            'Inspect sanitized provider diagnostics and hide-me-NAME.service privately.'),
+
     'UNDERLAY_UNAVAILABLE': ('Gateway tap0 or underlay service is unhealthy.',
                              'Check netns-NAME-underlay.service; host networking remains separate.'),
+
     'DNS_UNAVAILABLE': ('Isolated DNS failed; no host resolver fallback is permitted.',
                          'Check private provider resolvers and netns-NAME-dns.service on the gateway.'),
+
     'FIREWALL_ERROR': ('Namespace filter, forwarding or NAT checks failed.',
                        'Operator must verify namespace nft rules and forwarding; no automatic firewall weakening.'),
+
     'ROUTE_ERROR': ('A required IPv4/IPv6 tunnel route is missing.',
                     'Inspect namespace routes and provider policy routing; no host-route fallback.'),
+
     'EGRESS_UNAVAILABLE': ('All isolated HTTPS destinations failed; exact upstream cause is unknown.',
                            'Inspect per-family probe exit codes; no restart based solely on endpoint failures.'),
+
     'EGRESS_DEGRADED': ('Only some destinations/address families succeeded.',
                         'Inspect probe results; a single endpoint/family failure does not trigger recovery.'),
+
     'PROVIDER_RATE_LIMITED': ('Provider API reported HTTP 429; reconnect attempts are paused.',
                              'Check provider retry guidance privately before resetting recovery.'),
+
     'PROVIDER_API_UNAVAILABLE': ('Provider API reported HTTP 5xx; bounded recovery waits for backoff.',
                                 'Check provider availability; this is not evidence of invalid credentials.'),
+
     'STARTING': ('Startup/resume grace period is active.', 'Wait for prerequisites and the next health check.'),
+
     'CLOCK_ERROR': ('Clock moved backwards or a WireGuard handshake has a future timestamp.',
                     'Verify host time synchronization before attempting VPN recovery.'),
+
     'UNKNOWN': ('Diagnostics are unavailable or stale.', 'Check the recovery timer and run vpn-status --verbose.'),
 }
 
@@ -190,6 +219,7 @@ def inspect(c, old, now):
         if intent == 'manual' or (intent == 'unknown' and not (u == provider and released_hold)):
             return ('TAILSCALE_OFFLINE' if u == 'tailscaled.service' else
                     'DISABLED' if intent == 'manual' else 'STOP_INTENT_UNKNOWN'), None, details
+
     for path in [c['key']] + ([c['bootstrap']] if c.get('bootstrap') and not client else []):
         try:
             if Path(path).stat().st_size == 0:
@@ -198,21 +228,27 @@ def inspect(c, old, now):
             return 'SECRETS_UNAVAILABLE', None, details
         except OSError:
             return 'CONFIGURATION_ERROR', None, details
+
     namespace = units[f'{prefix}.service']
     if (not Path(c['namespace_path']).exists()
             or command('ip', '-n', name, 'link', 'show', 'lo')[0]
             or namespace.get('ActiveState') in ('activating', 'deactivating')):
         component = f'{prefix}.service' if namespace.get('ActiveState') in ('inactive', 'failed') else None
         return 'NAMESPACE_UNAVAILABLE', component, details
+
     def ip(*args):
         return command('ip', '-n', name, *args)
+
     def inside(*args):
         return command('ip', 'netns', 'exec', name, *args)
+
     # Route/interface evidence is separate from endpoint/DNS/TLS probe outcomes.
     host = {}
+
     for family, label, address in (('-4', 'ipv4', '1.1.1.1'), ('-6', 'ipv6', '2606:4700:4700::1111')):
         rc, route = command('ip', '-j', family, 'route', 'get', address)
         usable = None
+
         try:
             routes = json.loads(route) if not rc else []
             dev = routes[0].get('dev') if routes else None
@@ -223,20 +259,24 @@ def inspect(c, old, now):
                 usable = False
         except (ValueError, IndexError, TypeError):
             pass
+
         results = [command('curl', '--noproxy', '*', family, '-fsS', '--connect-timeout', '2',
                            '--max-time', '4', '--output', '/dev/null', u)[0] for u in c['urls']]
         host[label] = dict(route=usable, probes=results)
+
     details['host'] = host
     if not any(0 in h['probes'] for h in host.values()):
         return ('HOST_OFFLINE' if all(h['route'] is False for h in host.values())
                 else 'HOST_CONNECTIVITY_UNVERIFIED'), None, details
     rc, tail = command('tailscale', 'status', '--json')
+
     try:
         backend = json.loads(tail).get('BackendState') if not rc else None
         details['tailscale'] = backend if backend in ('Running', 'Stopped', 'NeedsLogin', 'NeedsMachineAuth', 'Starting') else 'unavailable'
         running = backend == 'Running'
     except ValueError:
         running = False
+
     if not running:
         return 'TAILSCALE_OFFLINE', None, details
     if client and command('tailscale', 'ping', '--timeout=3s', '--c=1', c['endpoint'], timeout=5)[0]:
@@ -278,6 +318,7 @@ def inspect(c, old, now):
                        and (provider_state in ('active', 'activating')
                             or (provider_state in ('failed', 'inactive') and provider_started))
                        and (not released_hold or invocation != hold.get('invocation')))
+
     if current_attempt and not any_success:
         # Inactive units retain InvocationID; changed credentials must get a new attempt.
         _, log = command('journalctl', '--no-pager', '-o', 'cat', '-n', '200',
@@ -287,6 +328,7 @@ def inspect(c, old, now):
         if evidence:
             details['provider_evidence_invocation'] = invocation
             return evidence, provider if evidence == 'PROVIDER_API_UNAVAILABLE' else None, details
+
     if not client:
         underlay = f'{prefix}-underlay.service'
         if (ip('link', 'show', 'tap0')[0] or units[underlay].get('ActiveState') not in ('active', 'activating')
@@ -295,6 +337,7 @@ def inspect(c, old, now):
         if (ip('link', 'show', 'hm0')[0] or units[provider].get('ActiveState') not in ('active', 'activating')
                 or (released_hold and invocation == hold.get('invocation'))):
             return 'PROVIDER_UNHEALTHY', provider, details
+
     interface = 'shared0' if client else 'hm0'
     for family, address in [('-4', '1.1.1.1'), ('-6', '2606:4700:4700::1111')]:
         rc, route = ip(family, 'route', 'get', address)
@@ -315,12 +358,14 @@ def inspect(c, old, now):
         resolver = ''
     if not re.search(r'^nameserver\s+(?!127\.0\.0\.1\b|::1\b)\S+', resolver, re.M):
         return 'DNS_UNAVAILABLE', provider if not client else None, details
+
     if not fresh or not any_success:
         dns_failure = fresh and results and all(r == 6 for r in results)
         # Two independent destinations, both families, repeated failures and a
         # healthy host uplink justify provider-only recovery; HTTP/TLS errors do not.
         recoverable = fresh and len(c['urls']) >= 2 and results and all(r in (6, 7, 28) for r in results)
         return ('DNS_UNAVAILABLE' if dns_failure else 'EGRESS_UNAVAILABLE'), (provider if not client and recoverable else None), details
+
     if c['role'] == 'gateway':
         # The relay query runs in the isolated health unit, not through
         # ip netns exec in this host-side recovery service. The latter can
@@ -334,6 +379,7 @@ def inspect(c, old, now):
         if (relay['exit_code'] != 0 or not relay.get('answered')
                 or units[dns].get('ActiveState') not in ('active', 'activating')):
             return 'DNS_UNAVAILABLE', dns, details
+
     return ('HEALTHY' if all(r == 0 for r in results) else 'EGRESS_DEGRADED'), None, details
 
 
@@ -367,6 +413,7 @@ def reconcile(c):
     phase = ('HEALTHY' if reason == 'HEALTHY' else 'DEGRADED') if healthy else 'WAITING'
     manual = reason in ('AUTH_REJECTED', 'PROVIDER_RATE_LIMITED', 'CONFIGURATION_ERROR',
                         'DEPLOYMENT_MISMATCH', 'FIREWALL_ERROR', 'CLOCK_ERROR', 'STOP_INTENT_UNKNOWN')
+
     if healthy:
         (Path(c['state']) / 'hold.json').unlink(missing_ok=True)
         # Ten healthy minutes replenish budget; a single success cannot hide flapping.
@@ -375,8 +422,10 @@ def reconcile(c):
             attempts, retry_at = 0, 0
     else:
         healthy_since = 0
+
     if manual:
         phase = 'ACTION_REQUIRED'
+
         if reason in ('AUTH_REJECTED', 'PROVIDER_RATE_LIMITED'):
             hold_path = Path(c['state']) / 'hold.json'
             provider = f'hide-me-{c["name"]}.service'
@@ -388,6 +437,7 @@ def reconcile(c):
             # even when systemd has already marked the unit failed/inactive.
             if rejected_invocation or not hold_path.exists():
                 save(hold_path, new_hold, 0o600)
+
             if details.get('units', {}).get(provider, {}).get('ActiveState') in ('active', 'activating', 'deactivating'):
                 stops = Path(c['state']) / 'stops'
                 stops.mkdir(exist_ok=True)
@@ -402,6 +452,7 @@ def reconcile(c):
         else:
             # Recheck a concurrent deliberate stop before issuing a repair.
             current = unit(component)
+
             if current.get('Job', '0') not in ('', '0') or current.get('ActiveState') in ('activating', 'deactivating'):
                 reason, phase, component = 'STARTING', 'STARTING', None
             elif ((Path(c['state']) / 'maintenance').exists()
@@ -427,9 +478,11 @@ def reconcile(c):
             # Restart completion is NOT success. Next isolated check must verify it.
     elif not healthy and now < grace_until and not manual:
         phase = 'STARTING'
+
     message, action = MESSAGES[reason]
     if phase == 'RECOVERY_COOLDOWN' and attempts >= 3:
         action = f'Budget exhausted; inspect failures, then explicitly reset with sudo /etc/network-namespaces/{c["name"]}-recovery-reset.'
+
     record = dict(reason=reason, phase=phase, message=message, next_action=action.replace('NAME', c['name']),
                   host=c['host'], role=c['role'], checked_at=now, failures=failures,
                   operator_action_required=manual or (phase == 'RECOVERY_COOLDOWN' and attempts >= 3),
@@ -439,6 +492,7 @@ def reconcile(c):
                   recovery_pending=not healthy and (phase == 'VERIFYING' or old.get('recovery_pending', False)),
                   healthy_since=healthy_since, grace_until=grace_until, boot=boot, suspend=suspend,
                   details=details)
+
     record['last_failure'] = old.get('last_failure') if healthy else dict(
         reason=reason, checked_at=now, probes=details.get('probes', {}),
         first_seen=(old.get('last_failure') or {}).get('first_seen', now) if old.get('reason') == reason else now)
@@ -456,6 +510,7 @@ def status(c, verbose=False, entry_failed=False):
         expected += [f'hide-me-{c["name"]}.service', f'netns-{c["name"]}-underlay.service', f'netns-{c["name"]}-dns.service']
     active_units = True
     known_units = True
+
     for u in expected:
         info = unit(u)
         active_units = active_units and (u.endswith('.timer') or info.get('ActiveState') == 'active')
@@ -465,6 +520,7 @@ def status(c, verbose=False, entry_failed=False):
         managed_stop = (u == f'hide-me-{c["name"]}.service' and s.get('details', {}).get('provider_reauth_pending'))
         intent = stop_intent(c, u, info)
         stopped = intent == 'manual'
+
         if info.get('LoadState') == 'not-found':
             s.update(reason='DEPLOYMENT_MISMATCH', phase='ACTION_REQUIRED',
                      message=MESSAGES['DEPLOYMENT_MISMATCH'][0], next_action=MESSAGES['DEPLOYMENT_MISMATCH'][1])
@@ -475,6 +531,7 @@ def status(c, verbose=False, entry_failed=False):
         elif intent == 'unknown' and not managed_stop and s.get('reason') not in ('AUTH_REJECTED', 'PROVIDER_RATE_LIMITED', 'DEPLOYMENT_MISMATCH'):
             s.update(reason='STOP_INTENT_UNKNOWN', phase='ACTION_REQUIRED',
                      message=MESSAGES['STOP_INTENT_UNKNOWN'][0], next_action=MESSAGES['STOP_INTENT_UNKNOWN'][1])
+
     if entry_failed and s.get('reason') in ('HEALTHY', 'EGRESS_DEGRADED'):
         s.update(reason='READINESS_FAILED', phase='BLOCKED',
                  message='Fresh launch readiness failed; previous scheduled probes are insufficient.',
@@ -486,6 +543,7 @@ def status(c, verbose=False, entry_failed=False):
         marker_fresh = 0 <= marker_age <= 90
     except (OSError, ValueError):
         marker_fresh = False
+
     if entry_failed or (known_units and not active_units) or not Path(c['namespace_path']).exists():
         applications = 'BLOCKED'
     elif stale or not known_units:
@@ -495,6 +553,7 @@ def status(c, verbose=False, entry_failed=False):
         applications = 'BLOCKED'
     else:
         applications = {'HEALTHY':'READY', 'EGRESS_DEGRADED':'DEGRADED'}.get(s.get('reason'), 'BLOCKED')
+
     if applications == 'BLOCKED' and s.get('reason') in ('HEALTHY', 'EGRESS_DEGRADED'):
         s.update(reason='READINESS_FAILED', phase='BLOCKED',
                  message='Current unit/namespace state or the IPv4 readiness marker is unavailable.',
@@ -533,13 +592,16 @@ def probe(c):
     now = int(time.time())
     runtime = Path(c['runtime'])
     snapshot = dict(checked_at=now, results=results)
+
     if c['role'] == 'gateway':
         # systemd has already entered /run/netns/vpn and mounted the private
         # resolver. Record only an exit code and boolean, never response data.
         rc, answer = command('dig', '+short', '+time=2', '+tries=1',
                              '@10.77.0.1', 'api.github.com', 'A', timeout=5)
         snapshot['relay_dns'] = dict(exit_code=rc, answered=bool(answer.strip()))
+
     save(runtime / 'probes.json', snapshot)
+
     # Preserve the original IPv4 readiness contract; IPv6-only success is degradation.
     if 0 in results[:len(c['urls'])]:
         tmp = runtime / 'ready.new'
@@ -561,6 +623,7 @@ def main():
     if os.geteuid() != 0:
         sys.exit('Recovery commands require root; vpn-status is read-only.')
     state = Path(c['state'])
+
     # ExecCondition must not wait on a lock held by the restarting monitor.
     if mode == 'provider-allowed':
         hold = read_json(state / 'hold.json')
@@ -568,13 +631,16 @@ def main():
             sys.exit(1)
         _, route = command('ip', '-4', 'route', 'show', 'table', 'main', 'default')
         sys.exit(0 if 'via 10.0.2.2 dev tap0' in route else 1)
+
     state.mkdir(parents=True, exist_ok=True, mode=0o755)
     if mode in ('lifecycle-start', 'lifecycle-stop'):
         lifecycle(c, sys.argv[3], mode.split('-')[1])
         return
+
     # Serialize timer and manual resets.
     with (state / 'lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
+
         if mode == 'reconcile':
             reconcile(c)
         elif mode == 'reset':
