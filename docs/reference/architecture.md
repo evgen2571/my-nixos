@@ -30,6 +30,7 @@ flowchart TD
 | `config/` | Program-native source configuration |
 | `lib/config-paths.nix` | Source-to-runtime mappings, including host variants |
 | `tests/` | Automated checks and smoke tests |
+| `provisioning/` | Opt-in fresh-system-disk layouts and destructive confirmation guard |
 
 `flake/hosts.nix` uses `nixpkgs.lib.nixosSystem` with Home Manager and sops-nix.
 The module catalog supplies system modules and `home-manager.sharedModules` for
@@ -44,6 +45,12 @@ Shared desktop declarations retain ordinary Nix priority. If a selection stops
 being common to both machines, move it back to the profiles or choose an explicit
 override. The workstation bundle uses `mkDefault` for its overridable features.
 Hardware declarations and security-sensitive host selections remain local.
+
+Disko is pinned for [installation-only provisioning](../operations/storage-provisioning.md).
+Its layouts are not imported into the existing hosts. Routine builds and
+activation retain their current mount, swap and boot contracts; only the separate
+explicit provisioning command partitions or formats a selected disk. Data disks
+remain outside that command's layouts.
 
 ## Public and private configuration
 

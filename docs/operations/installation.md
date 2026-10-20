@@ -53,6 +53,9 @@ local SOPS needs your own protected decryption identity.
 Follow the [NixOS installation manual](https://nixos.org/manual/nixos/stable/#sec-installation)
 for installation media, networking, partitioning, encryption, and mounting.
 This walkthrough uses manual disk preparation and `nixos-install`.
+For a fresh or replacement system disk, [opt-in disko provisioning](storage-provisioning.md)
+provides reusable UEFI/ext4 layouts and an explicit whole-disk confirmation barrier.
+It does not preserve partitions or change existing hosts during rebuilds.
 
 ### 1. Prepare and copy
 

@@ -4,6 +4,11 @@
   inputs = {
     private.url = "path:./templates/private";
 
+    disko = {
+      url = "github:nix-community/disko/v1.13.0";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     flake-parts.url = "github:hercules-ci/flake-parts";
 
     nixpkgs.url = "nixpkgs/nixos-26.05";
@@ -55,6 +60,7 @@
         ./flake/devshells.nix
         ./flake/formatting.nix
         ./flake/verification.nix
+        ./flake/provisioning.nix
       ];
 
       systems = [ "x86_64-linux" ];

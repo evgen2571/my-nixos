@@ -19,6 +19,7 @@
 
 - [Deployment](operations/deployment.md): builds, updates, restoration, and rollback.
 - [Installation](operations/installation.md): adapt the configuration to another machine.
+- [Storage provisioning](operations/storage-provisioning.md): opt-in disko layouts for fresh system disks.
 - [Secrets and private inputs](operations/secrets.md): source selection and SOPS.
 - [Server](operations/server.md): services, storage, access, and backups.
 - [VPN](operations/vpn.md): isolated applications, health, and recovery.
