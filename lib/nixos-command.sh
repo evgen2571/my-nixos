@@ -48,4 +48,4 @@ if [[ $action == build ]]; then
     exec nix build ".#nixosConfigurations.$host.config.system.build.toplevel" "${private_flags[@]}" --no-write-lock-file "$@"
 fi
 [[ $action != dry ]] || action=dry-build
-exec sudo nixos-rebuild "$action" --flake ".#$host" "${private_flags[@]}" --no-write-lock-file "$@"
+exec nixos-rebuild "$action" --sudo --flake ".#$host" "${private_flags[@]}" --no-write-lock-file "$@"

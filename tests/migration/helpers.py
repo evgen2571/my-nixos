@@ -26,7 +26,7 @@ class Helpers(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.directory = Path(self.temp.name)
         self.log = self.directory / "calls.jsonl"
-        for name in ["nix", "sudo", "nixos-rebuild"]:
+        for name in ["nix", "nixos-rebuild"]:
             tool = self.directory / name
             tool.write_text(
                 "#!"
@@ -34,6 +34,12 @@ class Helpers(unittest.TestCase):
                 + '\nimport json, os, sys\nwith open(os.environ["TEST_COMMAND_LOG"], "a") as log: log.write(json.dumps(sys.argv[1:])+"\\n")\n'
             )
             tool.chmod(0o755)
+        sudo = self.directory / "sudo"
+        sudo.write_text(
+            "#!" + sys.executable
+            + "\nimport sys\nsys.exit('fetching must run as the invoking user')\n"
+        )
+        sudo.chmod(0o755)
         self.env = os.environ | {
             "PATH": str(self.directory) + ":" + os.environ["PATH"],
             "TEST_COMMAND_LOG": str(self.log),
@@ -71,9 +77,9 @@ class Helpers(unittest.TestCase):
             prefix = {
                 "check": ["flake", "check"],
                 "build": ["build", ".#nixosConfigurations.nixos-server.config.system.build.toplevel"],
-                "dry": ["nixos-rebuild", "dry-build", "--flake", ".#nixos-server"],
-                "switch": ["nixos-rebuild", "switch", "--flake", ".#nixos-server"],
-                "boot": ["nixos-rebuild", "boot", "--flake", ".#nixos-server"],
+                "dry": ["dry-build", "--sudo", "--flake", ".#nixos-server"],
+                "switch": ["switch", "--sudo", "--flake", ".#nixos-server"],
+                "boot": ["boot", "--sudo", "--flake", ".#nixos-server"],
             }[action]
             self.assertEqual(call[:len(prefix)], prefix)
             i = call.index("--override-input")
@@ -126,6 +132,7 @@ class Helpers(unittest.TestCase):
                     self.assertEqual(call[i + 1:i + 3], ["private", expected])
                     self.assertEqual(call.count("--refresh"), 1)
                     self.assertIn("--no-write-lock-file", call)
+                    self.assertEqual("--sudo" in call, action in ["dry", "switch", "boot"])
 
     @unittest.skipUnless(shutil.which("just"), "just required")
     def test_just_loads_local_dotenv(self):
@@ -158,6 +165,7 @@ class Helpers(unittest.TestCase):
             )
             call = json.loads(self.log.read_text().splitlines()[-1])
             self.assertEqual(call[-len(FLAGS) :], FLAGS)
+            self.assertEqual("--sudo" in call, recipe != "build-pc")
 
     @unittest.skipUnless(shutil.which("fish"), "fish required")
     def test_fish_helpers_preserve_flags(self):
@@ -180,6 +188,7 @@ class Helpers(unittest.TestCase):
             )
             call = json.loads(self.log.read_text().splitlines()[-1])
             self.assertEqual(call[-len(FLAGS) :], FLAGS)
+            self.assertEqual("--sudo" in call, helper != "nb")
 
 
 if __name__ == "__main__":

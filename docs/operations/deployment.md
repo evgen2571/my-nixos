@@ -29,7 +29,10 @@ append `?ref=YOUR-REF`. Full `git+ssh://` URLs also work; an explicit query such
 as `?rev=FULL_COMMIT` is preserved. Remote inputs use `--refresh` on every
 invocation, so a push to the selected branch is picked up on the next rebuild.
 Nix manages its own fetched source/cache; no private working checkout is needed.
-The invoking user and the rebuild under sudo need authenticated Git/store access.
+Rebuilds fetch and build as the invoking user, using that user's SSH configuration
+and agent. `nixos-rebuild --sudo` elevates only the privileged deployment steps;
+root does not need GitHub credentials. Confirm access with `ssh -T git@github.com`
+(GitHub reports successful authentication but exits with status 1).
 Never embed access tokens or passwords in the URL.
 
 For a local checkout, use `MY_NIXOS_PRIVATE=/absolute/path/to/my-nixos-private`
@@ -75,7 +78,8 @@ sha256sum flake.lock
 ```
 
 Check `private_rev` against the reviewed pair before continuing. The invoking user
-and root/remote builder need Git/store access; acquire inputs before maintenance.
+needs Git/store access; remote builders need access to required store paths.
+Acquire inputs before maintenance.
 Never embed credentials in URLs or record personal overrides in the public lock.
 The [private template](../../templates/private/README.md) defines the input interface.
 
@@ -129,11 +133,11 @@ Run **only** the command for the host you are updating, from its public checkout
 
 ```sh
 # PC
-sudo nixos-rebuild switch --flake .#nixos-pc --override-input private "$private_input" --no-write-lock-file
+nixos-rebuild switch --sudo --flake .#nixos-pc --override-input private "$private_input" --no-write-lock-file
 # Laptop
-sudo nixos-rebuild switch --flake .#nixos-lp --override-input private "$private_input" --no-write-lock-file
+nixos-rebuild switch --sudo --flake .#nixos-lp --override-input private "$private_input" --no-write-lock-file
 # Server: coordinate the gateway maintenance window first.
-sudo nixos-rebuild switch --flake .#nixos-server --override-input private "$private_input" --no-write-lock-file
+nixos-rebuild switch --sudo --flake .#nixos-server --override-input private "$private_input" --no-write-lock-file
 ```
 
 Use normal target rebuild re-exec and retain the [deployment guards](#deployment-guards).

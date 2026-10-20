@@ -19,11 +19,11 @@ if status is-interactive
             case build
                 command nix build "$repo#nixosConfigurations.$host.config.system.build.toplevel" $flags
             case dry
-                command sudo nixos-rebuild dry-build --flake "$repo#$host" $flags
+                command nixos-rebuild dry-build --sudo --flake "$repo#$host" $flags
             case switch
-                command sudo nixos-rebuild switch --flake "$repo#$host" $flags
+                command nixos-rebuild switch --sudo --flake "$repo#$host" $flags
             case boot
-                command sudo nixos-rebuild boot --flake "$repo#$host" $flags
+                command nixos-rebuild boot --sudo --flake "$repo#$host" $flags
             case '*'
                 echo "unknown action: $action" >&2
                 return 1
