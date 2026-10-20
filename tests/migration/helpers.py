@@ -93,14 +93,39 @@ class Helpers(unittest.TestCase):
             self.assertFalse(self.log.exists())
 
     def test_explicit_input_ignores_unselected_local_checkout(self):
-        self.env["MY_NIXOS_PRIVATE"] = "/missing/unselected-checkout"
-        subprocess.run(
-            ["bash", str(ROOT / "lib/nixos-command.sh"), "build", "nixos-pc"] + FLAGS,
-            cwd=ROOT, env=self.env, check=True, capture_output=True,
-        )
-        call = json.loads(self.log.read_text().splitlines()[-1])
-        self.assertEqual(call.count("--override-input"), 1)
-        self.assertEqual(call[-len(FLAGS):], FLAGS)
+        for source in ["/missing/unselected-checkout", "git@github.com/example/private"]:
+            self.env["MY_NIXOS_PRIVATE"] = source
+            subprocess.run(
+                ["bash", str(ROOT / "lib/nixos-command.sh"), "build", "nixos-pc"] + FLAGS,
+                cwd=ROOT, env=self.env, check=True, capture_output=True,
+            )
+            call = json.loads(self.log.read_text().splitlines()[-1])
+            self.assertEqual(call.count("--override-input"), 1)
+            self.assertEqual(call[-len(FLAGS):], FLAGS)
+            self.assertNotIn("--refresh", call)
+
+    def test_remote_sources_default_main_and_preserve_explicit_refs(self):
+        base = "git+ssh://git@github.com/example/private"
+        for source, expected in [
+            ("git@github.com/example/private", base + "?ref=main"),
+            ("git@github.com/example/private?ref=release/private", base + "?ref=release/private"),
+            (base, base + "?ref=main"),
+            (base + "?ref=stable", base + "?ref=stable"),
+            (base + "?rev=" + "a" * 40, base + "?rev=" + "a" * 40),
+        ]:
+            for action in ["check", "build", "dry", "switch", "boot"]:
+                with self.subTest(source=source, action=action):
+                    self.env["MY_NIXOS_PRIVATE"] = source
+                    args = [action] + ([] if action == "check" else ["nixos-pc"])
+                    subprocess.run(
+                        ["bash", str(ROOT / "lib/nixos-command.sh")] + args,
+                        cwd=ROOT, env=self.env, check=True, capture_output=True,
+                    )
+                    call = json.loads(self.log.read_text().splitlines()[-1])
+                    i = call.index("--override-input")
+                    self.assertEqual(call[i + 1:i + 3], ["private", expected])
+                    self.assertEqual(call.count("--refresh"), 1)
+                    self.assertIn("--no-write-lock-file", call)
 
     @unittest.skipUnless(shutil.which("just"), "just required")
     def test_just_loads_local_dotenv(self):
@@ -109,12 +134,17 @@ class Helpers(unittest.TestCase):
         (project / "lib").mkdir(parents=True)
         shutil.copy(ROOT / "justfile", project)
         shutil.copy(ROOT / "lib/nixos-command.sh", project / "lib")
-        (project / ".env").write_text(f'MY_NIXOS_PRIVATE="{directory}"\n')
         env = self.env.copy()
         env.pop("MY_NIXOS_PRIVATE")
-        subprocess.run(["just", "build-pc"], cwd=project, env=env, check=True, capture_output=True)
-        call = json.loads(self.log.read_text().splitlines()[-1])
-        self.assertIn(f"git+file://{quote(str(directory))}?rev={revision}", call)
+        for source, expected in [
+            (str(directory), f"git+file://{quote(str(directory))}?rev={revision}"),
+            ("git@github.com/example/private", "git+ssh://git@github.com/example/private?ref=main"),
+            ("git@github.com/example/private?ref=release/private", "git+ssh://git@github.com/example/private?ref=release/private"),
+        ]:
+            (project / ".env").write_text(f'MY_NIXOS_PRIVATE="{source}"\n')
+            subprocess.run(["just", "build-pc"], cwd=project, env=env, check=True, capture_output=True)
+            call = json.loads(self.log.read_text().splitlines()[-1])
+            self.assertIn(expected, call)
 
     @unittest.skipUnless(shutil.which("just"), "just required")
     def test_just_aliases_and_actions_preserve_flags(self):

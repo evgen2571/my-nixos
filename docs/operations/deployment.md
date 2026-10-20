@@ -18,13 +18,24 @@ Coding agents also follow the authorization requirements in [AGENTS.md](../../AG
 
 Install `just` separately (or enter `nix shell nixpkgs#just`). In the public
 checkout, copy [.env.example](../../.env.example) to `.env` if that local file
-does not already exist, then set your private checkout's absolute path:
+does not already exist, then choose a private source:
 
 ```dotenv
-MY_NIXOS_PRIVATE=/absolute/path/to/my-nixos-private
+MY_NIXOS_PRIVATE=git@github.com/YOUR-USER/my-nixos-private
 ```
 
-`.env` is gitignored. It selects a checkout explicitly; there is no automatic
+The GitHub shorthand defaults to `?ref=main`. To follow another branch or tag,
+append `?ref=YOUR-REF`. Full `git+ssh://` URLs also work; an explicit query such
+as `?rev=FULL_COMMIT` is preserved. Remote inputs use `--refresh` on every
+invocation, so a push to the selected branch is picked up on the next rebuild.
+Nix manages its own fetched source/cache; no private working checkout is needed.
+The invoking user and the rebuild under sudo need authenticated Git/store access.
+Never embed access tokens or passwords in the URL.
+
+For a local checkout, use `MY_NIXOS_PRIVATE=/absolute/path/to/my-nixos-private`
+instead. This pins its committed `HEAD` and refuses missing or dirty checkouts.
+
+`.env` is gitignored. Sources are selected explicitly; there is no automatic
 sibling lookup. Keep secrets and credentials out of it. Once configured, run
 only the recipe for the machine you are updating:
 
@@ -35,16 +46,17 @@ just switch-lp      # apply on the laptop
 just switch-server  # apply on the server, coordinating gateway downtime
 ```
 
-These recipes select the private checkout's committed `HEAD`, print that commit,
-and pass `--no-write-lock-file`. A missing or dirty private checkout stops the
-command. Keep using compatible, reviewed public/private revisions and the
+All recipes pass `--no-write-lock-file`. Keep using compatible, reviewed
+public/private revisions and the
 [upgrade recovery precautions](#upgrade-an-existing-host). `just check` uses the
 same input; `just check --no-build` evaluates without running the checks.
 
-Just does not pull repositories or update package pins. Fetch/review updates in
-both checkouts before rebuilding. Without `MY_NIXOS_PRIVATE`, recipes retain
+Following a remote branch can select different private commits for a build and
+a later switch. Pin an explicit remote `?rev=FULL_COMMIT` when reproducing a
+tested pair. Just does not pull local checkouts or update package pins; fetch/review
+their updates before rebuilding. Without `MY_NIXOS_PRIVATE`, recipes retain
 explicit flag forwarding and the production deployment guards. An explicit
-`--override-input private URL` takes precedence over the local checkout setting.
+`--override-input private URL` takes precedence over the `.env` source setting.
 Fish helpers still accept the explicit flags described below.
 
 ## Select reviewed inputs
