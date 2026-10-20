@@ -67,5 +67,5 @@ agreed ordered-catalog and three assembled-host seams.
   native config sources; update active references without editing shared catalog rules.
 - [x] Compare the original inventory, public hosts, deployed content and activation;
   run targeted application checks, complete flake checks and practical artifact builds.
-- [ ] Record stage evidence/limitations, review Standards/Spec, commit and push
+- [x] Record stage evidence/limitations, review Standards/Spec, commit and push
   to the existing draft PR; update issue body and Agent Brief checkboxes.
