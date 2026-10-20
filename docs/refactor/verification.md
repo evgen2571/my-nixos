@@ -108,9 +108,12 @@ Final results for clean archive `a00006e`:
   again: **0 remaining Standards findings**. Independent Spec review:
   **0 findings**. The corrected exporter was rerun from the clean archive.
 
- A draft PR does
-not approve the target layout on the maintainer's behalf or authorize migration,
-merge or deployment; remaining tickets consume this artifact after review.
+The [target layout and mapping](target-tree.md) were subsequently reviewed and
+approved on 2026-10-20 at the maintainer's request. Both Standards and Spec layout
+reviews found no blockers. Fresh structural checks confirmed complete module/home
+coverage, unique typed entry targets, explicit-assembly separation, the original
+four inventory orders, and only the intended Fish/Kitty consolidations. No builds
+or runtime checks were repeated for this documentation-only approval.
 
 
 The integration draft is [PR #56](https://github.com/evgen2571/my-nixos/pull/56),

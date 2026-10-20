@@ -8,7 +8,7 @@ stage. The integration branch is
 `evgen2571/1-6-establish-module-inventory-and-host-equivale`; its PR remains draft
 until the rest of the series and final review. Do not merge or activate hosts.
 
-Start with [the proposed tree](target-tree.md), then [the exhaustive inventory](inventory.json).
+Start with [the approved target tree](target-tree.md), then [the exhaustive inventory](inventory.json).
 The inventory records all 75 discovered entries, in the original catalog order,
 with scope, profile eligibility, constituent files, option declarations, source
 references for dependencies/deployment, related checks/docs, and target entry.

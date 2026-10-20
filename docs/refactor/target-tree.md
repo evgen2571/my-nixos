@@ -1,6 +1,21 @@
-# Proposed final module tree
+# Approved final module tree
 
-Every listed path is a proposal; no source has moved. `inventory.json` is the exhaustive file mapping.
+Reviewed and approved on 2026-10-20 for the remaining #49 stages, following the
+maintainer's request to review and approve the layout. No source has moved.
+`inventory.json` is the exhaustive file mapping.
+
+Standards review: no findings. Spec review against #49/#50: no blockers.
+The review checked all 75 unique typed entry targets, complete baseline module
+and home-file coverage, explicit infrastructure exclusion, and exact target-tree
+coverage. Ordered desktop system/home counts remain 23/47; server counts remain
+12/23. Fish and Kitty are the only intentional shared consolidation targets.
+
+Niri/Fish colocation, single-file simplifications, retained complex-feature
+helpers, unconditional personal SSH and distinct server-baseline/server-base
+responsibilities follow the comparison contract. Typed discovery must preserve
+those boundaries and the recorded order/eligibility. This approval covers the
+layout and mapping; later implementation still needs equivalence verification.
+Merge and live activation remain separate decisions.
 
 ```
 modules/ai/codegraph.home.nix
