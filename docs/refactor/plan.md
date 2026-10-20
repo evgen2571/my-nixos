@@ -7,7 +7,7 @@ Integration branch: `evgen2571/1-6-establish-module-inventory-and-host-equivale`
 - [x] Capture original ordered catalog outputs, explicit assembly and every module/helper/asset; assign typed targets without moving source.
 - [x] Capture public assembled host/Home Manager option schemas and effective behavior; provide strict reproducible comparisons with narrow source-root normalization.
 - [x] Run baseline flake/application/VPN/VM checks, audit private access without publishing material, and record limitations.
-- [ ] Review standards and spec, verify the clean committed tree, publish one draft integration PR and update issue checkboxes.
+- [x] Review standards and spec, verify the clean committed tree, publish one draft integration PR and update issue checkboxes.
 
 The agreed seams are the four catalog outputs and three assembled hosts/users
 (parent issue Testing Decisions). Fixtures must include disabled options. Keep

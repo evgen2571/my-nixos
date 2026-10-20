@@ -96,6 +96,8 @@ Final results for clean archive `a00006e`:
 - Clean-archive host capture versus baseline: strict comparison passed for all
   four ordered inventories and three hosts/users. Its decompressed host JSON is
   byte-identical to the committed gzip fixture.
+- All three private-backed host builds from the clean integration archive also
+  exited 0 using the same private revision; no activation occurred.
 - Four comparator tests passed, including public-interface success/rejection
   cases. Nix formatting, documentation links, inventory coverage/uniqueness and
   all 230 baseline asset hashes passed; `git diff --check` passed.
@@ -109,3 +111,9 @@ Final results for clean archive `a00006e`:
  A draft PR does
 not approve the target layout on the maintainer's behalf or authorize migration,
 merge or deployment; remaining tickets consume this artifact after review.
+
+
+The integration draft is [PR #56](https://github.com/evgen2571/my-nixos/pull/56),
+targeting `main`. Issue #50 records completed acceptance checkboxes and links to
+these artifacts. The parent #49 and draft PR remain open for the remaining stages.
+Nothing has been merged.
