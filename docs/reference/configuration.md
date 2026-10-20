@@ -43,8 +43,9 @@ nix build .#nixosConfigurations.nixos-pc.config.system.build.toplevel --no-link
 
 The first command evaluates checks; the second executes registered checks.
 Production host builds also need the explicit [private override](../operations/deployment.md).
-`just build-pc`, `build-lp`, and `build-server` are conveniences if `just` is
-installed separately. Review formatter changes before committing: `nix fmt` can
+`just build-pc`, `build-lp`, and `build-server` are conveniences; see
+[Just setup](../operations/deployment.md#everyday-rebuilds-with-just).
+Review formatter changes before committing: `nix fmt` can
 touch files outside the task.
 
 Build success cannot prove graphical behavior, physical boot, login, or real VPN

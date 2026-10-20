@@ -155,17 +155,35 @@ class Helpers(unittest.TestCase):
 
     @unittest.skipUnless(shutil.which("just"), "just required")
     def test_just_aliases_and_actions_preserve_flags(self):
-        for recipe in ["build-pc", "dry-lp", "switch-server", "boot"]:
+        (self.directory / "bash").symlink_to(shutil.which("bash"))
+        env = self.env | {"PATH": str(self.directory)}
+        self.assertIsNone(shutil.which("just", path=env["PATH"]))
+        for recipe in [
+            f"{action}-{host}"
+            for action in ["build", "dry", "switch"]
+            for host in ["pc", "lp", "server"]
+        ] + ["build", "dry", "switch", "boot"]:
             self.log.unlink(missing_ok=True)
             args = [shutil.which("just"), "--justfile", str(ROOT / "justfile"), recipe]
-            if recipe == "boot":
+            if "-" not in recipe:
                 args += ["nixos-pc"]
             subprocess.run(
-                args + FLAGS, cwd=ROOT, env=self.env, check=True, capture_output=True
+                args + FLAGS, cwd=ROOT, env=env, check=True, capture_output=True
             )
             call = json.loads(self.log.read_text().splitlines()[-1])
             self.assertEqual(call[-len(FLAGS) :], FLAGS)
-            self.assertEqual("--sudo" in call, recipe != "build-pc")
+            self.assertEqual("--sudo" in call, not recipe.startswith("build"))
+            host = {"pc": "nixos-pc", "lp": "nixos-lp", "server": "nixos-server"}.get(
+                recipe.rsplit("-", 1)[-1], "nixos-pc"
+            )
+            self.assertIn(
+                f".#nixosConfigurations.{host}.config.system.build.toplevel"
+                if recipe.startswith("build") else f".#{host}", call,
+            )
+        subprocess.run(
+            [shutil.which("just"), "--justfile", str(ROOT / "justfile"), "default"],
+            cwd=ROOT, env=env, check=True, capture_output=True,
+        )
 
     @unittest.skipUnless(shutil.which("fish"), "fish required")
     def test_fish_helpers_preserve_flags(self):

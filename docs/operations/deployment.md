@@ -16,9 +16,10 @@ Coding agents also follow the authorization requirements in [AGENTS.md](../../AG
 
 ## Everyday rebuilds with Just
 
-Install `just` separately (or enter `nix shell nixpkgs#just`). In the public
-checkout, copy [.env.example](../../.env.example) to `.env` if that local file
-does not already exist, then choose a private source:
+Install `just` separately (or enter `nix shell nixpkgs#just`). For a single
+invocation, use `nix run nixpkgs#just -- RECIPE`; recipes do not require `just`
+on `PATH`. In the public checkout, copy [.env.example](../../.env.example) to
+`.env` if that local file does not already exist, then choose a private source:
 
 ```dotenv
 MY_NIXOS_PRIVATE=git@github.com/YOUR-USER/my-nixos-private
@@ -103,7 +104,7 @@ nix flake check --override-input private "$private_input" --no-write-lock-file
 | Laptop | `just build-lp` with `.env`, or `just build-lp --override-input private "$private_input"` |
 | Server | `just build-server` with `.env`, or `just build-server --override-input private "$private_input"` |
 
-`just` is a separate prerequisite. Its [recipes](../../justfile) use
+The build [recipes](../../justfile) use
 `nix build .#nixosConfigurations.HOST.config.system.build.toplevel`.
 Check `git diff --exit-code -- flake.lock` afterward. Successful builds do not
 establish target decryption, hardware boot or provider health.
