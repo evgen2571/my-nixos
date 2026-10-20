@@ -11,9 +11,9 @@ in
 {
   options.my.user.files.yazi.enable = lib.mkEnableOption "Yazi file manager";
 
-  config = lib.mkIf cfg.enable ({
+  config = lib.mkIf cfg.enable {
     home.packages = with pkgs; [
       yazi
     ];
-  });
+  };
 }

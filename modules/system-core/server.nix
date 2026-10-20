@@ -19,6 +19,7 @@
     keep-outputs = false;
     keep-derivations = false;
     substituters = [ "https://cache.nixos.org" ];
+
     experimental-features = [
       "nix-command"
       "flakes"

@@ -4,11 +4,13 @@
   targets,
   sudoPath ? "/run/wrappers/bin/sudo",
 }:
+
 stdenv.mkDerivation {
   pname = "namespace-launcher";
   version = "1";
   src = ./.;
   dontConfigure = true;
+
   targetsHeader = ''
     static const struct target targets[] = {
       ${lib.concatMapStringsSep "\n" (
@@ -26,7 +28,9 @@ stdenv.mkDerivation {
       { NULL, NULL, NULL, NULL, NULL }
     };
   '';
+
   passAsFile = [ "targetsHeader" ];
+
   buildPhase = ''
     runHook preBuild
     cp "$targetsHeaderPath" targets.h
@@ -38,7 +42,9 @@ stdenv.mkDerivation {
       client.c -o "$out/bin/namespace-launch"
     runHook postBuild
   '';
+
   dontInstall = true;
+
   meta = {
     description = "Restricted namespace entry with complete privilege drop before app execution";
     platforms = lib.platforms.linux;

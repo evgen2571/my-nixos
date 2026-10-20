@@ -18,6 +18,7 @@ in
 
     xdg.mimeApps = {
       enable = true;
+
       defaultApplications = {
         "image/*" = [ "qimgv.desktop" ];
       };

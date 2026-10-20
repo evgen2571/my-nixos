@@ -4,20 +4,24 @@
   lib,
   pkgs,
   inputs,
+  packageSources,
   ...
 }:
 
 let
   cfg = config.my.user.desktop.noctalia;
-  noctaliaPackage = inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default;
+  noctaliaPackage = packageSources.noctalia;
+
   noctaliaShellPackage = pkgs.symlinkJoin {
     name = "noctalia-shell-${noctaliaPackage.version or "unstable"}";
     paths = [ noctaliaPackage ];
+
     postBuild = ''
       if [ -e "$out/bin/noctalia" ] && [ ! -e "$out/bin/noctalia-shell" ]; then
         ln -s noctalia "$out/bin/noctalia-shell"
       fi
     '';
+
     meta = (noctaliaPackage.meta or { }) // {
       mainProgram = "noctalia-shell";
     };

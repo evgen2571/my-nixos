@@ -11,6 +11,7 @@
   };
 
   networking.networkmanager.enable = true;
+
   networking.networkmanager.plugins = with pkgs; [
     networkmanager-openvpn
   ];
@@ -20,6 +21,7 @@
 
   services.xserver = {
     enable = true;
+
     xkb = {
       layout = "us, ru";
       variant = ",phonetic";
@@ -27,6 +29,7 @@
   };
 
   security.rtkit.enable = true;
+
   services.pipewire = {
     enable = true;
     pulse.enable = true;
@@ -37,10 +40,12 @@
 
   nixpkgs.config = {
     allowUnfree = true;
+
     permittedInsecurePackages = [
       "electron-39.8.10"
     ];
   };
+
   programs.nix-ld.enable = true;
 
   zramSwap = {
@@ -63,6 +68,7 @@
   ];
 
   fonts.enableDefaultPackages = true;
+
   fonts.packages = with pkgs; [
     noto-fonts
     noto-fonts-cjk-sans
@@ -84,14 +90,17 @@
     max-free = 10737418240;
     keep-outputs = false;
     keep-derivations = false;
+
     substituters = [
       "https://cache.nixos.org"
       "https://cache.numtide.com"
     ];
+
     experimental-features = [
       "nix-command"
       "flakes"
     ];
+
     trusted-public-keys = [
       "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
       "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="

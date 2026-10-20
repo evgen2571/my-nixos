@@ -14,6 +14,7 @@ o.pumblend = 10
 o.winblend = 5
 o.list = true
 opt.listchars = { tab = "│ ", trail = "·", nbsp = "␣" }
+
 opt.fillchars = {
 	eob = " ",
 	fold = " ",
@@ -22,6 +23,7 @@ opt.fillchars = {
 	foldclose = "▸",
 	diff = "╱",
 }
+
 o.cursorline = true
 o.cursorlineopt = "number,line"
 o.scrolloff = 10

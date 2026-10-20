@@ -1,9 +1,11 @@
 { lib }:
+
 let
   paths = import ../../lib/config-paths.nix {
     root = ../..;
     inherit lib;
   };
+
   adapters = paths.dotfileAdapters;
   niri = adapters.niri { };
   discovered = adapters.niri { configDir = ./niri; };

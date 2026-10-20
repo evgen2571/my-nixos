@@ -27,6 +27,7 @@ in
       autoPrune = {
         enable = true;
         dates = "weekly";
+
         flags = [
           "--filter=until=168h"
         ];

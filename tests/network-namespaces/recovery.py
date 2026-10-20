@@ -36,6 +36,7 @@ class DoctorTest(unittest.TestCase):
                                        'netns-vpn-dns.service': ['netns-vpn.service', 'netns-vpn-shared.service']}
         self.scenario = dict(reason='healthy', log='', active='active', probes=[0, 0, 0, 0])
         stub = self.root / 'stub'
+
         stub.write_text('''#!PYTHON_EXECUTABLE
 import json, os, sys, time
 from pathlib import Path
@@ -45,6 +46,7 @@ cmd = Path(sys.argv[0]).name
 args = sys.argv[1:]
 with (root/'calls').open('a') as f: f.write(json.dumps([cmd]+args)+'\\n')
 reason = s.get('reason')
+
 if cmd == 'systemctl':
     if args[0] == 'show':
         unit = args[1]
@@ -79,24 +81,29 @@ if cmd == 'systemctl':
         if 0 in s['probes'][:2]:
             (root/'runtime'/'ready').write_text(str(int(time.time())))
     sys.exit(0)
+
 if cmd == 'tailscale':
     if args[0] == 'status': print(json.dumps({'BackendState':'NeedsLogin' if reason == 'tailscale' else 'Running'}))
     sys.exit(1 if reason == 'peer' and args[0] == 'ping' else 0)
+
 if cmd == 'journalctl':
     scope = next((x.split('=',1)[1] for x in args if x.startswith('_SYSTEMD_INVOCATION_ID=')), '')
     print(s.get('logs', {}).get(scope, s.get('log','') if scope == 'test-invocation' else ''))
     sys.exit(0)
+
 if cmd == 'dig':
     if reason == 'dns-diagnostic': sys.exit(125)
     if reason == 'dns-relay': sys.exit(9)
     print('192.0.2.1')
     sys.exit(0)
+
 if cmd == 'curl':
     if '--silent' in args:
         index = (2 if '-6' in args else 0) + (1 if args[-1] == 'https://two.test/' else 0)
         sys.exit(s['probes'][index])
     family = 'ipv6' if '-6' in args else 'ipv4'
     sys.exit(s.get('host_probes', {}).get(family, 7 if reason == 'offline' else 0))
+
 if cmd == 'ip':
     if '-j' in args:
         family = 'ipv6' if '-6' in args else 'ipv4'
@@ -119,6 +126,7 @@ if cmd == 'ip':
     sys.exit(0)
 sys.exit(0)
 '''.replace('PYTHON_EXECUTABLE', sys.executable))
+
         stub.chmod(0o755)
         for name in ['systemctl', 'tailscale', 'journalctl', 'curl', 'ip', 'dig']:
             (self.root / name).symlink_to(stub)
@@ -170,6 +178,7 @@ sys.exit(0)
             with self.subTest(reason=reason):
                 self.scenario.update(reason=reason, active=active)
                 self.assertEqual(self.run_doctor()['reason'], expected)
+
         self.assertEqual(self.repairs(), [])
 
     def test_prerequisite_outages_wait_and_resume_without_restarts(self):
@@ -217,6 +226,7 @@ sys.exit(0)
                 (self.root/'provider-stopped').unlink(missing_ok=True)
                 self.scenario.update(probes=[7, 7, 7, 7], log='REST failed: bad HTTP status '+code)
                 self.assertEqual(self.run_doctor()['reason'], expected)
+
         self.assertNotIn('AUTH_REJECTED', self.run_doctor('status'))
 
     def test_secret_missing_wrong_peer_and_filter_error_require_action(self):
@@ -435,12 +445,14 @@ sys.exit(0)
                     log='Rest: [ERR] Bad HTTP response ( 401 )',
                     units={'hide-me-vpn.service': {'active': state}},
                 )
+
                 if state == 'inactive':
                     # ExecStopPost records that a failed process was not
                     # deliberately stopped by the operator.
                     self.env['SERVICE_RESULT'] = 'exit-code'
                     self.run_doctor('lifecycle-stop', args=('hide-me-vpn.service',))
                     self.env.pop('SERVICE_RESULT')
+
                 status = self.run_doctor()
                 self.assertEqual(status['reason'], 'AUTH_REJECTED')
                 self.assertEqual(status['phase'], 'ACTION_REQUIRED')

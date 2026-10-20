@@ -21,6 +21,7 @@ def check(ciphertext, policy, host):
     age = metadata["age"]
     if not encrypted.fullmatch(metadata["mac"]) or not isinstance(age, list) or not age:
         raise ValueError("missing SOPS encryption metadata")
+
     for entry in age:
         if (
             not isinstance(entry, dict)
@@ -28,13 +29,16 @@ def check(ciphertext, policy, host):
             or not entry["recipient"].strip()
         ):
             raise ValueError("invalid age recipient metadata")
+
         wrapped = entry.get("enc")
+
         if (
             not isinstance(wrapped, str)
             or not wrapped.strip().startswith("-----BEGIN AGE ENCRYPTED FILE-----\n")
             or not wrapped.strip().endswith("\n-----END AGE ENCRYPTED FILE-----")
         ):
             raise ValueError("invalid encrypted age key metadata")
+
     if policy == "-":
         return
     rules = yaml.safe_load(Path(policy).read_text())["creation_rules"]

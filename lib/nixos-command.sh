@@ -6,6 +6,7 @@ shift
 private_flags=()
 explicit_private=false
 args=("$@")
+
 for i in "${!args[@]}"; do
     if [[ ${args[i]} == --override-input && ${args[i+1]:-} == private ]]; then
         explicit_private=true
@@ -29,6 +30,7 @@ if [[ -n ${MY_NIXOS_PRIVATE:-} && $explicit_private == false ]]; then
             exit 1
         fi
         private_rev=$(git -C "$private_checkout" rev-parse HEAD)
+
         # Encode path characters that would change the meaning of the Git URL.
         private_url=${private_checkout//%/%25}
         private_url=${private_url// /%20}

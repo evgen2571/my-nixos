@@ -1,9 +1,11 @@
 return {
 	"sphamba/smear-cursor.nvim",
 	event = "VeryLazy",
+
 	cond = function()
 		return not vim.g.neovide
 	end,
+
 	opts = {
 		-- Keep it subtle and readable
 		cursor_color = "none",

@@ -6,6 +6,7 @@ window-rule {
         width 3
         active-color "{{ colors.primary.default.hex }}"
     }
+
     shadow {
         on
         spread 4

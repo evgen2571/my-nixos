@@ -1,4 +1,5 @@
 { lib, secretFile, ... }:
+
 let
   file = secretFile;
 in
@@ -10,6 +11,7 @@ in
       mode = "0400";
       restartUnits = [ "netns-vpn-shared.service" ];
     };
+
     hide-me-bootstrap-token = {
       sopsFile = file;
       key = "hide_me_bootstrap_token";

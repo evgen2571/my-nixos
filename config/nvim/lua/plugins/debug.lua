@@ -1,11 +1,13 @@
 return {
 	"mfussenegger/nvim-dap",
+
 	dependencies = {
 		"rcarriga/nvim-dap-ui",
 		"nvim-neotest/nvim-nio",
 		"leoluz/nvim-dap-go",
 		"mfussenegger/nvim-dap-python",
 	},
+
 	keys = {
 		{
 			"<F5>",
@@ -14,6 +16,7 @@ return {
 			end,
 			desc = "Debug: Start/Continue",
 		},
+
 		{
 			"<F1>",
 			function()
@@ -21,6 +24,7 @@ return {
 			end,
 			desc = "Debug: Step Into",
 		},
+
 		{
 			"<F2>",
 			function()
@@ -28,6 +32,7 @@ return {
 			end,
 			desc = "Debug: Step Over",
 		},
+
 		{
 			"<F3>",
 			function()
@@ -35,6 +40,7 @@ return {
 			end,
 			desc = "Debug: Step Out",
 		},
+
 		{
 			"<leader>db",
 			function()
@@ -42,6 +48,7 @@ return {
 			end,
 			desc = "Debug: Toggle Breakpoint",
 		},
+
 		{
 			"<leader>dB",
 			function()
@@ -49,6 +56,7 @@ return {
 			end,
 			desc = "Debug: Set Breakpoint",
 		},
+
 		{
 			"<F7>",
 			function()
@@ -57,6 +65,7 @@ return {
 			desc = "Debug: See last session result.",
 		},
 	},
+
 	config = function()
 		local dap = require("dap")
 		local dapui = require("dapui")
@@ -66,9 +75,11 @@ return {
 				name = "Launch",
 				type = "lldb",
 				request = "launch",
+
 				program = function()
 					return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
 				end,
+
 				cwd = "${workspaceFolder}",
 				stopOnEntry = false,
 				args = {},
@@ -83,10 +94,12 @@ return {
 			command = vim.fn.exepath("lldb-dap") ~= "" and vim.fn.exepath("lldb-dap") or "lldb-dap",
 			name = "lldb",
 		}
+
 		dap.configurations.c = vim.deepcopy(dap.configurations.cpp)
 
 		dapui.setup({
 			icons = { expanded = "▾", collapsed = "▸", current_frame = "*" },
+
 			controls = {
 				icons = {
 					pause = "⏸",
@@ -104,6 +117,7 @@ return {
 
 		vim.api.nvim_set_hl(0, "DapBreak", { fg = "#e51400" })
 		vim.api.nvim_set_hl(0, "DapStop", { fg = "#ffcc00" })
+
 		local breakpoint_icons = vim.g.have_nerd_font
 				and {
 					Breakpoint = "",
@@ -119,6 +133,7 @@ return {
 				LogPoint = "◆",
 				Stopped = "⭔",
 			}
+
 		for type, icon in pairs(breakpoint_icons) do
 			local tp = "Dap" .. type
 			local hl = (type == "Stopped") and "DapStop" or "DapBreak"
@@ -140,6 +155,7 @@ return {
 			return require("languages.python").python()
 		end
 		local python_adapter = dap.adapters.python
+
 		dap.adapters.python = function(callback, configuration)
 			python_adapter(function(adapter)
 				if adapter.type == "executable" then
@@ -147,9 +163,11 @@ return {
 					adapter.options.cwd = root
 					adapter.args = { "run", "--project", root, "--with", "debugpy", "python", "-m", "debugpy.adapter" }
 				end
+
 				callback(adapter)
 			end, configuration)
 		end
+
 		for _, configuration in ipairs(dap.configurations.python) do
 			configuration.cwd = function()
 				return require("languages.python").root()

@@ -1,6 +1,6 @@
 {
   config,
-  inputs,
+  packageSources,
   pkgs,
   lib,
   ...
@@ -9,56 +9,20 @@
 let
   cfg = config.my.user.dev.tmux;
 
-  unstable = import inputs.nixpkgs-unstable {
-    system = pkgs.stdenv.hostPlatform.system;
-    config.allowUnfree = true;
-
-    overlays = [
-      (_: prev: {
-        go-mockery = prev.go-mockery.overrideAttrs (_: rec {
-          version = "3.8.1";
-
-          src = prev.fetchFromGitHub {
-            owner = "vektra";
-            repo = "mockery";
-            tag = "v${version}";
-            hash = "sha256-HCbnifYWE/3CG85dt0FPWT9hLSQbgOXuOKTBJHO0S2U=";
-          };
-
-          vendorHash = "sha256-ksfAHdPdOd8ELS0CSBg+E7KPd5xX/uGeLPn9HiItjdI=";
-        });
-      })
-    ];
-  };
-
-  sesh = unstable.sesh;
+  sesh = packageSources.sesh;
 
   # Restrict sesh directory discovery to immediate project directories.
   # Include unvisited projects; use zoxide scores to prioritize known ones.
   seshProjectList = pkgs.writeShellApplication {
     name = "sesh-project-list";
+
     runtimeInputs = [
       pkgs.coreutils
       pkgs.findutils
       pkgs.zoxide
     ];
-    text = ''
-      projects_dir="$HOME/dev"
-      [[ -d "$projects_dir" ]] || exit 0
 
-      declare -A scores=()
-      while IFS= read -r entry; do
-        if [[ "$entry" =~ ^[[:space:]]*([0-9]+([.][0-9]+)?)[[:space:]]+(.*)$ ]]; then
-          scores["''${BASH_REMATCH[3]}"]="''${BASH_REMATCH[1]}"
-        fi
-      done < <(zoxide query --list --score 2>/dev/null || true)
-
-      while IFS= read -r -d "" project; do
-        [[ -d "$project" ]] || continue
-        printf '%s %s\n' "''${scores["$project"]:-0}" "$project"
-      # Follow ~/dev when it is a symlink, retaining ~/dev paths in the output.
-      done < <(find -H "$projects_dir" -mindepth 1 -maxdepth 1 \( -type d -o -type l \) -print0) | sort -k1,1nr -k2,2
-    '';
+    text = builtins.readFile ./project-list.sh;
   };
 
   seshConfig =
@@ -66,12 +30,9 @@ let
       (builtins.readFile ../../../config/sesh/sesh.toml);
 in
 {
-  options.my.user.dev.tmux = {
-    enable = lib.mkEnableOption "tmux";
+  options.my.user.dev.tmux.enable = lib.mkEnableOption "tmux";
 
-  };
-
-  config = lib.mkIf cfg.enable ({
+  config = lib.mkIf cfg.enable {
     programs.tmux = {
       enable = true;
 
@@ -91,6 +52,7 @@ in
       plugins = with pkgs; [
         {
           plugin = tmuxPlugins.minimal-tmux-status;
+
           extraConfig = ''
             set -g @minimal-tmux-status "top"
             set -g @minimal-tmux-bg "default"
@@ -99,6 +61,7 @@ in
             set -g window-status-style 'fg=#4a4a4a'
           '';
         }
+
         tmuxPlugins.vim-tmux-navigator
       ];
 
@@ -144,5 +107,5 @@ in
     ];
 
     xdg.configFile."sesh/sesh.toml".text = seshConfig;
-  });
+  };
 }

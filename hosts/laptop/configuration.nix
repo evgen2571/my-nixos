@@ -28,6 +28,7 @@
     enable = true;
     name = lib.mkDefault "operator";
     shell = pkgs.fish;
+
     extraGroups = [
       "networkmanager"
       "wheel"

@@ -12,6 +12,7 @@ import unittest
 from urllib.parse import quote
 
 ROOT = Path(__file__).resolve().parents[2]
+
 FLAGS = [
     "--override-input",
     "private",
@@ -26,6 +27,7 @@ class Helpers(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.directory = Path(self.temp.name)
         self.log = self.directory / "calls.jsonl"
+
         for name in ["nix", "nixos-rebuild"]:
             tool = self.directory / name
             tool.write_text(
@@ -34,12 +36,14 @@ class Helpers(unittest.TestCase):
                 + '\nimport json, os, sys\nwith open(os.environ["TEST_COMMAND_LOG"], "a") as log: log.write(json.dumps(sys.argv[1:])+"\\n")\n'
             )
             tool.chmod(0o755)
+
         sudo = self.directory / "sudo"
         sudo.write_text(
             "#!" + sys.executable
             + "\nimport sys\nsys.exit('fetching must run as the invoking user')\n"
         )
         sudo.chmod(0o755)
+
         self.env = os.environ | {
             "PATH": str(self.directory) + ":" + os.environ["PATH"],
             "TEST_COMMAND_LOG": str(self.log),
@@ -66,6 +70,7 @@ class Helpers(unittest.TestCase):
     def test_configured_checkout_pins_commit_for_all_actions(self):
         directory, revision = self.private_checkout()
         self.env["MY_NIXOS_PRIVATE"] = str(directory)
+
         for action in ["check", "build", "dry", "switch", "boot"]:
             self.log.unlink(missing_ok=True)
             args = [action] + ([] if action == "check" else ["nixos-server"])
@@ -74,6 +79,7 @@ class Helpers(unittest.TestCase):
                 cwd=ROOT, env=self.env, check=True, capture_output=True,
             )
             call = json.loads(self.log.read_text().splitlines()[-1])
+
             prefix = {
                 "check": ["flake", "check"],
                 "build": ["build", ".#nixosConfigurations.nixos-server.config.system.build.toplevel"],
@@ -81,6 +87,7 @@ class Helpers(unittest.TestCase):
                 "switch": ["switch", "--sudo", "--flake", ".#nixos-server"],
                 "boot": ["boot", "--sudo", "--flake", ".#nixos-server"],
             }[action]
+
             self.assertEqual(call[:len(prefix)], prefix)
             i = call.index("--override-input")
             self.assertEqual(call[i + 1:i + 3], ["private", f"git+file://{quote(str(directory))}?rev={revision}"])
@@ -89,6 +96,7 @@ class Helpers(unittest.TestCase):
     def test_missing_or_dirty_private_checkout_refuses_commands(self):
         directory, _ = self.private_checkout()
         (directory / "uncommitted.nix").write_text("{}")
+
         for path in [directory, self.directory / "missing"]:
             self.env["MY_NIXOS_PRIVATE"] = str(path)
             result = subprocess.run(
@@ -112,6 +120,7 @@ class Helpers(unittest.TestCase):
 
     def test_remote_sources_default_main_and_preserve_explicit_refs(self):
         base = "git+ssh://git@github.com/example/private"
+
         for source, expected in [
             ("git@github.com/example/private", base + "?ref=main"),
             ("git@github.com/example/private?ref=release/private", base + "?ref=release/private"),
@@ -143,6 +152,7 @@ class Helpers(unittest.TestCase):
         shutil.copy(ROOT / "lib/nixos-command.sh", project / "lib")
         env = self.env.copy()
         env.pop("MY_NIXOS_PRIVATE")
+
         for source, expected in [
             (str(directory), f"git+file://{quote(str(directory))}?rev={revision}"),
             ("git@github.com/example/private", "git+ssh://git@github.com/example/private?ref=main"),
@@ -158,6 +168,7 @@ class Helpers(unittest.TestCase):
         (self.directory / "bash").symlink_to(shutil.which("bash"))
         env = self.env | {"PATH": str(self.directory)}
         self.assertIsNone(shutil.which("just", path=env["PATH"]))
+
         for recipe in [
             f"{action}-{host}"
             for action in ["build", "dry", "switch"]
@@ -180,6 +191,7 @@ class Helpers(unittest.TestCase):
                 f".#nixosConfigurations.{host}.config.system.build.toplevel"
                 if recipe.startswith("build") else f".#{host}", call,
             )
+
         subprocess.run(
             [shutil.which("just"), "--justfile", str(ROOT / "justfile"), "default"],
             cwd=ROOT, env=env, check=True, capture_output=True,
@@ -191,12 +203,14 @@ class Helpers(unittest.TestCase):
 
         for helper in ["nb", "nd", "nsw", "nboot"]:
             self.log.unlink(missing_ok=True)
+
             command = (
                 "source "
                 + shlex.quote(str(ROOT / "config/fish/conf.d/nixos-hosts.fish"))
                 + "; "
                 + shlex.join([helper, "nixos-pc"] + FLAGS)
             )
+
             subprocess.run(
                 [shutil.which("fish"), "--no-config", "--interactive", "-c", command],
                 cwd=ROOT,
@@ -204,6 +218,7 @@ class Helpers(unittest.TestCase):
                 check=True,
                 capture_output=True,
             )
+
             call = json.loads(self.log.read_text().splitlines()[-1])
             self.assertEqual(call[-len(FLAGS) :], FLAGS)
             self.assertEqual("--sudo" in call, helper != "nb")

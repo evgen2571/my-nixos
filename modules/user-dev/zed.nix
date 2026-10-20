@@ -11,9 +11,9 @@ in
 {
   options.my.user.dev.zed.enable = lib.mkEnableOption "Zed editor";
 
-  config = lib.mkIf cfg.enable ({
+  config = lib.mkIf cfg.enable {
     home.packages = with pkgs; [
       zed-editor
     ];
-  });
+  };
 }

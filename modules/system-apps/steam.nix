@@ -1,8 +1,6 @@
 {
   config,
-  pkgs,
   lib,
-  inputs,
   ...
 }:
 
@@ -12,9 +10,9 @@ in
 {
   options.my.system.apps.steam.enable = lib.mkEnableOption "Steam";
 
-  config = lib.mkIf cfg.enable ({
-
+  config = lib.mkIf cfg.enable {
     programs.gamescope.enable = true;
+
     programs.steam = {
       enable = true;
       gamescopeSession.enable = true;
@@ -28,5 +26,5 @@ in
         "steam-unwrapped"
         "steam-run"
       ];
-  });
+  };
 }

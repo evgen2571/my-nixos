@@ -3,6 +3,7 @@ return {
     'stevearc/conform.nvim',
     event = { 'BufWritePre' },
     cmd = { 'ConformInfo' },
+
     keys = {
       {
         '<leader>f',
@@ -13,10 +14,13 @@ return {
         desc = '[F]ormat buffer',
       },
     },
+
     opts = {
       notify_on_error = false,
+
       format_on_save = function(bufnr)
         local disable_filetypes = { c = true, cpp = true, markdown = true }
+
         if disable_filetypes[vim.bo[bufnr].filetype] then
           return nil
         else
@@ -26,6 +30,7 @@ return {
           }
         end
       end,
+
       formatters_by_ft = {
         lua = { 'stylua' },
         rust = { 'rustfmt' },
@@ -39,6 +44,7 @@ return {
         java = { 'google-java-format' },
         markdown = { 'prettier' },
       },
+
       formatters = {
         clang_format = {
           command = 'clang-format',

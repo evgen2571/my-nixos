@@ -83,7 +83,7 @@ Check with `tmux show-options -gv allow-passthrough` after reloading its config.
 `NVIM_RESEARCH_IMAGES=0` forces text mode. Use JupyterLab for rich widgets and large
 DataFrames; `:MoltenOpenInBrowser` can show HTML output.
 
-## Markdown, other languages, and AI
+## Markdown and other languages
 
 Markdown rendering works without an Obsidian plugin. `Space v r` toggles inline
 rendering, `Space v p` opens a side-by-side preview, and `Alt-c` toggles a task
@@ -95,10 +95,7 @@ C/C++, CMake and Rust use LLDB. `Space c m d` debugs a selected CMake target.
 For GoogleTest, build an executable and associate it with `:ConfigureGtest`.
 Unity setup is described below.
 
-Automatic AI suggestions start off. `Space t a` toggles them per buffer;
-`Alt-]` requests/cycles a suggestion and `Alt-[` cycles back. Ctrl-Y accepts Blink
-completion while its menu is open, otherwise an AI suggestion. An unavailable
-local Ollama endpoint produces a warning when requested.
+Ctrl-Y accepts the selected Blink completion.
 
 ## Unity projects
 
@@ -145,7 +142,7 @@ and installed plugins. It does not install missing dependencies. Headless tests
 cannot verify popup appearance, remote SSH sessions, or terminal graphics.
 
 Desktop checks still needed include plots directly in Kitty and through tmux,
-visual-selection execution, output focus, Ctrl-Y with both completion systems,
+visual-selection execution, output focus, Ctrl-Y completion acceptance,
 and real Noctalia palette reload on both desktops. Real CMake/Rust debugging,
 GoogleTest execution, Go/Java/Unity/Godot runtime sessions and project
 JupyterLab/MLflow widgets also need their own checks. Scientific wheel libraries

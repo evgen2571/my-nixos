@@ -9,6 +9,7 @@ profile. Application guides explain how the configured behavior works.
 | Add an app or service | Nearest `modules/user-apps/`, `modules/user-dev/`, `modules/system-apps/`, or `modules/system-services/` sibling; [module conventions](modules.md) |
 | Boot or hardware | `hosts/<host>/configuration.nix`, `hardware-configuration.nix` |
 | Flake inputs or host assembly | `flake.nix`, `flake/hosts.nix` |
+| Stable/unstable or external package selections | `lib/package-sources.nix`; [package sources](modules.md#package-sources) |
 | Module discovery | `lib/module-catalog.nix`, `lib/module-discovery.nix` |
 | Fish, tmux, Kitty | `config/fish/`, `modules/user-dev/`, [Kitty](../apps/kitty.md) |
 | Neovim mappings or plugins | `config/nvim/lua/core/`, `lua/plugins/`; [Neovim](../apps/neovim.md) |

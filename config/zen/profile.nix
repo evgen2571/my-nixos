@@ -3,6 +3,7 @@
 # See docs/apps/zen-browser.md.
 let
   mkPin = id: url: position: { inherit id url position; };
+
   mkFolder = id: position: pins: {
     inherit id position pins;
     editedTitle = true;
@@ -26,6 +27,7 @@ in
   # Keep synchronized with Zen's zen.keyboard.shortcuts.version.
   # Ctrl+` toggles compact mode; other bindings remain browser defaults.
   keyboardShortcutsVersion = 21;
+
   keyboardShortcuts = [
     {
       id = "zen-compact-mode-toggle";
@@ -36,6 +38,7 @@ in
 
   sine = {
     enable = true;
+
     mods = [
       # Add Sine store mod IDs, e.g. "Arc-2.0".
     ];
@@ -44,6 +47,7 @@ in
   # Preserve undeclared spaces, pins, and routes while migrating.
   spacesForce = false;
   pinsForce = false;
+
   spaceRouting = {
     force = false;
     defaultExternalRoute = "most-recent-space";
@@ -54,10 +58,12 @@ in
       id = "3a84855a-d00d-4b5b-a392-b93a25a261a0";
       position = 1000;
       icon = "✦";
+
       pins = {
         ChatGPT = mkPin "0a2fecde-fff1-45c4-b654-27383b130d0c" "https://chatgpt.com/" 100;
       }
       // (import ./chatgpt-projects.nix);
+
       routes = {
         "ChatGPT".reference = "chatgpt.com";
         "Legacy ChatGPT".reference = "chat.openai.com";
@@ -68,6 +74,7 @@ in
       id = "4fa704ee-f023-49a9-9082-c054cfce4d82";
       position = 2000;
       icon = "💻";
+
       pins = {
         "Competitive Programming" = mkFolder "41458320-bc66-4333-9486-304716712b47" 100 {
           "Codeforces" = mkPin "1166ec46-2b19-4f9e-80f7-613249db734b" "https://codeforces.com/" 100;
@@ -82,15 +89,19 @@ in
           "NixOS Packages" =
             mkPin "de6b0b59-b37a-4f5b-82cb-5d36a6adab9d" "https://search.nixos.org/packages"
               100;
+
           "NixOS Options" =
             mkPin "46cd7b8b-49b5-4e14-8cd8-e7a8ab981024" "https://search.nixos.org/options"
               200;
+
           "Home Manager Options" =
             mkPin "3b0666cc-8add-4e17-b945-c6dfe11b04de" "https://home-manager-options.extranix.com/"
               300;
+
           "cppreference" = mkPin "56285c02-b5c2-4181-90d3-525409973154" "https://en.cppreference.com/w/" 400;
           "Python Docs" = mkPin "e624e4f9-ae2c-49ac-8f37-6838cf7ffe9f" "https://docs.python.org/3/" 500;
           "Rust Docs" = mkPin "49b153cc-c0dd-4668-b80a-5e72d91dfe88" "https://doc.rust-lang.org/std/" 600;
+
           "MDN" =
             mkPin "7524ef73-d6c6-41cb-b7fb-47afbba4c1f4" "https://developer.mozilla.org/en-US/docs/Web"
               700;
@@ -99,12 +110,15 @@ in
         "ML and Research" = mkFolder "673d3c02-cb85-4fdf-acea-75f108d8d121" 300 {
           "Kaggle" = mkPin "faa09666-ade2-4f5a-b994-d017dbc9fe1e" "https://www.kaggle.com/" 100;
           "Hugging Face" = mkPin "f3183a06-d75e-4080-88ac-e8dc864a7842" "https://huggingface.co/" 200;
+
           "PyTorch Docs" =
             mkPin "c0d1a83e-ae73-45a8-9131-c674a352a8ca" "https://docs.pytorch.org/docs/stable/"
               300;
+
           "scikit-learn" =
             mkPin "28f0064d-5c01-4506-9cca-6326623b7d68" "https://scikit-learn.org/stable/"
               400;
+
           "arXiv" = mkPin "0f150af6-db6b-45fb-9704-6a96cfadfc6c" "https://arxiv.org/" 500;
         };
 
@@ -114,6 +128,7 @@ in
           "PyPI" = mkPin "f87b6ae5-86ae-46c8-a2ee-6f80bbf133ed" "https://pypi.org/" 600;
         };
       };
+
       routes = {
         "Codeforces".reference = "codeforces.com";
         "CSES".reference = "cses.fi";
@@ -140,6 +155,7 @@ in
       id = "2b69e16a-723d-4022-9e93-15e0bd4157fe";
       position = 3000;
       icon = "🎬";
+
       pins = {
         "Watching" = mkFolder "ab92f9cf-e4bd-4c80-b45e-b1e1767e91a3" 100 {
           "YouTube" = mkPin "53f6c054-79c9-49d1-b4a5-95bb62a889c3" "https://www.youtube.com/" 100;
@@ -153,6 +169,7 @@ in
           "MyAnimeList" = mkPin "0a62b7d9-9002-47a6-a53f-7153788371c8" "https://myanimelist.net/" 300;
         };
       };
+
       routes = {
         "YouTube".reference = "youtube.com";
         "Short YouTube Links".reference = "youtu.be";
@@ -169,6 +186,7 @@ in
     GitHub = (mkPin "c7219e49-73a8-4625-b15f-54699bf201d7" "https://github.com/" 100) // {
       isEssential = true;
     };
+
     "Google Calendar" =
       (mkPin "78f37ac0-5498-4395-b37e-1d3bb5258822" "https://calendar.google.com/calendar/" 200)
       // {

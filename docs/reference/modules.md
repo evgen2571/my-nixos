@@ -34,11 +34,13 @@ A minimal Home Manager module follows the existing option namespaces:
 
 ```nix
 { config, lib, pkgs, ... }:
+
 let
   cfg = config.my.user.apps.example;
 in
 {
   options.my.user.apps.example.enable = lib.mkEnableOption "Example application";
+
   config = lib.mkIf cfg.enable {
     home.packages = [ pkgs.example ];
   };
@@ -64,6 +66,72 @@ Use `mkDefault` for intended overridable defaults, as the workstation bundle doe
 Shared PC/laptop feature selections retain ordinary priority. Avoid `mkForce`
 unless the override is deliberate. Keep system and home state versions stable
 during normal updates.
+
+## Layout and comments
+
+Use the example above for small modules: arguments, a `cfg` binding, options,
+then a `config = lib.mkIf cfg.enable { ... };` block. Separate options and
+configuration sections with a blank line. Leave a blank line after the argument
+list and between separate option definitions, helper functions, and service
+blocks. Keep the fields of one option together. Group related scalar settings;
+automatic formatting alone does not provide these breaks. An enable-only option
+needs no extra attribute-set wrapper.
+
+Keep a feature in one file while its options and implementation are easy to read
+together. Use a directory with `default.nix` when it needs helpers or separate
+source files. Split by responsibility, such as package installation and file
+deployment; avoid creating a file for every setting. Shell scripts with their own
+control flow belong in `.sh` files, as in `modules/user-dev/tmux/project-list.sh`.
+
+Comments should explain a reason or constraint: why a file must stay writable,
+why a dependency is pinned, or which program owns a shortcut. Skip comments that
+repeat the next setting. A short section comment can explain what a longer group
+of settings or setup steps does. Put it directly above that group, with a blank
+line before the comment. Keep security and recovery explanations specific.
+
+The `module-style` flake check runs nixfmt and deadnix over `modules/` and the
+package-source map. The `sesh-project-list` check covers project discovery,
+symlinks, paths containing spaces, and an unavailable zoxide database.
+
+## Package sources
+
+`pkgs` uses the stable `nixpkgs` input. Use it for ordinary packages.
+[lib/package-sources.nix](../../lib/package-sources.nix) lists the explicit
+unstable and external-input package selections. `flake/hosts.nix` passes the same
+`packageSources` map to NixOS and Home Manager modules:
+
+```nix
+{ config, lib, packageSources, ... }:
+
+let
+  cfg = config.my.user.ai.codegraph;
+in
+{
+  options.my.user.ai.codegraph.enable = lib.mkEnableOption "CodeGraph";
+
+  config = lib.mkIf cfg.enable {
+    home.packages = [ packageSources.codegraph ];
+  };
+}
+```
+
+Change an exception's source in that map. For example, selecting stable Godot
+means removing `godot_4` from `inherit (unstable)` and adding:
+
+```nix
+godot_4 = inputs.nixpkgs.legacyPackages.${system}.godot_4;
+```
+
+Check the selected version and build before switching sources. For unfree stable
+packages, use an explicit stable import with `config.allowUnfree = true`, as the
+unstable import does. Keep dependency overrides and insecure-package allowances
+beside their package selection. Vesktop's allowances apply only to its package
+set; sesh's mockery override applies only to sesh. Do not spread either across
+the global package set.
+
+Upstream NixOS/Home Manager module imports stay in their owning feature modules.
+Zen's beta Home Manager module selects its own package. Input revisions remain
+in `flake.lock`; this map does not update or unpin them.
 
 ## File deployment
 

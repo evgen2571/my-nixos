@@ -5,6 +5,7 @@
   host,
   source,
 }:
+
 let
   fail = message: throw "secret source for ${host}: ${message}";
   files = private.secretFiles or { };

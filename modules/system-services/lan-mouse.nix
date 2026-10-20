@@ -1,8 +1,7 @@
 {
   config,
   lib,
-  inputs,
-  pkgs,
+  packageSources,
   ...
 }:
 
@@ -14,7 +13,7 @@ in
 
   config = lib.mkIf cfg.enable {
     environment.systemPackages = [
-      inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.lan-mouse
+      packageSources.lan-mouse
     ];
 
     networking.firewall.allowedUDPPorts = [ 4242 ];

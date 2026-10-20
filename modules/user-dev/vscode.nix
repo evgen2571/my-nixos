@@ -11,9 +11,9 @@ in
 {
   options.my.user.dev.vscode.enable = lib.mkEnableOption "Visual Studio Code";
 
-  config = lib.mkIf cfg.enable ({
+  config = lib.mkIf cfg.enable {
     home.packages = with pkgs; [
       vscode
     ];
-  });
+  };
 }

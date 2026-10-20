@@ -1,31 +1,37 @@
 let
   select = import ../../lib/secret-source.nix;
   root = ./fixtures;
+
   private = {
     nixosModules.pc = { };
     secretFiles.pc = ./fixtures/valid.yaml;
   };
+
   none = select {
     inherit root private;
     host = "pc";
     source = "none";
   };
+
   empty = select {
     inherit root;
     private = { };
     host = "pc";
     source = "private";
   };
+
   local = select {
     inherit root private;
     host = "pc";
     source = "local";
   };
+
   personal = select {
     inherit root private;
     host = "pc";
     source = "private";
   };
+
   fails = args: !(builtins.tryEval (builtins.deepSeq (select args) true)).success;
 in
 assert
@@ -37,17 +43,21 @@ assert
   }).file == null;
 assert fails {
   inherit root;
+
   private = {
     secretFiles.pc = null;
   };
+
   host = "pc";
   source = "private";
 };
 assert fails {
   inherit root;
+
   private = {
     nixosModules.pc = { };
   };
+
   host = "pc";
   source = "private";
 };
@@ -62,17 +72,21 @@ assert fails {
 };
 assert fails {
   inherit root;
+
   private = {
     secretFiles.pc = /nonexistent;
   };
+
   host = "pc";
   source = "private";
 };
 assert fails {
   inherit root;
+
   private = {
     secretFiles = [ ];
   };
+
   host = "pc";
   source = "private";
 };
