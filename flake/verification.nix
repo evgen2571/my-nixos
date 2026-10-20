@@ -67,8 +67,8 @@
               ];
             }
             ''
-              shellcheck ${../modules/user-dev/tmux/project-list.sh} ${../tests/sesh/project-list.sh}
-              bash ${../tests/sesh/project-list.sh} ${../modules/user-dev/tmux/project-list.sh}
+              shellcheck ${../modules/dev/tmux/project-list.sh} ${../tests/sesh/project-list.sh}
+              bash ${../tests/sesh/project-list.sh} ${../modules/dev/tmux/project-list.sh}
               touch $out
             '';
 

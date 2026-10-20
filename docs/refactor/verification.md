@@ -249,3 +249,54 @@ seven catalog tests successfully. Implementation commit: `132d5c1`.
 Issue #52's ten acceptance checkboxes and four Agent Brief checkboxes are updated
 with this stage's delivery. Integration remains on the existing draft PR #57;
 no ready-for-review transition, merge or activation is authorized by this stage.
+
+## Complex desktop and development features (#53)
+
+Stage begins at `5506933` on `refactor/feature-first-modules` with a clean tree.
+The [stage handoff](complex-features.md) records all nine file mappings, helper
+ownership and writable-state boundaries. The cumulative ledger now records
+74 discovered migrations; namespaces and secrets/deployment remain for #54.
+Shared catalog, discovery, compatibility registrations and frozen inventory are
+unchanged. No coordination edit to those shared files was needed.
+
+| Verification | Result |
+| --- | --- |
+| Existing catalog-equivalence assertion, red/green | Failed with the six added ledger entries before moves (old Niri path versus typed target); passed after moves |
+| `python3 tests/module-catalog/test_catalog.py` | 7 tests passed |
+| `python3 tests/module-equivalence/test_compare.py` | 6 tests passed |
+| Original-baseline public capture/comparison with approved mapping and ledger | Passed for all four ordered catalogs and three assembled hosts/Home Manager users |
+| Comparison with #52 public evidence | Identical complete host projections; no new package/derivation, managed-file, generated text, native option, permissions, activation, PAM, privilege or service differences |
+| Nine assigned feature files | All byte-identical to original inventory hashes, executable modes preserved; old entry files absent |
+| Complete asset audit | All 230 mapped assets present with unchanged executable modes; 218 byte-identical; same 12 paths differed in #51/#52; this stage additionally updates only the sesh check path within flake/verification.nix |
+| `nixfmt --check`, `deadnix --fail` | Passed for moved modules and flake verification; deadnix also checked all modules and package sources |
+| tmux/sesh shellcheck and project-list script tests | Passed; flake check uses the moved private script |
+| `python3 tests/niri/window-titles.py` | 2 tests passed |
+| Complete Niri trees, `niri validate` | Passed for pc, laptop and default workspace profiles, using evaluated per-leaf adapters and copied complete generated Noctalia includes from the existing disposable test fixture |
+| `tests/neovim/run.sh`, isolated XDG roots and copied installed dependencies | Same baseline failure: Compact hover Markdown assertion at smoke.lua:170, after the same 11 checks passed |
+| `python3 tests/neovim/competitive.py`, same isolated XDG roots | Same baseline limitation: missing pynvim; no receiver/template session ran |
+| `nix flake check --no-write-lock-file` | Exit 0; two changed checks executed, other valid outputs reused |
+| Explicit build of all 14 registered check outputs | Exit 0; includes config-paths, Niri host profiles, sesh, catalog/equivalence, source/deployment, style and namespace/VM outputs |
+| Three private-backed non-activating host builds | Exit 0 for PC/laptop/server with the same audited private revision; logs kept local |
+
+Only the exact repository source root and the two previously approved #52 home
+module-reference fields are normalized, as specified in the comparison contract.
+No arbitrary store hash, derivation, source content, command or authorization
+rule is stripped. No new derivation differences require content normalization.
+The unchanged package selections, native sources and exact deployed projections
+cover generated tmux/sesh configuration, Noctalia source/shared/profile/template
+files, Niri leaves and Neovim activation's writable copy/Matugen exclusion.
+
+Private repository visibility was reconfirmed PRIVATE before using revision
+`70c2c843dba1ee03812bbf42ae5f85f89162d0a8`. The private checkout was unchanged;
+no secrets or keys were inspected. The #52 baseline private projection limitation
+(unsupported upstream Zen option traversal) still prevents a complete private
+behavior snapshot; successful private builds are separate evidence. No private
+snapshots were published. Disposable Neovim dependencies came from the existing
+baseline test copy of installed plugins, not a fresh lockfile installation.
+
+Niri validation includes fixture-generated themes and proves syntax/includes,
+not fresh theme generation or GUI appearance. Existing VM outputs were reused;
+no fresh VM execution or live VPN exercise ran. Physical login/keyring unlock,
+appearance sync, manual UI behavior, boot, production decryption and real VPN
+egress remain unverified. No activation, restart, runtime migration, route/firewall
+change or application-data deletion occurred.

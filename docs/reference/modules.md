@@ -129,7 +129,7 @@ Keep a feature in one file while its options and implementation are easy to read
 together. Use a directory with `nixos.nix` or `home.nix` when it needs helpers or separate
 source files. Split by responsibility, such as package installation and file
 deployment; avoid creating a file for every setting. Shell scripts with their own
-control flow belong in `.sh` files, as in `modules/user-dev/tmux/project-list.sh`.
+control flow belong in `.sh` files, as in `modules/dev/tmux/project-list.sh`.
 
 Comments should explain a reason or constraint: why a file must stay writable,
 why a dependency is pinned, or which program owns a shortcut. Skip comments that

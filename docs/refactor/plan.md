@@ -54,3 +54,18 @@ The agreed catalog and three assembled-host seams remain authoritative.
   path. Run focused and full checks plus available private non-activating builds.
 - [x] Record exact mapping, boundaries and verification in a stage handoff;
   review Standards/Spec, commit, update issue checkboxes, and retain draft status.
+
+## Complex desktop and development features (#53)
+
+Spec: [#53](https://github.com/evgen2571/my-nixos/issues/53). Stage starts at
+`5506933`; keep the current integration branch and draft PR #57. Reuse the
+agreed ordered-catalog and three assembled-host seams.
+
+- [x] Extend the ledger with six assigned entries; demonstrate the existing
+  catalog-equivalence assertion fails before moving implementations.
+- [x] Move all nine mapped files byte-for-byte, retaining private helpers and
+  native config sources; update active references without editing shared catalog rules.
+- [x] Compare the original inventory, public hosts, deployed content and activation;
+  run targeted application checks, complete flake checks and practical artifact builds.
+- [ ] Record stage evidence/limitations, review Standards/Spec, commit and push
+  to the existing draft PR; update issue body and Agent Brief checkboxes.

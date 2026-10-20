@@ -29,7 +29,7 @@ Edit [kitty.conf](../../config/kitty/kitty.conf) for terminal behavior. The
 
 Project session behavior belongs to [config/sesh](../../config/sesh), shell
 behavior to [config/fish](../../config/fish), and multiplexing to
-[tmux module](../../modules/user-dev/tmux/default.nix). Keep a terminal change in its owning layer.
+[tmux module](../../modules/dev/tmux/home.nix). Keep a terminal change in its owning layer.
 
 [Neovim plots](neovim.md#python-projects-and-notebooks) need Kitty graphics and,
 inside tmux, `allow-passthrough on`. Check `tmux show-options -gv allow-passthrough`

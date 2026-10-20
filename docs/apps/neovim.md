@@ -126,7 +126,7 @@ a check in a real project.
 | Plugins and explicit loading order | [lua/plugins](../../config/nvim/lua/plugins) |
 | Python environment and notebook commands | [languages/python.lua](../../config/nvim/lua/languages/python.lua) |
 | Hover and theme lifecycle | [lua/integrations](../../config/nvim/lua/integrations) |
-| Provider packages and installation | [Neovim module](../../modules/user-dev/neovim) |
+| Provider packages and installation | [Neovim module](../../modules/dev/neovim) |
 
 Activation copies source into writable `~/.config/nvim` with `rsync --delete`,
 except generated `lua/matugen.lua`. Keep lasting edits in this repository;
