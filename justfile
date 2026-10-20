@@ -1,52 +1,53 @@
 set positional-arguments
 set shell := ["bash", "-uc"]
+set dotenv-load
 
 host := "nixos-pc"
 
 default:
-    @just --list
+    @echo 'Use just --list to list recipes.'
 
 fmt:
     nix fmt
 
-check:
-    nix flake check
+check *flags:
+    bash lib/nixos-command.sh check "$@"
 
 build host=host *flags:
-    nix build ".#nixosConfigurations.$1.config.system.build.toplevel" "${@:2}"
+    bash lib/nixos-command.sh build "$@"
 
 dry host=host *flags:
-    sudo nixos-rebuild dry-build --flake ".#$1" "${@:2}"
+    bash lib/nixos-command.sh dry "$@"
 
 switch host=host *flags:
-    sudo nixos-rebuild switch --flake ".#$1" "${@:2}"
+    bash lib/nixos-command.sh switch "$@"
 
 boot host=host *flags:
-    sudo nixos-rebuild boot --flake ".#$1" "${@:2}"
+    bash lib/nixos-command.sh boot "$@"
 
 build-pc *flags:
-    just build nixos-pc "$@"
+    bash lib/nixos-command.sh build nixos-pc "$@"
 
 dry-pc *flags:
-    just dry nixos-pc "$@"
+    bash lib/nixos-command.sh dry nixos-pc "$@"
 
 switch-pc *flags:
-    just switch nixos-pc "$@"
+    bash lib/nixos-command.sh switch nixos-pc "$@"
 
 build-lp *flags:
-    just build nixos-lp "$@"
+    bash lib/nixos-command.sh build nixos-lp "$@"
 
 dry-lp *flags:
-    just dry nixos-lp "$@"
+    bash lib/nixos-command.sh dry nixos-lp "$@"
 
 switch-lp *flags:
-    just switch nixos-lp "$@"
+    bash lib/nixos-command.sh switch nixos-lp "$@"
 
 build-server *flags:
-    just build nixos-server "$@"
+    bash lib/nixos-command.sh build nixos-server "$@"
 
 dry-server *flags:
-    just dry nixos-server "$@"
+    bash lib/nixos-command.sh dry nixos-server "$@"
 
 switch-server *flags:
-    just switch nixos-server "$@"
+    bash lib/nixos-command.sh switch nixos-server "$@"

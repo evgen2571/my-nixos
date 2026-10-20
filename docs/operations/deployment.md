@@ -14,6 +14,55 @@ networking. For another machine, use [host adaptation](installation.md#new-machi
 Keep independent recovery access for live installation, activation, and rollback.
 Coding agents also follow the authorization requirements in [AGENTS.md](../../AGENTS.md).
 
+## Everyday rebuilds with Just
+
+Install `just` separately (or enter `nix shell nixpkgs#just`). For a single
+invocation, use `nix run nixpkgs#just -- RECIPE`; recipes do not require `just`
+on `PATH`. In the public checkout, copy [.env.example](../../.env.example) to
+`.env` if that local file does not already exist, then choose a private source:
+
+```dotenv
+MY_NIXOS_PRIVATE=git@github.com/YOUR-USER/my-nixos-private
+```
+
+The GitHub shorthand defaults to `?ref=main`. To follow another branch or tag,
+append `?ref=YOUR-REF`. Full `git+ssh://` URLs also work; an explicit query such
+as `?rev=FULL_COMMIT` is preserved. Remote inputs use `--refresh` on every
+invocation, so a push to the selected branch is picked up on the next rebuild.
+Nix manages its own fetched source/cache; no private working checkout is needed.
+Rebuilds fetch and build as the invoking user, using that user's SSH configuration
+and agent. `nixos-rebuild --sudo` elevates only the privileged deployment steps;
+root does not need GitHub credentials. Confirm access with `ssh -T git@github.com`
+(GitHub reports successful authentication but exits with status 1).
+Never embed access tokens or passwords in the URL.
+
+For a local checkout, use `MY_NIXOS_PRIVATE=/absolute/path/to/my-nixos-private`
+instead. This pins its committed `HEAD` and refuses missing or dirty checkouts.
+
+`.env` is gitignored. Sources are selected explicitly; there is no automatic
+sibling lookup. Keep secrets and credentials out of it. Once configured, run
+only the recipe for the machine you are updating:
+
+```sh
+just build-pc       # build without activation
+just switch-pc      # apply on the PC
+just switch-lp      # apply on the laptop
+just switch-server  # apply on the server, coordinating gateway downtime
+```
+
+All recipes pass `--no-write-lock-file`. Keep using compatible, reviewed
+public/private revisions and the
+[upgrade recovery precautions](#upgrade-an-existing-host). `just check` uses the
+same input; `just check --no-build` evaluates without running the checks.
+
+Following a remote branch can select different private commits for a build and
+a later switch. Pin an explicit remote `?rev=FULL_COMMIT` when reproducing a
+tested pair. Just does not pull local checkouts or update package pins; fetch/review
+their updates before rebuilding. Without `MY_NIXOS_PRIVATE`, recipes retain
+explicit flag forwarding and the production deployment guards. An explicit
+`--override-input private URL` takes precedence over the `.env` source setting.
+Fish helpers still accept the explicit flags described below.
+
 ## Select reviewed inputs
 
 Use a reviewed, compatible pair of public/private commits. Run from a clean
@@ -30,7 +79,8 @@ sha256sum flake.lock
 ```
 
 Check `private_rev` against the reviewed pair before continuing. The invoking user
-and root/remote builder need Git/store access; acquire inputs before maintenance.
+needs Git/store access; remote builders need access to required store paths.
+Acquire inputs before maintenance.
 Never embed credentials in URLs or record personal overrides in the public lock.
 The [private template](../../templates/private/README.md) defines the input interface.
 
@@ -50,11 +100,11 @@ nix flake check --override-input private "$private_input" --no-write-lock-file
 
 | Target | Non-activating command |
 | --- | --- |
-| PC | `just build-pc --override-input private "$private_input" --no-write-lock-file` |
-| Laptop | `just build-lp --override-input private "$private_input" --no-write-lock-file` |
-| Server | `just build-server --override-input private "$private_input" --no-write-lock-file` |
+| PC | `just build-pc` with `.env`, or `just build-pc --override-input private "$private_input"` |
+| Laptop | `just build-lp` with `.env`, or `just build-lp --override-input private "$private_input"` |
+| Server | `just build-server` with `.env`, or `just build-server --override-input private "$private_input"` |
 
-`just` is a separate prerequisite. Its [recipes](../../justfile) use
+The build [recipes](../../justfile) use
 `nix build .#nixosConfigurations.HOST.config.system.build.toplevel`.
 Check `git diff --exit-code -- flake.lock` afterward. Successful builds do not
 establish target decryption, hardware boot or provider health.
@@ -84,11 +134,11 @@ Run **only** the command for the host you are updating, from its public checkout
 
 ```sh
 # PC
-sudo nixos-rebuild switch --flake .#nixos-pc --override-input private "$private_input" --no-write-lock-file
+nixos-rebuild switch --sudo --flake .#nixos-pc --override-input private "$private_input" --no-write-lock-file
 # Laptop
-sudo nixos-rebuild switch --flake .#nixos-lp --override-input private "$private_input" --no-write-lock-file
+nixos-rebuild switch --sudo --flake .#nixos-lp --override-input private "$private_input" --no-write-lock-file
 # Server: coordinate the gateway maintenance window first.
-sudo nixos-rebuild switch --flake .#nixos-server --override-input private "$private_input" --no-write-lock-file
+nixos-rebuild switch --sudo --flake .#nixos-server --override-input private "$private_input" --no-write-lock-file
 ```
 
 Use normal target rebuild re-exec and retain the [deployment guards](#deployment-guards).
