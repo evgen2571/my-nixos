@@ -179,3 +179,5 @@ Use [the configuration map](configuration.md#choose-verification-by-impact) for
 checks. Verify both availability and intended enablement, then format and evaluate
 all affected hosts. Generated services/files may require a non-activating build.
 Changes to live systems remain a separately authorized step.
+
+The feature-first refactor has a [pre-migration inventory and comparison contract](../refactor/README.md).

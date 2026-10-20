@@ -17,6 +17,11 @@
     in
     {
       checks = {
+        module-equivalence = import ../tests/module-equivalence {
+          inherit pkgs;
+          root = ../.;
+        };
+
         # Formatting and small script checks run without a host deployment.
         module-style =
           pkgs.runCommand "module-style-checks"
