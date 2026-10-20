@@ -7,14 +7,18 @@
   requirePrivate,
   ...
 }:
+
 let
   available = secretSource == "private" && secretFile != null;
+
   preflight = pkgs.writeShellApplication {
     name = "deployment-preflight";
+
     runtimeInputs = [
       pkgs.coreutils
       pkgs.sops
     ];
+
     text =
       builtins.replaceStrings
         [ "@available@" "@ciphertext@" ]
@@ -32,17 +36,21 @@ in
         assertion = config.my.primaryUser.name != "operator";
         message = "Production private input must supply the existing primary account metadata.";
       }
+
       {
         assertion =
           !config.services.openssh.enable
           || config.my.primaryUser.authorizedKeys != [ ]
           || config.my.primaryUser.authorizedKeyFiles != [ ];
+
         message = "Production SSH server requires its private authorized-key associations.";
       }
     ];
+
     # This only suppresses NixOS's evaluation-time lockout assertion. Accounts
     # stay locked, and the unavailable closure below cannot be built/deployed.
     users.allowNoPasswordLogin = lib.mkIf (!available) true;
+
     # A secretless production closure must not reach nix-env, installers or boot.
     system.systemBuilderCommands = lib.mkAfter (
       if available then
@@ -55,7 +63,9 @@ in
           exit 1
         ''
     );
+
     system.preSwitchChecks.privateMaterial = "${lib.getExe preflight}";
+
     system.build.nixos-install = lib.mkForce (
       pkgs.nixos-install.overrideAttrs (old: {
         src = pkgs.runCommand "nixos-install-preflight-source" { nativeBuildInputs = [ pkgs.patch ]; } ''
@@ -66,6 +76,7 @@ in
         '';
       })
     );
+
     system.build.nixos-rebuild = lib.mkForce (
       (pkgs.nixos-rebuild-ng.override { nix = config.nix.package; }).overrideAttrs (old: {
         patches = (old.patches or [ ]) ++ [
@@ -74,9 +85,11 @@ in
         ];
       })
     );
+
     # Retain the namespace/firewall and app isolation, but never start stale transports.
     systemd.services = lib.mkIf (!available) {
       netns-vpn-shared.serviceConfig.ExecCondition = lib.mkBefore [ "${pkgs.coreutils}/bin/false" ];
+
       hide-me-vpn =
         lib.mkIf (config.my.system.services.networkNamespaces.namespaces.vpn.shared.role == "gateway")
           {

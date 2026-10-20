@@ -1,4 +1,5 @@
 { config, lib, ... }:
+
 let
   cfg = config.my.server.storage;
   primaryUser = config.my.primaryUser.name;
@@ -84,6 +85,7 @@ in
         "/dev/disk/by-label/"
         "/dev/disk/by-id/"
       ];
+
       message = ''
         my.server.storage.device must use a stable path under one of:
 

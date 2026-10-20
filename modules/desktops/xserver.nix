@@ -1,4 +1,5 @@
 { lib, config, ... }:
+
 let
   cfg = config.my.desktop.xserver;
 in

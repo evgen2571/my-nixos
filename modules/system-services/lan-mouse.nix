@@ -4,6 +4,7 @@
   packageSources,
   ...
 }:
+
 let
   cfg = config.my.system.services.lanMouse;
 in

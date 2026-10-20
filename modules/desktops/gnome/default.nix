@@ -4,6 +4,7 @@
   pkgs,
   ...
 }:
+
 let
   cfg = config.my.desktop.gnome;
 in
@@ -14,6 +15,7 @@ in
     services = {
       desktopManager.gnome.enable = true;
       displayManager.gdm.enable = false;
+
       gnome = {
         core-apps.enable = false;
         core-developer-tools.enable = false;

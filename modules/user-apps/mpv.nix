@@ -4,6 +4,7 @@
   pkgs,
   ...
 }:
+
 let
   cfg = config.my.user.apps.mpv;
 in
@@ -17,6 +18,7 @@ in
 
     xdg.mimeApps = {
       enable = true;
+
       defaultApplications = {
         "video/*" = [ "mpv.desktop" ];
       };

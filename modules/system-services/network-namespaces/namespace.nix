@@ -5,6 +5,7 @@
   name,
   ns,
 }:
+
 let
   doctor = import ./doctor.nix {
     inherit
@@ -15,6 +16,7 @@ let
       ns
       ;
   };
+
   shared = ns.shared.role != "standalone";
   isClient = ns.shared.role == "client";
   runtime = "/run/network-namespaces/${name}";
@@ -23,6 +25,7 @@ let
   underlay = "${netns}-underlay";
   vpn = "hide-me-${name}";
   client = pkgs.callPackage ../../../packages/hide-me { };
+
   tools = with pkgs; [
     coreutils
     gnugrep
@@ -33,6 +36,8 @@ let
     wireguard-tools
     systemd
   ];
+
+  # The namespace filter stays in place even when the provider stops.
   policy = pkgs.writeText "${netns}-firewall.nft" ''
     table inet agent_workspace {
       chain output {
@@ -69,11 +74,15 @@ let
       }
     ''}
   '';
+
+  # Create the namespace, resolver files, and filter before starting transport.
   init = pkgs.writeShellApplication {
     name = "${netns}-init";
     runtimeInputs = tools;
+
     text = ''
       install -d -m 0755 /run/netns /run/network-namespaces ${runtime} ${runtime}/empty-nscd
+
       # Adopt an existing namespace, including one retained by active sessions.
       if ! ip netns list | grep -q '^${name}\( \|$\)'; then
         ip netns add ${name}
@@ -85,6 +94,7 @@ let
       fi
       sed 's/^hosts:.*/hosts: files dns/' /etc/nsswitch.conf > ${runtime}/nsswitch.conf
       chmod 0644 ${runtime}/nsswitch.conf
+
       # Flush and repopulate in ONE nft transaction; no open-filter interval.
       if ip netns exec ${name} nft list table inet agent_workspace >/dev/null 2>&1; then
         { echo 'flush table inet agent_workspace'; ${
@@ -97,12 +107,15 @@ let
       fi
     '';
   };
+
   cleanup = pkgs.writeShellApplication {
     name = "${netns}-cleanup";
     runtimeInputs = tools;
+
     text = ''
       rm -f ${runtime}/ready
       if ip netns list | grep -q '^${name}\( \|$\)'; then
+
         # Deleting the name does not kill processes holding the old namespace.
         # They retain its fail-closed filter until their final process exits.
         ip netns delete ${name}
@@ -110,9 +123,11 @@ let
       rm -rf ${runtime}
     '';
   };
+
   waitUnderlay = pkgs.writeShellApplication {
     name = "${netns}-wait-underlay";
     runtimeInputs = tools;
+
     text = ''
       for ((attempt=0; attempt<100; attempt++)); do
         if ip -n ${name} -4 route show default | grep -q 'via 10.0.2.2 dev tap0'; then
@@ -124,11 +139,15 @@ let
       exit 1
     '';
   };
+
+  # Clear stale provider routes and seed its writable token when needed.
   prepare = pkgs.writeShellApplication {
     name = "${vpn}-prepare";
     runtimeInputs = tools;
+
     text = ''
       rm -f ${runtime}/ready
+
       # Recover from SIGKILL, which cannot unwind upstream's routes/rules.
       # This only touches the dedicated namespace; independent nft stays active.
       ip link delete hm0 2>/dev/null || true
@@ -158,15 +177,19 @@ let
       chmod 0600 ${state}/accessToken.txt
     '';
   };
+
+  # Check the local tunnel before accepting the last HTTPS probe result.
   localCheck = pkgs.writeShellApplication {
     name = "${netns}-local-check";
     runtimeInputs = tools;
+
     text = ''
       reject() { echo "VPN local readiness: $1" >&2; exit 1; }
       systemctl is-active --quiet ${
         if isClient then "netns-${name}-shared" else vpn
       }.service || reject SERVICE_UNAVAILABLE
       for chain in output input forward; do
+
         # Read the complete chain before checking it. With pipefail, nft |
         # grep -q can report a broken pipe even when the drop policy exists.
         # Use an immutable nft executable instead of relying on the caller PATH.
@@ -186,11 +209,13 @@ let
       awk '$1 == "nameserver" && $2 != "127.0.0.1" && $2 != "::1" { ok = 1 } END { exit !ok }' ${runtime}/resolv.conf || reject DNS_UNAVAILABLE
     '';
   };
+
   # Agent entry requires both local tunnel readiness and a recent HTTPS probe.
   # The network probe runs on the timer, never per Codex invocation.
   check = pkgs.writeShellApplication {
     name = "${netns}-check";
     runtimeInputs = [ pkgs.coreutils ];
+
     text = ''
       diagnose() {
         ${lib.optionalString shared "${lib.getExe doctor.status} --entry-failed >&2"}
@@ -209,61 +234,74 @@ in
   systemd.services.${netns} = {
     description = "Persistent isolated network namespace ${name}";
     wantedBy = [ "multi-user.target" ];
+
     before = [
       "${underlay}.service"
       "${vpn}.service"
     ];
+
     # Changing a package elsewhere must not destroy active app namespaces.
     restartIfChanged = shared;
     stopIfChanged = shared;
+
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
       ExecStart = lib.getExe init;
       ExecStop = lib.getExe cleanup;
+
       # ip netns must publish its bind mount into the host mount namespace.
       # Do not add PrivateTmp/ProtectSystem here: they create private mounts.
       CapabilityBoundingSet = [
         "CAP_SYS_ADMIN"
         "CAP_NET_ADMIN"
       ];
+
       NoNewPrivileges = true;
     };
   };
 
   systemd.services.${underlay} = lib.mkIf (!isClient) {
     description = "Restricted userspace underlay for ${name}";
+
     unitConfig = {
       StartLimitIntervalSec = 300;
       StartLimitBurst = 3;
     };
+
     wantedBy = [ "multi-user.target" ];
     requires = [ "${netns}.service" ];
+
     after = [
       "${netns}.service"
       "network-online.target"
     ];
+
     wants = [ "network-online.target" ];
     bindsTo = [ "${netns}.service" ];
     partOf = [ "${netns}.service" ];
     restartIfChanged = false;
     stopIfChanged = false;
+
     serviceConfig = {
       Type = "exec";
       ExecStart = "${lib.getExe pkgs.slirp4netns} --configure --disable-host-loopback --disable-dns --enable-seccomp --netns-type=path /run/netns/${name} tap0";
       ExecStartPost = lib.getExe waitUnderlay;
+
       # Closing the nonpersistent TAP may already have removed the interface.
       ExecStopPost =
         if shared then
           [ "-${pkgs.iproute2}/bin/ip -n ${name} link delete tap0" ]
         else
           "-${pkgs.iproute2}/bin/ip -n ${name} link delete tap0";
+
       Restart = "always";
       RestartSec = 3;
       ProtectSystem = "strict";
       ProtectHome = true;
       PrivateTmp = true;
       NoNewPrivileges = true;
+
       InaccessiblePaths = [
         "-/run/secrets"
         "-/etc/shadow"
@@ -275,6 +313,7 @@ in
   systemd.services.${vpn} = lib.mkIf (!isClient) {
     description = "hide.me Free VPN in namespace ${name}";
     wantedBy = [ "multi-user.target" ];
+
     # Keep the provider alive through underlay process restarts; its gate waits
     # for tap0 at startup, and the monitor repairs failed prerequisites.
     requires = lib.optional (!shared) "${underlay}.service";
@@ -282,10 +321,12 @@ in
     after = [ "${underlay}.service" ] ++ lib.optional (config ? sops) "sops-install-secrets.service";
     bindsTo = [ "${netns}.service" ];
     partOf = [ "${netns}.service" ];
+
     unitConfig = {
       StartLimitIntervalSec = 300;
       StartLimitBurst = 3;
     };
+
     # Underlay restart should not force namespace teardown. The client's DPD
     # handles short outages and retries; systemd handles a crashed client.
     serviceConfig = {
@@ -300,20 +341,24 @@ in
       ExecCondition = lib.optional shared doctor.gate;
       ExecStartPre = if shared then [ (lib.getExe prepare) ] else lib.getExe prepare;
       ExecStart = "${client}/bin/hide.me --firewall-mark 18541 --interface hm0 --tokenFile ${state}/accessToken.txt --kill-switch=true connect ${ns.server}";
+
       ExecStopPost =
         if shared then
           [ "${pkgs.coreutils}/bin/rm -f ${runtime}/ready" ]
         else
           "${pkgs.coreutils}/bin/rm -f ${runtime}/ready";
+
       NetworkNamespacePath = "/run/netns/${name}";
       BindPaths = [ "${runtime}/resolv.conf:/etc/resolv.conf" ];
       BindReadOnlyPaths = [ "${runtime}/nsswitch.conf:/etc/nsswitch.conf" ];
       InaccessiblePaths = [ "-/run/nscd" ];
       ProtectSystem = "strict";
+
       ReadWritePaths = [
         state
         runtime
       ];
+
       ProtectHome = true;
       PrivateTmp = true;
       NoNewPrivileges = true;
@@ -328,14 +373,17 @@ in
   systemd.services."${netns}-health" = {
     description = "Verify external HTTPS egress through VPN ${name}";
     after = [ "${if isClient then "netns-${name}-shared" else vpn}.service" ];
+
     serviceConfig = {
       Type = "oneshot";
       ExecStart = doctor.probe;
       NetworkNamespacePath = "/run/netns/${name}";
+
       BindReadOnlyPaths = [
         "${runtime}/resolv.conf:/etc/resolv.conf"
         "${runtime}/nsswitch.conf:/etc/nsswitch.conf"
       ];
+
       InaccessiblePaths = [ "-/run/nscd" ];
       ProtectSystem = "strict";
       ProtectHome = true;
@@ -346,18 +394,22 @@ in
       TimeoutStartSec = 60;
     };
   };
+
   systemd.timers."${netns}-health" = {
     wantedBy = lib.optional (!shared) "timers.target";
+
     timerConfig = {
       OnBootSec = 15;
       OnUnitActiveSec = 30;
       AccuracySec = 1;
     };
   };
+
   systemd.services."${netns}-recovery" = lib.mkIf shared {
     description = "Diagnose and cautiously recover VPN ${name}";
     after = [ "network-online.target" ];
     wants = [ "network-online.target" ];
+
     serviceConfig = {
       Type = "oneshot";
       ExecStart = doctor.reconcile;
@@ -372,19 +424,24 @@ in
       TimeoutStartSec = 240;
     };
   };
+
   systemd.timers."${netns}-recovery" = lib.mkIf shared {
     wantedBy = [ "timers.target" ];
+
     timerConfig = {
       OnBootSec = 15;
       OnUnitInactiveSec = 30;
       AccuracySec = 1;
     };
   };
+
   systemd.lifecycleServices = lib.mkIf shared doctor.services;
   environment.systemPackages = lib.optional shared doctor.status;
+
   environment.etc."network-namespaces/${name}-recovery-reset" = lib.mkIf shared {
     source = doctor.reset;
   };
+
   # Used by the restricted entry helper; never a user-selectable command path.
   environment.etc."network-namespaces/${name}-check".source = lib.getExe check;
 }

@@ -4,6 +4,7 @@
   pkgs,
   ...
 }:
+
 let
   cfg = config.my.desktop.niri;
 in
@@ -109,17 +110,21 @@ in
     systemd.user.services.niri-portal-init = {
       description = "Initialize Niri screen-sharing portals";
       wantedBy = [ "graphical-session.target" ];
+
       wants = [
         "xdg-desktop-portal.service"
         "xdg-desktop-portal-gnome.service"
       ];
+
       after = [
         "graphical-session.target"
         "xdg-desktop-portal.service"
         "xdg-desktop-portal-gnome.service"
       ];
+
       serviceConfig = {
         Type = "oneshot";
+
         ExecStart = pkgs.writeShellScript "niri-portal-init" ''
           set -eu
           ${pkgs.systemd}/bin/systemctl --user restart \

@@ -1,21 +1,26 @@
 # Real systemd lifecycle and old-generation reboot tests, entirely inside VMs.
 { pkgs, sopsNix }:
+
 let
   lib = pkgs.lib;
+
   migration = pkgs.runCommand "vpn-migration-bundle" { } ''
     mkdir -p $out
     cp ${../../modules/system-services/network-namespaces/migration}/*.sh $out/
   '';
+
   common = { config, ... }: {
     imports = [
       ../../modules/system-services/network-namespaces
       sopsNix.nixosModules.sops
     ];
+
     # The encrypted fixture is created inside each VM; no test private key enters the store.
     sops = {
       validateSopsFiles = false;
       useSystemdActivation = true;
       age.keyFile = "/var/lib/test-vpn/age-key";
+
       secrets.vpn-wireguard-private-key = {
         sopsFile = "/var/lib/test-vpn/secrets.yaml";
         key = "wireguard_private_key";
@@ -23,13 +28,16 @@ let
         restartUnits = [ "netns-vpn-shared.service" ];
       };
     };
+
     systemd.services.test-vpn-secrets = {
       before = [ "sops-install-secrets.service" ];
       after = [ "local-fs.target" ];
       unitConfig.DefaultDependencies = false;
+
       serviceConfig = {
         Type = "oneshot";
         RemainAfterExit = true;
+
         ExecStart = pkgs.writeShellScript "test-vpn-secrets" ''
           set -eu
           umask 077
@@ -37,6 +45,7 @@ let
           if [[ ! -s /var/lib/test-vpn/age-key ]]; then
             ${pkgs.age}/bin/age-keygen -o /var/lib/test-vpn/age-key
             recipient=$(${pkgs.age}/bin/age-keygen -y /var/lib/test-vpn/age-key)
+
             # Deliberately public mock seeds match public-keys.nix.
             ${pkgs.python3}/bin/python3 -c 'import base64,json; print(json.dumps({"wireguard_private_key":base64.b64encode(bytes([${
               if config.networking.hostName == "nixos-server" then
@@ -51,10 +60,12 @@ let
         '';
       };
     };
+
     systemd.services.sops-install-secrets = {
       requires = [ "test-vpn-secrets.service" ];
       after = [ "test-vpn-secrets.service" ];
     };
+
     environment.systemPackages = with pkgs; [
       wireguard-tools
       iproute2
@@ -63,7 +74,9 @@ let
       curl
       python3
     ];
+
     environment.etc."vpn-migration".source = migration;
+
     systemd.services.tailscaled = {
       serviceConfig = {
         Type = "oneshot";
@@ -71,17 +84,21 @@ let
         ExecStart = "${pkgs.coreutils}/bin/true";
       };
     };
+
     my.system.services.networkNamespaces = {
       enable = true;
       namespaces.vpn.enable = true;
     };
+
     # Stub external WAN/Tailscale/HTTPS and age startup timestamps to exercise
     # debounce without a two-minute wait. Keep real systemd, namespaces,
     # transport, firewall, handshake and lifecycle hooks.
     environment.etc."vpn-test-tools/curl".source = pkgs.writeShellScript "test-host-https" "exit 0";
+
     environment.etc."vpn-test-tools/tailscale".source = pkgs.writeShellScript "test-tailnet" ''
       echo '{"BackendState":"Running"}'
     '';
+
     environment.etc."vpn-test-tools/systemctl".source = pkgs.writeShellScript "test-systemctl" ''
       if [ "$1" = show ]; then
         ${pkgs.systemd}/bin/systemctl "$@" | ${pkgs.gnused}/bin/sed 's/^ActiveEnterTimestampMonotonic=.*/ActiveEnterTimestampMonotonic=0/'
@@ -89,6 +106,7 @@ let
         exec ${pkgs.systemd}/bin/systemctl "$@"
       fi
     '';
+
     environment.etc."vpn-test-doctor.json".text = builtins.toJSON {
       name = "vpn";
       host = config.networking.hostName;
@@ -100,18 +118,22 @@ let
       bootstrap = null;
       token = "/var/lib/hide-me-vpn/accessToken.txt";
       endpoint = "192.168.1.254";
+
       peers = map (
         p: p.publicKey
       ) config.my.system.services.networkNamespaces.namespaces.vpn.shared.peers;
+
       urls = [
         "https://one.test/"
         "https://two.test/"
       ];
+
       dependencies = {
         "netns-vpn.service" = [ ];
         "netns-vpn-shared.service" = [ "netns-vpn.service" ];
       };
     };
+
     systemd.services.netns-vpn-recovery.serviceConfig.ExecStart = lib.mkForce (
       pkgs.writeShellScript "test-reconcile" ''
         export PATH=/etc/vpn-test-tools:${
@@ -126,6 +148,7 @@ let
         exec ${pkgs.python3}/bin/python3 ${../../modules/system-services/network-namespaces/doctor.py} /etc/vpn-test-doctor.json reconcile
       ''
     );
+
     systemd.services.netns-vpn-health.serviceConfig.ExecStart = lib.mkForce (
       pkgs.writeShellScript "test-isolated-probes" ''
         now=$(${pkgs.coreutils}/bin/date +%s)
@@ -133,17 +156,22 @@ let
         echo "$now" > /run/network-namespaces/vpn/ready
       ''
     );
+
     systemd.timers.netns-vpn-health.wantedBy = lib.mkForce [ ];
+
     # No external HTTPS/provider/Tailscale dependency in this isolated LAN fixture.
     systemd.timers.netns-vpn-recovery.wantedBy = lib.mkForce [ ];
   };
+
   mockProvider = {
     wantedBy = [ "multi-user.target" ];
     requires = [ "netns-vpn.service" ];
     after = [ "netns-vpn.service" ];
+
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
+
       ExecStart = pkgs.writeShellScript "mock-local-provider" ''
         echo started >> /var/lib/provider-starts
       '';
@@ -152,29 +180,37 @@ let
 in
 pkgs.testers.runNixOSTest {
   name = "shared-vpn-systemd";
+
   nodes = {
     server = { ... }: {
       imports = [ common ];
       networking.hostName = "nixos-server";
+
       networking.interfaces.eth1.ipv4.addresses = [
         {
           address = "192.168.1.254";
           prefixLength = 24;
         }
       ];
+
       networking.firewall.allowedUDPPorts = [ 51877 ]; # VM LAN models Tailscale transport.
+
       my.system.services.networkNamespaces.namespaces.vpn.shared = {
         role = "gateway";
+
         peers = [
           {
             publicKey = (import ./public-keys.nix).laptop;
+
             allowedIPs = [
               "10.77.0.3/32"
               "fd77::3/128"
             ];
           }
+
           {
             publicKey = (import ./public-keys.nix).pc;
+
             allowedIPs = [
               "10.77.0.2/32"
               "fd77::2/128"
@@ -182,16 +218,20 @@ pkgs.testers.runNixOSTest {
           }
         ];
       };
+
       # No provider authentication or external VPN connection in this test.
       systemd.services.hide-me-vpn = lib.mkForce { enable = false; };
       systemd.services.netns-vpn-underlay.wantedBy = lib.mkForce [ ];
+
       systemd.services.mock-egress = {
         wantedBy = [ "multi-user.target" ];
         requires = [ "netns-vpn.service" ];
         after = [ "netns-vpn.service" ];
+
         serviceConfig = {
           Type = "oneshot";
           RemainAfterExit = true;
+
           ExecStart = pkgs.writeShellScript "mock-egress" ''
             set -eu
             ${pkgs.iproute2}/bin/ip netns add external
@@ -208,45 +248,55 @@ pkgs.testers.runNixOSTest {
           '';
         };
       };
+
       systemd.services.mock-dns-one = {
         wantedBy = [ "multi-user.target" ];
         requires = [ "mock-egress.service" ];
         after = [ "mock-egress.service" ];
+
         serviceConfig = {
           NetworkNamespacePath = "/run/netns/external";
           ExecStart = "${pkgs.dnsmasq}/bin/dnsmasq --keep-in-foreground --conf-file=/dev/null --bind-interfaces --listen-address=203.0.113.1 --no-resolv --no-hosts --address=/egress.test/203.0.113.1 --pid-file=";
         };
       };
+
       systemd.services.mock-dns-two = {
         wantedBy = [ "multi-user.target" ];
         requires = [ "mock-egress.service" ];
         after = [ "mock-egress.service" ];
+
         serviceConfig = {
           NetworkNamespacePath = "/run/netns/external";
           ExecStart = "${pkgs.dnsmasq}/bin/dnsmasq --keep-in-foreground --conf-file=/dev/null --bind-interfaces --listen-address=203.0.113.3 --no-resolv --no-hosts --address=/egress.test/203.0.113.3 --pid-file=";
         };
       };
+
       systemd.services.mock-http = {
         wantedBy = [ "multi-user.target" ];
         requires = [ "mock-egress.service" ];
         after = [ "mock-egress.service" ];
+
         serviceConfig = {
           NetworkNamespacePath = "/run/netns/external";
           ExecStart = "${pkgs.python3}/bin/python3 -m http.server 8080 --bind 203.0.113.1";
         };
       };
     };
+
     laptop = { ... }: {
       imports = [ common ];
       networking.hostName = "nixos-lp";
+
       my.system.services.networkNamespaces.namespaces.vpn.shared = {
         role = "client";
         address = "10.77.0.3/24";
         address6 = "fd77::3/64";
         endpoint = "192.168.1.254:51877";
+
         peers = [
           {
             publicKey = (import ./public-keys.nix).gateway;
+
             allowedIPs = [
               "0.0.0.0/0"
               "::/0"
@@ -255,19 +305,24 @@ pkgs.testers.runNixOSTest {
         ];
       };
     };
+
     client = { ... }: {
       imports = [ common ];
       networking.hostName = "nixos-pc";
+
       # Boot the pre-migration role; candidate is a test-only specialisation.
       systemd.services.hide-me-vpn = lib.mkForce mockProvider;
+
       specialisation.shared.configuration.my.system.services.networkNamespaces.namespaces.vpn.shared = {
         role = lib.mkForce "client";
         address = "10.77.0.2/24";
         address6 = "fd77::2/64";
         endpoint = "192.168.1.254:51877";
+
         peers = [
           {
             publicKey = (import ./public-keys.nix).gateway;
+
             allowedIPs = [
               "0.0.0.0/0"
               "::/0"
@@ -277,6 +332,7 @@ pkgs.testers.runNixOSTest {
       };
     };
   };
+
   testScript = ''
     import json
     client.start(allow_reboot=True)
@@ -290,11 +346,13 @@ pkgs.testers.runNixOSTest {
     old = client.succeed("readlink -f /run/current-system").strip()
     candidate = client.succeed("readlink -f /run/current-system/specialisation/shared").strip()
     client.succeed("test -s /run/secrets/vpn-wireguard-private-key; test $(stat -Lc %a /run/secrets/vpn-wireguard-private-key) = 400")
+
     # Refuse to overwrite someone else's persistent unit override.
     client.succeed("mkdir -p /etc/systemd/system.control; echo preserve-me > /etc/systemd/system.control/hide-me-vpn.service")
     client.fail("bash /etc/vpn-migration/desktop-provider-guard.sh")
     assert client.succeed("cat /etc/systemd/system.control/hide-me-vpn.service").strip() == "preserve-me"
     client.succeed("rm /etc/systemd/system.control/hide-me-vpn.service")
+
     # Permanent desktop disable stops both provider and underlay.
     client.succeed("bash /etc/vpn-migration/desktop-provider-guard.sh")
     client.fail("systemctl is-active --quiet hide-me-vpn.service")
@@ -314,12 +372,14 @@ pkgs.testers.runNixOSTest {
             print(machine.succeed("ip -brief address; ip route; ip -n vpn route show table all; ip netns exec vpn wg show shared0 public-key; ip netns exec vpn wg show shared0 endpoints; ip netns exec vpn wg show shared0 latest-handshakes; ip netns exec vpn nft list table inet agent_workspace"))
         raise
     client.wait_until_succeeds(dns + " | grep -x 203.0.113.1")
+
     # A fresh marker must never bypass fresh independent filter checks.
     client.succeed("date +%s > /run/network-namespaces/vpn/ready; /etc/network-namespaces/vpn-check")
     client.succeed("ip netns exec vpn nft 'chain inet agent_workspace forward { policy accept; }'")
     client.fail("/etc/network-namespaces/vpn-check")
     client.succeed("ip netns exec vpn nft 'chain inet agent_workspace forward { policy drop; }'")
     assert server.succeed("systemctl show netns-vpn-dns -p User --value").strip() == "dnsmasq"
+
     # DNS follows provider resolver changes and has no cached fallback.
     server.succeed("printf 'nameserver 203.0.113.3\\n' > /run/network-namespaces/vpn/resolv.conf")
     client.wait_until_succeeds(dns + " | grep -x 203.0.113.3")
@@ -327,11 +387,13 @@ pkgs.testers.runNixOSTest {
     client.wait_until_fails(dns + " | grep -x 203.0.113.3")
     server.succeed("systemctl start mock-dns-two")
     client.wait_until_succeeds(dns + " | grep -x 203.0.113.3")
+
     # Shared restart must restart its bound DNS service too.
     server.succeed("systemctl restart netns-vpn-shared")
     server.wait_until_succeeds("systemctl is-active --quiet netns-vpn-dns.service")
     client.wait_until_succeeds(probe)
     client.wait_until_succeeds(dns + " | grep -x 203.0.113.3")
+
     # A direct stop is protected even without a recent public snapshot.
     client.succeed("systemctl stop netns-vpn-shared")
     intent_path = "/var/lib/network-namespaces-vpn/stops/netns-vpn-shared.service"
@@ -341,6 +403,7 @@ pkgs.testers.runNixOSTest {
     client.succeed("vpn-status | grep 'Applications: BLOCKED'")
     client.succeed("systemctl start netns-vpn-shared")
     client.wait_until_succeeds(probe)
+
     # A namespace stop propagates to shared0; it is not a direct transport stop.
     client.succeed("systemctl stop netns-vpn")
     assert json.loads(client.succeed(f"cat {intent_path}"))["intent"] == "dependency"
@@ -359,16 +422,19 @@ pkgs.testers.runNixOSTest {
     client.succeed("systemctl start netns-vpn-recovery.service")
     client.succeed("vpn-status | grep 'Applications: READY'")
     client.succeed("su nobody -s /bin/sh -c 'vpn-status --verbose' | grep 'Applications: READY'")
+
     # Namespace restart must propagate to the client transport and private DNS.
     client.succeed("systemctl restart netns-vpn")
     client.wait_for_unit("netns-vpn-shared.service")
     client.wait_until_succeeds(probe)
     client.wait_until_succeeds(dns + " | grep -x 203.0.113.3")
+
     # Simulated Tailscale UDP outage must recover without transport recreation.
     server.succeed("iptables -I INPUT -p udp --dport 51877 -j DROP")
     client.fail(probe)
     server.succeed("iptables -D INPUT -p udp --dport 51877 -j DROP")
     client.wait_until_succeeds(probe)
+
     # Retained process must lose egress when independent rollback runs.
     client.succeed("ip netns exec vpn sleep 300 >/dev/null 2>&1 & echo $! > /run/old-app-pid")
     client.succeed("systemctl start shared-vpn-rollback.service")
@@ -378,6 +444,7 @@ pkgs.testers.runNixOSTest {
     client.fail("ip -n vpn link show shared0")
     client.fail("systemctl start hide-me-vpn.service")
     client.fail("nsenter --net=/proc/$(cat /run/old-app-pid)/ns/net ip link show shared0")
+
     # Reboot really returns to the OLD standalone image, whose activation lacks the guard.
     client.reboot()
     client.wait_for_unit("multi-user.target")
@@ -387,6 +454,7 @@ pkgs.testers.runNixOSTest {
     assert client.succeed("cat /var/lib/provider-starts").splitlines() == ["started"]
     assert client.succeed("systemctl show netns-vpn-underlay.service -p LoadState --value").strip() == "masked"
     client.fail("systemctl start netns-vpn-underlay.service")
+
     # Normal client reboot automatically decrypts SOPS and starts only the overlay.
     laptop.reboot()
     laptop.wait_for_unit("netns-vpn-shared.service")

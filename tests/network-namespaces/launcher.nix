@@ -1,4 +1,5 @@
 { pkgs }:
+
 let
   probe = pkgs.writeScript "namespace-launcher-probe" ''
     #!${pkgs.python3}/bin/python3
@@ -21,9 +22,11 @@ let
     print(json.dumps(result))
     sys.exit(0 if sys.argv[1:] == ["--child"] else 37)
   '';
+
   check = pkgs.writeShellScript "namespace-launcher-test-ready" ''
     test -f /run/network-namespaces/vpn/ready
   '';
+
   # Adapter for tests only. Production uses the real sudo binary and policy.
   sudo = pkgs.writeScript "namespace-launcher-test-sudo" ''
     #!${pkgs.python3}/bin/python3
@@ -34,6 +37,7 @@ let
 in
 pkgs.callPackage ../../packages/namespace-launcher {
   sudoPath = toString sudo;
+
   targets = [
     {
       id = "probe";

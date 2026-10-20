@@ -5,6 +5,7 @@
   lib,
   ...
 }:
+
 let
   cfg = config.my.user.dev.tmux;
 
@@ -14,11 +15,13 @@ let
   # Include unvisited projects; use zoxide scores to prioritize known ones.
   seshProjectList = pkgs.writeShellApplication {
     name = "sesh-project-list";
+
     runtimeInputs = [
       pkgs.coreutils
       pkgs.findutils
       pkgs.zoxide
     ];
+
     text = builtins.readFile ./project-list.sh;
   };
 
@@ -49,6 +52,7 @@ in
       plugins = with pkgs; [
         {
           plugin = tmuxPlugins.minimal-tmux-status;
+
           extraConfig = ''
             set -g @minimal-tmux-status "top"
             set -g @minimal-tmux-bg "default"
@@ -57,6 +61,7 @@ in
             set -g window-status-style 'fg=#4a4a4a'
           '';
         }
+
         tmuxPlugins.vim-tmux-navigator
       ];
 

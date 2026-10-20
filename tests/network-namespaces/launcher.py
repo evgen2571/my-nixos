@@ -21,6 +21,7 @@ def run(*args):
     return subprocess.run(args, check=True, capture_output=True, text=True)
 
 
+
 # All /etc and /run changes below are confined to private tmpfs mounts.
 run("mount", "--make-rprivate", "/")
 run("mount", "-t", "tmpfs", "tmpfs", "/etc")
@@ -86,6 +87,7 @@ class LauncherTests(unittest.TestCase):
 
     def test_not_ready_does_not_execute_app(self):
         (runtime / "ready").unlink()
+
         try:
             p = self.invoke("probe")
             self.assertEqual(p.returncode, 125)
@@ -97,6 +99,7 @@ class LauncherTests(unittest.TestCase):
     def test_missing_namespace_does_not_execute_app(self):
         global expected_ns
         run("ip", "netns", "delete", "vpn")
+
         try:
             p = self.invoke("probe")
             self.assertEqual(p.returncode, 125)
@@ -107,6 +110,7 @@ class LauncherTests(unittest.TestCase):
 
     def test_root_owned_resolver_is_required(self):
         (runtime / "resolv.conf").chmod(0o666)
+
         try:
             p = self.invoke("probe")
             self.assertEqual(p.returncode, 125)

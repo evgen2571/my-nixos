@@ -3,6 +3,7 @@
   config,
   ...
 }:
+
 let
   cfg = config.my.hardware.nvidia;
 in

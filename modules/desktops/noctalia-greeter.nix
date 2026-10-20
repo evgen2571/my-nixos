@@ -6,6 +6,7 @@
   pkgs,
   ...
 }:
+
 let
   cfg = config.my.desktop.noctaliaGreeter;
   greeterPackage = packageSources.noctalia-greeter;
@@ -25,6 +26,7 @@ in
       settings = {
         session.default = "niri";
         user.default = config.my.primaryUser.name;
+
         cursor = {
           theme = "Bibata-Modern-Ice";
           size = 24;

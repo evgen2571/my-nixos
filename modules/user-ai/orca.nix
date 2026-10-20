@@ -6,17 +6,20 @@
   osConfig ? { },
   ...
 }:
+
 let
   cfg = config.my.user.ai.orca;
 in
 {
   options.my.user.ai.orca = {
     enable = lib.mkEnableOption "Orca agent workspace";
+
     unwrappedPackage = lib.mkOption {
       type = lib.types.package;
       readOnly = true;
       default = packageSources.orca;
     };
+
     networkNamespace = lib.mkOption {
       type = lib.types.nullOr lib.types.str;
       default = null;

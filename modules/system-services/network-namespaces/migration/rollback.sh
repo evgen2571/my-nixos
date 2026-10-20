@@ -8,10 +8,12 @@ case "$host" in nixos-server|nixos-pc|nixos-lp) ;; *) exit 2;; esac
 if [[ "$host" != nixos-server ]]; then
   bash "$(dirname -- "${BASH_SOURCE[0]}")/desktop-provider-guard.sh"
 fi
+
 # A manual trigger must not cause a second rollback when the timer later expires.
 if [[ $(systemctl show shared-vpn-rollback.timer -p LoadState --value) != not-found ]]; then
   systemctl stop shared-vpn-rollback.timer
 fi
+
 # Stop probes first, then egress/transport, then the retained namespace unit.
 for unit in netns-vpn-health.timer netns-vpn-health.service hide-me-vpn.service \
   netns-vpn-dns.service netns-vpn-shared.service netns-vpn-underlay.service netns-vpn.service; do
@@ -19,6 +21,7 @@ for unit in netns-vpn-health.timer netns-vpn-health.service hide-me-vpn.service 
     systemctl stop "$unit"
   fi
 done
+
 # An adopted or orphaned named namespace may outlive its systemd unit.
 if ip netns list | grep -q '^vpn\( \|$\)'; then
   for link in shared0 hm0 tap0; do
@@ -28,8 +31,10 @@ if ip netns list | grep -q '^vpn\( \|$\)'; then
   done
   ip netns delete vpn
 fi
+
 rm -rf /run/network-namespaces/vpn
 "$old/bin/switch-to-configuration" test
+
 if [[ "$host" == nixos-server ]]; then
   for unit in netns-vpn.service netns-vpn-underlay.service netns-vpn-shared.service \
     netns-vpn-dns.service hide-me-vpn.service netns-vpn-health.timer; do
@@ -38,6 +43,7 @@ if [[ "$host" == nixos-server ]]; then
     fi
   done
 else
+
   # Old desktop generations are recovery for host access, never local VPN fallback.
   for unit in netns-vpn-health.timer netns-vpn-health.service netns-vpn.service; do
     if [[ $(systemctl show "$unit" -p LoadState --value) != not-found ]]; then systemctl stop "$unit"; fi

@@ -4,6 +4,7 @@
   lib,
   ...
 }:
+
 let
   cfg = config.my.user.dev.fish;
 in

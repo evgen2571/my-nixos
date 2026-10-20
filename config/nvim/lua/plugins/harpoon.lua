@@ -26,6 +26,7 @@ for index, alt in ipairs({ "<M-a>", "<M-s>", "<M-d>", "<M-f>" }) do
 		select_file(index),
 		desc = "Bookmarks: jump to file " .. index,
 	}
+
 	keys[#keys + 1] = {
 		alt,
 		select_file(index),
@@ -38,6 +39,7 @@ return {
 		"ThePrimeagen/harpoon",
 		dependencies = { "nvim-lua/plenary.nvim" },
 		keys = keys,
+
 		config = function()
 			require("harpoon").setup({
 				tabline = {

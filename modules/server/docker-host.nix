@@ -4,6 +4,7 @@
   pkgs,
   ...
 }:
+
 let
   cfg = config.my.server.dockerHost;
   storage = config.my.server.storage;
@@ -26,6 +27,7 @@ in
       autoPrune = {
         enable = true;
         dates = "weekly";
+
         flags = [
           "--filter=until=168h"
         ];

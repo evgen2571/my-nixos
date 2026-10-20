@@ -2,18 +2,21 @@ return {
 	"benlubas/molten-nvim",
 	version = "^1.0.0",
 	ft = { "python" },
-	-- Remote commands are registered by rplugin.vim; cmd stubs would delete them.
 
+	-- Remote commands are registered by rplugin.vim; cmd stubs would delete them.
 	build = ":UpdateRemotePlugins",
+
 	dependencies = {
 		{
 			"3rd/image.nvim",
 			build = false, -- CLI processor needs no LuaRocks/magick bindings.
 			lazy = true,
+
 			config = function()
 				if not require("languages.python").graphics() then
 					return
 				end
+
 				local ok, err = pcall(function()
 					require("image").setup({
 						backend = "kitty",
@@ -23,12 +26,14 @@ return {
 						window_overlap_clear_enabled = true,
 					})
 				end)
+
 				if not ok then
 					vim.notify("Image rendering unavailable: " .. tostring(err), vim.log.levels.WARN)
 				end
 			end,
 		},
 	},
+
 	init = function()
 		vim.g.molten_output_win_max_height = 20
 		vim.g.molten_auto_open_output = false
@@ -37,18 +42,23 @@ return {
 		vim.g.molten_image_provider = "none"
 		vim.g.molten_auto_init_behavior = "raise"
 	end,
+
 	config = function()
 		vim.api.nvim_create_autocmd("User", {
 			pattern = "MoltenKernelReady",
+
 			callback = function(ev)
 				require("languages.python").ready_kernels[ev.data.kernel_id] = true
 			end,
 		})
+
 		vim.api.nvim_create_autocmd("User", {
 			pattern = "MoltenDeinitPost",
+
 			callback = function()
 				local active = vim.fn.MoltenRunningKernels(false)
 				local ready = require("languages.python").ready_kernels
+
 				for kernel in pairs(ready) do
 					if not vim.tbl_contains(active, kernel) then
 						ready[kernel] = nil
@@ -56,13 +66,16 @@ return {
 				end
 			end,
 		})
+
 		vim.api.nvim_create_autocmd("User", {
 			group = vim.api.nvim_create_augroup("research-molten-runtime", { clear = true }),
 			pattern = "MoltenInitPre",
+
 			callback = function()
 				require("languages.python").prepare_runtime()
 			end,
 		})
+
 		if require("languages.python").graphics() then
 			local ok = pcall(require, "image")
 			if ok and require("image").is_enabled() then
@@ -70,6 +83,7 @@ return {
 			end
 		end
 	end,
+
 	keys = {
 		{
 			"<leader>mi",
@@ -79,7 +93,9 @@ return {
 			desc = "Molten: project uv kernel",
 			ft = "python",
 		},
+
 		{ "<leader>mk", "<cmd>MoltenInit<CR>", desc = "Molten: select kernel" },
+
 		{
 			"<leader>mc",
 			function()
@@ -88,6 +104,7 @@ return {
 			desc = "Molten: execute # %% cell",
 			ft = "python",
 		},
+
 		{
 			"]j",
 			function()
@@ -96,6 +113,7 @@ return {
 			desc = "Next Python cell",
 			ft = "python",
 		},
+
 		{
 			"[j",
 			function()
@@ -104,6 +122,7 @@ return {
 			desc = "Previous Python cell",
 			ft = "python",
 		},
+
 		{
 			"<leader>ml",
 			function()
@@ -111,15 +130,18 @@ return {
 			end,
 			desc = "Molten: execute line",
 		},
+
 		{
 			"<leader>me",
 			":<C-u>lua require('languages.python').evaluate('MoltenEvaluateVisual')<CR>gv",
 			mode = "x",
 			desc = "Molten: execute selection",
 		},
+
 		{ "<leader>mo", "<cmd>noautocmd MoltenEnterOutput<CR>", desc = "Molten: enter output" },
 		{ "<leader>mh", "<cmd>MoltenHideOutput<CR>", desc = "Molten: hide output" },
 		{ "<leader>ms", "<cmd>MoltenInterrupt<CR>", desc = "Molten: interrupt" },
+
 		{
 			"<leader>mr",
 			function()
@@ -127,6 +149,7 @@ return {
 			end,
 			desc = "Molten: restart kernel",
 		},
+
 		{ "<leader>md", "<cmd>MoltenDeinit<CR>", desc = "Molten: stop kernel" },
 	},
 }

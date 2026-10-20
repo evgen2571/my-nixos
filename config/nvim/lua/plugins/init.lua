@@ -9,6 +9,8 @@ return {
   require 'plugins.autopairs',
   require 'plugins.gitsigns',
   require 'plugins.treesitter',
+
+  -- Feature specs keep their existing loading order.
   { import = 'plugins.base16' },
   { import = 'plugins.cmake-tools' },
   { import = 'plugins.codediff' },

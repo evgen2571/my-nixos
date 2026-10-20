@@ -6,6 +6,7 @@ window-rule {
     open-maximized-to-edges true
     open-on-workspace "gaming"
 }
+
 window-rule {
     match app-id=r#"^(steam|steamwebhelper)$"# title=r#"^(Steam Settings|Friends List|Chat|Properties|Downloads|Special Offers)$"#
     open-maximized-to-edges false

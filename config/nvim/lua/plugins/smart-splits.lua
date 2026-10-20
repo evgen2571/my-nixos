@@ -1,6 +1,7 @@
 return {
 	"mrjones2014/smart-splits.nvim",
 	opts = {},
+
 	keys = {
 		{ "<leader>rh", function() require("smart-splits").resize_left() end, desc = "Resize split left" },
 		{ "<leader>rj", function() require("smart-splits").resize_down() end, desc = "Resize split down" },

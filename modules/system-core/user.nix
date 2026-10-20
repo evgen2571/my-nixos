@@ -4,6 +4,7 @@
   pkgs,
   ...
 }:
+
 let
   cfg = config.my.primaryUser;
 in
@@ -92,6 +93,7 @@ in
     users.users.${cfg.name} = {
       isNormalUser = true;
       inherit (cfg) description extraGroups shell;
+
       openssh.authorizedKeys = {
         keys = cfg.authorizedKeys;
         keyFiles = cfg.authorizedKeyFiles;
@@ -111,11 +113,13 @@ in
               userName = cfg.git.userName;
               userEmail = cfg.git.userEmail;
             }
+
             (lib.mkIf (cfg.git.signingKey != null) {
               signingKey = cfg.git.signingKey;
             })
           ];
         }
+
         cfg.home.settings
       ]
     );

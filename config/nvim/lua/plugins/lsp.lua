@@ -2,22 +2,27 @@ return {
   {
     'folke/lazydev.nvim',
     ft = 'lua',
+
     opts = {
       library = {
         { path = '${3rd}/luv/library', words = { 'vim%.uv' } },
       },
     },
   },
+
   {
     'neovim/nvim-lspconfig',
     event = { 'BufReadPre', 'BufNewFile' },
+
     dependencies = {
       { 'j-hui/fidget.nvim', opts = {} },
       'saghen/blink.cmp',
     },
+
     config = function()
       vim.api.nvim_create_autocmd('LspAttach', {
         group = vim.api.nvim_create_augroup('editor-lsp-attach', { clear = true }),
+
         callback = function(event)
           local map = function(keys, func, desc, mode)
             mode = mode or 'n'
@@ -47,8 +52,10 @@ return {
           end
 
           local client = vim.lsp.get_client_by_id(event.data.client_id)
+
           if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_documentHighlight, event.buf) then
             local highlight_augroup = vim.api.nvim_create_augroup('editor-lsp-highlight', { clear = false })
+
             vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
               buffer = event.buf,
               group = highlight_augroup,
@@ -63,6 +70,7 @@ return {
 
             vim.api.nvim_create_autocmd('LspDetach', {
               group = vim.api.nvim_create_augroup('editor-lsp-detach', { clear = true }),
+
               callback = function(event2)
                 vim.lsp.buf.clear_references()
                 vim.api.nvim_clear_autocmds { group = 'editor-lsp-highlight', buffer = event2.buf }
@@ -82,6 +90,7 @@ return {
         severity_sort = true,
         float = { border = 'rounded', source = 'if_many' },
         underline = { severity = vim.diagnostic.severity.ERROR },
+
         signs = vim.g.have_nerd_font and {
           text = {
             [vim.diagnostic.severity.ERROR] = '󰅚 ',
@@ -90,9 +99,11 @@ return {
             [vim.diagnostic.severity.HINT] = '󰌶 ',
           },
         } or {},
+
         virtual_text = {
           source = 'if_many',
           spacing = 2,
+
           format = function(diagnostic)
             local diagnostic_message = {
               [vim.diagnostic.severity.ERROR] = diagnostic.message,
@@ -100,6 +111,7 @@ return {
               [vim.diagnostic.severity.INFO] = diagnostic.message,
               [vim.diagnostic.severity.HINT] = diagnostic.message,
             }
+
             return diagnostic_message[diagnostic.severity]
           end,
         },
@@ -110,12 +122,14 @@ return {
 
       local function unity_root(path)
         path = vim.fs.dirname(path)
+
         while path and path ~= '' do
           if vim.fn.isdirectory(path .. '/Assets') == 1
             and vim.fn.isdirectory(path .. '/Packages') == 1
             and vim.fn.isdirectory(path .. '/ProjectSettings') == 1 then
             return path
           end
+
           local parent = vim.fs.dirname(path)
           if parent == path then
             break
@@ -130,30 +144,38 @@ return {
             client.config.settings.python.pythonPath = require('languages.python').python(client.config.root_dir)
             client:notify('workspace/didChangeConfiguration', { settings = client.config.settings })
           end,
+
           settings = { python = { analysis = {
             diagnosticMode = 'openFilesOnly', typeCheckingMode = 'basic',
+
           } }, pyright = { disableOrganizeImports = true } },
         },
+
         ruff = { on_attach = function(client) client.server_capabilities.hoverProvider = false end },
         nixd = {},
         marksman = {},
         gopls = {},
+
         clangd = {
           cmd = { 'clangd', '--header-insertion=never', '--compile-commands-dir=.' },
         },
+
         -- Godot exposes its LSP from the running editor over TCP on port 6005.
         -- Do not start a second headless Godot process here: nvim-lspconfig's
         -- gdscript config connects to the editor and starts no stdio process.
         gdscript = {
           filetypes = { 'gdscript' },
         },
+
         omnisharp = {
           filetypes = { 'cs' },
           single_file_support = false,
+
           -- Unity generates several .csproj files. Prefer the solution, then
           -- fall back to a project file when the solution is not present yet.
           root_dir = function(bufnr, on_dir)
             local path = vim.api.nvim_buf_get_name(bufnr)
+
             local root = lspconfig_util.root_pattern('*.slnx')(path)
               or lspconfig_util.root_pattern('*.sln')(path)
               or lspconfig_util.root_pattern('*.csproj')(path)
@@ -164,6 +186,7 @@ return {
               on_dir(root)
             end
           end,
+
           settings = {
             FormattingOptions = {
               -- Unity's generated projects contain editor-specific settings;
@@ -171,20 +194,24 @@ return {
               EnableEditorConfigSupport = false,
               OrganizeImports = true,
             },
+
             -- Loading on demand commonly leaves UnityEngine and package
             -- assemblies unavailable to completion until another file opens.
             MsBuild = {
               LoadProjectsOnDemand = false,
             },
+
             RoslynExtensionsOptions = {
               EnableAnalyzersSupport = true,
               EnableImportCompletion = true,
             },
+
             Sdk = {
               IncludePrereleases = true,
             },
           },
         },
+
         lua_ls = {
           settings = {
             Lua = {

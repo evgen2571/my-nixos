@@ -1,4 +1,5 @@
 { root, lib }:
+
 let
   inherit (builtins) listToAttrs readFile;
 
@@ -77,6 +78,7 @@ let
             pc = "workspaces-pc.kdl";
             laptop = "workspaces-laptop.kdl";
           };
+
           workspacesFile = workspaceFiles.${workspaceProfile};
         in
         # Keep leaf ownership: Noctalia generates siblings in the live Niri directory.

@@ -1,5 +1,6 @@
 return {
 	"nosduco/remote-sshfs.nvim",
+
 	cmd = {
 		"RemoteSSHFSConnect",
 		"RemoteSSHFSDisconnect",
@@ -7,10 +8,12 @@ return {
 		"RemoteSSHFSFindFiles",
 		"RemoteSSHFSLiveGrep",
 	},
+
 	dependencies = {
 		"nvim-telescope/telescope.nvim",
 		"nvim-lua/plenary.nvim",
 	},
+
 	opts = {
 		connections = {
 			ssh_configs = {
@@ -19,6 +22,7 @@ return {
 			},
 		},
 	},
+
 	config = function(_, opts)
 		require("remote-sshfs").setup(opts)
 		pcall(require("telescope").load_extension, "remote-sshfs")

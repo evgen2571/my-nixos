@@ -1,5 +1,6 @@
 return {
 	"nvim-neotest/neotest",
+
 	dependencies = {
 		"nvim-neotest/nvim-nio",
 		"nvim-lua/plenary.nvim",
@@ -7,6 +8,7 @@ return {
 		"alfaix/neotest-gtest",
 		"nvim-neotest/neotest-python",
 	},
+
 	keys = {
 		{
 			"<leader>tn",
@@ -15,6 +17,7 @@ return {
 			end,
 			desc = "Test: nearest",
 		},
+
 		{
 			"<leader>tf",
 			function()
@@ -22,6 +25,7 @@ return {
 			end,
 			desc = "Test: file",
 		},
+
 		{
 			"<leader>ts",
 			function()
@@ -29,6 +33,7 @@ return {
 			end,
 			desc = "Test: summary",
 		},
+
 		{
 			"<leader>to",
 			function()
@@ -36,6 +41,7 @@ return {
 			end,
 			desc = "Test: output",
 		},
+
 		{
 			"<leader>tx",
 			function()
@@ -43,6 +49,7 @@ return {
 			end,
 			desc = "Test: stop",
 		},
+
 		{
 			"<leader>td",
 			function()
@@ -52,14 +59,17 @@ return {
 			desc = "Test: debug nearest",
 		},
 	},
+
 	config = function()
 		local adapters = {}
 		-- neotest-gtest parses its query at import time. A missing C++ parser
 		-- must not prevent Python testing during first-time parser installation.
 		local ok, gtest = pcall(require, "neotest-gtest")
+
 		if ok then
 			adapters[#adapters + 1] = gtest.setup({
 				debug_adapter = "lldb",
+
 				is_test_file = function(path)
 					return path:match("_test%.cpp$") ~= nil
 						or path:match("Test%.cpp$") ~= nil
@@ -69,14 +79,18 @@ return {
 		else
 			vim.notify("GoogleTest needs :TSInstall cpp; restart Neovim after installation", vim.log.levels.WARN)
 		end
+
 		require("neotest").setup({
 			discovery = { concurrent = 1 },
+
 			adapters = vim.list_extend(adapters, {
 				require("neotest-python")({
 					runner = "pytest",
+
 					python = function(root)
 						return require("languages.python").python(root)
 					end,
+
 					dap = { justMyCode = false },
 				}),
 			}),

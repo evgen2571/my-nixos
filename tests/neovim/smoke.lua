@@ -1,6 +1,7 @@
 vim.notify = function(msg)
 	print(msg)
 end
+
 -- Run with the repository config on runtimepath and plugins installed (see README).
 local function check(name, fn)
 	local ok, err = pcall(fn)
@@ -9,21 +10,25 @@ local function check(name, fn)
 	end
 	print("PASS: " .. name)
 end
+
 check("startup and lazy loading", function()
 	assert(package.loaded["nvim-treesitter"])
 	assert(not package.loaded.neotest)
 	assert(not package.loaded.dap)
 	assert(not require("lazy.core.config").plugins["molten-nvim"]._.loaded)
 end)
+
 check("Completion acceptance", function()
 	require("lazy").load({ plugins = { "blink.cmp" } })
 	local preset = require("blink.cmp.keymap.presets").get("default")
 	assert(preset["<C-y>"][1] == "select_and_accept")
 	assert(vim.fn.maparg("<leader>ta", "n") == "")
 end)
+
 check("Python provider", function()
 	assert(vim.fn.has("python3") == 1, "Neovim must have a working Python 3 provider for Molten")
 end)
+
 check("Python cells", function()
 	local py = require("languages.python")
 	local lines = { "# %%", "x = 1", "# %%", "print(x)" }
@@ -33,6 +38,7 @@ check("Python cells", function()
 	assert(first == 4 and last == 4)
 	assert(not py.graphics()) -- headless always uses text output
 end)
+
 check("Notebook commands and Python compatibility", function()
 	local py = require("languages.python")
 	assert(require("custom.python") == py, "Alias must share kernel readiness state")
@@ -40,16 +46,20 @@ check("Notebook commands and Python compatibility", function()
 	py.notebook = function(sync)
 		calls[#calls + 1] = sync and "sync" or "pair"
 	end
+
 	local ok, err = pcall(function()
 		vim.cmd.NotebookPair()
 		vim.cmd.NotebookSync()
 	end)
+
 	py.notebook = notebook
 	assert(ok, err)
 	assert(vim.deep_equal(calls, { "pair", "sync" }))
 end)
+
 check("Tree-sitter and textobjects", function()
 	vim.cmd.edit(vim.fn.tempname() .. ".py")
+
 	vim.api.nvim_buf_set_lines(
 		0,
 		0,
@@ -57,17 +67,20 @@ check("Tree-sitter and textobjects", function()
 		false,
 		{ "def square(x):", "    return x * x", "", "class Model:", "    pass" }
 	)
+
 	vim.bo.filetype = "python"
 	local parser = vim.treesitter.get_parser(0, "python")
 	assert(parser:parse()[1]:root():type() == "module")
 	assert(vim.treesitter.highlighter.active[vim.api.nvim_get_current_buf()])
 	local query = vim.treesitter.query.get("python", "textobjects")
 	local found = false
+
 	for _, capture in ipairs(query.captures) do
 		if capture == "function.outer" then
 			found = true
 		end
 	end
+
 	assert(found)
 	assert(vim.fn.maparg("af", "o") ~= "")
 	vim.api.nvim_win_set_cursor(0, { 1, 0 })
@@ -75,6 +88,7 @@ check("Tree-sitter and textobjects", function()
 	assert(not table.concat(vim.api.nvim_buf_get_lines(0, 0, -1, false), "\n"):find("def square", 1, true))
 	vim.bo.modified = false
 end)
+
 check("DAP registration", function()
 	local dap = require("dap")
 	assert(dap.adapters.lldb.command == vim.fn.exepath("lldb-dap"))
@@ -85,6 +99,7 @@ check("DAP registration", function()
 	assert(type(dap.adapters.go) == "function")
 	assert(require("dap-python").resolve_python() == require("languages.python").python())
 end)
+
 check("pytest and GoogleTest adapters", function()
 	require("neotest")
 	local adapter = require("neotest-python")({ runner = "pytest" })
@@ -95,6 +110,7 @@ check("pytest and GoogleTest adapters", function()
 		assert(vim.fn.maparg(lhs, "n") ~= "")
 	end
 end)
+
 check("LSP, formatting and lint policy", function()
 	assert(vim.lsp.config.pyright.settings.python.analysis.diagnosticMode == "openFilesOnly")
 	assert(vim.lsp.config.pyright.settings.pyright.disableOrganizeImports)
@@ -103,6 +119,7 @@ check("LSP, formatting and lint policy", function()
 	assert(not lint.linters_by_ft.python)
 	assert(require("conform").get_formatter_info("ruff_format", 0).available)
 end)
+
 check("Markdown editing without Obsidian", function()
 	local plugins = require("lazy.core.config").plugins
 	assert(plugins["render-markdown.nvim"])
@@ -118,6 +135,7 @@ check("Markdown editing without Obsidian", function()
 	assert(require("conform").get_formatter_info("prettier", 0).available)
 	vim.bo.modified = false
 end)
+
 check("Popup documentation and compact shortcut menu", function()
 	local hover = vim.fn.maparg("K", "n", false, true)
 	assert(hover.desc == "Documentation: hover at cursor")
@@ -130,10 +148,12 @@ check("Popup documentation and compact shortcut menu", function()
 	assert(opts.layout.spacing == 2)
 	assert(opts.win.height.max == 12)
 end)
+
 check("Compact hover Markdown", function()
 	local hover = require("integrations.hover")
 	assert(hover.preview_options.max_width == 60)
 	assert(hover.preview_options.max_height == 12)
+
 	local compact = hover.compact({
 		"```go",
 		"func Error(msg string, args ...any)",
@@ -146,6 +166,7 @@ check("Compact hover Markdown", function()
 		"",
 		"Added in go1.21",
 	})
+
 	assert(vim.deep_equal(compact, {
 		"```go",
 		"func Error(msg string, args ...any)",
@@ -154,9 +175,11 @@ check("Compact hover Markdown", function()
 		"",
 		"Added in go1.21",
 	}))
+
 	local fenced = hover.compact({ "```text", "---", "```" })
 	assert(fenced[2] == "---", "Fenced content must not be modified")
 end)
+
 check("Telescope fallback for Neovim 0.12", function()
 	require("lazy").load({ plugins = { "telescope.nvim" } })
 	local utils = require("telescope.utils")
@@ -164,6 +187,7 @@ check("Telescope fallback for Neovim 0.12", function()
 	assert(utils.if_nil(nil, "fallback") == "fallback")
 	assert(utils.if_nil(false, true) == false)
 end)
+
 check("Discoverable keymaps", function()
 	for _, lhs in ipairs({
 		"<leader>?",
@@ -177,16 +201,20 @@ check("Discoverable keymaps", function()
 	}) do
 		assert(vim.fn.maparg(lhs, "n") ~= "", "Missing shortcut: " .. lhs)
 	end
+
 	local spec = require("lazy.core.config").plugins["which-key.nvim"].opts.spec
 	local groups = {}
+
 	for _, entry in ipairs(spec) do
 		if entry.group then
 			groups[entry[1]] = entry.group
 		end
 	end
+
 	assert(groups["<leader>b"])
 	assert(groups["<leader>r"] == "🌐 Remote SSH")
 	assert(groups["<leader>v"])
 end)
+
 print("Neovim smoke tests passed")
 vim.cmd("qa!")

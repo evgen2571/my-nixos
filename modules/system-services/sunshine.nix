@@ -1,4 +1,5 @@
 { config, lib, ... }:
+
 let
   cfg = config.my.system.services.sunshine;
 in

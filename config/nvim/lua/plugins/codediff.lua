@@ -1,9 +1,11 @@
 return {
 	"esmuellert/codediff.nvim",
 	cmd = "CodeDiff",
+
 	keys = {
 		{ "<leader>gd", "<cmd>CodeDiff<CR>", desc = "Git diff" },
 	},
+
 	opts = {
 		diff = {
 			layout = "side-by-side",
@@ -12,6 +14,7 @@ return {
 			original_position = "left",
 			jump_to_first_change = true,
 		},
+
 		explorer = {
 			position = "left",
 			width = 40,
@@ -19,18 +22,21 @@ return {
 			view_mode = "list",
 			flatten_dirs = true,
 			file_filter = { ignore = { ".git/**", ".jj/**" } },
+
 			visible_groups = {
 				staged = true,
 				unstaged = true,
 				conflicts = true,
 			},
 		},
+
 		history = {
 			position = "bottom",
 			height = 15,
 			initial_focus = "history",
 			view_mode = "list",
 		},
+
 		keymaps = {
 			view = {
 				quit = "q",
@@ -51,6 +57,7 @@ return {
 				show_help = "g?",
 				toggle_layout = "t",
 			},
+
 			explorer = {
 				select = "<CR>",
 				hover = "K",
@@ -62,11 +69,13 @@ return {
 				toggle_changes = "gu",
 				toggle_staged = "gs",
 			},
+
 			history = {
 				select = "<CR>",
 				toggle_view_mode = "i",
 				refresh = "R",
 			},
+
 			conflict = {
 				accept_incoming = "<leader>gct",
 				accept_current = "<leader>gco",

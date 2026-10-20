@@ -3,6 +3,7 @@
   lib,
   ...
 }:
+
 let
   cfg = config.my.system.apps.steam;
 in
@@ -11,6 +12,7 @@ in
 
   config = lib.mkIf cfg.enable {
     programs.gamescope.enable = true;
+
     programs.steam = {
       enable = true;
       gamescopeSession.enable = true;

@@ -33,6 +33,7 @@ if [[ ! -e /var/lib/hide-me-vpn/accessToken.txt ]]; then
   [[ -s $token && ! -L $token && $(stat -c %a -- "$token") == 600 ]]
   install -o root -g root -m 0600 -- "$token" /var/lib/hide-me-vpn/accessToken.txt
 fi
+
 # Pin the old system against GC; the root timer survives SSH loss.
 ln -sfn "$old" /nix/var/nix/gcroots/my-nixos-vpn-rollback
 systemd-run --unit="$unit" --on-active=20min --timer-property=AccuracySec=1s \
@@ -45,6 +46,7 @@ if ! "$target/bin/switch-to-configuration" test; then
 fi
 ip -4 route show default > "$snapshot/default-v4-after"
 ip -6 route show default > "$snapshot/default-v6-after"
+
 if ! cmp "$snapshot/default-v4" "$snapshot/default-v4-after" ||
    ! cmp "$snapshot/default-v6" "$snapshot/default-v6-after" ||
    ! sha256sum --status -c "$snapshot/resolver-checksum" ||
@@ -53,6 +55,7 @@ if ! cmp "$snapshot/default-v4" "$snapshot/default-v4-after" ||
   systemctl start "$unit.service"
   exit 1
 fi
+
 echo 'Temporary activation finished; rollback remains armed.'
 echo 'After verification, cancel with: sudo systemctl stop my-nixos-vpn-rollback.timer'
 echo 'For immediate recovery: sudo systemctl start my-nixos-vpn-rollback.service'

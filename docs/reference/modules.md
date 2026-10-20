@@ -34,11 +34,13 @@ A minimal Home Manager module follows the existing option namespaces:
 
 ```nix
 { config, lib, pkgs, ... }:
+
 let
   cfg = config.my.user.apps.example;
 in
 {
   options.my.user.apps.example.enable = lib.mkEnableOption "Example application";
+
   config = lib.mkIf cfg.enable {
     home.packages = [ pkgs.example ];
   };
@@ -69,8 +71,11 @@ during normal updates.
 
 Use the example above for small modules: arguments, a `cfg` binding, options,
 then a `config = lib.mkIf cfg.enable { ... };` block. Separate options and
-configuration sections with a blank line. An enable-only option needs no extra
-attribute-set wrapper.
+configuration sections with a blank line. Leave a blank line after the argument
+list and between separate option definitions, helper functions, and service
+blocks. Keep the fields of one option together. Group related scalar settings;
+automatic formatting alone does not provide these breaks. An enable-only option
+needs no extra attribute-set wrapper.
 
 Keep a feature in one file while its options and implementation are easy to read
 together. Use a directory with `default.nix` when it needs helpers or separate
@@ -80,7 +85,9 @@ control flow belong in `.sh` files, as in `modules/user-dev/tmux/project-list.sh
 
 Comments should explain a reason or constraint: why a file must stay writable,
 why a dependency is pinned, or which program owns a shortcut. Skip comments that
-repeat the next setting. Keep security and recovery explanations specific.
+repeat the next setting. A short section comment can explain what a longer group
+of settings or setup steps does. Put it directly above that group, with a blank
+line before the comment. Keep security and recovery explanations specific.
 
 The `module-style` flake check runs nixfmt and deadnix over `modules/` and the
 package-source map. The `sesh-project-list` check covers project discovery,
@@ -95,11 +102,13 @@ unstable and external-input package selections. `flake/hosts.nix` passes the sam
 
 ```nix
 { config, lib, packageSources, ... }:
+
 let
   cfg = config.my.user.ai.codegraph;
 in
 {
   options.my.user.ai.codegraph.enable = lib.mkEnableOption "CodeGraph";
+
   config = lib.mkIf cfg.enable {
     home.packages = [ packageSources.codegraph ];
   };

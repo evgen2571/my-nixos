@@ -54,7 +54,9 @@ with tempfile.TemporaryDirectory(prefix="competitest-") as workspace:
             "languages": {"java": {"mainClass": "Main", "taskClass": "ATest"}},
             "batch": {"id": batch, "size": size},
         }
+
         body = json.dumps(task).encode()
+
         with socket.create_connection(("127.0.0.1", 27121), timeout=3) as client:
             client.sendall(
                 b"POST / HTTP/1.1\r\nHost: localhost\r\nContent-Length: "
@@ -62,6 +64,7 @@ with tempfile.TemporaryDirectory(prefix="competitest-") as workspace:
                 + b"\r\n\r\n"
                 + body
             )
+
             client.shutdown(socket.SHUT_WR)
             client.recv(1024)
 
@@ -71,12 +74,14 @@ with tempfile.TemporaryDirectory(prefix="competitest-") as workspace:
         send(url)
         path = root / relative
         wait(lambda: path.is_file())
+
         wait(
             lambda: (
                 Path(lua("return vim.api.nvim_buf_get_name(0)")).resolve()
                 == path.resolve()
             )
         )
+
         assert path.read_bytes() == original_template
         assert (
             path.parent / "tests" / (path.stem + "_input0.txt")
@@ -98,6 +103,7 @@ with tempfile.TemporaryDirectory(prefix="competitest-") as workspace:
                 'local r=require("competitest.commands").runners; for _,v in pairs(r) do if v.tcdata[1] and not v.tcdata[1].running and v.tcdata[1].status ~= "" then return true end end; return false'
             )
         )
+
         wait(
             lambda: (
                 lua(
@@ -107,6 +113,7 @@ with tempfile.TemporaryDirectory(prefix="competitest-") as workspace:
                 else True
             )
         )
+
         data = lua(
             'local r=require("competitest.commands").runners; for _,v in pairs(r) do local t={}; for _,tc in ipairs(v.tcdata) do t[#t+1]={status=tc.status, time=tc.time, stderr=tc.stderr, stdout=tc.stdout, number=tc.tcnum} end; return t end'
         )
@@ -184,12 +191,14 @@ with tempfile.TemporaryDirectory(prefix="competitest-") as workspace:
         good = '#include <iostream>\nint main(){int a,b;std::cin>>a>>b;std::cout<<a+b<<"\\n";}'
         run(good, ["DONE", "CORRECT", "CORRECT"])
         assert not (a.parent / "A").exists()
+
         assert (
             lua(
                 'return vim.fn.executable(require("competitest.commands").runners[vim.api.nvim_get_current_buf()].rc.exec)'
             )
             == 1
         )
+
         print(
             "PASS F6 compile, all samples, timings, cache binary and rerun after edits"
         )
@@ -240,6 +249,7 @@ with tempfile.TemporaryDirectory(prefix="competitest-") as workspace:
         for extension in ("py", "rs"):
             n.command("edit " + str(root / ("ordinary." + extension)))
             assert not lua('return vim.fn.maparg("<F6>", "n", false, true).buffer == 1')
+
         with tempfile.TemporaryDirectory(prefix="ordinary-cmake-") as project:
             Path(project, "CMakeLists.txt").write_text(
                 "cmake_minimum_required(VERSION 3.20)\nproject(test)\n"
@@ -249,6 +259,7 @@ with tempfile.TemporaryDirectory(prefix="competitest-") as workspace:
                 lua('return vim.fn.maparg("<leader>cmb", "n", false, true).buffer') == 1
             )
             assert not lua('return vim.fn.maparg("<F6>", "n", false, true).buffer == 1')
+
         assert template.read_bytes() == original_template
         print("PASS F6 isolation, CMake bindings, unchanged F5 and template")
     finally:

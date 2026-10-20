@@ -1,12 +1,16 @@
 # Production profiles must remain server-only and use their declared SOPS secrets.
 { configurations, pkgs }:
+
 let
   lib = pkgs.lib;
+
   desktops = map (name: configurations.${name}.config) [
     "nixos-pc"
     "nixos-lp"
   ];
+
   server = configurations.nixos-server.config;
+
   correctSecret =
     c:
     if !(c.sops.secrets ? vpn-wireguard-private-key) then

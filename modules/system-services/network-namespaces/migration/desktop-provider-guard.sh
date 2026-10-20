@@ -5,6 +5,7 @@ set -euo pipefail
 name=${1:-vpn}
 [[ "$name" =~ ^[a-zA-Z][a-zA-Z0-9_-]{0,31}$ ]] || exit 2
 install -d -m 0755 /etc/systemd/system.control
+
 for unit in "hide-me-$name.service" "netns-$name-underlay.service"; do
   mask=/etc/systemd/system.control/$unit
   if [[ -e "$mask" || -L "$mask" ]]; then
@@ -13,6 +14,7 @@ for unit in "hide-me-$name.service" "netns-$name-underlay.service"; do
     ln -s /dev/null "$mask"
   fi
 done
+
 # Boot activation runs before PID 1 is systemd; the masks apply when it starts.
 if [[ ! -d /run/systemd/system ]]; then exit 0; fi
 systemctl daemon-reload

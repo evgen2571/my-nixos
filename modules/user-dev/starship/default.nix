@@ -5,6 +5,7 @@
   pkgs,
   ...
 }:
+
 let
   cfg = config.my.user.dev.starship;
 in

@@ -3,6 +3,7 @@
   lib,
   ...
 }:
+
 let
   cfg = config.my.desktop.opentabletdriver;
 in

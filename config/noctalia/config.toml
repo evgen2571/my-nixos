@@ -1,6 +1,7 @@
 [audio]
 enable_overdrive = false
 enable_sounds = false
+
 notification_sound = ""
 sound_volume = 0.5
 volume_change_sound = ""
@@ -31,6 +32,7 @@ refresh_minutes = 5
 [control_center]
 sidebar = "compact"
 sidebar_section = "compact"
+
 width = 700
 
     [[control_center.shortcuts]]
@@ -55,31 +57,42 @@ width = 700
 active_monitor_only = false
 active_opacity = 1.0
 active_scale = 1.0
+
 auto_hide = false
 background_opacity = 0.0
 cross_axis_padding = 8
 enabled = false
 icon_size = 48
+
 inactive_opacity = 0.85000002384185791
 inactive_scale = 0.85000002384185791
+
 item_spacing = 6
+
 launcher_icon = "grid-dots"
 launcher_position = "none"
+
 magnification = true
 magnification_scale = 1.4500000476837158
+
 main_axis_padding = 16
+
 margin_edge = 8
 margin_ends = 0
+
 monitors = []
 pinned = []
 position = "bottom"
+
 radius = 16
 radius_bottom_left = 16
 radius_bottom_right = 16
 radius_top_left = 16
 radius_top_right = 16
+
 reserve_space = true
 shadow = true
+
 show_dots = false
 show_instance_count = true
 show_running = true
@@ -89,18 +102,23 @@ battery_charging = []
 battery_discharging = []
 battery_percentage_changed = []
 battery_plugged = []
+
 bluetooth_disabled = []
 bluetooth_enabled = []
+
 colors_changed = []
 logging_out = []
 power_profile_changed = []
 rebooting = []
+
 session_locked = []
 session_unlocked = []
+
 shutting_down = []
 started = []
 theme_mode_changed = []
 wallpaper_changed = []
+
 wifi_disabled = []
 wifi_enabled = []
 
@@ -156,6 +174,7 @@ wallpaper = ""
 [nightlight]
 enabled = false
 force = false
+
 temperature_day = 6500
 temperature_night = 4000
 
@@ -165,21 +184,28 @@ collapse_on_dismiss = true
 enable_daemon = true
 layer = "top"
 monitors = []
+
 offset_x = 20
 offset_y = 8
+
 position = "top_right"
 scale = 1.0
+
 show_actions = true
 show_app_name = true
 
 [osd]
 background_opacity = 1.0
 monitors = []
+
 offset_x = 20
 offset_y = 8
+
 orientation = "horizontal"
+
 position = "top_center"
 position_vertical = "top_center"
+
 scale = 1.0
 
     [osd.kinds]
@@ -193,9 +219,11 @@ scale = 1.0
     nightlight = true
     power_profile = true
     privacy = true
+
     volume = true
     volume_input = true
     volume_output = true
+
     wifi = true
 
 [plugins]
@@ -219,11 +247,13 @@ ui_scale = 1.0
 
 [shell]
 app_icon_colorize = false
+
 clipboard_auto_paste = "auto"
 clipboard_confirm_clear_history = true
 clipboard_enabled = true
 clipboard_history_max_entries = 1000
 clipboard_image_action_command = ""
+
 corner_radius_scale = 1.0
 date_format = "%I, %M %p"
 disable_mipmaps = false
@@ -257,11 +287,13 @@ time_format = "{:%H:%M}"
     control_center_placement = "attached"
     floating_offset = 4
     launcher_placement = "attached"
+
     open_near_click_clipboard = true
     open_near_click_control_center = true
     open_near_click_launcher = true
     open_near_click_session = false
     open_near_click_wallpaper = true
+
     session_placement = "attached"
     shadow = true
     transparency_mode = "glass"
@@ -280,8 +312,10 @@ time_format = "{:%H:%M}"
     copy_to_clipboard = true
     filename_pattern = ""
     freeze_screen = true
+
     pipe_command = ""
     pipe_to_command = false
+
     save_to_file = true
 
     [shell.session.power]
@@ -342,8 +376,10 @@ cpu_temp_critical_threshold = 85.0
 cpu_temp_sensor_path = ""
 cpu_usage_activity_threshold = 50.0
 cpu_usage_critical_threshold = 90.0
+
 disk_poll_seconds = 10.0
 enabled = true
+
 gpu_poll_seconds = 0.0
 gpu_temp_activity_threshold = 60.0
 gpu_temp_critical_threshold = 85.0
@@ -351,14 +387,19 @@ gpu_usage_activity_threshold = 50.0
 gpu_usage_critical_threshold = 95.0
 gpu_vram_activity_threshold = 50.0
 gpu_vram_critical_threshold = 90.0
+
 memory_poll_seconds = 2.0
+
 net_rx_activity_threshold = 1.0
 net_rx_critical_threshold = 50.0
 net_tx_activity_threshold = 1.0
 net_tx_critical_threshold = 50.0
+
 network_poll_seconds = 3.0
+
 ram_pct_activity_threshold = 60.0
 ram_pct_critical_threshold = 90.0
+
 swap_pct_activity_threshold = 20.0
 swap_pct_critical_threshold = 80.0
 
@@ -373,6 +414,7 @@ wallpaper_scheme = "m3-content"
     [theme.templates]
     builtin_ids = [ "cava", "gtk3", "gtk4", "kcolorscheme", "kitty", "niri" ]
     community_ids = [ "pear-desktop", "telegram", "libreoffice", "neovim", "obsidian", "lazygit", "yazi", "codex", "opencode", "bat", "obs", "prismlauncher" ]
+
     enable_builtin_templates = true
     enable_community_templates = true
 
@@ -388,11 +430,15 @@ wallpaper_scheme = "m3-content"
 [wallpaper]
 directory_dark = ""
 directory_light = ""
+
 edge_smoothness = 0.30000001192092896
 enabled = true
+
 fill_color = ""
 fill_mode = "crop"
+
 per_monitor_directories = false
+
 transition = [ "fade", "wipe", "disc", "stripes", "zoom", "honeycomb" ]
 transition_duration = 1500.0
 transition_on_startup = true

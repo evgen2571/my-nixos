@@ -3,6 +3,7 @@
   lib,
   ...
 }:
+
 let
   cfg = config.my.system.dev.fish;
 in

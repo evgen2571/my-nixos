@@ -24,12 +24,15 @@ return {
     'apyra/nvim-unity-sync',
     enabled = false,
   },
+
   {
     'nvim-lua/plenary.nvim',
     lazy = false,
+
     config = function()
       vim.api.nvim_create_user_command('Ustatus', function()
         local root = project_root(vim.api.nvim_buf_get_name(0))
+
         if not root then
           vim.notify('[Unity] No Unity project found (expected Assets, Packages, and ProjectSettings).', vim.log.levels.WARN)
           return
@@ -44,10 +47,12 @@ return {
 
       vim.api.nvim_create_user_command('Usync', function()
         local root = project_root(vim.api.nvim_buf_get_name(0))
+
         if not root then
           vim.notify('[Unity] No Unity project found.', vim.log.levels.WARN)
           return
         end
+
         vim.notify('[Unity] Project detected. Regenerate project files from Unity: Edit > Preferences > External Tools > Regenerate project files.', vim.log.levels.INFO)
       end, { desc = 'Show Unity project-file regeneration instructions' })
     end,

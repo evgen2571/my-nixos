@@ -4,6 +4,7 @@
   packageSources,
   ...
 }:
+
 let
   cfg = config.my.user.ai.codegraph;
 in

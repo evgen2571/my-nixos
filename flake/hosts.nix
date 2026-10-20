@@ -1,10 +1,14 @@
 { inputs, withSystem, ... }:
+
 let
   moduleProfiles = (import ../lib/module-catalog.nix { root = ../.; }).profiles;
+
   configPaths = import ../lib/config-paths.nix {
     root = ../.;
     lib = inputs.nixpkgs.lib;
   };
+
+  # Assemble the system and its Home Manager user with the same inputs.
   mkHost =
     {
       hostModule,
@@ -20,12 +24,15 @@ let
       { inputs', self', ... }:
       let
         packageSources = import ../lib/package-sources.nix { inherit inputs system; };
+
         selected = import ../lib/secret-source.nix {
           root = ../.;
           private = inputs.private;
           inherit host;
           source = secretSource;
         };
+
+        # Pass source selection and package choices to both module systems.
         sharedSpecialArgs = {
           inherit
             inputs
@@ -34,6 +41,7 @@ let
             configPaths
             packageSources
             ;
+
           secretFile = selected.file;
           inherit secretSource requirePrivate host;
         }
@@ -42,6 +50,7 @@ let
       inputs.nixpkgs.lib.nixosSystem {
         inherit system;
         specialArgs = sharedSpecialArgs;
+
         modules = [
           hostModule
           inputs.home-manager.nixosModules.home-manager

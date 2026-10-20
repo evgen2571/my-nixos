@@ -22,6 +22,7 @@ return {
 					"Trouble",
 					"trouble",
 				},
+
 				callback = function()
 					vim.b.miniindentscope_disable = true
 				end,
@@ -71,10 +72,12 @@ return {
 	{
 		"lukas-reineke/indent-blankline.nvim",
 		optional = true,
+
 		opts = {
 			indent = {
 				char = "",
 			},
+
 			scope = {
 				enabled = false,
 			},
@@ -85,9 +88,11 @@ return {
 	{
 		"folke/snacks.nvim",
 		optional = true,
+
 		opts = {
 			indent = {
 				enabled = false,
+
 				scope = {
 					enabled = false,
 				},

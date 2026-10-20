@@ -1,26 +1,32 @@
 return {
   'NMAC427/guess-indent.nvim',
+
   {
     'folke/which-key.nvim',
     event = 'VimEnter',
+
     opts = {
       delay = 180,
       -- Classic is a borderless bottom-anchored multi-column menu.
       -- Which-Key still implements it with a floating window internally.
       preset = 'classic',
       show_help = false,
+
       win = {
         border = 'none',
         padding = { 0, 1 },
         height = { min = 3, max = 12 },
         no_overlap = false,
       },
+
       layout = {
         width = { min = 18, max = 34 },
         spacing = 2,
       },
+
       icons = {
         mappings = vim.g.have_nerd_font,
+
         keys = vim.g.have_nerd_font and {} or {
           Up = '<Up> ',
           Down = '<Down> ',
@@ -38,6 +44,7 @@ return {
           BS = '<BS> ',
           Space = '<Space> ',
           Tab = '<Tab> ',
+
           F1 = '<F1>',
           F2 = '<F2>',
           F3 = '<F3>',
@@ -52,6 +59,7 @@ return {
           F12 = '<F12>',
         },
       },
+
       spec = {
         {
           '<leader>?',
@@ -60,6 +68,7 @@ return {
           end,
           desc = 'Show all shortcut groups',
         },
+
         { '<leader>b', group = '📌 Bookmarks (Harpoon)' },
         { '<leader>c', group = '🧰 Code & build' },
         { '<leader>cm', group = 'CMake' },
@@ -80,14 +89,17 @@ return {
       },
     },
   },
+
   {
     'folke/todo-comments.nvim',
     event = 'VimEnter',
     dependencies = { 'nvim-lua/plenary.nvim' },
     opts = { signs = false },
   },
+
   {
     'echasnovski/mini.nvim',
+
     config = function()
       require('mini.ai').setup { n_lines = 500 }
       require('mini.surround').setup()

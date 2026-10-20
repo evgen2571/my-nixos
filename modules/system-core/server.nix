@@ -1,4 +1,5 @@
 { lib, ... }:
+
 {
   boot.loader.systemd-boot.enable = true;
   boot.loader.systemd-boot.configurationLimit = 10;
@@ -18,6 +19,7 @@
     keep-outputs = false;
     keep-derivations = false;
     substituters = [ "https://cache.nixos.org" ];
+
     experimental-features = [
       "nix-command"
       "flakes"

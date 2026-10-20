@@ -8,28 +8,33 @@ type = "active_window"
 [widget.bluetooth]
 capsule = true
 capsule_opacity = 0.0
+
 type = "bluetooth"
 
 [widget.brightness]
 capsule = true
 capsule_opacity = 0.0
+
 type = "brightness"
 
 [widget.clipboard]
 capsule = true
 capsule_opacity = 0.0
+
 type = "clipboard"
 
 [widget.clock]
 capsule = true
 capsule_opacity = 0.0
 capsule_padding = 10.0
+
 scale = 1.1000000000000001
 type = "clock"
 
 [widget.control-center]
 capsule = true
 capsule_opacity = 0.0
+
 type = "control-center"
 
 [widget.cpu]
@@ -51,20 +56,25 @@ type = "keyboard_layout"
 [widget.launcher]
 capsule = true
 capsule_opacity = 0.0
+
 type = "launcher"
 
 [widget.lock_keys]
 display = "short"
 hide_when_off = false
+
 show_caps_lock = true
 show_num_lock = true
 show_scroll_lock = false
+
 type = "lock_keys"
 
 [widget.media]
 art_size = 16.0
+
 capsule = true
 capsule_opacity = 0.0
+
 max_length = 220.0
 min_length = 80.0
 title_scroll = "none"
@@ -73,6 +83,7 @@ type = "media"
 [widget.network]
 capsule = true
 capsule_opacity = 0.0
+
 type = "network"
 
 [widget.network_rx]
@@ -86,6 +97,7 @@ type = "sysmon"
 [widget.notifications]
 capsule = true
 capsule_opacity = 0.0
+
 type = "notifications"
 
 [widget.output_volume]
@@ -99,6 +111,7 @@ type = "sysmon"
 [widget.session]
 capsule = true
 capsule_opacity = 0.0
+
 type = "session"
 
 [widget.spacer]
@@ -111,19 +124,23 @@ type = "sysmon"
 [widget.tray]
 capsule = true
 capsule_opacity = 0.0
+
 type = "tray"
 
 [widget.volume]
 capsule = true
 capsule_opacity = 0.0
+
 type = "volume"
 
 [widget.wallpaper]
 capsule = true
 capsule_opacity = 0.0
+
 type = "wallpaper"
 
 [widget.workspaces]
 capsule = true
 capsule_opacity = 0.0
+
 type = "workspaces"

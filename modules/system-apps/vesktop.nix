@@ -5,6 +5,7 @@
   pkgs,
   ...
 }:
+
 let
   cfg = config.my.system.apps.vesktop;
 
@@ -12,6 +13,7 @@ let
     name = "vesktop-wayland";
     paths = [ packageSources.vesktop ];
     nativeBuildInputs = [ pkgs.makeWrapper ];
+
     postBuild = ''
       wrapProgram $out/bin/vesktop \
         --set NIXOS_OZONE_WL 1 \
@@ -19,6 +21,7 @@ let
         --add-flags "--ozone-platform=wayland" \
         --add-flags "--enable-features=UseOzonePlatform,WebRTCPipeWireCapturer,WaylandWindowDecorations"
     '';
+
     meta.mainProgram = "vesktop";
   };
 in
