@@ -14,6 +14,39 @@ networking. For another machine, use [host adaptation](installation.md#new-machi
 Keep independent recovery access for live installation, activation, and rollback.
 Coding agents also follow the authorization requirements in [AGENTS.md](../../AGENTS.md).
 
+## Everyday rebuilds with Just
+
+Install `just` separately (or enter `nix shell nixpkgs#just`). In the public
+checkout, copy [.env.example](../../.env.example) to `.env` if that local file
+does not already exist, then set your private checkout's absolute path:
+
+```dotenv
+MY_NIXOS_PRIVATE=/absolute/path/to/my-nixos-private
+```
+
+`.env` is gitignored. It selects a checkout explicitly; there is no automatic
+sibling lookup. Keep secrets and credentials out of it. Once configured, run
+only the recipe for the machine you are updating:
+
+```sh
+just build-pc       # build without activation
+just switch-pc      # apply on the PC
+just switch-lp      # apply on the laptop
+just switch-server  # apply on the server, coordinating gateway downtime
+```
+
+These recipes select the private checkout's committed `HEAD`, print that commit,
+and pass `--no-write-lock-file`. A missing or dirty private checkout stops the
+command. Keep using compatible, reviewed public/private revisions and the
+[upgrade recovery precautions](#upgrade-an-existing-host). `just check` uses the
+same input; `just check --no-build` evaluates without running the checks.
+
+Just does not pull repositories or update package pins. Fetch/review updates in
+both checkouts before rebuilding. Without `MY_NIXOS_PRIVATE`, recipes retain
+explicit flag forwarding and the production deployment guards. An explicit
+`--override-input private URL` takes precedence over the local checkout setting.
+Fish helpers still accept the explicit flags described below.
+
 ## Select reviewed inputs
 
 Use a reviewed, compatible pair of public/private commits. Run from a clean
@@ -50,9 +83,9 @@ nix flake check --override-input private "$private_input" --no-write-lock-file
 
 | Target | Non-activating command |
 | --- | --- |
-| PC | `just build-pc --override-input private "$private_input" --no-write-lock-file` |
-| Laptop | `just build-lp --override-input private "$private_input" --no-write-lock-file` |
-| Server | `just build-server --override-input private "$private_input" --no-write-lock-file` |
+| PC | `just build-pc` with `.env`, or `just build-pc --override-input private "$private_input"` |
+| Laptop | `just build-lp` with `.env`, or `just build-lp --override-input private "$private_input"` |
+| Server | `just build-server` with `.env`, or `just build-server --override-input private "$private_input"` |
 
 `just` is a separate prerequisite. Its [recipes](../../justfile) use
 `nix build .#nixosConfigurations.HOST.config.system.build.toplevel`.
