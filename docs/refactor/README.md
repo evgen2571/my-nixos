@@ -5,7 +5,7 @@ and the remaining [#49](https://github.com/evgen2571/my-nixos/issues/49) series.
 The exact functional baseline is `cb75bb68aaf0412f26488d63e4556e36c31193bd`
 (merged PR #48). No implementation modules or application sources change in this
 stage. The integration branch is
-`evgen2571/1-6-establish-module-inventory-and-host-equivale`; its PR remains draft
+`refactor/feature-first-modules`; its PR remains draft
 until the rest of the series and final review. Do not merge or activate hosts.
 
 Start with [the approved target tree](target-tree.md), then [the exhaustive inventory](inventory.json).

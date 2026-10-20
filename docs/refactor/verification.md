@@ -116,7 +116,14 @@ four inventory orders, and only the intended Fish/Kitty consolidations. No build
 or runtime checks were repeated for this documentation-only approval.
 
 
-The integration draft is [PR #56](https://github.com/evgen2571/my-nixos/pull/56),
+The integration draft is [PR #57](https://github.com/evgen2571/my-nixos/pull/57),
 targeting `main`. Issue #50 records completed acceptance checkboxes and links to
 these artifacts. The parent #49 and draft PR remain open for the remaining stages.
 Nothing has been merged.
+
+
+The integration branch was renamed to `refactor/feature-first-modules` at the
+maintainer's request. GitHub automatically closed former draft #56 when its head
+branch was renamed; draft #57 replaces it with the same commit history and evidence.
+The next implementation stage is #51. Its native dependency #50 remains open in
+the tracker even though its deliverables and layout review are complete.

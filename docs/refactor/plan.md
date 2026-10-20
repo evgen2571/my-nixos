@@ -2,7 +2,7 @@
 
 Spec: [#50](https://github.com/evgen2571/my-nixos/issues/50), under #49.
 Baseline: `cb75bb68aaf0412f26488d63e4556e36c31193bd`.
-Integration branch: `evgen2571/1-6-establish-module-inventory-and-host-equivale`.
+Integration branch: `refactor/feature-first-modules`.
 
 - [x] Capture original ordered catalog outputs, explicit assembly and every module/helper/asset; assign typed targets without moving source.
 - [x] Capture public assembled host/Home Manager option schemas and effective behavior; provide strict reproducible comparisons with narrow source-root normalization.
