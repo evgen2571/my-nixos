@@ -87,6 +87,25 @@ changes, exact-root normalization and incomplete mapping. The public capture
 is a separate integration procedure because it evaluates assembled hosts and
 produces reviewer evidence rather than a sandbox mock.
 
-Final check/review results are appended here before publication. A draft PR does
+Final results for clean archive `a00006e`:
+
+- `nix flake check path:CLEAN --no-write-lock-file`: exit 0, including the new check.
+- Explicit build of all 13 registered integration checks: exit 0.
+- Fresh baseline `shared-vpn-systemd --rebuild --no-link --no-write-lock-file`:
+  exit 0; distinct from the initially reused VM output.
+- Clean-archive host capture versus baseline: strict comparison passed for all
+  four ordered inventories and three hosts/users. Its decompressed host JSON is
+  byte-identical to the committed gzip fixture.
+- Four comparator tests passed, including public-interface success/rejection
+  cases. Nix formatting, documentation links, inventory coverage/uniqueness and
+  all 230 baseline asset hashes passed; `git diff --check` passed.
+- No diff to implementation modules, application sources, host/home definitions,
+  package sources, `flake.lock` or plugin locks.
+- Independent Standards review initially found an invalid exporter path element
+  and negative tests that bypassed the comparator. Both were fixed and reviewed
+  again: **0 remaining Standards findings**. Independent Spec review:
+  **0 findings**. The corrected exporter was rerun from the clean archive.
+
+ A draft PR does
 not approve the target layout on the maintainer's behalf or authorize migration,
 merge or deployment; remaining tickets consume this artifact after review.
