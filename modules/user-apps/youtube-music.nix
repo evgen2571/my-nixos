@@ -4,17 +4,16 @@
   pkgs,
   ...
 }:
-
 let
   cfg = config.my.user.apps.youtubeMusic;
 in
 {
   options.my.user.apps.youtubeMusic.enable = lib.mkEnableOption "YouTube Music";
 
-  config = lib.mkIf cfg.enable ({
+  config = lib.mkIf cfg.enable {
     home.packages = with pkgs; [
       pear-desktop
       yt-dlp
     ];
-  });
+  };
 }

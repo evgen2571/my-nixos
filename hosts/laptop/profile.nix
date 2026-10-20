@@ -55,9 +55,6 @@
       };
     };
 
-    apps = {
-    };
-
     desktop = {
       niriConfig = {
         workspaceProfile = "laptop";

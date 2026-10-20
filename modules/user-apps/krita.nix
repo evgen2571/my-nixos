@@ -4,7 +4,6 @@
   pkgs,
   ...
 }:
-
 let
   cfg = config.my.user.apps.krita;
 in

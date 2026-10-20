@@ -1,10 +1,8 @@
 {
   lib,
   config,
-  pkgs,
   ...
 }:
-
 let
   cfg = config.my.system.services.tailscale;
 in

@@ -14,6 +14,33 @@
     in
     {
       checks = {
+        module-style =
+          pkgs.runCommand "module-style-checks"
+            {
+              nativeBuildInputs = [
+                pkgs.nixfmt
+                pkgs.deadnix
+              ];
+            }
+            ''
+              find ${../modules} -name '*.nix' -print0 | xargs -0 nixfmt --check
+              nixfmt --check ${../lib/package-sources.nix}
+              deadnix --fail ${../modules} ${../lib/package-sources.nix}
+              touch $out
+            '';
+        sesh-project-list =
+          pkgs.runCommand "sesh-project-list-checks"
+            {
+              nativeBuildInputs = [
+                pkgs.bash
+                pkgs.shellcheck
+              ];
+            }
+            ''
+              shellcheck ${../modules/user-dev/tmux/project-list.sh} ${../tests/sesh/project-list.sh}
+              bash ${../tests/sesh/project-list.sh} ${../modules/user-dev/tmux/project-list.sh}
+              touch $out
+            '';
         personal-metadata = import ../tests/migration/metadata.nix {
           inherit pkgs;
           configurations = inputs.self.nixosConfigurations;

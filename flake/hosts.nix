@@ -19,6 +19,7 @@ let
     withSystem system (
       { inputs', self', ... }:
       let
+        packageSources = import ../lib/package-sources.nix { inherit inputs system; };
         selected = import ../lib/secret-source.nix {
           root = ../.;
           private = inputs.private;
@@ -31,6 +32,7 @@ let
             inputs'
             self'
             configPaths
+            packageSources
             ;
           secretFile = selected.file;
           inherit secretSource requirePrivate host;

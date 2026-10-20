@@ -2,14 +2,12 @@
   config,
   lib,
   pkgs,
-  inputs,
+  packageSources,
   osConfig ? { },
   ...
 }:
-
 let
   cfg = config.my.user.ai.orca;
-  agents = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system};
 in
 {
   options.my.user.ai.orca = {
@@ -17,7 +15,7 @@ in
     unwrappedPackage = lib.mkOption {
       type = lib.types.package;
       readOnly = true;
-      default = agents.orca;
+      default = packageSources.orca;
     };
     networkNamespace = lib.mkOption {
       type = lib.types.nullOr lib.types.str;
@@ -27,7 +25,7 @@ in
 
   config = lib.mkIf cfg.enable {
     home.packages = [
-      agents.orca
+      packageSources.orca
     ]
     ++ lib.optional (cfg.networkNamespace != null) (
       pkgs.writeShellScriptBin "orca-vpn" ''

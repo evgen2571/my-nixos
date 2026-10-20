@@ -3,7 +3,6 @@
   lib,
   ...
 }:
-
 let
   cfg = config.my.user.dev.zoxide;
 in

@@ -18,9 +18,6 @@
     };
 
     system = {
-      apps = {
-      };
-
       services = {
         networkNamespaces = {
           enable = true;

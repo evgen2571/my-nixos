@@ -5,7 +5,6 @@
   pkgs,
   ...
 }:
-
 let
   cfg = config.my.user.dev.neovim;
   nvimConfig = configPaths.dev.neovim.configDir;

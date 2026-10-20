@@ -1,15 +1,14 @@
 {
   config,
   inputs,
+  packageSources,
   lib,
   pkgs,
   ...
 }:
-
 let
   cfg = config.my.desktop.noctaliaGreeter;
-  greeterPackage =
-    inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.noctalia-greeter;
+  greeterPackage = packageSources.noctalia-greeter;
 in
 {
   imports = [
@@ -32,10 +31,8 @@ in
           path = "${pkgs.bibata-cursors}/share/icons";
         };
 
-        # Only pin layout. Leave wallpaper, palette, and scheme to Noctalia Sync.
         appearance = {
-          # Show Noctalia's current colors after the first successful Sync Now.
-          # Palette and wallpaper files are still managed by Noctalia, not Nix.
+          # Noctalia's Sync Now supplies the palette and wallpaper at runtime.
           scheme = "Synced";
           hide_logo = true;
           password_style = "default";

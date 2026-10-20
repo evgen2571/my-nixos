@@ -22,6 +22,7 @@ flowchart TD
 | Location | Responsibility |
 | --- | --- |
 | `flake.nix`, `flake/` | Inputs, host assembly, checks, formatter, development shell |
+| `lib/package-sources.nix` | Package selections outside the default stable package set, with scoped dependency fixes |
 | `hosts/<host>/configuration.nix` | Hardware, boot, machine identity, base imports |
 | `hosts/<host>/profile.nix` | Feature selection and machine-specific settings |
 | `hosts/common/desktop.nix` | Shared PC/laptop selections, explicitly imported by both profiles |

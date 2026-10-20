@@ -1,5 +1,4 @@
 { config, lib, ... }:
-
 let
   cfg = config.my.system.services.syncthing;
   primaryUser = config.my.primaryUser.name;

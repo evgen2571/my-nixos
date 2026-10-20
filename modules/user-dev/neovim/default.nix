@@ -4,17 +4,17 @@
   lib,
   ...
 }:
-
 let
   cfg = config.my.user.dev.neovim;
   neovimWithPython = pkgs.neovim.override {
     withPython3 = true;
-    extraPython3Packages = ps: with ps; [
-      jupyter-client
-      pillow
-      cairosvg
-      nbformat
-    ];
+    extraPython3Packages =
+      ps: with ps; [
+        jupyter-client
+        pillow
+        cairosvg
+        nbformat
+      ];
   };
 in
 {

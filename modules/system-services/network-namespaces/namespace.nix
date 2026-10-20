@@ -204,7 +204,6 @@ let
       (( now >= checkedAt && now - checkedAt <= 90 )) || diagnose
     '';
   };
-
 in
 {
   systemd.services.${netns} = {

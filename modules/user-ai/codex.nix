@@ -2,13 +2,12 @@
   config,
   lib,
   pkgs,
-  inputs,
+  packageSources,
   osConfig ? { },
   ...
 }:
 let
   cfg = config.my.user.ai.codex;
-  agents = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system};
 
   # Preserve the VPN namespace launcher while leaving Codex arguments,
   # MCP settings, and authentication mutable.
@@ -47,7 +46,7 @@ in
     unwrappedPackage = lib.mkOption {
       type = lib.types.package;
       readOnly = true;
-      default = agents.codex;
+      default = packageSources.codex;
       description = "Original Codex package from the pinned llm-agents input.";
     };
     package = lib.mkOption {
@@ -62,7 +61,8 @@ in
     assertions = lib.optional (cfg.networkNamespace != null) {
       assertion =
         (osConfig.my.system.services.networkNamespaces.enable or false)
-        && (osConfig.my.system.services.networkNamespaces.namespaces.${cfg.networkNamespace}.enable or false);
+        && (osConfig.my.system.services.networkNamespaces.namespaces.${cfg.networkNamespace}.enable or false
+        );
       message = "Codex networkNamespace requires the corresponding system VPN namespace to be enabled.";
     };
     home.packages = [ cfg.package ];

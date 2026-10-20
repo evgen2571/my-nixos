@@ -4,7 +4,6 @@
   pkgs,
   ...
 }:
-
 let
   cfg = config.my.user.dev.languages.rust;
 in

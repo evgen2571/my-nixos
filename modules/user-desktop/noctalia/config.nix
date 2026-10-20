@@ -4,7 +4,6 @@
   lib,
   ...
 }:
-
 let
   cfg = config.my.user.desktop.noctalia;
 in

@@ -4,7 +4,6 @@
   pkgs,
   ...
 }:
-
 let
   cfg = config.my.system.services.virtualization;
 in
@@ -12,7 +11,7 @@ in
   options.my.system.services.virtualization.enable =
     lib.mkEnableOption "Libvirt virtualization tooling";
 
-  config = lib.mkIf cfg.enable ({
+  config = lib.mkIf cfg.enable {
     virtualisation.libvirtd = {
       enable = true;
 
@@ -28,5 +27,5 @@ in
     environment.systemPackages = with pkgs; [
       virtiofsd
     ];
-  });
+  };
 }

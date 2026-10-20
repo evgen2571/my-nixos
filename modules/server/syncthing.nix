@@ -1,5 +1,4 @@
 { config, lib, ... }:
-
 let
   cfg = config.my.server.syncthing;
   storage = config.my.server.storage;

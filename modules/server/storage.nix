@@ -1,5 +1,4 @@
 { config, lib, ... }:
-
 let
   cfg = config.my.server.storage;
   primaryUser = config.my.primaryUser.name;
@@ -80,11 +79,7 @@ in
 
   config = lib.mkIf cfg.enable {
     assertions = lib.optional (cfg.device != null) {
-      assertion = lib.any (
-        prefix:
-        lib.hasPrefix prefix cfg.device
-        && cfg.device != prefix
-      ) [
+      assertion = lib.any (prefix: lib.hasPrefix prefix cfg.device && cfg.device != prefix) [
         "/dev/disk/by-uuid/"
         "/dev/disk/by-label/"
         "/dev/disk/by-id/"

@@ -1,28 +1,16 @@
 {
   config,
-  inputs,
+  packageSources,
   lib,
   pkgs,
   ...
 }:
-
 let
   cfg = config.my.system.apps.vesktop;
 
-  unstable = import inputs.nixpkgs-unstable {
-    system = pkgs.stdenv.hostPlatform.system;
-    config = {
-      allowUnfree = true;
-      permittedInsecurePackages = [
-        "electron-39.8.10"
-        "pnpm-10.29.2"
-      ];
-    };
-  };
-
   vesktop = pkgs.symlinkJoin {
     name = "vesktop-wayland";
-    paths = [ unstable.vesktop ];
+    paths = [ packageSources.vesktop ];
     nativeBuildInputs = [ pkgs.makeWrapper ];
     postBuild = ''
       wrapProgram $out/bin/vesktop \

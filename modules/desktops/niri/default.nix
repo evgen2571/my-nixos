@@ -4,7 +4,6 @@
   pkgs,
   ...
 }:
-
 let
   cfg = config.my.desktop.niri;
 in
@@ -105,11 +104,8 @@ in
       };
     };
 
-    # Portal services can be D-Bus activated before Niri has finished
-    # publishing the Wayland session. In that state OBS and Chromium-based
-    # apps see a portal, but the ScreenCast session cannot be subscribed to.
-    # Re-run the same initialization that fixes it manually, once the desktop
-    # session is fully up.
+    # Portals started before Niri publishes its Wayland session cannot share
+    # the screen in OBS or Chromium. Restart them once the session is ready.
     systemd.user.services.niri-portal-init = {
       description = "Initialize Niri screen-sharing portals";
       wantedBy = [ "graphical-session.target" ];

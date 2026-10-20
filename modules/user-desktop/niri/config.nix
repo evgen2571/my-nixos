@@ -4,7 +4,6 @@
   config,
   ...
 }:
-
 let
   cfg = config.my.user.desktop.niriConfig;
 in

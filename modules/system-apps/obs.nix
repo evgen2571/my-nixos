@@ -4,7 +4,6 @@
   pkgs,
   ...
 }:
-
 let
   cfg = config.my.system.apps.obs;
   nvidiaEnabled = config.my.hardware.nvidia.enable or false;

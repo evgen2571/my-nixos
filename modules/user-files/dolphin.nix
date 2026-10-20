@@ -4,14 +4,13 @@
   pkgs,
   ...
 }:
-
 let
   cfg = config.my.user.files.dolphin;
 in
 {
   options.my.user.files.dolphin.enable = lib.mkEnableOption "Dolphin file manager";
 
-  config = lib.mkIf cfg.enable ({
+  config = lib.mkIf cfg.enable {
     home.packages = with pkgs; [
       kdePackages.qtsvg
       kdePackages.kio
@@ -22,5 +21,5 @@ in
       kdePackages.dolphin
       kdePackages.ark
     ];
-  });
+  };
 }

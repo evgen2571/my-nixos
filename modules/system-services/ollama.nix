@@ -1,36 +1,24 @@
 {
   config,
   lib,
-  inputs,
-  pkgs,
+  packageSources,
   ...
 }:
-
 let
   cfg = config.my.system.services.ollama;
 in
 {
   options.my.system.services.ollama.enable = lib.mkEnableOption "Ollama service";
 
-  config = lib.mkIf cfg.enable (
-    let
-      unstable = import inputs.nixpkgs-unstable {
-        system = pkgs.stdenv.hostPlatform.system;
-        config.allowUnfree = true;
-      };
-    in
-    {
-      environment.systemPackages = [ unstable.ollama ];
+  config = lib.mkIf cfg.enable {
+    environment.systemPackages = [ packageSources.ollama ];
 
-      services.ollama = {
-        enable = true;
-        package = unstable.ollama;
+    services.ollama = {
+      enable = true;
+      package = packageSources.ollama;
 
-        # Preload local code-completion model for minuet-ai.nvim.
-        loadModels = [
-          "qwen2.5-coder:1.5b"
-        ];
-      };
-    }
-  );
+      # minuet-ai.nvim uses this local completion model.
+      loadModels = [ "qwen2.5-coder:1.5b" ];
+    };
+  };
 }
