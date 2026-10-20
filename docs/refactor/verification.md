@@ -127,3 +127,54 @@ maintainer's request. GitHub automatically closed former draft #56 when its head
 branch was renamed; draft #57 replaces it with the same commit history and evidence.
 The next implementation stage is #51. Its native dependency #50 remains open in
 the tracker even though its deliverables and layout review are complete.
+
+## Typed discovery stage (#51)
+
+Implemented from integration commit `6cdbad3` with every feature implementation,
+host/profile/home assembly, application source, package selection and lockfile
+unchanged. No module was relocated. The compatibility table is the ordered
+75-entry projection of the approved inventory; it is not a newly sorted catalog.
+
+| Verification | Result |
+| --- | --- |
+| `python3 tests/module-catalog/test_catalog.py` | 7 tests passed; initial typed-entry test failed against old catalog before implementation |
+| Fixture coverage | Both typed naming forms, ignored helpers/assets, recursion beside `default.nix`, mixed legacy/typed migration, exact-once import, missing/duplicate/invalid-scope diagnostics, infrastructure exclusion, Fish scope eligibility, inventory coverage, and all 75 typed target slots |
+| `nixfmt --check lib/module-catalog.nix lib/module-discovery.nix flake/verification.nix` | Passed |
+| `deadnix --fail lib/module-catalog.nix lib/module-discovery.nix flake/verification.nix` | Passed |
+| `python3 tests/module-equivalence/test_compare.py` | All 4 comparator tests passed |
+| `nix flake check --no-write-lock-file` | Exit 0; hosts/check outputs evaluated, one new check executed, other valid outputs reused |
+| `nix build --impure --expr 'builtins.attrValues (builtins.getFlake (toString ./.)).checks.x86_64-linux' --no-link` | Exit 0; all 14 registered outputs built/reused, including sandboxed catalog fixtures and existing catalog/host/VM/source/style checks |
+| `python3 tests/module-equivalence/compare.py capture "$PWD" /tmp/issue51-evidence` | Exit 0; public fully assembled host/Home Manager evidence captured |
+| `python3 tests/module-equivalence/compare.py compare /tmp/issue50-evidence-baseline /tmp/issue51-evidence` | Passed: all four ordered inventories and three host/Home Manager projections matched exactly |
+| Complete catalog JSON versus `catalog-baseline.json` | Structurally identical, including ordered entries and scope/profile/root metadata |
+| Three private-backed non-activating host builds | Exit 0 for PC, laptop and server, using the previously audited private revision `70c2c843dba1ee03812bbf42ae5f85f89162d0a8` after reconfirming PRIVATE visibility |
+| `git diff --check` | Passed |
+
+Private builds used all three `nixosConfigurations.<host>.config.system.build.toplevel`
+attributes in one `nix build`, with the same local Git private override and
+`--no-write-lock-file --no-link` as the baseline procedure above. Private inputs
+and logs remained local. No arbitrary store-path normalization was added; public
+host evidence matched with only the existing exact source-root normalization.
+There were no unexplained derivation changes.
+
+Independent Standards review: no actionable findings. Independent Spec review:
+no implementation findings; its request to record completed validation is covered
+here. The working tree began clean and changes are confined to discovery,
+catalog/compatibility registrations, fixture checks and documentation.
+
+The existing Neovim compact-hover failure and unavailable `pynvim` check recorded
+above were not rerun: no application source changed. Existing VM outputs were
+reused; no fresh VM or live namespace runtime test was needed for this catalog-only
+change. Private host builds establish build compatibility, not a new private
+behavior snapshot. Physical boot/login, GUI behavior, production decryption and
+live VPN egress remain unverified. No live activation, runtime migration, route,
+firewall or service change occurred.
+
+For #52–#54, keep shared catalog/table ownership serialized as documented in
+[module conventions](../reference/modules.md#temporary-legacy-compatibility).
+The current `module-equivalence` flake assertion intentionally uses the untouched
+legacy-path fixture; migration tickets must extend it to apply the approved
+explicit mapping as paths move, without refreshing the original fixture.
+Final #55 must remove legacy discovery and the temporary table while retaining
+an explicit typed ordering contract. Draft PR #57 was neither replaced nor marked
+ready; no PR was created and nothing was merged.

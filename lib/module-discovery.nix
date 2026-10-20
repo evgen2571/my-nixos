@@ -10,39 +10,52 @@ let
     readDir
     ;
 
-  isNixFile = name: match ".*\\.nix" name != null;
+  scopeOf =
+    name:
+    if name == "nixos.nix" || match ".*\\.nixos\\.nix" name != null then
+      "system"
+    else if name == "home.nix" || match ".*\\.home\\.nix" name != null then
+      "home"
+    else
+      null;
 
-  scanDir =
-    dir:
+  scan =
+    legacy: dir:
     let
       entries = readDir dir;
     in
-    if entries ? "default.nix" then
+    if legacy && entries."default.nix" or null == "regular" then
       [ dir ]
     else
       concatLists (
         map (
           name:
           let
-            entryType = entries.${name};
-            entryPath = dir + "/${name}";
+            kind = entries.${name};
+            path = dir + "/${name}";
+            scope = scopeOf name;
           in
-          if entryType == "regular" && isNixFile name then
-            [ entryPath ]
-          else if entryType == "directory" then
-            scanDir entryPath
+          if kind == "directory" then
+            scan legacy path
+          else if kind != "regular" then
+            [ ]
+          else if legacy then
+            if scope == null && match ".*\\.nix" name != null then [ path ] else [ ]
+          else if scope != null then
+            [ { inherit path scope; } ]
           else
             [ ]
         ) (attrNames entries)
       );
 
-  modulesUnder =
-    relPath:
+  under =
+    legacy: relPath:
     let
       dir = root + relPath;
     in
-    if pathExists dir then scanDir dir else [ ];
+    if pathExists dir then scan legacy dir else [ ];
 in
 {
-  inherit modulesUnder;
+  modulesUnder = under true;
+  typedUnder = under false;
 }

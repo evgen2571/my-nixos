@@ -17,6 +17,26 @@
     in
     {
       checks = {
+        module-catalog =
+          pkgs.runCommand "module-catalog-checks"
+            {
+              nativeBuildInputs = [
+                pkgs.nix
+                pkgs.nixfmt
+                pkgs.deadnix
+                pkgs.python3
+              ];
+            }
+            ''
+              export HOME="$TMPDIR/home"
+              export NIX_STATE_DIR="$TMPDIR/nix-state"
+              export MODULE_CATALOG=${../.}/lib/module-catalog.nix
+              nixfmt --check ${../lib/module-catalog.nix} ${../lib/module-discovery.nix} ${./verification.nix}
+              deadnix --fail ${../lib/module-catalog.nix} ${../lib/module-discovery.nix} ${./verification.nix}
+              python3 ${../tests/module-catalog/test_catalog.py}
+              touch $out
+            '';
+
         module-equivalence = import ../tests/module-equivalence {
           inherit pkgs;
           root = ../.;
