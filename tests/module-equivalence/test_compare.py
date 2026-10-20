@@ -1,6 +1,8 @@
 import importlib.util
 from pathlib import Path
 import unittest
+import tempfile
+import json
 import sys
 sys.dont_write_bytecode = True
 
@@ -22,6 +24,28 @@ class EquivalenceTests(unittest.TestCase):
         for changed in [dict(baseline, modules=['b', 'a']), dict(baseline, mode='0444'),
                         dict(baseline, command='tool'), {k: v for k, v in baseline.items() if k != 'disabled'}]:
             self.assertNotEqual(compare.normalize(baseline, '/source'), compare.normalize(changed, '/source'))
+
+    def test_comparator_rejects_changed_evidence(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            baseline, candidate = [Path(temporary) / name for name in ['baseline', 'candidate']]
+            for directory in [baseline, candidate]:
+                directory.mkdir()
+                (directory / 'catalog.json').write_text(json.dumps({'profiles': {
+                    'desktop': {'home': ['a', 'b'], 'system': []}}}))
+                (directory / 'hosts.json').write_text(json.dumps({
+                    'mode': '0400', 'command': 'tool --safe', 'disabled': False}))
+            compare.compare(baseline, candidate, None)
+            for changed in [{'mode': '0444', 'command': 'tool --safe', 'disabled': False},
+                            {'mode': '0400', 'command': 'tool', 'disabled': False},
+                            {'mode': '0400', 'command': 'tool --safe'}]:
+                (candidate / 'hosts.json').write_text(json.dumps(changed))
+                with self.assertRaisesRegex(SystemExit, 'host evidence differs'):
+                    compare.compare(baseline, candidate, None)
+            (candidate / 'hosts.json').write_bytes((baseline / 'hosts.json').read_bytes())
+            (candidate / 'catalog.json').write_text(json.dumps({'profiles': {
+                'desktop': {'home': ['b', 'a'], 'system': []}}}))
+            with self.assertRaisesRegex(SystemExit, 'ordered catalog'):
+                compare.compare(baseline, candidate, None)
 
     def test_catalog_mapping_preserves_order_and_scope(self):
         baseline = {'desktop': {'home': ['old-a', 'old-b'], 'system': []}}

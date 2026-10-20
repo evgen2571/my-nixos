@@ -100,7 +100,7 @@ let
         "networking.nftables"
         "networking.nameservers"
         "networking.networkmanager.enable"
-        [ "fileSystems" ]
+        "fileSystems"
         "boot.kernelParams"
         "boot.kernelModules"
         "system.activationScripts"
