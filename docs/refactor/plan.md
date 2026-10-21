@@ -102,6 +102,6 @@ The approved architecture and catalog/assembled-host test seams remain in force.
 - [x] Compare final public hosts and ordered catalogs against the exact #50
   baseline. Run focused tests, full flake checks, available VM/isolation and
   non-activating builds; record baseline failures and private/manual limits.
-- [ ] Review Standards/Spec, commit, validate the clean committed archive, update
+- [x] Review Standards/Spec, commit, validate the clean committed archive, update
   PR #57 with the full migration evidence and issue checkboxes; keep draft,
   do not merge or close the parent.

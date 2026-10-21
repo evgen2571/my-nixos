@@ -480,3 +480,35 @@ No activation, service restart, route/firewall change, runtime migration or
 application-state deletion occurred. Clean committed-source validation and the
 two independent review results accompany the final PR handoff; PR #57 remains
 draft and parent #49 remains open.
+
+### Standards
+
+Independent review of `9084987...b1c5d11`: no documented-standard violations or
+actionable baseline smells. Profile/scope ownership, private helper boundaries,
+explicit assembly, established order and source/runtime protections remain intact.
+
+### Spec
+
+Independent review against #55, including the combined original-baseline contract:
+no missing requirements, scope creep or incorrect behavior found. The reviewer
+independently reran six catalog tests, six comparator tests and the original
+public-host comparison, and audited all 230 mapped assets/modes and the exact
+module tree successfully. Builds, VM/runtime tests and private comparisons rely
+on the separately recorded verification rather than the reviewer's reruns.
+
+### Clean committed tree and delivery
+
+A clean `git archive` of implementation commit `b1c5d11` passed
+`nix flake check path:CHECKOUT --no-write-lock-file`, explicit builds of all 14
+registered checks and public evidence capture/comparison against the exact
+original baseline with the full mapping. Every new source is tracked. All 254
+relative documentation links/anchors and `git diff --check` passed. The complete
+package/plugin locks and package-source map match the original baseline.
+
+Draft PR #57 now describes the complete migration and all #49–#55 references,
+with mapping, ordering, evidence, private/manual limitations and separate
+behavior-changing follow-ups. Issue #55's ten acceptance criteria and four Agent
+Brief checkboxes are updated. Parent #49 remains open; no merge or ready-for-review
+transition occurred. The integration branch contains the implementation plus this
+final evidence record; final committed-source validation is repeated after the
+record commit before the final user handoff.
