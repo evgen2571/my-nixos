@@ -55,22 +55,18 @@ class Configuration(unittest.TestCase):
             "Mod+L": "focus-column-or-monitor-right;",
             "Mod+J": "focus-window-or-workspace-down;",
             "Mod+K": "focus-window-or-workspace-up;",
-            "Mod+Shift+H": "move-window-to-monitor-left;",
-            "Mod+Shift+L": "move-window-to-monitor-right;",
+            "Mod+Shift+H": "move-column-left-or-to-monitor-left;",
+            "Mod+Shift+L": "move-column-right-or-to-monitor-right;",
             "Mod+Shift+J": "move-window-to-workspace-down;",
             "Mod+Shift+K": "move-window-to-workspace-up;",
-            "Mod+Ctrl+H": 'set-column-width "-5%";',
-            "Mod+Ctrl+L": 'set-column-width "+5%";',
-            "Mod+Ctrl+J": 'set-window-height "-5%";',
-            "Mod+Ctrl+K": 'set-window-height "+5%";',
-            "Mod+Alt+H": "focus-monitor-left;",
-            "Mod+Alt+L": "focus-monitor-right;",
-            "Mod+Alt+J": "focus-workspace-down;",
-            "Mod+Alt+K": "focus-workspace-up;",
-            "Mod+Ctrl+Alt+H": "move-column-left;",
-            "Mod+Ctrl+Alt+L": "move-column-right;",
-            "Mod+Ctrl+Alt+J": "move-window-down;",
-            "Mod+Ctrl+Alt+K": "move-window-up;",
+            "Mod+Ctrl+H": "focus-monitor-left;",
+            "Mod+Ctrl+L": "focus-monitor-right;",
+            "Mod+Ctrl+J": "focus-workspace-down;",
+            "Mod+Ctrl+K": "focus-workspace-up;",
+            "Mod+Alt+H": 'set-column-width "-5%";',
+            "Mod+Alt+L": 'set-column-width "+5%";',
+            "Mod+Alt+J": 'set-window-height "-5%";',
+            "Mod+Alt+K": 'set-window-height "+5%";',
             "Mod+Ctrl+Shift+H": "move-column-to-monitor-left;",
             "Mod+Ctrl+Shift+L": "move-column-to-monitor-right;",
             "Mod+Ctrl+Shift+J": "move-column-to-workspace-down;",
@@ -81,12 +77,16 @@ class Configuration(unittest.TestCase):
             "Mod+Shift+P": 'spawn "noctalia" "msg" "session" "lock-and-suspend";',
         }
         for key, action in expected.items():
-            self.assertEqual(bindings[tuple(sorted(key.split("+")))], action, key)
+            with self.subTest(key=key):
+                self.assertEqual(bindings[tuple(sorted(key.split("+")))], action)
+        for key in "HJKL":
+            self.assertNotIn(tuple(sorted(f"Mod+Ctrl+Alt+{key}".split("+"))), bindings)
         for key in ("U", "I"):
             for modifier in ("Mod", "Mod+Ctrl", "Mod+Shift"):
                 self.assertNotIn(tuple(sorted(f"{modifier}+{key}".split("+"))), bindings)
         for arrow, letter in {"Left": "H", "Down": "J", "Up": "K", "Right": "L"}.items():
-            for modifier in ("Mod", "Mod+Shift", "Mod+Ctrl"):
+            self.assertNotIn(tuple(sorted(f"Mod+Ctrl+{arrow}".split("+"))), bindings)
+            for modifier in ("Mod", "Mod+Shift", "Mod+Alt"):
                 self.assertEqual(bindings[tuple(sorted(f"{modifier}+{arrow}".split("+")))],
                                  bindings[tuple(sorted(f"{modifier}+{letter}".split("+")))])
 

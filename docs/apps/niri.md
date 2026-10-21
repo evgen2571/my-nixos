@@ -7,14 +7,12 @@ Niri arranges tiled windows in scrolling columns. `Mod` is the desktop modifier
 | --- | --- |
 | `Mod+H/L` | Focus column; cross to the adjacent monitor at the column boundary |
 | `Mod+J/K` | Focus window down/up; switch workspace at the column boundary |
-| `Mod+Shift+H/L` | Move the focused window directly to the adjacent monitor |
+| `Mod+Shift+H/L` | Move a column left/right; cross to the adjacent monitor at the edge |
 | `Mod+Shift+J/K` | Move the focused window directly to the next/previous workspace |
-| `Mod+Ctrl+Alt+H/L` | Move a tiled column left/right; nudge floating windows horizontally |
-| `Mod+Ctrl+Alt+J/K` | Move a tiled window down/up; nudge floating windows vertically |
-| `Mod+Ctrl+H/L` | Decrease/increase column width by 5% |
-| `Mod+Ctrl+J/K` | Decrease/increase window height by 5% |
-| `Mod+Alt+H/L` | Focus adjacent monitor directly |
-| `Mod+Alt+J/K` | Focus next/previous workspace directly |
+| `Mod+Ctrl+H/L` | Focus adjacent monitor directly |
+| `Mod+Ctrl+J/K` | Focus next/previous workspace directly |
+| `Mod+Alt+H/L` | Decrease/increase column width by 5% |
+| `Mod+Alt+J/K` | Decrease/increase window height by 5% |
 | `Mod+Ctrl+Shift+H/L` | Move a whole column to the adjacent monitor directly |
 | `Mod+Ctrl+Shift+J/K` | Move a whole column to the next/previous workspace directly |
 | `Mod+Page_Down/Page_Up` | Focus next/previous workspace; add Shift to reorder workspaces |
@@ -24,10 +22,10 @@ Niri arranges tiled windows in scrolling columns. `Mod` is the desktop modifier
 | `Mod+Alt+Space` / `Mod+Shift+V` | Toggle floating / focus floating versus tiled windows |
 | `Mod+Shift+F` / `Mod+Q` | Fullscreen / close window |
 
-Shift movement sends only the focused window, including floating windows, to
-the destination; a missing adjacent monitor leaves it in place. Alt+Mod+HJKL
-retains direct focus, so basic movement uses the free Ctrl+Alt+Mod group.
-Arrows mirror HJKL for focus, Shift movement, and Ctrl sizing. Direct column
+Horizontal Shift movement uses `move-column-left-or-to-monitor-left` and its
+right counterpart. Shift+J/K sends the focused window to another workspace.
+Ctrl+Mod+HJKL retains direct monitor/workspace focus; Ctrl+Alt+Mod+HJKL is unbound.
+Arrows mirror HJKL for focus, Shift movement, and Alt sizing. Direct column
 movement uses Ctrl+Shift rather than Alt+Shift, which switches keyboard layouts.
 The old U/I navigation groups and monitor arrow chords are removed. Home/End
 still focus the first/last column; Ctrl+Home/End move a column to those positions.
@@ -182,8 +180,8 @@ as well. Neither path activates or changes the running configuration.
 
 Desktop acceptance after an authorized deployment still needs:
 
-- HJKL focus at column/monitor/workspace boundaries, direct Shift window transfers,
-  Ctrl+Alt basic movement for tiled/floating windows, and 5% sizing.
+- HJKL focus at column/monitor/workspace boundaries, horizontal Shift column movement,
+  vertical Shift window transfers, Ctrl direct focus, and Alt 5% sizing.
 - Two physical PC monitors and the single laptop output, including mouse focus/warp interaction.
 - Noctalia Settings opening focused, centered, and floating, and reopening a moved window.
 - A Polkit prompt, focus-or-launch with several matching windows, and closing/reopening the tmux dropdown.
