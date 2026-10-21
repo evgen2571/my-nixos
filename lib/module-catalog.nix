@@ -1,7 +1,4 @@
-{
-  root,
-  legacyEntries ? builtins.fromJSON (builtins.readFile ./module-compatibility.json),
-}:
+{ root }:
 
 let
   inherit (builtins)
@@ -12,89 +9,6 @@ let
     ;
 
   discovery = import ./module-discovery.nix { inherit root; };
-
-  # Keep system modules and Home Manager modules in their own profiles.
-  profileRoots = [
-    {
-      scope = "system";
-      relPath = "/modules/desktops";
-      profiles = [ "desktop" ];
-    }
-
-    {
-      scope = "system";
-      relPath = "/modules/server";
-      profiles = [ "server" ];
-    }
-
-    {
-      scope = "system";
-      relPath = "/modules/system-services";
-
-      profiles = [
-        "desktop"
-        "server"
-      ];
-    }
-
-    {
-      scope = "system";
-      relPath = "/modules/hardware";
-      profiles = [ "desktop" ];
-    }
-
-    {
-      scope = "system";
-      relPath = "/modules/system-apps";
-      profiles = [ "desktop" ];
-    }
-
-    {
-      scope = "system";
-      relPath = "/modules/system-dev";
-      profiles = [ "desktop" ];
-    }
-
-    {
-      scope = "system";
-      relPath = "/modules/system-files";
-      profiles = [ "desktop" ];
-    }
-
-    {
-      scope = "home";
-      relPath = "/modules/user-ai";
-      profiles = [ "desktop" ];
-    }
-
-    {
-      scope = "home";
-      relPath = "/modules/user-apps";
-      profiles = [ "desktop" ];
-    }
-
-    {
-      scope = "home";
-      relPath = "/modules/user-desktop";
-      profiles = [ "desktop" ];
-    }
-
-    {
-      scope = "home";
-      relPath = "/modules/user-dev";
-
-      profiles = [
-        "desktop"
-        "server"
-      ];
-    }
-
-    {
-      scope = "home";
-      relPath = "/modules/user-files";
-      profiles = [ "desktop" ];
-    }
-  ];
 
   # Typed rules own availability; colocated entries need not share profiles.
   typedRoots = [
@@ -134,12 +48,17 @@ let
       ];
       home = [ ];
     }
-  ]
-  ++ map (rule: {
-    inherit (rule) relPath;
-    system = if rule.scope == "system" then rule.profiles else [ ];
-    home = if rule.scope == "home" then rule.profiles else [ ];
-  }) profileRoots;
+    {
+      relPath = "/modules/hardware";
+      system = [ "desktop" ];
+      home = [ ];
+    }
+    {
+      relPath = "/modules/server";
+      system = [ "server" ];
+      home = [ ];
+    }
+  ];
 
   relative =
     path: builtins.substring (builtins.stringLength (toString root) + 1) (-1) (toString path);
@@ -173,84 +92,12 @@ let
       ) (discovery.typedUnder rule.relPath)
     ) typedRoots
   );
-  typedPaths = map (entry: relative entry.path) typed;
-  legacyPaths = concatLists (
-    map (rule: map relative (discovery.modulesUnder rule.relPath)) profileRoots
-  );
-
-  registrationsValid =
-    if
-      !(unique (map (entry: entry.path) legacyEntries))
-      || !(unique (map (entry: entry.target) legacyEntries))
-    then
-      fail "duplicate legacy or target registration in module-compatibility.json"
-    else
-      builtins.all (
-        entry:
-        if
-          !(elem entry.scope [
-            "system"
-            "home"
-          ])
-        then
-          fail "invalid scope ${entry.scope} for ${entry.path}"
-        else if
-          entry.profiles == [ ]
-          || !(builtins.all (
-            name:
-            elem name [
-              "desktop"
-              "server"
-            ]
-          ) entry.profiles)
-        then
-          fail "invalid profiles for ${entry.path}"
-        else
-          true
-      ) legacyEntries;
-
-  compatible = map (
-    entry:
-    let
-      old = elem entry.path legacyPaths;
-      new = elem entry.target typedPaths;
-      target = filter (item: relative item.path == entry.target) typed;
-      owner = filter (rule: rule.relPath == entry.relPath) profileRoots;
-    in
-    if old && new then
-      fail "duplicate registration: ${entry.path} and ${entry.target}; remove the legacy entry when migrating"
-    else if !old && !new then
-      fail "missing expected entry: ${entry.path} or ${entry.target}"
-    else if
-      owner == [ ]
-      || (builtins.head owner).scope != entry.scope
-      || (builtins.head owner).profiles != entry.profiles
-    then
-      fail "invalid legacy scope/profile assignment for ${entry.path}"
-    else if
-      new
-      && (
-        (builtins.head target).scope != entry.scope || (builtins.head target).profiles != entry.profiles
-      )
-    then
-      fail "typed scope/profile rules disagree with compatibility registration for ${entry.target}"
-    else
-      {
-        path = root + "/${if new then entry.target else entry.path}";
-        inherit (entry) scope profiles;
-        relPath = if new then (builtins.head target).relPath else entry.relPath;
-      }
-  ) legacyEntries;
-
-  ordinary = filter (
-    entry: !(elem (relative entry.path) (map (item: item.target) legacyEntries))
-  ) typed;
+  # Preserve established import order; new features follow in discovery order.
+  order = builtins.fromJSON (builtins.readFile ./module-order.json);
+  ordered = concatLists (map (path: filter (entry: relative entry.path == path) typed) order);
+  ordinary = filter (entry: !(elem (relative entry.path) order)) typed;
   modules =
-    assert registrationsValid;
-    if !(unique typedPaths) then
-      fail "duplicate typed entry registered by overlapping catalog roots"
-    else
-      compatible ++ ordinary;
+    if !(unique order) then fail "duplicate path in module-order.json" else ordered ++ ordinary;
 
   pathsFor =
     profile: scope:
@@ -263,7 +110,7 @@ let
   };
 in
 {
-  inherit modules profileRoots;
+  inherit modules;
   profiles = {
     desktop = profile "desktop";
     server = profile "server";

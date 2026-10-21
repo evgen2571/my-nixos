@@ -38,40 +38,31 @@ from host profiles.
 Core baselines, primary-user/Home Manager baseline wiring, secrets and deployment
 are explicitly assembled. `modules/core` and `modules/deployment` stay outside
 optional discovery.
-Temporary legacy `modules/system-core` exclusion also remains until #55.
-Host shared profiles remain outside discovery too. Optional `server/base.nixos.nix` stays
-separate from the explicit server baseline.
+Host shared profiles remain outside discovery too. Optional `server/base.nixos.nix`
+stays separate from the explicit server baseline.
 
-### Temporary legacy compatibility
+### Import order
 
-The original category roots (`desktops`, `system-*` except `system-core`, and
-`user-*`, plus `hardware` and `server`) retain their previous scope/profile rules.
-Only the 75 ordered registrations frozen in `lib/module-compatibility.json` can
-enter from the untyped layout. Legacy scanning keeps the `default.nix` stopping
-rule for these entries. New untyped helpers never become optional modules.
+`lib/module-order.json` lists the existing typed entries in their established
+import order. It contains only current paths; availability and profile eligibility
+come from the catalog root rules above. Discovery never reads the historical
+inventory or migration ledger, scans old category roots, or treats `default.nix`
+as an entry point.
 
-Each registration must resolve to exactly one of its legacy or approved typed
-paths. Missing both is an error; keeping both is a duplicate-registration error.
-Migration replaces the path in its existing ordered slot, preserving effective
-import order even when new feature paths sort differently. New ordinary typed
-features follow the compatibility entries, in catalog-root order and recursive
-sorted-name order. The catalog returns separate deterministic `systemModules`
+Existing entries retain their listed position. New ordinary typed features follow
+these entries in root order: `ai`, `apps`, `desktop`, `dev`, `files`,
+`services`, `hardware`, `server`; within each root, recursive sorted-name order. No registration is needed for
+a new feature. If an existing entry moves, update its path in the same ordering
+slot and verify the baseline comparison. The final inventory check detects missing,
+duplicated or reordered baseline entries, including disabled features. Directory
+fixtures may contain only a subset of entries; absent paths in the ordering list
+do not create modules. The catalog returns separate deterministic `systemModules`
 and `homeModules` lists for each profile.
-
-The table is frozen from the approved inventory: Tickets #52–#54 move their
-assigned implementations and remove the corresponding legacy entry files in the
-same change. They do not edit shared discovery, root rules or compatibility
-registrations. Any necessary shared change is serialized through the integration
-branch owner before another migration integrates. Fixture/inventory coverage
-rejects registration drift. This is a temporary ordering bridge: final ticket
-#55 must remove legacy scanning and the compatibility table, replacing the latter
-with an explicit typed ordering mechanism that preserves the recorded order.
-The ordered baseline must never be refreshed simply to accept a new sort order.
 
 Run `python3 tests/module-catalog/test_catalog.py` for extendable directory
 fixtures and `nix build .#checks.x86_64-linux.module-catalog --no-link` for the
-sandboxed check. `module-equivalence` applies the explicit [migration ledger](../refactor/migrations.json)
-to the frozen ordered inventory;
+sandboxed check. `module-equivalence` applies the complete [old-to-new inventory](../refactor/inventory.json)
+to the frozen ordered catalog;
 [the comparison contract](../refactor/README.md) covers assembled hosts.
 
 ## Add or select a feature

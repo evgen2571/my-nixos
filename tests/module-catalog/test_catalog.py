@@ -11,18 +11,15 @@ CATALOG = Path(os.environ.get('MODULE_CATALOG',
 
 
 class CatalogTests(unittest.TestCase):
-    def evaluate(self, files, legacy=None, error=None):
+    def evaluate(self, files, error=None):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             for name in files:
                 path = root / name
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_text('{}')
-            registrations = root / 'entries.json'
-            registrations.write_text(json.dumps(legacy or []))
             expression = f'''let
-              catalog = import {CATALOG} {{ root = {root};
-                legacyEntries = builtins.fromJSON (builtins.readFile {registrations}); }};
+              catalog = import {CATALOG} {{ root = {root}; }};
               relative = p: builtins.substring {len(directory) + 1} (-1) (toString p);
             in builtins.mapAttrs (_: profile: {{
               system = map relative profile.systemModules;
@@ -52,33 +49,23 @@ class CatalogTests(unittest.TestCase):
         self.assertEqual(profiles['server']['home'], profiles['desktop']['home'])
         self.assertEqual(profiles['server']['system'], [])
 
-    def registration(self, **changes):
-        return dict(path='modules/system-dev/fish.nix',
-                    target='modules/dev/fish/nixos.nix', scope='system',
-                    profiles=['desktop'], relPath='/modules/system-dev', **changes)
-
-    def test_legacy_and_migrated_entries_keep_frozen_order(self):
-        entries = [self.registration(), dict(
-            path='modules/system-dev/z.nix', target='modules/dev/a.nixos.nix',
-            scope='system', profiles=['desktop'], relPath='/modules/system-dev')]
-        result = self.evaluate(['modules/system-dev/fish.nix', 'modules/dev/a.nixos.nix',
-                                'modules/dev/fish/home.nix'], entries)
-        self.assertEqual(result['desktop']['system'], [
-            'modules/system-dev/fish.nix', 'modules/dev/a.nixos.nix'])
-        self.assertEqual(result['server']['system'], [])
-        self.assertEqual(result['server']['home'], ['modules/dev/fish/home.nix'])
-        migrated = self.evaluate(['modules/dev/fish/nixos.nix', 'modules/dev/a.nixos.nix'], entries)
-        self.assertEqual(migrated['desktop']['system'], [
-            'modules/dev/fish/nixos.nix', 'modules/dev/a.nixos.nix'])
-
-    def test_legacy_default_stops_helpers_but_not_typed_siblings(self):
-        entry = dict(path='modules/system-dev/old', target='modules/dev/old.nixos.nix',
-                     scope='system', profiles=['desktop'], relPath='/modules/system-dev')
-        result = self.evaluate(['modules/system-dev/old/default.nix',
-                                'modules/system-dev/old/config.nix',
-                                'modules/system-dev/old/sibling.nixos.nix'], [entry])
-        self.assertEqual(result['desktop']['system'], [
-            'modules/system-dev/old', 'modules/system-dev/old/sibling.nixos.nix'])
+    def test_obsolete_roots_are_not_discovered(self):
+        entries = json.loads((CATALOG.parent.parent /
+            'docs/refactor/inventory.json').read_text())['entries']
+        files = [entry['target'] for entry in entries]
+        result = self.evaluate(files + [
+            'modules/desktops/old.nixos.nix',
+            'modules/system-services/old.nixos.nix',
+            'modules/system-apps/old.nixos.nix',
+            'modules/system-dev/old.nixos.nix',
+            'modules/system-files/old.nixos.nix',
+            'modules/user-ai/old.home.nix', 'modules/user-apps/old.home.nix',
+            'modules/user-desktop/old.home.nix', 'modules/user-dev/old.home.nix',
+            'modules/user-files/old.home.nix',
+        ])
+        for profile in result.values():
+            for paths in profile.values():
+                self.assertTrue(set(paths) <= set(files), paths)
 
     def test_helpers_and_explicit_infrastructure_are_excluded(self):
         result = self.evaluate(['modules/core/primary-user.home.nix',
@@ -90,37 +77,35 @@ class CatalogTests(unittest.TestCase):
         self.assertEqual(result, {name: {'system': [], 'home': []}
                                   for name in ['desktop', 'server']})
 
-    def test_missing_duplicate_and_invalid_scope_diagnostics(self):
-        entry = self.registration()
-        self.evaluate([], [entry], error='missing expected entry: modules/system-dev/fish.nix')
-        self.evaluate(['modules/system-dev/fish.nix', 'modules/dev/fish/nixos.nix'],
-                      [entry], error='duplicate registration:')
-        self.evaluate([], [entry, entry], error='duplicate legacy or target registration')
-        invalid = entry | {'scope': 'other'}
-        self.evaluate([], [invalid], error='invalid scope other')
-        self.evaluate(['modules/server/wrong.home.nix'], error='wrong scope home for modules/server/wrong.home.nix')
-        self.evaluate(['modules/dev/fish/home.nix'], [entry | {
-            'target': 'modules/dev/fish/home.nix'}], error='typed scope/profile rules disagree')
-        self.evaluate(['modules/system-dev/fish.nix'], [entry | {
-            'profiles': ['server']}], error='invalid legacy scope/profile assignment')
-        self.evaluate([], [entry | {'profiles': ['unknown']}], error='invalid profiles')
+    def test_invalid_scope_diagnostics(self):
+        for path, scope in [('modules/server/wrong.home.nix', 'home'),
+                            ('modules/hardware/wrong.home.nix', 'home'),
+                            ('modules/services/wrong.home.nix', 'home'),
+                            ('modules/ai/wrong.nixos.nix', 'system')]:
+            with self.subTest(path=path):
+                self.evaluate([path], error=f'wrong scope {scope} for {path}')
+
+    def test_existing_order_precedes_new_automatically_discovered_features(self):
+        result = self.evaluate(['modules/dev/fish/nixos.nix',
+                                'modules/apps/steam.nixos.nix',
+                                'modules/apps/aaa.nixos.nix',
+                                'modules/dev/aaa.nixos.nix',
+                                'modules/dev/fish/home.nix'])
+        self.assertEqual(result['desktop']['system'], [
+            'modules/apps/steam.nixos.nix', 'modules/dev/fish/nixos.nix',
+            'modules/apps/aaa.nixos.nix', 'modules/dev/aaa.nixos.nix'])
+        self.assertEqual(result['server']['system'], [])
+        self.assertEqual(result['server']['home'], ['modules/dev/fish/home.nix'])
 
     def test_complete_typed_inventory_preserves_all_four_ordered_profiles(self):
-        entries = json.loads((CATALOG.parent / 'module-compatibility.json').read_text())
-        baseline = json.loads((CATALOG.parent.parent /
-            'tests/module-equivalence/catalog-baseline.json').read_text())['profiles']
-        mapping = {entry['path']: entry['target'] for entry in entries}
-        result = self.evaluate([entry['target'] for entry in entries], entries)
-        self.assertEqual(result, {profile: {scope: [mapping[path] for path in paths]
-            for scope, paths in scopes.items()} for profile, scopes in baseline.items()})
-
-    def test_compatibility_table_matches_approved_inventory(self):
         repository = CATALOG.parent.parent
         entries = json.loads((repository / 'docs/refactor/inventory.json').read_text())['entries']
-        actual = json.loads((CATALOG.parent / 'module-compatibility.json').read_text())
-        self.assertEqual(actual, [{key: entry[key] for key in
-                                  ['path', 'target', 'scope', 'profiles', 'relPath']}
-                                 for entry in entries])
+        baseline = json.loads((repository /
+            'tests/module-equivalence/catalog-baseline.json').read_text())['profiles']
+        mapping = {entry['path']: entry['target'] for entry in entries}
+        result = self.evaluate([entry['target'] for entry in entries])
+        self.assertEqual(result, {profile: {scope: [mapping[path] for path in paths]
+            for scope, paths in scopes.items()} for profile, scopes in baseline.items()})
 
 
 if __name__ == '__main__':

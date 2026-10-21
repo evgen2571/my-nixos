@@ -11,7 +11,7 @@ profile. Application guides explain how the configured behavior works.
 | Flake inputs or host assembly | `flake.nix`, `flake/hosts.nix` |
 | Stable/unstable or external package selections | `lib/package-sources.nix`; [package sources](modules.md#package-sources) |
 | Module discovery | `lib/module-catalog.nix`, `lib/module-discovery.nix` |
-| Fish, tmux, Kitty | `config/fish/`, `modules/user-dev/`, [Kitty](../apps/kitty.md) |
+| Fish, tmux, Kitty | `config/fish/`, `modules/dev/`, [Kitty](../apps/kitty.md) |
 | Neovim mappings or plugins | `config/nvim/lua/core/`, `lua/plugins/`; [Neovim](../apps/neovim.md) |
 | Niri shortcuts or layout | `config/niri/sub/binds.kdl`, `layout.kdl`, `input.kdl`; [Niri](../apps/niri.md) |
 | Niri window placement | `config/niri/sub/rules/`, host workspace sources |

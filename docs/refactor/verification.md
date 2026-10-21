@@ -171,7 +171,7 @@ live VPN egress remain unverified. No live activation, runtime migration, route,
 firewall or service change occurred.
 
 For #52–#54, keep shared catalog/table ownership serialized as documented in
-[module conventions](../reference/modules.md#temporary-legacy-compatibility).
+[the stage #51 module conventions](https://github.com/evgen2571/my-nixos/blob/631294b/docs/reference/modules.md#temporary-legacy-compatibility).
 The current `module-equivalence` flake assertion intentionally uses the untouched
 legacy-path fixture; migration tickets must extend it to apply the approved
 explicit mapping as paths move, without refreshing the original fixture.
@@ -408,3 +408,75 @@ full flake check, explicit build of all 14 check outputs, public capture/compari
 247 relative documentation links/anchors and `git diff --check`. The implementation
 commit is `3040f5f`. The public comparison still uses the original baseline and
 approved mappings; all original source/runtime guards remain unchanged.
+
+## Final typed-only architecture (#55)
+
+Stage starts at `9084987` on `refactor/feature-first-modules`. The
+[final handoff](final-architecture.md) describes the completed mapping, ordering,
+explicit assembly and private coordination. Original inventory/catalog/host
+fixtures, package selections, `flake.lock` and `config/nvim/lazy-lock.json` are
+unchanged. No implementation module, host profile, application source, template
+or explicit host assembly changed during #55.
+
+| Verification | Result |
+| --- | --- |
+| Final-contract obsolete-root fixture, red/green | Failed because the old scanner admitted typed entries under removed category roots; passed after removal |
+| `python3 tests/module-catalog/test_catalog.py` | 6 final-contract tests passed; recursive typed forms beside helpers/defaults, obsolete-root exclusion, explicit exclusions, wrong-scope diagnostics, existing/new order and complete four-profile baseline |
+| `python3 tests/module-equivalence/test_compare.py` | 6 tests passed, retaining strict normalization and historical comparison coverage |
+| Original #50 baseline capture/comparison, complete inventory mapping without `--migrations` | All four ordered catalogs and all three public NixOS/Home Manager projections matched |
+| Source/mode and exact module-tree audit | All 230 mapped assets present, modes unchanged; 216 original hashes match, 14 differences remain explained by the completed series; no extra module files; all 75 optional/six explicit entries accounted for |
+| `nixfmt --check`, `deadnix --fail`, `git diff --check`, current-path audit | Passed; module/shell formatting and checks also covered by the full suite |
+| `nix flake check --no-write-lock-file` | Exit 0 after staging the new ordering file; initial attempt correctly refused the untracked file |
+| Explicit build of all 14 registered checks | Exit 0; includes application/config-path, catalog/equivalence, source/deployment, namespace/recovery, VM and shell/style checks |
+| `python3 tests/network-namespaces/recovery.py` | 42 tests passed |
+| `python3 tests/niri/window-titles.py` | 2 tests passed |
+| `nix run .#shared-vpn-test --no-write-lock-file` | Exit 0; fresh disposable isolation, simultaneous clients, IPv4/IPv6, DNS, failure/recovery and unchanged host routes/resolver |
+| `nix build .#checks.x86_64-linux.shared-vpn-systemd --no-write-lock-file --no-link --rebuild` | Exit 0; forced three-machine VM rebuild covering lifecycle, DNS, recovery, rollback, old-generation reboot and persistent masks |
+| `nix shell` with pinned age/SOPS, `bash tests/migration/standalone.sh` | Exit 0; none/local builds, first-login VM, unsafe/missing/wrong identity and encrypted-field refusals; lock unchanged |
+| Three private-backed non-activating host builds | Exit 0 for PC/laptop/server with the same audited private revision |
+| Targeted private-backed infrastructure comparison against original baseline | All three host projections matched; no private values exported |
+
+Public capture and comparison:
+
+```sh
+python3 tests/module-equivalence/compare.py capture "$PWD" /tmp/issue55-evidence
+python3 tests/module-equivalence/compare.py compare \
+  /tmp/issue50-evidence-baseline /tmp/issue55-evidence \
+  --mapping docs/refactor/inventory.json
+```
+
+Only exact repository-source roots and the two reviewed #52 primary-user module
+references are normalized. Package identities, schemas/defaults, disabled features,
+users/groups, generated files/units, managed destinations/modes, security/network
+settings, activation entries and Home Manager projections remain strict. There
+are no new derivation/content differences requiring an exception. The 14 original
+source-byte changes are the same reviewed Fish/Kitty consolidations, relative
+references, host/template/flake assembly and discovery/catalog changes described
+in prior handoffs. No package or plugin locks changed.
+
+The final catalog does not import the historical inventory/ledger or compatibility
+code. Its only ordering input is the current typed-path list. The final inventory
+assertion applies the full approved mapping and all explicit entries, never a
+partial migration. Current path references are audited across assembly, profiles,
+templates, tests, scripts, README and docs. Historical handoffs and negative or
+baseline-comparison fixtures intentionally retain old paths; the old compatibility
+section's historical link is pinned to its original commit.
+
+Private visibility was reconfirmed PRIVATE before using unchanged revision
+`70c2c843dba1ee03812bbf42ae5f85f89162d0a8`. It has no direct old public-module
+imports. The targeted comparison uses the same local-only #54 projection and
+exact source-root substitution, covering namespace settings/registrations,
+secrets metadata, accounts/groups, system/user units and files, firewall/resolver,
+privileges, guards, activation/build commands and relevant home wiring. The older
+whole-private Home Manager/Zen schema limitation remains; targeted private
+comparison and successful builds do not claim complete private option equivalence.
+No private snapshot or credential was inspected or published.
+
+Neovim's existing `Compact hover Markdown` failure at `smoke.lua:170` and the
+missing `pynvim` competitive-test dependency remain as reproduced on baseline
+and #53; those unchanged UI tests were not rerun in #55. Full graphical appearance,
+physical boot/login, production decryption and real provider egress remain manual.
+No activation, service restart, route/firewall change, runtime migration or
+application-state deletion occurred. Clean committed-source validation and the
+two independent review results accompany the final PR handoff; PR #57 remains
+draft and parent #49 remains open.

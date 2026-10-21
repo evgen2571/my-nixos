@@ -85,3 +85,23 @@ Spec: [#54](https://github.com/evgen2571/my-nixos/issues/54). Stage starts at
   harness, VM checks, full flake checks, formatting/dead-code and reference checks.
 - [x] Record evidence and limits, review Standards/Spec against the stage start,
   commit/push to the draft PR and update issue body/Agent Brief checkboxes.
+
+## Final typed-only architecture (#55)
+
+Spec: [#55](https://github.com/evgen2571/my-nixos/issues/55). Stage starts at
+`9084987`; use the current branch and update the existing draft PR #57.
+The approved architecture and catalog/assembled-host test seams remain in force.
+
+- [x] Replace transition fixtures with final-contract coverage; demonstrate old-root
+  typed entries are rejected/excluded before removing legacy discovery.
+- [x] Remove old roots, default fallback, compatibility registrations and injection
+  callers. Preserve existing order with a typed-path-only order list; new features
+  retain automatic discovery. Keep root scope/profile rules explicit.
+- [x] Audit all 230 mapped assets and six explicit entries, references, available
+  private consumers and unchanged package/plugin locks; update practical docs.
+- [x] Compare final public hosts and ordered catalogs against the exact #50
+  baseline. Run focused tests, full flake checks, available VM/isolation and
+  non-activating builds; record baseline failures and private/manual limits.
+- [ ] Review Standards/Spec, commit, validate the clean committed archive, update
+  PR #57 with the full migration evidence and issue checkboxes; keep draft,
+  do not merge or close the parent.

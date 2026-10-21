@@ -1,10 +1,9 @@
 # Feature-first refactor comparison contract
 
-This is the pre-migration handoff for [#50](https://github.com/evgen2571/my-nixos/issues/50)
+This records the pre-migration contract for [#50](https://github.com/evgen2571/my-nixos/issues/50)
 and the remaining [#49](https://github.com/evgen2571/my-nixos/issues/49) series.
 The exact functional baseline is `cb75bb68aaf0412f26488d63e4556e36c31193bd`
-(merged PR #48). No implementation modules or application sources change in this
-stage. The integration branch is
+(merged PR #48). The final typed-only architecture is described in [the final handoff](final-architecture.md). The integration branch is
 `refactor/feature-first-modules`; its PR remains draft
 until the rest of the series and final review. Do not merge or activate hosts.
 
@@ -12,7 +11,8 @@ Start with [the approved target tree](target-tree.md), then [the exhaustive inve
 Current migration progress and #52 evidence are in [ordinary features and baselines](ordinary-features.md);
 [complex features and #53 evidence](complex-features.md) and
 [infrastructure and #54 evidence](infrastructure.md) cover subsequent stages.
-`migrations.json` records the subset already moved. The baseline evidence below stays unchanged.
+`migrations.json` records the completed stage ledger for historical comparisons;
+the final catalog and inventory check do not depend on it. The baseline evidence below stays unchanged.
 The inventory records all 75 discovered entries, in the original catalog order,
 with scope, profile eligibility, constituent files, option declarations, source
 references for dependencies/deployment, related checks/docs, and target entry.

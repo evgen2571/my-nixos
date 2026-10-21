@@ -1,7 +1,7 @@
 # Approved final module tree
 
 Reviewed and approved on 2026-10-20 for the remaining #49 stages, following the
-maintainer's request to review and approve the layout. No source has moved.
+maintainer's request to review and approve the layout. The implementation is now complete; see [the final handoff](final-architecture.md).
 `inventory.json` is the exhaustive file mapping.
 
 Standards review: no findings. Spec review against #49/#50: no blockers.
