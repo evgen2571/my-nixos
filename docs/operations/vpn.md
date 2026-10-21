@@ -162,7 +162,7 @@ Never overwrite a valid refreshed token with an old SOPS seed.
 [Namespace primitives](network-namespaces.md) explains filters, provider
 credentials and the restricted app registry. Host profiles select roles; private
 host overrides supply real endpoints and peer associations. Implementation lives
-in [namespace modules](../../modules/system-services/network-namespaces/), with
+in [namespace modules](../../modules/services/network-namespaces/), with
 [tests](../../tests/network-namespaces/) and [provider packaging](../../packages/hide-me/).
 
 Use the reviewed private input from [deployment](deployment.md) for affected-host

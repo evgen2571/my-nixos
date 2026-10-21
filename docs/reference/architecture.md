@@ -28,7 +28,7 @@ flowchart TD
 | `hosts/common/desktop.nix` | Shared PC/laptop selections, explicitly imported by both profiles |
 | `modules/{ai,apps,desktop,dev,files,hardware,server,services}` | Feature categories with typed NixOS/Home Manager entries |
 | `modules/core` | Explicit desktop/server and primary-user/Home Manager baselines |
-| Legacy namespace and deployment entries | Remaining #54 migration; see [refactor progress](../refactor/complex-features.md) |
+| `modules/deployment` | Explicit production deployment guards, preflight script and patches |
 | `config/` | Program-native source configuration |
 | `lib/config-paths.nix` | Source-to-runtime mappings, including host variants |
 | `tests/` | Automated checks and smoke tests |

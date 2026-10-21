@@ -30,8 +30,8 @@ in
         nativeBuildInputs = [ (pkgs.python3.withPackages (ps: [ ps.pyyaml ])) ];
       }
       ''
-        python3 ${../lib/check-sops-source.py} ${secretFile} ${
-          if secretSource == "local" then ../.sops.yaml else "-"
+        python3 ${../../lib/check-sops-source.py} ${secretFile} ${
+          if secretSource == "local" then ../../.sops.yaml else "-"
         } ${lib.escapeShellArg host}
         touch $out
       ''

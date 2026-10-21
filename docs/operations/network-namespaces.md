@@ -75,7 +75,7 @@ before an approved restart. HTTP 401/403 establishes rejection, not expiry.
 ## Add an isolated application
 
 Use the existing immutable application registry in
-[launcher.nix](../../modules/system-services/network-namespaces/launcher.nix):
+[launcher.nix](../../modules/services/network-namespaces/launcher.nix):
 
 ```nix
 my.system.services.networkNamespaces.applications.mytool = {

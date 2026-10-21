@@ -19,7 +19,7 @@ profile. Application guides explain how the configured behavior works.
 | Greeter or login | `modules/desktop/noctalia-greeter.nixos.nix`; [greeter](../operations/noctalia-greeter.md) |
 | Zen spaces and pins | `config/zen/`, `modules/apps/zen-browser.home.nix`; [Zen](../apps/zen-browser.md) |
 | Agent tools | `modules/ai/`; [Skillshare](../apps/skillshare.md), [CodeGraph](../apps/codegraph.md) |
-| VPN, DNS isolation, launchers | `modules/system-services/network-namespaces/`; [VPN](../operations/vpn.md), [namespace implementation](../operations/network-namespaces.md) |
+| VPN, DNS isolation, launchers | `modules/services/network-namespaces/`; [VPN](../operations/vpn.md), [namespace implementation](../operations/network-namespaces.md) |
 | Source modes or deployment preflight | `lib/secret-source.nix`, `modules/deployment/`; [secrets](../operations/secrets.md) |
 | Server storage, SSH, Docker, Syncthing | `modules/server/`, `hosts/server/profile.nix`; [server](../operations/server.md) |
 | Checks | `flake/verification.nix`, matching `tests/` subtree |

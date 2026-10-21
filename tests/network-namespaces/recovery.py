@@ -8,7 +8,7 @@ import tempfile
 import time
 import unittest
 
-SCRIPT = Path(__file__).resolve().parents[2] / 'modules/system-services/network-namespaces/doctor.py'
+SCRIPT = Path(__file__).resolve().parents[2] / 'modules/services/network-namespaces/doctor.py'
 
 
 class DoctorTest(unittest.TestCase):

@@ -55,8 +55,8 @@ let
           hostModule
           inputs.home-manager.nixosModules.home-manager
           inputs.sops-nix.nixosModules.sops
-          ../modules/secrets.nix
-          ../modules/deployment
+          ../modules/core/secrets.nixos.nix
+          ../modules/deployment/nixos.nix
         ]
         ++ profile.systemModules
         ++ extraModules

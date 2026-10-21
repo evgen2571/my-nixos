@@ -36,8 +36,9 @@ SSH retain their existing behavior. Do not manually import discovered modules
 from host profiles.
 
 Core baselines, primary-user/Home Manager baseline wiring, secrets and deployment
-are explicitly assembled. `modules/core`, `modules/system-core`,
-`modules/deployment` and `modules/secrets.nix` stay outside optional discovery.
+are explicitly assembled. `modules/core` and `modules/deployment` stay outside
+optional discovery.
+Temporary legacy `modules/system-core` exclusion also remains until #55.
 Host shared profiles remain outside discovery too. Optional `server/base.nixos.nix` stays
 separate from the explicit server baseline.
 

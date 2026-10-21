@@ -69,3 +69,19 @@ agreed ordered-catalog and three assembled-host seams.
   run targeted application checks, complete flake checks and practical artifact builds.
 - [x] Record stage evidence/limitations, review Standards/Spec, commit and push
   to the existing draft PR; update issue body and Agent Brief checkboxes.
+
+## VPN, secrets and deployment infrastructure (#54)
+
+Spec: [#54](https://github.com/evgen2571/my-nixos/issues/54). Stage starts at
+`4b23d57`; use the current integration branch and retain draft PR #57.
+
+- [x] Extend the ledger at the agreed catalog seam and demonstrate failure before moves.
+- [x] Move all mapped infrastructure entries/assets, repairing explicit assembly,
+  test imports, sandbox copies, scripts and current documentation references.
+  Preserve frozen discovery/compatibility rules for final #55.
+- [x] Compare original inventories, public assembled hosts and meaningful generated
+  artifacts; audit private consumers and run available non-activating builds.
+- [x] Run focused namespace/recovery/source/deployment checks, disposable isolation
+  harness, VM checks, full flake checks, formatting/dead-code and reference checks.
+- [ ] Record evidence and limits, review Standards/Spec against the stage start,
+  commit/push to the draft PR and update issue body/Agent Brief checkboxes.

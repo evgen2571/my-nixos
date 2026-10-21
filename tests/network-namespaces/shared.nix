@@ -8,7 +8,7 @@ let
     system = "x86_64-linux";
 
     modules = [
-      ../../modules/system-services/network-namespaces
+      ../../modules/services/network-namespaces/nixos.nix
 
       ({ pkgs, ... }: {
         system.stateVersion = "26.05";

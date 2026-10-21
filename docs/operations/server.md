@@ -96,5 +96,5 @@ maintenance. Keep `system.stateVersion` unchanged during ordinary upgrades.
 | Features and storage selection | [host profile](../../hosts/server/profile.nix) |
 | SSH, Docker, storage, Syncthing | [server modules](../../modules/server/) |
 | Base system | [server core](../../modules/core/server-baseline.nixos.nix) |
-| VPN | [namespace modules](../../modules/system-services/network-namespaces/) |
+| VPN | [namespace modules](../../modules/services/network-namespaces/) |
 | Credentials | [secrets guide](secrets.md) |

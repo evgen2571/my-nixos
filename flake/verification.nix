@@ -140,8 +140,8 @@
               nativeBuildInputs = [ pkgs.python3 ];
             }
             ''
-              mkdir -p modules/system-services/network-namespaces
-              cp ${../modules/system-services/network-namespaces/doctor.py} modules/system-services/network-namespaces/doctor.py
+              mkdir -p modules/services/network-namespaces
+              cp ${../modules/services/network-namespaces/doctor.py} modules/services/network-namespaces/doctor.py
               # Keep the same repository-relative CLI test boundary in the sandbox.
               mkdir -p tests/network-namespaces
               cp ${../tests/network-namespaces/recovery.py} tests/network-namespaces/recovery.py
@@ -152,7 +152,7 @@
         shared-vpn-scripts =
           pkgs.runCommand "shared-vpn-script-checks" { nativeBuildInputs = [ pkgs.shellcheck ]; }
             ''
-              shellcheck ${../tests/network-namespaces/shared.sh} ${../tests/network-namespaces/prepare-shared-rollback.sh} ${../modules/system-services/network-namespaces/migration}/*.sh
+              shellcheck ${../tests/network-namespaces/shared.sh} ${../tests/network-namespaces/prepare-shared-rollback.sh} ${../modules/services/network-namespaces/migration}/*.sh
               touch $out
             '';
       };

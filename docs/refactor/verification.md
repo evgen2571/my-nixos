@@ -311,3 +311,79 @@ paths outside the intentional historical inventory/compatibility/ledger/handoff.
 Issue #53's nine acceptance checkboxes and four Agent Brief checkboxes are
 updated. Implementation commit: `3ea5cc2`. The existing integration PR #57
 remains draft; no merge or ready-for-review transition occurred.
+
+## VPN, secrets and deployment infrastructure (#54)
+
+Stage begins at clean `4b23d57` on `refactor/feature-first-modules`.
+The [infrastructure handoff](infrastructure.md) records the complete mapping,
+explicit assembly and recovery/state boundaries. All 75 discovered entries and
+six explicit entries now have their approved targets. Frozen inventory, catalog,
+discovery, compatibility registrations, package selections and lockfile are
+unchanged in this stage; the legacy bridge remains for #55.
+
+| Verification | Result |
+| --- | --- |
+| Catalog-equivalence assertion, red/green | Failed on missing mapped explicit infrastructure before moves; passed after moves |
+| `python3 tests/module-catalog/test_catalog.py` | 7 tests passed, including explicit infrastructure exclusion and legacy compatibility |
+| `python3 tests/module-equivalence/test_compare.py` | 6 tests passed |
+| `python3 tests/network-namespaces/recovery.py` | 42 tests passed |
+| Original-baseline capture/comparison with approved mapping and cumulative ledger | All four ordered inventories and three complete public host/Home Manager projections matched |
+| Comparison with #53 public capture | Complete host projections byte-identical; no new package/derivation or generated-content differences |
+| Source/mode audit | All 230 mapped assets present with unchanged executable modes; 216 original hashes match; namespace's ten files and deployment entry byte-identical |
+| `nixfmt --check`, `deadnix --fail`, namespace/migration `shellcheck`, `git diff --check` | Passed |
+| `nix flake check --no-write-lock-file` | Exit 0; four changed checks built, other valid outputs reused |
+| Explicit build of all 14 registered check outputs | Exit 0, including namespace standalone/shared/host/VM, source/deployment, catalog/equivalence, style and application checks |
+| `nix run .#shared-vpn-test --no-write-lock-file` | Exit 0; fresh disposable user/net/mount namespace isolation, simultaneous clients, IPv4/IPv6, DNS and fail-closed recovery checks |
+| `nix build .#checks.x86_64-linux.shared-vpn-systemd --no-write-lock-file --no-link --rebuild` | Exit 0; fresh three-machine VM execution, test script 105.56 seconds; lifecycle, DNS, bounded recovery, rollback, old-generation reboot and persistent desktop masks |
+| Standalone source/deployment harness with pinned age/SOPS tools | Exit 0; none/local builds, disposable key-only first-login VM, unsafe/missing/wrong identity refusals, missing encrypted field and first-login configuration refusals; lock unchanged |
+| Three non-activating private-backed host builds | Exit 0 for PC/laptop/server, using the audited private revision |
+| Targeted private-backed infrastructure comparison against exact original baseline | All three host projections matched after exact repository-root substitution; no values published |
+
+The 14 source-byte differences against the original inventory consist of the
+already documented earlier-stage changes plus the relocated secrets module's
+two relative source references. `flake/hosts.nix` now explicitly selects the
+approved secrets/deployment paths; `flake/verification.nix` repairs namespace
+sandbox and script references. All ten namespace files, four deployment script/
+patch assets and the deployment module retain their bytes and executable modes.
+Namespace package calls retain their depth and targets. The full generated host
+projection has no new derivation differences needing content exceptions. Existing
+normalization remains restricted to exact source roots and the two previously
+approved primary-user module-reference fields; no store hashes, commands,
+privileges or generated content are broadly stripped.
+
+Private visibility was reconfirmed **PRIVATE** before auditing/building revision
+`70c2c843dba1ee03812bbf42ae5f85f89162d0a8`. Its eight Nix files have no direct old
+public-module imports; no private source changes are required for that revision.
+The audit does not cover unavailable consumers. No keys, decrypted credentials
+or runtime tokens were inspected. Builds still originate only from this public
+repository, with the same explicit local Git private override and no lock write.
+
+A local-only comparison evaluated baseline and candidate `nixosConfigurations`
+with that private override. The projection covered complete namespace settings
+and app registrations (including executable derivations), SOPS secret metadata,
+age settings, account/group definitions, all system/user units and `/etc` files,
+firewall/nftables/resolver settings, sudo/wrappers/polkit, system source checks,
+activation/pre-switch/builder commands, guarded install/rebuild derivations,
+Home Manager shared wiring and Codex/Orca options/user units. It compared recursive
+values strictly, encoding derivations as name/output/derivation paths and replacing
+only each exact public source root. No private snapshots were written or published;
+only comparison results and error/differing-field paths stayed in protected local
+logs. Initial overbroad projections hit unset upstream `sops.defaultSopsFile`
+and `users.ldap.base` on the baseline; the focused projection selects the actual
+infrastructure settings instead. The older whole-private option-schema/Zen
+projection limitation remains; this targeted comparison does not claim complete
+private Home Manager option equivalence.
+
+No live activation, restart, route/firewall change, secret edit, runtime recovery
+or migration occurred. Real provider egress, production decryption, physical
+boot/login and hardware suspend/resume remain manual checks; disposable fixtures
+and non-activating builds do not establish those results. Unrelated Neovim/UI
+checks were not repeated; their baseline limitations remain as recorded above.
+
+The standalone harness initially exited 127 after its successful first-login VM
+because the host shell lacked `age-keygen`. Rerunning with pinned tools passed:
+
+```sh
+nix shell --impure --expr 'let f = builtins.getFlake (toString ./.); p = f.inputs.nixpkgs.legacyPackages.x86_64-linux; in [ p.age p.sops ]' \
+  --command bash tests/migration/standalone.sh
+```

@@ -12,6 +12,7 @@
     "modules/server/syncthing.nix",
     "modules/system-services/blueman.nix",
     "modules/system-services/lan-mouse.nix",
+    "modules/system-services/network-namespaces",
     "modules/system-services/sunshine.nix",
     "modules/system-services/syncthing.nix",
     "modules/system-services/tailscale.nix",
@@ -79,6 +80,8 @@
     "modules/system-core/common.nix",
     "modules/system-core/server.nix",
     "modules/system-core/user.nix",
-    "home/default.nix"
+    "home/default.nix",
+    "modules/secrets.nix",
+    "modules/deployment/default.nix"
   ]
 }

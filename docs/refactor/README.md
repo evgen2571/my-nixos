@@ -10,7 +10,8 @@ until the rest of the series and final review. Do not merge or activate hosts.
 
 Start with [the approved target tree](target-tree.md), then [the exhaustive inventory](inventory.json).
 Current migration progress and #52 evidence are in [ordinary features and baselines](ordinary-features.md);
-[complex features and #53 evidence](complex-features.md) cover the next stage.
+[complex features and #53 evidence](complex-features.md) and
+[infrastructure and #54 evidence](infrastructure.md) cover subsequent stages.
 `migrations.json` records the subset already moved. The baseline evidence below stays unchanged.
 The inventory records all 75 discovered entries, in the original catalog order,
 with scope, profile eligibility, constituent files, option declarations, source
