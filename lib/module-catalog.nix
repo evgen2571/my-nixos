@@ -6,130 +6,111 @@ let
     elem
     filter
     map
-    pathExists
     ;
 
   discovery = import ./module-discovery.nix { inherit root; };
 
-  # Keep system modules and Home Manager modules in their own profiles.
-  profileRoots = [
+  # Typed rules own availability; colocated entries need not share profiles.
+  typedRoots = [
     {
-      scope = "system";
-      relPath = "/modules/desktops";
-      profiles = [ "desktop" ];
+      relPath = "/modules/ai";
+      system = [ ];
+      home = [ "desktop" ];
     }
-
     {
-      scope = "system";
-      relPath = "/modules/server";
-      profiles = [ "server" ];
+      relPath = "/modules/apps";
+      system = [ "desktop" ];
+      home = [ "desktop" ];
     }
-
     {
-      scope = "system";
-      relPath = "/modules/system-services";
-
-      profiles = [
+      relPath = "/modules/desktop";
+      system = [ "desktop" ];
+      home = [ "desktop" ];
+    }
+    {
+      relPath = "/modules/dev";
+      system = [ "desktop" ];
+      home = [
         "desktop"
         "server"
       ];
     }
-
     {
-      scope = "system";
+      relPath = "/modules/files";
+      system = [ "desktop" ];
+      home = [ "desktop" ];
+    }
+    {
+      relPath = "/modules/services";
+      system = [
+        "desktop"
+        "server"
+      ];
+      home = [ ];
+    }
+    {
       relPath = "/modules/hardware";
-      profiles = [ "desktop" ];
+      system = [ "desktop" ];
+      home = [ ];
     }
-
     {
-      scope = "system";
-      relPath = "/modules/system-apps";
-      profiles = [ "desktop" ];
-    }
-
-    {
-      scope = "system";
-      relPath = "/modules/system-dev";
-      profiles = [ "desktop" ];
-    }
-
-    {
-      scope = "system";
-      relPath = "/modules/system-files";
-      profiles = [ "desktop" ];
-    }
-
-    {
-      scope = "home";
-      relPath = "/modules/user-ai";
-      profiles = [ "desktop" ];
-    }
-
-    {
-      scope = "home";
-      relPath = "/modules/user-apps";
-      profiles = [ "desktop" ];
-    }
-
-    {
-      scope = "home";
-      relPath = "/modules/user-desktop";
-      profiles = [ "desktop" ];
-    }
-
-    {
-      scope = "home";
-      relPath = "/modules/user-dev";
-
-      profiles = [
-        "desktop"
-        "server"
-      ];
-    }
-
-    {
-      scope = "home";
-      relPath = "/modules/user-files";
-      profiles = [ "desktop" ];
+      relPath = "/modules/server";
+      system = [ "server" ];
+      home = [ ];
     }
   ];
 
-  preferredPaths = rootDef: filter pathExists (map (relPath: root + relPath) (rootDef.first or [ ]));
+  relative =
+    path: builtins.substring (builtins.stringLength (toString root) + 1) (-1) (toString path);
+  fail = message: throw "module catalog: ${message}";
+  unique =
+    values:
+    builtins.length values == builtins.length (
+      builtins.attrNames (
+        builtins.listToAttrs (
+          map (value: {
+            name = value;
+            value = true;
+          }) values
+        )
+      )
+    );
 
-  orderedDiscoveredPaths =
-    rootDef:
-    let
-      first = preferredPaths rootDef;
-      discovered = discovery.modulesUnder rootDef.relPath;
-    in
-    first ++ filter (path: !(elem path first)) discovered;
+  typed = concatLists (
+    map (
+      rule:
+      map (
+        entry:
+        if rule.${entry.scope} == [ ] then
+          fail "wrong scope ${entry.scope} for ${relative entry.path} under ${rule.relPath}"
+        else
+          entry
+          // {
+            inherit (rule) relPath;
+            profiles = rule.${entry.scope};
+          }
+      ) (discovery.typedUnder rule.relPath)
+    ) typedRoots
+  );
+  # Preserve established import order; new features follow in discovery order.
+  order = builtins.fromJSON (builtins.readFile ./module-order.json);
+  ordered = concatLists (map (path: filter (entry: relative entry.path == path) typed) order);
+  ordinary = filter (entry: !(elem (relative entry.path) order)) typed;
+  modules =
+    if !(unique order) then fail "duplicate path in module-order.json" else ordered ++ ordinary;
 
-  modulesForRoot =
-    rootDef:
-    map (path: {
-      inherit path;
-      inherit (rootDef) scope profiles relPath;
-    }) (orderedDiscoveredPaths rootDef);
-
-  modules = concatLists (map modulesForRoot profileRoots);
-
-  moduleMatches =
-    profile: scope: module:
-    module.scope == scope && elem profile module.profiles;
-
-  pathsFor = profile: scope: map (module: module.path) (filter (moduleMatches profile scope) modules);
-
+  pathsFor =
+    profile: scope:
+    map (module: module.path) (
+      filter (module: module.scope == scope && elem profile module.profiles) modules
+    );
   profile = name: {
     systemModules = pathsFor name "system";
     homeModules = pathsFor name "home";
   };
 in
 {
-  inherit
-    modules
-    profileRoots
-    ;
-
+  inherit modules;
   profiles = {
     desktop = profile "desktop";
     server = profile "server";

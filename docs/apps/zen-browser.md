@@ -24,7 +24,7 @@ Keep those names and URLs in private configuration. The public
 modules can set
 `my.primaryUser.home.settings.programs.zen-browser.profiles.default.spaces.ChatGPT.pins`.
 
-The [module](../../modules/user-apps/zen-browser.nix) installs Zen when
+The [module](../../modules/apps/zen-browser.home.nix) installs Zen when
 `my.user.apps.zenBrowser.enable` is set. A null `profilePath` leaves its writable
 profile unmanaged. To adopt an existing profile:
 

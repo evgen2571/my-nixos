@@ -23,7 +23,7 @@ an ownership conflict. Repository maintenance skills are linked from
 
 ## Ownership
 
-[modules/user-ai/skillshare.nix](../../modules/user-ai/skillshare.nix) installs
+[modules/ai/skillshare.home.nix](../../modules/ai/skillshare.home.nix) installs
 only the executable from [pkgs/skillshare.nix](../../pkgs/skillshare.nix).
 Home Manager does not initialize Skillshare, create targets, or run sync/upgrade.
 It does not own Skillshare's mutable configuration or account-managed plugins.

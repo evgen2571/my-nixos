@@ -6,12 +6,12 @@ let
 
   migration = pkgs.runCommand "vpn-migration-bundle" { } ''
     mkdir -p $out
-    cp ${../../modules/system-services/network-namespaces/migration}/*.sh $out/
+    cp ${../../modules/services/network-namespaces/migration}/*.sh $out/
   '';
 
   common = { config, ... }: {
     imports = [
-      ../../modules/system-services/network-namespaces
+      ../../modules/services/network-namespaces/nixos.nix
       sopsNix.nixosModules.sops
     ];
 
@@ -145,7 +145,7 @@ let
             pkgs.bind
           ]
         }
-        exec ${pkgs.python3}/bin/python3 ${../../modules/system-services/network-namespaces/doctor.py} /etc/vpn-test-doctor.json reconcile
+        exec ${pkgs.python3}/bin/python3 ${../../modules/services/network-namespaces/doctor.py} /etc/vpn-test-doctor.json reconcile
       ''
     );
 

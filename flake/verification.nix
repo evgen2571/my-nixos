@@ -17,6 +17,31 @@
     in
     {
       checks = {
+        module-catalog =
+          pkgs.runCommand "module-catalog-checks"
+            {
+              nativeBuildInputs = [
+                pkgs.nix
+                pkgs.nixfmt
+                pkgs.deadnix
+                pkgs.python3
+              ];
+            }
+            ''
+              export HOME="$TMPDIR/home"
+              export NIX_STATE_DIR="$TMPDIR/nix-state"
+              export MODULE_CATALOG=${../.}/lib/module-catalog.nix
+              nixfmt --check ${../lib/module-catalog.nix} ${../lib/module-discovery.nix} ${./verification.nix}
+              deadnix --fail ${../lib/module-catalog.nix} ${../lib/module-discovery.nix} ${./verification.nix}
+              python3 ${../tests/module-catalog/test_catalog.py}
+              touch $out
+            '';
+
+        module-equivalence = import ../tests/module-equivalence {
+          inherit pkgs;
+          root = ../.;
+        };
+
         # Formatting and small script checks run without a host deployment.
         module-style =
           pkgs.runCommand "module-style-checks"
@@ -42,8 +67,8 @@
               ];
             }
             ''
-              shellcheck ${../modules/user-dev/tmux/project-list.sh} ${../tests/sesh/project-list.sh}
-              bash ${../tests/sesh/project-list.sh} ${../modules/user-dev/tmux/project-list.sh}
+              shellcheck ${../modules/dev/tmux/project-list.sh} ${../tests/sesh/project-list.sh}
+              bash ${../tests/sesh/project-list.sh} ${../modules/dev/tmux/project-list.sh}
               touch $out
             '';
 
@@ -115,8 +140,8 @@
               nativeBuildInputs = [ pkgs.python3 ];
             }
             ''
-              mkdir -p modules/system-services/network-namespaces
-              cp ${../modules/system-services/network-namespaces/doctor.py} modules/system-services/network-namespaces/doctor.py
+              mkdir -p modules/services/network-namespaces
+              cp ${../modules/services/network-namespaces/doctor.py} modules/services/network-namespaces/doctor.py
               # Keep the same repository-relative CLI test boundary in the sandbox.
               mkdir -p tests/network-namespaces
               cp ${../tests/network-namespaces/recovery.py} tests/network-namespaces/recovery.py
@@ -127,7 +152,7 @@
         shared-vpn-scripts =
           pkgs.runCommand "shared-vpn-script-checks" { nativeBuildInputs = [ pkgs.shellcheck ]; }
             ''
-              shellcheck ${../tests/network-namespaces/shared.sh} ${../tests/network-namespaces/prepare-shared-rollback.sh} ${../modules/system-services/network-namespaces/migration}/*.sh
+              shellcheck ${../tests/network-namespaces/shared.sh} ${../tests/network-namespaces/prepare-shared-rollback.sh} ${../modules/services/network-namespaces/migration}/*.sh
               touch $out
             '';
       };

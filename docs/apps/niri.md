@@ -33,7 +33,7 @@ sizing, `input.kdl` for input, and `rules/apps/` for application policies.
 `noctalia.kdl` and `noctalia-dropdown.kdl` are generated theme inputs.
 
 PC and laptop have separate named-workspace files. The
-[Niri Home Manager module](../../modules/user-desktop/niri/config.nix) selects
+[Niri Home Manager module](../../modules/desktop/niri/home.nix) selects
 one through `my.user.desktop.niriConfig.workspaceProfile` and installs it as
 `~/.config/niri/sub/workspaces.kdl`. Change host selection in its profile.
 The PC spreads workspaces across two outputs; the laptop uses its internal

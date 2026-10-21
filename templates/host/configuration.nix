@@ -5,7 +5,7 @@
   imports = [
     ./hardware-configuration.nix
     ./profile.nix
-    ../../modules/system-core/user.nix
+    ../../modules/core/primary-user.nixos.nix
   ];
 
   networking.hostName = "replace-me";

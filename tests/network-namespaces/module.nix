@@ -23,7 +23,7 @@ let
 
   eval = evaluate [
     base
-    ../../modules/system-services/network-namespaces
+    ../../modules/services/network-namespaces/nixos.nix
 
     ({ pkgs, ... }: {
       users.users.probe.isNormalUser = true;
