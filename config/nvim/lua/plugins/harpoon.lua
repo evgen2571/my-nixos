@@ -1,23 +1,21 @@
 local function add_file()
-	require("harpoon.mark").add_file()
+	require("harpoon"):list():add()
 end
 
 local function open_menu()
-	require("harpoon.ui").toggle_quick_menu()
+	local harpoon = require("harpoon")
+	harpoon.ui:toggle_quick_menu(harpoon:list())
 end
 
 local function select_file(index)
 	return function()
-		require("harpoon.ui").nav_file(index)
+		require("harpoon"):list():select(index)
 	end
 end
 
 local keys = {
-	{ "<leader>ba", add_file, desc = "Bookmarks: add current file" },
-	{ "<leader>bm", open_menu, desc = "Bookmarks: show menu" },
-	-- Keep existing bindings for muscle memory.
-	{ "<leader>a", add_file, desc = "Bookmarks: add file (legacy)" },
-	{ "<leader>e", open_menu, desc = "Bookmarks: menu (legacy)" },
+	{ "<leader>a", add_file, desc = "Bookmarks: add current file" },
+	{ "<leader>e", open_menu, desc = "Bookmarks: show menu" },
 }
 
 for index, alt in ipairs({ "<M-a>", "<M-s>", "<M-d>", "<M-f>" }) do
@@ -37,16 +35,28 @@ end
 return {
 	{
 		"ThePrimeagen/harpoon",
+		branch = "harpoon2",
 		dependencies = { "nvim-lua/plenary.nvim" },
 		keys = keys,
 
 		config = function()
-			require("harpoon").setup({
-				tabline = {
-					enabled = true,
-					show_icons = true,
-				},
-			})
+			local bookmarks = require("integrations.bookmarks")
+			bookmarks.import()
+			vim.api.nvim_create_autocmd("DirChanged", { callback = bookmarks.import })
+			vim.o.showtabline = 2
+			vim.o.tabline = "%!v:lua.require'integrations.bookmarks'.tabline()"
+			for _, group in ipairs({
+				"HarpoonInactive",
+				"HarpoonActive",
+				"HarpoonNumberActive",
+				"HarpoonNumberInactive",
+			}) do
+				vim.api.nvim_set_hl(
+					0,
+					group,
+					{ default = true, link = group:find("Inactive") and "TabLine" or "TabLineSel" }
+				)
+			end
 		end,
 	},
 }

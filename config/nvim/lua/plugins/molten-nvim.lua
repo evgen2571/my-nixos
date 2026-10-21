@@ -13,7 +13,11 @@ return {
 			lazy = true,
 
 			config = function()
-				if not require("languages.python").graphics() then
+				local available, reason = require("languages.python").graphics()
+				if not available then
+					if vim.env.NVIM_RESEARCH_IMAGES ~= "0" and #vim.api.nvim_list_uis() > 0 then
+						vim.notify("Molten images unavailable: " .. reason, vim.log.levels.WARN)
+					end
 					return
 				end
 
@@ -22,28 +26,49 @@ return {
 						backend = "kitty",
 						processor = "magick_cli",
 						integrations = { markdown = { enabled = false }, neorg = { enabled = false } },
-						max_height_window_percentage = 40,
+						max_width_window_percentage = 100,
+						max_height_window_percentage = 50,
+						tmux_show_only_in_active_window = true,
 						window_overlap_clear_enabled = true,
+						window_overlap_clear_ft_ignore = {},
 					})
 				end)
 
-				if not ok then
-					vim.notify("Image rendering unavailable: " .. tostring(err), vim.log.levels.WARN)
+				if ok and require("image").is_enabled() then
+					-- Set before Molten's first command snapshots its options and creates the canvas.
+					vim.g.molten_image_provider = "image.nvim"
+				else
+					vim.notify(
+						"Molten image.nvim initialization failed: " .. tostring(err or "provider disabled"),
+						vim.log.levels.WARN
+					)
 				end
 			end,
 		},
 	},
 
 	init = function()
-		vim.g.molten_output_win_max_height = 20
+		vim.g.molten_output_win_max_height = math.max(1, math.floor(vim.o.lines * 0.5))
+		vim.g.molten_output_win_max_width = math.max(1, vim.o.columns - 4)
 		vim.g.molten_auto_open_output = false
 		vim.g.molten_virt_text_output = true
+		vim.g.molten_output_virt_lines = true
 		vim.g.molten_virt_text_max_lines = 12
 		vim.g.molten_image_provider = "none"
 		vim.g.molten_auto_init_behavior = "raise"
 	end,
 
 	config = function()
+		vim.api.nvim_create_autocmd("VimResized", {
+			callback = function()
+				vim.g.molten_output_win_max_height = math.max(1, math.floor(vim.o.lines * 0.5))
+				vim.g.molten_output_win_max_width = math.max(1, vim.o.columns - 4)
+				if next(require("languages.python").ready_kernels) then
+					vim.fn.MoltenUpdateOption("output_win_max_height", vim.g.molten_output_win_max_height)
+					vim.fn.MoltenUpdateOption("output_win_max_width", vim.g.molten_output_win_max_width)
+				end
+			end,
+		})
 		vim.api.nvim_create_autocmd("User", {
 			pattern = "MoltenKernelReady",
 
@@ -75,13 +100,6 @@ return {
 				require("languages.python").prepare_runtime()
 			end,
 		})
-
-		if require("languages.python").graphics() then
-			local ok = pcall(require, "image")
-			if ok and require("image").is_enabled() then
-				vim.g.molten_image_provider = "image.nvim"
-			end
-		end
 	end,
 
 	keys = {

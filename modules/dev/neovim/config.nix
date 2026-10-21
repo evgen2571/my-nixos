@@ -25,11 +25,12 @@ in
 
       mkdir -p "$target_dir"
 
-      # Copy declarative configuration, but preserve Matugen's generated file.
+      # Preserve generated theme and legacy marks until Harpoon 2 imports each project.
       ${pkgs.rsync}/bin/rsync \
         -a \
         --delete \
         --exclude='/lua/matugen.lua' \
+        --exclude='/harpoon.json' \
         --chmod=u+rwX \
         "$source_dir"/ \
         "$target_dir"/

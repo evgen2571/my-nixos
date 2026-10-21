@@ -31,13 +31,13 @@ return {
 
           map('grn', vim.lsp.buf.rename, '[R]e[n]ame')
           map('ga', vim.lsp.buf.code_action, '[G]oto Code [A]ction', { 'n', 'x' })
-          map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
-          map('gi', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
-          map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
+          map('gr', Snacks.picker.lsp_references, '[G]oto [R]eferences')
+          map('gi', Snacks.picker.lsp_implementations, '[G]oto [I]mplementation')
+          map('gd', Snacks.picker.lsp_definitions, '[G]oto [D]efinition')
           map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
-          map('gO', require('telescope.builtin').lsp_document_symbols, 'Open Document Symbols')
-          map('gW', require('telescope.builtin').lsp_dynamic_workspace_symbols, 'Open Workspace Symbols')
-          map('grt', require('telescope.builtin').lsp_type_definitions, '[G]oto [T]ype Definition')
+          map('gO', Snacks.picker.lsp_symbols, 'Open Document Symbols')
+          map('gW', Snacks.picker.lsp_workspace_symbols, 'Open Workspace Symbols')
+          map('grt', Snacks.picker.lsp_type_definitions, '[G]oto [T]ype Definition')
 
           ---@param client vim.lsp.Client
           ---@param method vim.lsp.protocol.Method

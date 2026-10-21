@@ -185,21 +185,33 @@ function M.kernel()
 end
 
 function M.graphics()
-	if vim.env.NVIM_RESEARCH_IMAGES == "0" or #vim.api.nvim_list_uis() == 0 then
-		return false
+	if vim.env.NVIM_RESEARCH_IMAGES == "0" then
+		return false, "disabled by NVIM_RESEARCH_IMAGES=0"
 	end
-	if not (vim.env.KITTY_WINDOW_ID or vim.env.TERM == "xterm-kitty") then
-		return false
+	if #vim.api.nvim_list_uis() == 0 then
+		return false, "no attached Neovim UI"
 	end
 
+	local kitty = vim.env.KITTY_WINDOW_ID ~= nil or vim.env.TERM == "xterm-kitty" or vim.env.TERM_PROGRAM == "kitty"
 	if vim.env.TMUX then
-		local result = vim.system({ "tmux", "show-options", "-gv", "allow-passthrough" }, { text = true }):wait(1000)
-		if result.code ~= 0 or not (result.stdout or ""):match("on") then
-			return false
+		if vim.fn.executable("tmux") ~= 1 then
+			return false, "tmux executable is missing"
+		end
+		local term = vim.system({ "tmux", "display-message", "-p", "#{client_termname}" }, { text = true }):wait(1000)
+		kitty = kitty or (term.code == 0 and vim.trim(term.stdout or "") == "xterm-kitty")
+		local result = vim.system({ "tmux", "show", "-Apv", "allow-passthrough" }, { text = true }):wait(1000)
+		local passthrough = vim.trim(result.stdout or "")
+		if result.code ~= 0 or (passthrough ~= "on" and passthrough ~= "all") then
+			return false, "tmux requires allow-passthrough on (reload its configuration)"
 		end
 	end
-
-	return vim.fn.executable("magick") == 1
+	if not kitty then
+		return false, "Kitty graphics terminal was not detected (check TERM / TERM_PROGRAM or the tmux client)"
+	end
+	if vim.fn.executable("magick") ~= 1 then
+		return false, "ImageMagick executable 'magick' is missing"
+	end
+	return true
 end
 
 -- Pair or sync notebooks without overwriting unrelated or unsaved files.

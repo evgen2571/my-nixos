@@ -5,21 +5,6 @@ return {
     version = '1.*',
 
     dependencies = {
-      {
-        'L3MON4D3/LuaSnip',
-        version = '2.*',
-
-        build = (function()
-          if vim.fn.has 'win32' == 1 or vim.fn.executable 'make' == 0 then
-            return
-          end
-          return 'make install_jsregexp'
-        end)(),
-
-        dependencies = {},
-        opts = {},
-      },
-
       'folke/lazydev.nvim',
     },
 
@@ -45,8 +30,9 @@ return {
         },
       },
 
-      snippets = { preset = 'luasnip' },
-      fuzzy = { implementation = 'lua' },
+      snippets = { preset = 'default' },
+      -- Keep the locked Lua plugin reproducible; Rust needs a matching Nix-built library.
+      fuzzy = { implementation = 'lua', prebuilt_binaries = { download = false } },
       signature = { enabled = true },
     },
   },

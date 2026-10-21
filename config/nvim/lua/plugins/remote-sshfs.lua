@@ -5,16 +5,24 @@ return {
 		"RemoteSSHFSConnect",
 		"RemoteSSHFSDisconnect",
 		"RemoteSSHFSEdit",
+		"RemoteSSHFSReload",
 		"RemoteSSHFSFindFiles",
 		"RemoteSSHFSLiveGrep",
 	},
 
 	dependencies = {
-		"nvim-telescope/telescope.nvim",
+		"folke/snacks.nvim",
 		"nvim-lua/plenary.nvim",
 	},
 
+	keys = {
+		{ "<leader>rc", "<cmd>RemoteSSHFSConnect<CR>", desc = "Remote SSHFS: connect" },
+		{ "<leader>rd", "<cmd>RemoteSSHFSDisconnect<CR>", desc = "Remote SSHFS: disconnect" },
+		{ "<leader>re", "<cmd>RemoteSSHFSEdit<CR>", desc = "Remote SSHFS: edit SSH configs" },
+	},
+
 	opts = {
+		ui = { picker = "snacks" },
 		connections = {
 			ssh_configs = {
 				vim.fn.expand("$HOME") .. "/.ssh/config",
@@ -22,14 +30,4 @@ return {
 			},
 		},
 	},
-
-	config = function(_, opts)
-		require("remote-sshfs").setup(opts)
-		pcall(require("telescope").load_extension, "remote-sshfs")
-
-		local api = require("remote-sshfs.api")
-		vim.keymap.set("n", "<leader>rc", api.connect, { desc = "Remote SSHFS: connect" })
-		vim.keymap.set("n", "<leader>rd", api.disconnect, { desc = "Remote SSHFS: disconnect" })
-		vim.keymap.set("n", "<leader>re", api.edit, { desc = "Remote SSHFS: edit SSH configs" })
-	end,
 }
