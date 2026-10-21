@@ -1,7 +1,7 @@
 # Login screen and keyring
 
 PC and laptop use Noctalia Greeter through greetd, with Niri preselected. The
-[greeter module](../../modules/desktops/noctalia-greeter.nix) owns login layout
+[greeter module](../../modules/desktop/noctalia-greeter.nixos.nix) owns login layout
 and PAM integration. [Noctalia Shell](../apps/noctalia.md) owns desktop appearance.
 
 ## Sync appearance

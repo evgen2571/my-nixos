@@ -7,29 +7,69 @@ Host profiles select features; `config/` holds program-native source files.
 
 ## Discovery and enablement
 
-`flake/hosts.nix` selects a catalog profile. `lib/module-catalog.nix` chooses its
-module roots; `lib/module-discovery.nix` recursively imports `.nix` files.
-A directory containing `default.nix` is imported as one module, and that entry
-point must explicitly import any module helpers beside it.
+`flake/hosts.nix` selects a catalog profile. `lib/module-discovery.nix` recognizes
+`*.nixos.nix` and directory `nixos.nix` as NixOS entries, and `*.home.nix` and
+directory `home.nix` as Home Manager entries. Typed discovery recurses in sorted
+name order even beside a `default.nix`; helpers such as `config.nix`, ordinary
+untyped Nix files, symlinks and non-module assets are ignored. Helpers are imported
+explicitly by their owner. Each typed entry belongs to exactly one module system.
 
-| Module root | Scope | Profiles |
+`lib/module-catalog.nix` owns availability independently for each scope:
+
+| Typed module root | NixOS profiles | Home Manager profiles |
 | --- | --- | --- |
-| `modules/desktops`, `modules/hardware`, `modules/system-apps`, `modules/system-dev`, `modules/system-files` | NixOS | Desktop |
-| `modules/system-services` | NixOS | Desktop, server |
-| `modules/server` | NixOS | Server |
-| `modules/user-ai`, `modules/user-apps`, `modules/user-desktop`, `modules/user-files` | Home Manager | Desktop |
-| `modules/user-dev` | Home Manager | Desktop, server |
+| `modules/ai` | None | Desktop |
+| `modules/apps`, `modules/desktop`, `modules/files` | Desktop | Desktop |
+| `modules/dev` | Desktop | Desktop, server |
+| `modules/services` | Desktop, server | None |
+| `modules/hardware` | Desktop | None |
+| `modules/server` | Server | None |
 
-The system-core base/user modules are explicitly imported by host configurations;
-`modules/secrets.nix` is imported by flake assembly. They are outside discovered
-roots. Host shared profiles also remain outside discovery.
+For example, `dev/fish/nixos.nix` is desktop-only while its colocated `home.nix`
+is available on desktops and server. Declaring a typed entry in a scope the root
+does not allow is an error, with its path and scope in the diagnostic.
 
-Discovery makes options available. Hosts enable them separately. Do not manually
-import a discovered module from a host profile. Keep implementation helpers inside
-a directory owned by `default.nix` so they do not become accidental modules.
+Discovery recognizes an entry, catalog rules make its options available, and host
+profiles activate its behavior through the existing enable/settings options.
+Availability does not enable a feature. Unconditional entries such as personal
+SSH retain their existing behavior. Do not manually import discovered modules
+from host profiles.
+
+Core baselines, primary-user/Home Manager baseline wiring, secrets and deployment
+are explicitly assembled. `modules/core` and `modules/deployment` stay outside
+optional discovery.
+Host shared profiles remain outside discovery too. Optional `server/base.nixos.nix`
+stays separate from the explicit server baseline.
+
+### Import order
+
+`lib/module-order.json` lists the existing typed entries in their established
+import order. It contains only current paths; availability and profile eligibility
+come from the catalog root rules above. Discovery never reads the historical
+inventory or migration ledger, scans old category roots, or treats `default.nix`
+as an entry point.
+
+Existing entries retain their listed position. New ordinary typed features follow
+these entries in root order: `ai`, `apps`, `desktop`, `dev`, `files`,
+`services`, `hardware`, `server`; within each root, recursive sorted-name order. No registration is needed for
+a new feature. If an existing entry moves, update its path in the same ordering
+slot and verify the baseline comparison. The final inventory check detects missing,
+duplicated or reordered baseline entries, including disabled features. Directory
+fixtures may contain only a subset of entries; absent paths in the ordering list
+do not create modules. The catalog returns separate deterministic `systemModules`
+and `homeModules` lists for each profile.
+
+Run `python3 tests/module-catalog/test_catalog.py` for extendable directory
+fixtures and `nix build .#checks.x86_64-linux.module-catalog --no-link` for the
+sandboxed check. `module-equivalence` applies the complete [old-to-new inventory](../refactor/inventory.json)
+to the frozen ordered catalog;
+[the comparison contract](../refactor/README.md) covers assembled hosts.
 
 ## Add or select a feature
 
+Add an ordinary desktop app at `modules/apps/example.home.nix` (or
+`modules/apps/example/home.nix` when it needs helpers). No registration or manual
+import is needed; the root rules make it available to desktop Home Manager only.
 A minimal Home Manager module follows the existing option namespaces:
 
 ```nix
@@ -78,10 +118,10 @@ automatic formatting alone does not provide these breaks. An enable-only option
 needs no extra attribute-set wrapper.
 
 Keep a feature in one file while its options and implementation are easy to read
-together. Use a directory with `default.nix` when it needs helpers or separate
+together. Use a directory with `nixos.nix` or `home.nix` when it needs helpers or separate
 source files. Split by responsibility, such as package installation and file
 deployment; avoid creating a file for every setting. Shell scripts with their own
-control flow belong in `.sh` files, as in `modules/user-dev/tmux/project-list.sh`.
+control flow belong in `.sh` files, as in `modules/dev/tmux/project-list.sh`.
 
 Comments should explain a reason or constraint: why a file must stay writable,
 why a dependency is pinned, or which program owns a shortcut. Skip comments that
@@ -179,3 +219,5 @@ Use [the configuration map](configuration.md#choose-verification-by-impact) for
 checks. Verify both availability and intended enablement, then format and evaluate
 all affected hosts. Generated services/files may require a non-activating build.
 Changes to live systems remain a separately authorized step.
+
+The feature-first refactor has a [pre-migration inventory and comparison contract](../refactor/README.md).

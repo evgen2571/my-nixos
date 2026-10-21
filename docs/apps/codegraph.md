@@ -14,7 +14,7 @@ it does not uninstall the executable or unregister MCP.
 ## Optional agent connection
 
 Nix installs the CLI on both desktops through
-[modules/user-ai/codegraph.nix](../../modules/user-ai/codegraph.nix), from the
+[modules/ai/codegraph.home.nix](../../modules/ai/codegraph.home.nix), from the
 locked unstable Nixpkgs input. It does not register MCP, start a daemon, edit
 agent instructions or index projects. Avoid `codegraph upgrade` for this
 Nix-managed binary.

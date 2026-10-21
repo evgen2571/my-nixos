@@ -23,13 +23,13 @@ bindings override earlier scroll bindings for the same Up/Down combinations.
 ## Configuration and graphics
 
 Edit [kitty.conf](../../config/kitty/kitty.conf) for terminal behavior. The
-[Kitty module](../../modules/user-dev/kitty) installs it through
+[Kitty module](../../modules/dev/kitty.home.nix) installs it through
 [config-paths.nix](../../lib/config-paths.nix), including the host's
 `my.user.dev.kitty.fontSize`. Colors come from the included Noctalia theme.
 
 Project session behavior belongs to [config/sesh](../../config/sesh), shell
 behavior to [config/fish](../../config/fish), and multiplexing to
-[tmux module](../../modules/user-dev/tmux/default.nix). Keep a terminal change in its owning layer.
+[tmux module](../../modules/dev/tmux/home.nix). Keep a terminal change in its owning layer.
 
 [Neovim plots](neovim.md#python-projects-and-notebooks) need Kitty graphics and,
 inside tmux, `allow-passthrough on`. Check `tmux show-options -gv allow-passthrough`

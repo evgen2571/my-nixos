@@ -1,0 +1,753 @@
+{
+  "modules": [
+    {
+      "path": "modules/desktops/gnome",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/desktops",
+      "scope": "system"
+    },
+    {
+      "path": "modules/desktops/niri",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/desktops",
+      "scope": "system"
+    },
+    {
+      "path": "modules/desktops/noctalia-greeter.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/desktops",
+      "scope": "system"
+    },
+    {
+      "path": "modules/desktops/opentabletdriver.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/desktops",
+      "scope": "system"
+    },
+    {
+      "path": "modules/desktops/xserver.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/desktops",
+      "scope": "system"
+    },
+    {
+      "path": "modules/server/base.nix",
+      "profiles": [
+        "server"
+      ],
+      "relPath": "/modules/server",
+      "scope": "system"
+    },
+    {
+      "path": "modules/server/docker-host.nix",
+      "profiles": [
+        "server"
+      ],
+      "relPath": "/modules/server",
+      "scope": "system"
+    },
+    {
+      "path": "modules/server/ssh.nix",
+      "profiles": [
+        "server"
+      ],
+      "relPath": "/modules/server",
+      "scope": "system"
+    },
+    {
+      "path": "modules/server/storage.nix",
+      "profiles": [
+        "server"
+      ],
+      "relPath": "/modules/server",
+      "scope": "system"
+    },
+    {
+      "path": "modules/server/syncthing.nix",
+      "profiles": [
+        "server"
+      ],
+      "relPath": "/modules/server",
+      "scope": "system"
+    },
+    {
+      "path": "modules/system-services/blueman.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/system-services",
+      "scope": "system"
+    },
+    {
+      "path": "modules/system-services/lan-mouse.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/system-services",
+      "scope": "system"
+    },
+    {
+      "path": "modules/system-services/network-namespaces",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/system-services",
+      "scope": "system"
+    },
+    {
+      "path": "modules/system-services/sunshine.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/system-services",
+      "scope": "system"
+    },
+    {
+      "path": "modules/system-services/syncthing.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/system-services",
+      "scope": "system"
+    },
+    {
+      "path": "modules/system-services/tailscale.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/system-services",
+      "scope": "system"
+    },
+    {
+      "path": "modules/system-services/virtualization.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/system-services",
+      "scope": "system"
+    },
+    {
+      "path": "modules/hardware/bluetooth.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/hardware",
+      "scope": "system"
+    },
+    {
+      "path": "modules/hardware/nvidia.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/hardware",
+      "scope": "system"
+    },
+    {
+      "path": "modules/hardware/screen-recorder.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/hardware",
+      "scope": "system"
+    },
+    {
+      "path": "modules/system-apps/lutris.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/system-apps",
+      "scope": "system"
+    },
+    {
+      "path": "modules/system-apps/obs.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/system-apps",
+      "scope": "system"
+    },
+    {
+      "path": "modules/system-apps/steam.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/system-apps",
+      "scope": "system"
+    },
+    {
+      "path": "modules/system-apps/vesktop.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/system-apps",
+      "scope": "system"
+    },
+    {
+      "path": "modules/system-apps/waydroid.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/system-apps",
+      "scope": "system"
+    },
+    {
+      "path": "modules/system-dev/docker",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/system-dev",
+      "scope": "system"
+    },
+    {
+      "path": "modules/system-dev/fish.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/system-dev",
+      "scope": "system"
+    },
+    {
+      "path": "modules/system-files/thunar.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/system-files",
+      "scope": "system"
+    },
+    {
+      "path": "modules/user-ai/codegraph.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-ai",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-ai/codex.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-ai",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-ai/llama-cpp.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-ai",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-ai/opencode.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-ai",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-ai/orca.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-ai",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-ai/skillshare.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-ai",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-apps/anki.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-apps",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-apps/bruno.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-apps",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-apps/chrome.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-apps",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-apps/krita.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-apps",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-apps/mpv.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-apps",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-apps/obsidian.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-apps",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-apps/osu-lazer.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-apps",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-apps/prism-launcher.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-apps",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-apps/qimgv.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-apps",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-apps/telegram.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-apps",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-apps/voxtype.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-apps",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-apps/youtube-music.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-apps",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-apps/zen-browser.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-apps",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-desktop/niri/config.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-desktop",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-desktop/noctalia",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-desktop",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-desktop/screen-recorder.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-desktop",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-dev/bb.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-dev/bundles/terminal-workflow.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-dev/bundles/toolchains.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-dev/bundles/workstation.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-dev/ffmpeg.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-dev/fish",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-dev/git.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-dev/github.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-dev/kitty",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-dev/languages/cpp.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-dev/languages/godot.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-dev/languages/java.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-dev/languages/python.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-dev/languages/rust.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-dev/languages/unity.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-dev/neovim",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-dev/pycharm.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-dev/ssh.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-dev/starship",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-dev/tmux",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-dev/vscode.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-dev/zed.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-dev/zoxide.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-files/dolphin.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-files",
+      "scope": "home"
+    },
+    {
+      "path": "modules/user-files/yazi.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-files",
+      "scope": "home"
+    }
+  ],
+  "profiles": {
+    "desktop": {
+      "home": [
+        "modules/user-ai/codegraph.nix",
+        "modules/user-ai/codex.nix",
+        "modules/user-ai/llama-cpp.nix",
+        "modules/user-ai/opencode.nix",
+        "modules/user-ai/orca.nix",
+        "modules/user-ai/skillshare.nix",
+        "modules/user-apps/anki.nix",
+        "modules/user-apps/bruno.nix",
+        "modules/user-apps/chrome.nix",
+        "modules/user-apps/krita.nix",
+        "modules/user-apps/mpv.nix",
+        "modules/user-apps/obsidian.nix",
+        "modules/user-apps/osu-lazer.nix",
+        "modules/user-apps/prism-launcher.nix",
+        "modules/user-apps/qimgv.nix",
+        "modules/user-apps/telegram.nix",
+        "modules/user-apps/voxtype.nix",
+        "modules/user-apps/youtube-music.nix",
+        "modules/user-apps/zen-browser.nix",
+        "modules/user-desktop/niri/config.nix",
+        "modules/user-desktop/noctalia",
+        "modules/user-desktop/screen-recorder.nix",
+        "modules/user-dev/bb.nix",
+        "modules/user-dev/bundles/terminal-workflow.nix",
+        "modules/user-dev/bundles/toolchains.nix",
+        "modules/user-dev/bundles/workstation.nix",
+        "modules/user-dev/ffmpeg.nix",
+        "modules/user-dev/fish",
+        "modules/user-dev/git.nix",
+        "modules/user-dev/github.nix",
+        "modules/user-dev/kitty",
+        "modules/user-dev/languages/cpp.nix",
+        "modules/user-dev/languages/godot.nix",
+        "modules/user-dev/languages/java.nix",
+        "modules/user-dev/languages/python.nix",
+        "modules/user-dev/languages/rust.nix",
+        "modules/user-dev/languages/unity.nix",
+        "modules/user-dev/neovim",
+        "modules/user-dev/pycharm.nix",
+        "modules/user-dev/ssh.nix",
+        "modules/user-dev/starship",
+        "modules/user-dev/tmux",
+        "modules/user-dev/vscode.nix",
+        "modules/user-dev/zed.nix",
+        "modules/user-dev/zoxide.nix",
+        "modules/user-files/dolphin.nix",
+        "modules/user-files/yazi.nix"
+      ],
+      "system": [
+        "modules/desktops/gnome",
+        "modules/desktops/niri",
+        "modules/desktops/noctalia-greeter.nix",
+        "modules/desktops/opentabletdriver.nix",
+        "modules/desktops/xserver.nix",
+        "modules/system-services/blueman.nix",
+        "modules/system-services/lan-mouse.nix",
+        "modules/system-services/network-namespaces",
+        "modules/system-services/sunshine.nix",
+        "modules/system-services/syncthing.nix",
+        "modules/system-services/tailscale.nix",
+        "modules/system-services/virtualization.nix",
+        "modules/hardware/bluetooth.nix",
+        "modules/hardware/nvidia.nix",
+        "modules/hardware/screen-recorder.nix",
+        "modules/system-apps/lutris.nix",
+        "modules/system-apps/obs.nix",
+        "modules/system-apps/steam.nix",
+        "modules/system-apps/vesktop.nix",
+        "modules/system-apps/waydroid.nix",
+        "modules/system-dev/docker",
+        "modules/system-dev/fish.nix",
+        "modules/system-files/thunar.nix"
+      ]
+    },
+    "server": {
+      "home": [
+        "modules/user-dev/bb.nix",
+        "modules/user-dev/bundles/terminal-workflow.nix",
+        "modules/user-dev/bundles/toolchains.nix",
+        "modules/user-dev/bundles/workstation.nix",
+        "modules/user-dev/ffmpeg.nix",
+        "modules/user-dev/fish",
+        "modules/user-dev/git.nix",
+        "modules/user-dev/github.nix",
+        "modules/user-dev/kitty",
+        "modules/user-dev/languages/cpp.nix",
+        "modules/user-dev/languages/godot.nix",
+        "modules/user-dev/languages/java.nix",
+        "modules/user-dev/languages/python.nix",
+        "modules/user-dev/languages/rust.nix",
+        "modules/user-dev/languages/unity.nix",
+        "modules/user-dev/neovim",
+        "modules/user-dev/pycharm.nix",
+        "modules/user-dev/ssh.nix",
+        "modules/user-dev/starship",
+        "modules/user-dev/tmux",
+        "modules/user-dev/vscode.nix",
+        "modules/user-dev/zed.nix",
+        "modules/user-dev/zoxide.nix"
+      ],
+      "system": [
+        "modules/server/base.nix",
+        "modules/server/docker-host.nix",
+        "modules/server/ssh.nix",
+        "modules/server/storage.nix",
+        "modules/server/syncthing.nix",
+        "modules/system-services/blueman.nix",
+        "modules/system-services/lan-mouse.nix",
+        "modules/system-services/network-namespaces",
+        "modules/system-services/sunshine.nix",
+        "modules/system-services/syncthing.nix",
+        "modules/system-services/tailscale.nix",
+        "modules/system-services/virtualization.nix"
+      ]
+    }
+  }
+}

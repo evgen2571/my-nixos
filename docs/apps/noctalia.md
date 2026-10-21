@@ -25,7 +25,7 @@ are shared, while `bar-pc.toml`/`bar-laptop.toml` and corresponding widget files
 select each desktop's layout. Host profiles choose
 `my.user.desktop.noctalia.profile`.
 
-The [Home Manager module](../../modules/user-desktop/noctalia/config.nix) turns
+The [Home Manager module](../../modules/desktop/noctalia/config.nix) turns
 TOML defaults into `programs.noctalia.settings`. Private settings can override
 personal values there. Avatar, wallpaper and screenshot paths derive from the
 home directory by default.

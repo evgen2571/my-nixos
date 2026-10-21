@@ -1,0 +1,3717 @@
+{
+  "baseline": "cb75bb68aaf0412f26488d63e4556e36c31193bd",
+  "entries": [
+    {
+      "path": "modules/desktops/gnome",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/desktops",
+      "scope": "system",
+      "target": "modules/desktop/gnome.nixos.nix",
+      "files": [
+        "modules/desktops/gnome/default.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.desktop.gnome.enable = lib.mkEnableOption \"GNOME desktop environment\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.desktop.gnome;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/desktops/niri",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/desktops",
+      "scope": "system",
+      "target": "modules/desktop/niri/nixos.nix",
+      "files": [
+        "modules/desktops/niri/default.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.desktop.niri.enable = lib.mkEnableOption \"Niri desktop session\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.desktop.niri;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix",
+        "tests/niri/hosts.nix",
+        "tests/config-paths/default.nix",
+        "docs/apps/niri.md"
+      ]
+    },
+    {
+      "path": "modules/desktops/noctalia-greeter.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/desktops",
+      "scope": "system",
+      "target": "modules/desktop/noctalia-greeter.nixos.nix",
+      "files": [
+        "modules/desktops/noctalia-greeter.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.desktop.noctaliaGreeter.enable = lib.mkEnableOption \"Noctalia Greeter display manager\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.desktop.noctaliaGreeter;",
+        "greeterPackage = packageSources.noctalia-greeter;",
+        "imports = [",
+        "inputs.noctalia-greeter.nixosModules.default",
+        "user.default = config.my.primaryUser.name;",
+        "subject.user == ${builtins.toJSON config.my.primaryUser.name}) {"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix",
+        "tests/niri/hosts.nix",
+        "docs/apps/noctalia.md"
+      ]
+    },
+    {
+      "path": "modules/desktops/opentabletdriver.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/desktops",
+      "scope": "system",
+      "target": "modules/desktop/opentabletdriver.nixos.nix",
+      "files": [
+        "modules/desktops/opentabletdriver.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.desktop.opentabletdriver.enable = lib.mkEnableOption \"OpenTabletDriver support\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.desktop.opentabletdriver;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/desktops/xserver.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/desktops",
+      "scope": "system",
+      "target": "modules/desktop/xserver.nixos.nix",
+      "files": [
+        "modules/desktops/xserver.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.desktop.xserver.enable = lib.mkEnableOption \"X server and XWayland support\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.desktop.xserver;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix",
+        "docs/operations/server.md"
+      ]
+    },
+    {
+      "path": "modules/server/base.nix",
+      "profiles": [
+        "server"
+      ],
+      "relPath": "/modules/server",
+      "scope": "system",
+      "target": "modules/server/base.nixos.nix",
+      "files": [
+        "modules/server/base.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.server.base.enable = lib.mkEnableOption \"base server module\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.server.base;"
+      ],
+      "deploymentReferences": [
+        "rsync"
+      ],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix",
+        "docs/operations/server.md"
+      ]
+    },
+    {
+      "path": "modules/server/docker-host.nix",
+      "profiles": [
+        "server"
+      ],
+      "relPath": "/modules/server",
+      "scope": "system",
+      "target": "modules/server/docker-host.nixos.nix",
+      "files": [
+        "modules/server/docker-host.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.server.dockerHost.enable = lib.mkEnableOption \"production-oriented Docker host\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.server.dockerHost;",
+        "storage = config.my.server.storage;",
+        "assertion = storage.enable;",
+        "message = \"my.server.dockerHost requires my.server.storage.enable to be true.\";",
+        "users.users.${config.my.primaryUser.name}.extraGroups = ["
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix",
+        "docs/operations/server.md"
+      ]
+    },
+    {
+      "path": "modules/server/ssh.nix",
+      "profiles": [
+        "server"
+      ],
+      "relPath": "/modules/server",
+      "scope": "system",
+      "target": "modules/server/ssh.nixos.nix",
+      "files": [
+        "modules/server/ssh.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.server.ssh = {"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.server.ssh;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix",
+        "docs/operations/server.md"
+      ]
+    },
+    {
+      "path": "modules/server/storage.nix",
+      "profiles": [
+        "server"
+      ],
+      "relPath": "/modules/server",
+      "scope": "system",
+      "target": "modules/server/storage.nixos.nix",
+      "files": [
+        "modules/server/storage.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.server.storage = {"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.server.storage;",
+        "primaryUser = config.my.primaryUser.name;",
+        "assertion = lib.any (prefix: lib.hasPrefix prefix cfg.device && cfg.device != prefix) ["
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix",
+        "docs/operations/server.md"
+      ]
+    },
+    {
+      "path": "modules/server/syncthing.nix",
+      "profiles": [
+        "server"
+      ],
+      "relPath": "/modules/server",
+      "scope": "system",
+      "target": "modules/server/syncthing.nixos.nix",
+      "files": [
+        "modules/server/syncthing.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.server.syncthing.enable = lib.mkEnableOption \"server-oriented Syncthing\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.server.syncthing;",
+        "storage = config.my.server.storage;",
+        "assertion = storage.enable;",
+        "message = \"my.server.syncthing requires my.server.storage.enable to be true.\";",
+        "assertion = storage.device != null;",
+        "my.server.syncthing requires my.server.storage.device to be set to a"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix",
+        "docs/operations/server.md"
+      ]
+    },
+    {
+      "path": "modules/system-services/blueman.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/system-services",
+      "scope": "system",
+      "target": "modules/services/blueman.nixos.nix",
+      "files": [
+        "modules/system-services/blueman.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.system.services.blueman.enable = lib.mkEnableOption \"Blueman Bluetooth manager\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.system.services.blueman;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/system-services/lan-mouse.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/system-services",
+      "scope": "system",
+      "target": "modules/services/lan-mouse.nixos.nix",
+      "files": [
+        "modules/system-services/lan-mouse.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.system.services.lanMouse.enable = lib.mkEnableOption \"Lan Mouse firewall access\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.system.services.lanMouse;",
+        "packageSources.lan-mouse"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/system-services/network-namespaces",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/system-services",
+      "scope": "system",
+      "target": "modules/services/network-namespaces/nixos.nix",
+      "files": [
+        "modules/system-services/network-namespaces/default.nix",
+        "modules/system-services/network-namespaces/doctor.nix",
+        "modules/system-services/network-namespaces/doctor.py",
+        "modules/system-services/network-namespaces/launcher.nix",
+        "modules/system-services/network-namespaces/migration/desktop-provider-guard.sh",
+        "modules/system-services/network-namespaces/migration/prepare-rollback.sh",
+        "modules/system-services/network-namespaces/migration/rollback.sh",
+        "modules/system-services/network-namespaces/namespace.nix",
+        "modules/system-services/network-namespaces/shared.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.system.services.networkNamespaces = {",
+        "options.my.system.services.networkNamespaces = {"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.system.services.networkNamespaces;",
+        "import ./namespace.nix {",
+        "imports = [",
+        "assertion =",
+        "pkgs.callPackage ../../../packages/hide-me { }",
+        "cfg = config.my.system.services.networkNamespaces;",
+        "launcher = pkgs.callPackage ../../../packages/namespace-launcher { inherit targets; };",
+        "assertion =",
+        "doctor = import ./doctor.nix {",
+        "client = pkgs.callPackage ../../../packages/hide-me { };",
+        "# Agent entry requires both local tunnel readiness and a recent HTTPS probe.",
+        "requires = [ \"${netns}.service\" ];",
+        "requires = lib.optional (!shared) \"${underlay}.service\";",
+        "text = builtins.readFile ./migration/desktop-provider-guard.sh;",
+        ") config.my.system.services.networkNamespaces.namespaces;",
+        "assertion =",
+        "message = \"Shared VPN ${name} requires a runtime private key, declarative public keys and allowed IPs (one peer and an endpoint for clients).\";",
+        "requires = [ \"netns-${name}.service\" ];",
+        "requires = [ \"netns-${name}.service\" ];",
+        "config = lib.mkIf config.my.system.services.networkNamespaces.enable {"
+      ],
+      "deploymentReferences": [
+        "text = ''",
+        "text = ''exec ${lib.getExe command} status \"$@\"'';",
+        "text = ''",
+        "chmod 0644 ${runtime}/resolv.conf",
+        "chmod 0644 ${runtime}/nsswitch.conf",
+        "text = ''",
+        "text = ''",
+        "text = ''",
+        "chmod 0600 ${state}/accessToken.txt",
+        "text = ''",
+        "text = ''",
+        "source = doctor.reset;",
+        "environment.etc.\"network-namespaces/${name}-check\".source = lib.getExe check;",
+        "text = builtins.readFile ./migration/desktop-provider-guard.sh;",
+        "text = ''",
+        "text = \"${lib.getExe guard} ${name}\";"
+      ],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix",
+        "tests/network-namespaces/",
+        "docs/operations/network-namespaces.md",
+        "docs/operations/vpn.md"
+      ]
+    },
+    {
+      "path": "modules/system-services/sunshine.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/system-services",
+      "scope": "system",
+      "target": "modules/services/sunshine.nixos.nix",
+      "files": [
+        "modules/system-services/sunshine.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.system.services.sunshine.enable = lib.mkEnableOption \"Sunshine\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.system.services.sunshine;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/system-services/syncthing.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/system-services",
+      "scope": "system",
+      "target": "modules/services/syncthing.nixos.nix",
+      "files": [
+        "modules/system-services/syncthing.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.system.services.syncthing.enable = lib.mkEnableOption \"Syncthing\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.system.services.syncthing;",
+        "primaryUser = config.my.primaryUser.name;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/system-services/tailscale.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/system-services",
+      "scope": "system",
+      "target": "modules/services/tailscale.nixos.nix",
+      "files": [
+        "modules/system-services/tailscale.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.system.services.tailscale = {"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.system.services.tailscale;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/system-services/virtualization.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/system-services",
+      "scope": "system",
+      "target": "modules/services/virtualization.nixos.nix",
+      "files": [
+        "modules/system-services/virtualization.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.system.services.virtualization.enable ="
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.system.services.virtualization;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/hardware/bluetooth.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/hardware",
+      "scope": "system",
+      "target": "modules/hardware/bluetooth.nixos.nix",
+      "files": [
+        "modules/hardware/bluetooth.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.hardware.bluetooth = {"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.hardware.bluetooth;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/hardware/nvidia.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/hardware",
+      "scope": "system",
+      "target": "modules/hardware/nvidia.nixos.nix",
+      "files": [
+        "modules/hardware/nvidia.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.hardware.nvidia.enable = lib.mkEnableOption \"NVIDIA graphics support\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.hardware.nvidia;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/hardware/screen-recorder.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/hardware",
+      "scope": "system",
+      "target": "modules/desktop/screen-recorder.nixos.nix",
+      "files": [
+        "modules/hardware/screen-recorder.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.hardware.screenRecorder.enable = lib.mkEnableOption \"screen recording hardware support\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.hardware.screenRecorder;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/system-apps/lutris.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/system-apps",
+      "scope": "system",
+      "target": "modules/apps/lutris.nixos.nix",
+      "files": [
+        "modules/system-apps/lutris.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.system.apps.lutris.enable = lib.mkEnableOption \"Lutris\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.system.apps.lutris;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/system-apps/obs.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/system-apps",
+      "scope": "system",
+      "target": "modules/apps/obs.nixos.nix",
+      "files": [
+        "modules/system-apps/obs.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.system.apps.obs.enable = lib.mkEnableOption \"OBS Studio\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.system.apps.obs;",
+        "nvidiaEnabled = config.my.hardware.nvidia.enable or false;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/system-apps/steam.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/system-apps",
+      "scope": "system",
+      "target": "modules/apps/steam.nixos.nix",
+      "files": [
+        "modules/system-apps/steam.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.system.apps.steam.enable = lib.mkEnableOption \"Steam\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.system.apps.steam;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/system-apps/vesktop.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/system-apps",
+      "scope": "system",
+      "target": "modules/apps/vesktop.nixos.nix",
+      "files": [
+        "modules/system-apps/vesktop.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.system.apps.vesktop.enable = lib.mkEnableOption \"Vesktop\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.system.apps.vesktop;",
+        "paths = [ packageSources.vesktop ];"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/system-apps/waydroid.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/system-apps",
+      "scope": "system",
+      "target": "modules/apps/waydroid.nixos.nix",
+      "files": [
+        "modules/system-apps/waydroid.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.system.apps.waydroid.enable = lib.mkEnableOption \"Waydroid\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.system.apps.waydroid;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/system-dev/docker",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/system-dev",
+      "scope": "system",
+      "target": "modules/dev/docker.nixos.nix",
+      "files": [
+        "modules/system-dev/docker/default.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.system.dev.docker.enable = lib.mkEnableOption \"Docker\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.system.dev.docker;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/system-dev/fish.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/system-dev",
+      "scope": "system",
+      "target": "modules/dev/fish/nixos.nix",
+      "files": [
+        "modules/system-dev/fish.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.system.dev.fish.enable = lib.mkEnableOption \"Fish shell system integration\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.system.dev.fish;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix",
+        "tests/config-paths/default.nix",
+        "tests/migration/helpers.py"
+      ]
+    },
+    {
+      "path": "modules/system-files/thunar.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/system-files",
+      "scope": "system",
+      "target": "modules/files/thunar.nixos.nix",
+      "files": [
+        "modules/system-files/thunar.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.system.files.thunar.enable = lib.mkEnableOption \"Thunar file manager\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.system.files.thunar;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/user-ai/codegraph.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-ai",
+      "scope": "home",
+      "target": "modules/ai/codegraph.home.nix",
+      "files": [
+        "modules/user-ai/codegraph.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.ai.codegraph.enable ="
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.ai.codegraph;",
+        "home.packages = [ packageSources.codegraph ];"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix",
+        "docs/apps/codegraph.md"
+      ]
+    },
+    {
+      "path": "modules/user-ai/codex.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-ai",
+      "scope": "home",
+      "target": "modules/ai/codex.home.nix",
+      "files": [
+        "modules/user-ai/codex.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.ai.codex = {"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.ai.codex;",
+        "\"${lib.getExe osConfig.my.system.services.networkNamespaces.launcherPackage} codex-${config.home.username}\";",
+        "default = packageSources.codex;",
+        "assertion =",
+        "(osConfig.my.system.services.networkNamespaces.enable or false)",
+        "&& (osConfig.my.system.services.networkNamespaces.namespaces.${cfg.networkNamespace}.enable or false",
+        "message = \"Codex networkNamespace requires the corresponding system VPN namespace to be enabled.\";"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/user-ai/llama-cpp.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-ai",
+      "scope": "home",
+      "target": "modules/ai/llama-cpp.home.nix",
+      "files": [
+        "modules/user-ai/llama-cpp.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.ai.llamaCpp.enable = lib.mkEnableOption \"llama.cpp\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.ai.llamaCpp;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/user-ai/opencode.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-ai",
+      "scope": "home",
+      "target": "modules/ai/opencode.home.nix",
+      "files": [
+        "modules/user-ai/opencode.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.ai.opencode.enable = lib.mkEnableOption \"OpenCode\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.ai.opencode;",
+        "home.packages = [ packageSources.opencode ];"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/user-ai/orca.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-ai",
+      "scope": "home",
+      "target": "modules/ai/orca.home.nix",
+      "files": [
+        "modules/user-ai/orca.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.ai.orca = {"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.ai.orca;",
+        "default = packageSources.orca;",
+        "packageSources.orca",
+        "exec ${lib.getExe osConfig.my.system.services.networkNamespaces.launcherPackage} orca-${config.home.username} \"$@\""
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/user-ai/skillshare.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-ai",
+      "scope": "home",
+      "target": "modules/ai/skillshare.home.nix",
+      "files": [
+        "modules/user-ai/skillshare.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.ai.skillshare.enable ="
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.ai.skillshare;",
+        "home.packages = [ (pkgs.callPackage ../../pkgs/skillshare.nix { }) ];"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix",
+        "docs/apps/skillshare.md"
+      ]
+    },
+    {
+      "path": "modules/user-apps/anki.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-apps",
+      "scope": "home",
+      "target": "modules/apps/anki.home.nix",
+      "files": [
+        "modules/user-apps/anki.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.apps.anki.enable = lib.mkEnableOption \"Anki Flashcards\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.apps.anki;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/user-apps/bruno.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-apps",
+      "scope": "home",
+      "target": "modules/apps/bruno.home.nix",
+      "files": [
+        "modules/user-apps/bruno.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.apps.bruno.enable = lib.mkEnableOption \"Bruno API client\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.apps.bruno;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/user-apps/chrome.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-apps",
+      "scope": "home",
+      "target": "modules/apps/chrome.home.nix",
+      "files": [
+        "modules/user-apps/chrome.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.apps.chrome.enable = lib.mkEnableOption \"Google Chrome\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.apps.chrome;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/user-apps/krita.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-apps",
+      "scope": "home",
+      "target": "modules/apps/krita.home.nix",
+      "files": [
+        "modules/user-apps/krita.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.apps.krita.enable = lib.mkEnableOption \"Krita\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.apps.krita;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/user-apps/mpv.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-apps",
+      "scope": "home",
+      "target": "modules/apps/mpv.home.nix",
+      "files": [
+        "modules/user-apps/mpv.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.apps.mpv.enable = lib.mkEnableOption \"MPV\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.apps.mpv;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/user-apps/obsidian.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-apps",
+      "scope": "home",
+      "target": "modules/apps/obsidian.home.nix",
+      "files": [
+        "modules/user-apps/obsidian.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.apps.obsidian.enable = lib.mkEnableOption \"Obsidian\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.apps.obsidian;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/user-apps/osu-lazer.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-apps",
+      "scope": "home",
+      "target": "modules/apps/osu-lazer.home.nix",
+      "files": [
+        "modules/user-apps/osu-lazer.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.apps.osuLazer.enable = lib.mkEnableOption \"osu!lazer\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.apps.osuLazer;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/user-apps/prism-launcher.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-apps",
+      "scope": "home",
+      "target": "modules/apps/prism-launcher.home.nix",
+      "files": [
+        "modules/user-apps/prism-launcher.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.apps.prismLauncher.enable = lib.mkEnableOption \"Prism Launcher\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.apps.prismLauncher;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/user-apps/qimgv.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-apps",
+      "scope": "home",
+      "target": "modules/apps/qimgv.home.nix",
+      "files": [
+        "modules/user-apps/qimgv.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.apps.qimgv.enable = lib.mkEnableOption \"qimgv image viewer\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.apps.qimgv;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/user-apps/telegram.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-apps",
+      "scope": "home",
+      "target": "modules/apps/telegram.home.nix",
+      "files": [
+        "modules/user-apps/telegram.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.apps.telegram.enable = lib.mkEnableOption \"Telegram Desktop\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.apps.telegram;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/user-apps/voxtype.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-apps",
+      "scope": "home",
+      "target": "modules/apps/voxtype.home.nix",
+      "files": [
+        "modules/user-apps/voxtype.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.apps.voxtype.enable = lib.mkEnableOption \"Voxtype\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.apps.voxtype;",
+        "imports = [",
+        "inputs.voxtype.homeManagerModules.default",
+        "package = packageSources.voxtype;"
+      ],
+      "deploymentReferences": [
+        "mode = \"type\";",
+        "text = {"
+      ],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/user-apps/youtube-music.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-apps",
+      "scope": "home",
+      "target": "modules/apps/youtube-music.home.nix",
+      "files": [
+        "modules/user-apps/youtube-music.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.apps.youtubeMusic.enable = lib.mkEnableOption \"YouTube Music\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.apps.youtubeMusic;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/user-apps/zen-browser.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-apps",
+      "scope": "home",
+      "target": "modules/apps/zen-browser.home.nix",
+      "files": [
+        "modules/user-apps/zen-browser.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.apps.zenBrowser = {"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.apps.zenBrowser;",
+        "imports = [",
+        "inputs.zen-browser.homeModules.beta",
+        "default = (import ../../config/zen/profile.nix) // {"
+      ],
+      "deploymentReferences": [
+        "profiles = lib.mkIf (cfg.profilePath != null) {"
+      ],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix",
+        "docs/apps/zen-browser.md"
+      ]
+    },
+    {
+      "path": "modules/user-desktop/niri/config.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-desktop",
+      "scope": "home",
+      "target": "modules/desktop/niri/home.nix",
+      "files": [
+        "modules/user-desktop/niri/config.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.desktop.niriConfig = {"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.desktop.niriConfig;",
+        "xdg.configFile = configPaths.dotfileAdapters.niri {"
+      ],
+      "deploymentReferences": [
+        "xdg.configFile = configPaths.dotfileAdapters.niri {"
+      ],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix",
+        "tests/niri/hosts.nix",
+        "tests/config-paths/default.nix",
+        "docs/apps/niri.md"
+      ]
+    },
+    {
+      "path": "modules/user-desktop/noctalia",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-desktop",
+      "scope": "home",
+      "target": "modules/desktop/noctalia/home.nix",
+      "files": [
+        "modules/user-desktop/noctalia/config.nix",
+        "modules/user-desktop/noctalia/default.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.desktop.noctalia = {"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.desktop.noctalia;",
+        "} (builtins.fromTOML (builtins.readFile cfg.configFile))",
+        "\"noctalia/bar-common.toml\".source = configPaths.wm.noctaliaConfigDir + \"/bar-common.toml\";",
+        "\"noctalia/bar.toml\".source = configPaths.wm.noctaliaConfigDir + \"/bar-${cfg.profile}.toml\";",
+        "\"noctalia/user-templates.toml\".source = configPaths.wm.noctaliaConfigDir + \"/user-templates.toml\";",
+        "configPaths.wm.noctaliaConfigDir + \"/templates/niri-dropdown.kdl\";",
+        "\"noctalia/widgets-common.toml\".source = configPaths.wm.noctaliaConfigDir + \"/widgets-common.toml\";",
+        "\"noctalia/widgets.toml\".source = configPaths.wm.noctaliaConfigDir + \"/widgets-${cfg.profile}.toml\";",
+        "cfg = config.my.user.desktop.noctalia;",
+        "noctaliaPackage = packageSources.noctalia;",
+        "imports = [",
+        "inputs.noctalia.homeModules.default",
+        "default = configPaths.wm.noctaliaConfigDir + \"/config.toml\";",
+        "${pkgs.python3}/bin/python3 ${configPaths.wm.noctaliaConfigDir}/prune-stale-settings.py \\"
+      ],
+      "deploymentReferences": [
+        "xdg.configFile = {",
+        "\"noctalia/bar-common.toml\".source = configPaths.wm.noctaliaConfigDir + \"/bar-common.toml\";",
+        "\"noctalia/bar.toml\".source = configPaths.wm.noctaliaConfigDir + \"/bar-${cfg.profile}.toml\";",
+        "\"noctalia/user-templates.toml\".source = configPaths.wm.noctaliaConfigDir + \"/user-templates.toml\";",
+        "\"noctalia/templates/niri-dropdown.kdl\".source =",
+        "\"noctalia/widgets-common.toml\".source = configPaths.wm.noctaliaConfigDir + \"/widgets-common.toml\";",
+        "\"noctalia/widgets.toml\".source = configPaths.wm.noctaliaConfigDir + \"/widgets-${cfg.profile}.toml\";",
+        "home.activation.pruneStaleNoctaliaSettings = lib.hm.dag.entryAfter [ \"writeBoundary\" ] ''"
+      ],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix",
+        "tests/niri/hosts.nix",
+        "docs/apps/noctalia.md"
+      ]
+    },
+    {
+      "path": "modules/user-desktop/screen-recorder.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-desktop",
+      "scope": "home",
+      "target": "modules/desktop/screen-recorder.home.nix",
+      "files": [
+        "modules/user-desktop/screen-recorder.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.desktop.screenRecorder.enable = lib.mkEnableOption \"screen recording tools\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.desktop.screenRecorder;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/user-dev/bb.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home",
+      "target": "modules/dev/bb.home.nix",
+      "files": [
+        "modules/user-dev/bb.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.dev.bb.enable = lib.mkEnableOption \"bb\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.dev.bb;",
+        "packageSources.bb"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/user-dev/bundles/terminal-workflow.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home",
+      "target": "modules/dev/bundles/terminal-workflow.home.nix",
+      "files": [
+        "modules/user-dev/bundles/terminal-workflow.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.dev.terminalWorkflow.enable ="
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.dev.terminalWorkflow;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/user-dev/bundles/toolchains.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home",
+      "target": "modules/dev/bundles/toolchains.home.nix",
+      "files": [
+        "modules/user-dev/bundles/toolchains.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.dev.toolchains.enable = lib.mkEnableOption \"generic developer tooling\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.dev.toolchains;"
+      ],
+      "deploymentReferences": [
+        "xdg.configFile.\"direnv/direnvrc\".text = ''"
+      ],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/user-dev/bundles/workstation.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home",
+      "target": "modules/dev/bundles/workstation.home.nix",
+      "files": [
+        "modules/user-dev/bundles/workstation.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.dev.workstation.enable = lib.mkEnableOption \"developer workstation baseline\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.dev.workstation;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/user-dev/ffmpeg.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home",
+      "target": "modules/dev/ffmpeg.home.nix",
+      "files": [
+        "modules/user-dev/ffmpeg.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.dev.ffmpeg.enable = lib.mkEnableOption \"ffmpeg\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.dev.ffmpeg;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/user-dev/fish",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home",
+      "target": "modules/dev/fish/home.nix",
+      "files": [
+        "modules/user-dev/fish/config.nix",
+        "modules/user-dev/fish/default.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.dev.fish.enable = lib.mkEnableOption \"Fish user configuration\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.dev.fish;",
+        "xdg.configFile = configPaths.dotfileAdapters.fish { };",
+        "imports = ["
+      ],
+      "deploymentReferences": [
+        "xdg.configFile = configPaths.dotfileAdapters.fish { };"
+      ],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix",
+        "tests/config-paths/default.nix",
+        "tests/migration/helpers.py"
+      ]
+    },
+    {
+      "path": "modules/user-dev/git.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home",
+      "target": "modules/dev/git.home.nix",
+      "files": [
+        "modules/user-dev/git.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.dev.git = {"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.dev.git;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/user-dev/github.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home",
+      "target": "modules/dev/github.home.nix",
+      "files": [
+        "modules/user-dev/github.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.dev.github.enable = lib.mkEnableOption \"GitHub CLI\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.dev.github;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/user-dev/kitty",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home",
+      "target": "modules/dev/kitty.home.nix",
+      "files": [
+        "modules/user-dev/kitty/config.nix",
+        "modules/user-dev/kitty/default.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.dev.kitty = {"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.dev.kitty;",
+        "xdg.configFile = configPaths.dotfileAdapters.kitty {",
+        "cfg = config.my.user.dev.kitty;",
+        "imports = ["
+      ],
+      "deploymentReferences": [
+        "xdg.configFile = configPaths.dotfileAdapters.kitty {"
+      ],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix",
+        "tests/config-paths/default.nix",
+        "docs/apps/kitty.md"
+      ]
+    },
+    {
+      "path": "modules/user-dev/languages/cpp.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home",
+      "target": "modules/dev/languages/cpp.home.nix",
+      "files": [
+        "modules/user-dev/languages/cpp.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.dev.languages.cpp.enable = lib.mkEnableOption \"C and C++ development toolchain\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.dev.languages.cpp;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/user-dev/languages/godot.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home",
+      "target": "modules/dev/languages/godot.home.nix",
+      "files": [
+        "modules/user-dev/languages/godot.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.dev.languages.godot.enable = lib.mkEnableOption \"Godot game development\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.dev.languages.godot;",
+        "packageSources.godot_4"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/user-dev/languages/java.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home",
+      "target": "modules/dev/languages/java.home.nix",
+      "files": [
+        "modules/user-dev/languages/java.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.dev.languages.java.enable = lib.mkEnableOption \"Java development\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.dev.languages.java;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/user-dev/languages/python.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home",
+      "target": "modules/dev/languages/python.home.nix",
+      "files": [
+        "modules/user-dev/languages/python.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.dev.languages.python.enable = lib.mkEnableOption \"Python development toolchain\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.dev.languages.python;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/user-dev/languages/rust.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home",
+      "target": "modules/dev/languages/rust.home.nix",
+      "files": [
+        "modules/user-dev/languages/rust.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.dev.languages.rust.enable = lib.mkEnableOption \"Rust development toolchain\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.dev.languages.rust;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/user-dev/languages/unity.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home",
+      "target": "modules/dev/languages/unity.home.nix",
+      "files": [
+        "modules/user-dev/languages/unity.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.dev.languages.unity.enable = lib.mkEnableOption \"Unity game development\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.dev.languages.unity;",
+        "packageSources.unityhub"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/user-dev/neovim",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home",
+      "target": "modules/dev/neovim/home.nix",
+      "files": [
+        "modules/user-dev/neovim/config.nix",
+        "modules/user-dev/neovim/default.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.dev.neovim.enable = lib.mkEnableOption \"Neovim\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.dev.neovim;",
+        "nvimConfig = configPaths.dev.neovim.configDir;",
+        "cfg = config.my.user.dev.neovim;",
+        "imports = ["
+      ],
+      "deploymentReferences": [
+        "home.activation.installNeovimConfig = config.lib.dag.entryAfter [ \"writeBoundary\" ] ''",
+        "${pkgs.rsync}/bin/rsync \\",
+        "--exclude='/lua/matugen.lua' \\",
+        "--chmod=u+rwX \\",
+        "# Existing files that rsync did not transfer may still have old",
+        "chmod -R u+rwX \"$target_dir\""
+      ],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix",
+        "tests/neovim/run.sh",
+        "docs/apps/neovim.md"
+      ]
+    },
+    {
+      "path": "modules/user-dev/pycharm.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home",
+      "target": "modules/dev/pycharm.home.nix",
+      "files": [
+        "modules/user-dev/pycharm.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.dev.pycharm.enable = lib.mkEnableOption \"PyCharm\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.dev.pycharm;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/user-dev/ssh.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home",
+      "target": "modules/dev/ssh.home.nix",
+      "files": [
+        "modules/user-dev/ssh.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.dev.ssh = {"
+      ],
+      "gate": "unconditional (personal SSH client)",
+      "dependencyReferences": [
+        "cfg = config.my.user.dev.ssh;"
+      ],
+      "deploymentReferences": [
+        "programs.ssh = {"
+      ],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/user-dev/starship",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home",
+      "target": "modules/dev/starship.home.nix",
+      "files": [
+        "modules/user-dev/starship/default.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.dev.starship.enable = lib.mkEnableOption \"Starship prompt\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.dev.starship;",
+        "xdg.configFile = configPaths.dotfileAdapters.starship { };"
+      ],
+      "deploymentReferences": [
+        "xdg.configFile = configPaths.dotfileAdapters.starship { };"
+      ],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/user-dev/tmux",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home",
+      "target": "modules/dev/tmux/home.nix",
+      "files": [
+        "modules/user-dev/tmux/default.nix",
+        "modules/user-dev/tmux/project-list.sh"
+      ],
+      "optionDeclarations": [
+        "options.my.user.dev.tmux.enable = lib.mkEnableOption \"tmux\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.dev.tmux;",
+        "sesh = packageSources.sesh;",
+        "text = builtins.readFile ./project-list.sh;",
+        "(builtins.readFile ../../../config/sesh/sesh.toml);"
+      ],
+      "deploymentReferences": [
+        "text = builtins.readFile ./project-list.sh;",
+        "programs.tmux = {",
+        "xdg.configFile.\"sesh/sesh.toml\".text = seshConfig;"
+      ],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix",
+        "tests/sesh/project-list.sh"
+      ]
+    },
+    {
+      "path": "modules/user-dev/vscode.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home",
+      "target": "modules/dev/vscode.home.nix",
+      "files": [
+        "modules/user-dev/vscode.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.dev.vscode.enable = lib.mkEnableOption \"Visual Studio Code\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.dev.vscode;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/user-dev/zed.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home",
+      "target": "modules/dev/zed.home.nix",
+      "files": [
+        "modules/user-dev/zed.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.dev.zed.enable = lib.mkEnableOption \"Zed editor\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.dev.zed;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/user-dev/zoxide.nix",
+      "profiles": [
+        "desktop",
+        "server"
+      ],
+      "relPath": "/modules/user-dev",
+      "scope": "home",
+      "target": "modules/dev/zoxide.home.nix",
+      "files": [
+        "modules/user-dev/zoxide.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.dev.zoxide.enable = lib.mkEnableOption \"Zoxide: smart cd\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.dev.zoxide;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/user-files/dolphin.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-files",
+      "scope": "home",
+      "target": "modules/files/dolphin.home.nix",
+      "files": [
+        "modules/user-files/dolphin.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.files.dolphin.enable = lib.mkEnableOption \"Dolphin file manager\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.files.dolphin;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    },
+    {
+      "path": "modules/user-files/yazi.nix",
+      "profiles": [
+        "desktop"
+      ],
+      "relPath": "/modules/user-files",
+      "scope": "home",
+      "target": "modules/files/yazi.home.nix",
+      "files": [
+        "modules/user-files/yazi.nix"
+      ],
+      "optionDeclarations": [
+        "options.my.user.files.yazi.enable = lib.mkEnableOption \"Yazi file manager\";"
+      ],
+      "gate": "mkIf cfg.enable; see evaluated schema for complete options and defaults",
+      "dependencyReferences": [
+        "cfg = config.my.user.files.yazi;"
+      ],
+      "deploymentReferences": [],
+      "testsDocs": [
+        "docs/reference/modules.md",
+        "docs/reference/configuration.md",
+        "tests/module-equivalence/hosts.nix"
+      ]
+    }
+  ],
+  "explicit": {
+    "modules/system-core/common.nix": "modules/core/desktop-baseline.nixos.nix",
+    "modules/system-core/server.nix": "modules/core/server-baseline.nixos.nix",
+    "modules/system-core/user.nix": "modules/core/primary-user.nixos.nix",
+    "modules/secrets.nix": "modules/core/secrets.nixos.nix",
+    "modules/deployment/default.nix": "modules/deployment/nixos.nix",
+    "home/default.nix": "modules/core/primary-user.home.nix"
+  },
+  "assets": [
+    {
+      "old": "modules/deployment/default.nix",
+      "target": "modules/deployment/nixos.nix",
+      "sha256": "b0443bac3f162a787977aedcadffca06875bb48208d9a6f8d27924a3de81709a",
+      "executable": false,
+      "owner": "explicit assembly"
+    },
+    {
+      "old": "modules/deployment/install-preflight.patch",
+      "target": "modules/deployment/install-preflight.patch",
+      "sha256": "e0c54ad62ba88c868a942cdc7e121603ecfde28c99b78a68549dfa0895cfb968",
+      "executable": false,
+      "owner": "explicit assembly"
+    },
+    {
+      "old": "modules/deployment/preflight.sh",
+      "target": "modules/deployment/preflight.sh",
+      "sha256": "218dcdc7ce8b367082a2276f127e92b619555bb3e15c01e2939d51ccbf36cc18",
+      "executable": false,
+      "owner": "explicit assembly"
+    },
+    {
+      "old": "modules/deployment/rebuild-preflight.patch",
+      "target": "modules/deployment/rebuild-preflight.patch",
+      "sha256": "7fb548587f96870cc7c8363d9133138d05730b47e471aa6062cde1dd8698fd81",
+      "executable": false,
+      "owner": "explicit assembly"
+    },
+    {
+      "old": "modules/deployment/rebuild-tests.patch",
+      "target": "modules/deployment/rebuild-tests.patch",
+      "sha256": "12f7964e4df26ba9fb3789f660d8649a283fa6eaa243b8989bfc555a5e7385e8",
+      "executable": false,
+      "owner": "explicit assembly"
+    },
+    {
+      "old": "modules/desktops/gnome/default.nix",
+      "target": "modules/desktop/gnome.nixos.nix",
+      "sha256": "6153b6245445280c3d4f3f876182a42e880d0b3ffa25f892a32628982c5273cd",
+      "executable": false,
+      "owner": "modules/desktops/gnome"
+    },
+    {
+      "old": "modules/desktops/niri/default.nix",
+      "target": "modules/desktop/niri/nixos.nix",
+      "sha256": "5de4756c15f444754ef80b1642f96be5fb750b3f377277dfbfecaed767d0daf4",
+      "executable": false,
+      "owner": "modules/desktops/niri"
+    },
+    {
+      "old": "modules/desktops/noctalia-greeter.nix",
+      "target": "modules/desktop/noctalia-greeter.nixos.nix",
+      "sha256": "e912d330a893de899fc2c246e9af29fde9afdd5e97061aebb261717a55cc92d6",
+      "executable": false,
+      "owner": "modules/desktops/noctalia-greeter.nix"
+    },
+    {
+      "old": "modules/desktops/opentabletdriver.nix",
+      "target": "modules/desktop/opentabletdriver.nixos.nix",
+      "sha256": "5bddf8c6db6b72ba20a57597f9d3e34be69bb10fc0fd7365cbb3d7951057839d",
+      "executable": false,
+      "owner": "modules/desktops/opentabletdriver.nix"
+    },
+    {
+      "old": "modules/desktops/xserver.nix",
+      "target": "modules/desktop/xserver.nixos.nix",
+      "sha256": "d808512ed155e39e216afbc97e45b3fd0567af745c04723e584ea514e695ddbd",
+      "executable": false,
+      "owner": "modules/desktops/xserver.nix"
+    },
+    {
+      "old": "modules/hardware/bluetooth.nix",
+      "target": "modules/hardware/bluetooth.nixos.nix",
+      "sha256": "b6f8628228dc0bc84c1200190f1ebd6316a8e036c876a82a731dfb6c374d9e8e",
+      "executable": false,
+      "owner": "modules/hardware/bluetooth.nix"
+    },
+    {
+      "old": "modules/hardware/nvidia.nix",
+      "target": "modules/hardware/nvidia.nixos.nix",
+      "sha256": "b9a8b79f5741c89b3ff2f21fe280abd4a5d1d2d352cc27f60e4decd989c850b2",
+      "executable": false,
+      "owner": "modules/hardware/nvidia.nix"
+    },
+    {
+      "old": "modules/hardware/screen-recorder.nix",
+      "target": "modules/desktop/screen-recorder.nixos.nix",
+      "sha256": "75d6e2773561b86731e4e16477504b6d71216ae9fc597b82fea247b6d077e0ef",
+      "executable": false,
+      "owner": "modules/hardware/screen-recorder.nix"
+    },
+    {
+      "old": "modules/secrets.nix",
+      "target": "modules/core/secrets.nixos.nix",
+      "sha256": "261a492b3fe27627fe6357e900057a216bbf15c2ca6ec4fd86fdcea9174105df",
+      "executable": false,
+      "owner": "explicit assembly"
+    },
+    {
+      "old": "modules/server/base.nix",
+      "target": "modules/server/base.nixos.nix",
+      "sha256": "76b0eb0db5665c046fbda013fd5120abe18d0042801e6a64059e0b3c2d40979f",
+      "executable": false,
+      "owner": "modules/server/base.nix"
+    },
+    {
+      "old": "modules/server/docker-host.nix",
+      "target": "modules/server/docker-host.nixos.nix",
+      "sha256": "dc1a6096db8b4fcad3fc76c9a570400bdf8221e140f39fc73d993608602b8bea",
+      "executable": false,
+      "owner": "modules/server/docker-host.nix"
+    },
+    {
+      "old": "modules/server/ssh.nix",
+      "target": "modules/server/ssh.nixos.nix",
+      "sha256": "e85929a91829c9f665624097fa299818541b7ac8a6077f9cc83a79b3a12d0be3",
+      "executable": false,
+      "owner": "modules/server/ssh.nix"
+    },
+    {
+      "old": "modules/server/storage.nix",
+      "target": "modules/server/storage.nixos.nix",
+      "sha256": "c1d0762931c652e2b565b54cb46a9da3e9c0a78694b09098b589028c293088c8",
+      "executable": false,
+      "owner": "modules/server/storage.nix"
+    },
+    {
+      "old": "modules/server/syncthing.nix",
+      "target": "modules/server/syncthing.nixos.nix",
+      "sha256": "bb0bb5d855b63a453d51342ce6c2fede50f09814fff685fcea475868749ea10b",
+      "executable": false,
+      "owner": "modules/server/syncthing.nix"
+    },
+    {
+      "old": "modules/system-apps/lutris.nix",
+      "target": "modules/apps/lutris.nixos.nix",
+      "sha256": "9543d8504efdd5419a20a150915b76f0ce805172c6b31fd905a03780b4f29df6",
+      "executable": false,
+      "owner": "modules/system-apps/lutris.nix"
+    },
+    {
+      "old": "modules/system-apps/obs.nix",
+      "target": "modules/apps/obs.nixos.nix",
+      "sha256": "91b727fbe55d08beddfe87534fc4ed7e85655a185f412f932b4430a3d0e8911a",
+      "executable": false,
+      "owner": "modules/system-apps/obs.nix"
+    },
+    {
+      "old": "modules/system-apps/steam.nix",
+      "target": "modules/apps/steam.nixos.nix",
+      "sha256": "c7a40195ce0d3c55442860e932ae363f702cea8fd993f7716cf1c20e3a974660",
+      "executable": false,
+      "owner": "modules/system-apps/steam.nix"
+    },
+    {
+      "old": "modules/system-apps/vesktop.nix",
+      "target": "modules/apps/vesktop.nixos.nix",
+      "sha256": "2ea23ddb53931183a1d3d0e600272f574ea4bbde43fdd625a7b0d11cdab41c67",
+      "executable": false,
+      "owner": "modules/system-apps/vesktop.nix"
+    },
+    {
+      "old": "modules/system-apps/waydroid.nix",
+      "target": "modules/apps/waydroid.nixos.nix",
+      "sha256": "fc4969f2adaac994cf601c4eb8ec24228b460359a9a67bc85a6735f69ded4793",
+      "executable": false,
+      "owner": "modules/system-apps/waydroid.nix"
+    },
+    {
+      "old": "modules/system-core/common.nix",
+      "target": "modules/core/desktop-baseline.nixos.nix",
+      "sha256": "12a0222bbe30b406d9fad335e31db215507041efb256043471fbf8460b4b8bcd",
+      "executable": false,
+      "owner": "explicit assembly"
+    },
+    {
+      "old": "modules/system-core/server.nix",
+      "target": "modules/core/server-baseline.nixos.nix",
+      "sha256": "f25a19cefe3ecb5024ec0181cd2d21b3a47c618ce5a54f5bb5025c03b2107dfa",
+      "executable": false,
+      "owner": "explicit assembly"
+    },
+    {
+      "old": "modules/system-core/user.nix",
+      "target": "modules/core/primary-user.nixos.nix",
+      "sha256": "3ee24559cbeba54a1642347c016f93a944811edc35470f7f3f11c4463b1f1a2d",
+      "executable": false,
+      "owner": "explicit assembly"
+    },
+    {
+      "old": "modules/system-dev/docker/default.nix",
+      "target": "modules/dev/docker.nixos.nix",
+      "sha256": "19c52533b9ed9c560532b4b056dcc61b1bb07db18a5e35610a596e2313af96d4",
+      "executable": false,
+      "owner": "modules/system-dev/docker"
+    },
+    {
+      "old": "modules/system-dev/fish.nix",
+      "target": "modules/dev/fish/nixos.nix",
+      "sha256": "9f52373a6c56260d5e7281653fdcc134742938aec2ccc241a613a0666b76411d",
+      "executable": false,
+      "owner": "modules/system-dev/fish.nix"
+    },
+    {
+      "old": "modules/system-files/thunar.nix",
+      "target": "modules/files/thunar.nixos.nix",
+      "sha256": "0ef9bcf59914355c4d6bd1ab8678764cdf79fcfc034924494d2d2656c684a3cc",
+      "executable": false,
+      "owner": "modules/system-files/thunar.nix"
+    },
+    {
+      "old": "modules/system-services/blueman.nix",
+      "target": "modules/services/blueman.nixos.nix",
+      "sha256": "1d95d5d3470550bfabd1f2a0ebaeb71edc06108326a0f1533f5836b92a90efe2",
+      "executable": false,
+      "owner": "modules/system-services/blueman.nix"
+    },
+    {
+      "old": "modules/system-services/lan-mouse.nix",
+      "target": "modules/services/lan-mouse.nixos.nix",
+      "sha256": "f6febeda834dc9d50634548d26f4c76296ff31441efd2d172492633bb2355227",
+      "executable": false,
+      "owner": "modules/system-services/lan-mouse.nix"
+    },
+    {
+      "old": "modules/system-services/network-namespaces/default.nix",
+      "target": "modules/services/network-namespaces/nixos.nix",
+      "sha256": "141fd0db170a7d6e2ced00f8a42a2442313286e6fa8b69906ff98b1f8bc69884",
+      "executable": false,
+      "owner": "modules/system-services/network-namespaces"
+    },
+    {
+      "old": "modules/system-services/network-namespaces/doctor.nix",
+      "target": "modules/services/network-namespaces/doctor.nix",
+      "sha256": "85bb21baba89aad616fa723e96d9f52e6c3f9483c795657fa2b1949faa234a3d",
+      "executable": false,
+      "owner": "modules/system-services/network-namespaces"
+    },
+    {
+      "old": "modules/system-services/network-namespaces/doctor.py",
+      "target": "modules/services/network-namespaces/doctor.py",
+      "sha256": "4d0a53d41325df901f8661c9bc4184e0d8757d8dfc6a41a3f627e25344660d08",
+      "executable": false,
+      "owner": "modules/system-services/network-namespaces"
+    },
+    {
+      "old": "modules/system-services/network-namespaces/launcher.nix",
+      "target": "modules/services/network-namespaces/launcher.nix",
+      "sha256": "8de9acdce60ad1fd78dffc25e10a1095f340eeb944cc8c182d56cd22e123b71a",
+      "executable": false,
+      "owner": "modules/system-services/network-namespaces"
+    },
+    {
+      "old": "modules/system-services/network-namespaces/migration/desktop-provider-guard.sh",
+      "target": "modules/services/network-namespaces/migration/desktop-provider-guard.sh",
+      "sha256": "711c1ec3f683b1e1dafec91ab420ba7e1a91aea985b13b5d4ac442caf9071a03",
+      "executable": false,
+      "owner": "modules/system-services/network-namespaces"
+    },
+    {
+      "old": "modules/system-services/network-namespaces/migration/prepare-rollback.sh",
+      "target": "modules/services/network-namespaces/migration/prepare-rollback.sh",
+      "sha256": "96f0e533571eda34db1825b399a34c746d8199dc79da6e96ba116687f5b22364",
+      "executable": true,
+      "owner": "modules/system-services/network-namespaces"
+    },
+    {
+      "old": "modules/system-services/network-namespaces/migration/rollback.sh",
+      "target": "modules/services/network-namespaces/migration/rollback.sh",
+      "sha256": "522c055df1793f8289011eeacc8bf2fd472e1adebe046bfe38c25417b8ab2910",
+      "executable": false,
+      "owner": "modules/system-services/network-namespaces"
+    },
+    {
+      "old": "modules/system-services/network-namespaces/namespace.nix",
+      "target": "modules/services/network-namespaces/namespace.nix",
+      "sha256": "23f2a3986aa0dabc5c77ec77ba3563630bc4d2807e084b2b91343b83efd5ab5c",
+      "executable": false,
+      "owner": "modules/system-services/network-namespaces"
+    },
+    {
+      "old": "modules/system-services/network-namespaces/shared.nix",
+      "target": "modules/services/network-namespaces/shared.nix",
+      "sha256": "cf0c645038123652517f02816aea8586142fb22ee6dbcb67f46a07079c6c0ca3",
+      "executable": false,
+      "owner": "modules/system-services/network-namespaces"
+    },
+    {
+      "old": "modules/system-services/sunshine.nix",
+      "target": "modules/services/sunshine.nixos.nix",
+      "sha256": "91c72236353bc38852c6c6b3c7a01d7253bd397cb939af21be2a20bbe1c71fd6",
+      "executable": false,
+      "owner": "modules/system-services/sunshine.nix"
+    },
+    {
+      "old": "modules/system-services/syncthing.nix",
+      "target": "modules/services/syncthing.nixos.nix",
+      "sha256": "9415af85e527a09ecca99bb7fe6c6bbe66b281915311a67e6d52f5420fd0b76c",
+      "executable": false,
+      "owner": "modules/system-services/syncthing.nix"
+    },
+    {
+      "old": "modules/system-services/tailscale.nix",
+      "target": "modules/services/tailscale.nixos.nix",
+      "sha256": "1e93bca654843a02ea8b68eeba8c7f72046ffc9a74a90570c0ed594bb6423518",
+      "executable": false,
+      "owner": "modules/system-services/tailscale.nix"
+    },
+    {
+      "old": "modules/system-services/virtualization.nix",
+      "target": "modules/services/virtualization.nixos.nix",
+      "sha256": "91369241ed1601a4277e0408c82f1c94782792866202fb5175506002a12ffacc",
+      "executable": false,
+      "owner": "modules/system-services/virtualization.nix"
+    },
+    {
+      "old": "modules/user-ai/codegraph.nix",
+      "target": "modules/ai/codegraph.home.nix",
+      "sha256": "2cdaa9cd9eabe6ef16262f212dc6629178e365a94bf478e2a95f310710a847a5",
+      "executable": false,
+      "owner": "modules/user-ai/codegraph.nix"
+    },
+    {
+      "old": "modules/user-ai/codex.nix",
+      "target": "modules/ai/codex.home.nix",
+      "sha256": "4855ddfd12280b79464a098f9c98855cf66b2ab5e320064db44e4dadbb4c30ce",
+      "executable": false,
+      "owner": "modules/user-ai/codex.nix"
+    },
+    {
+      "old": "modules/user-ai/llama-cpp.nix",
+      "target": "modules/ai/llama-cpp.home.nix",
+      "sha256": "c91d1885fcc7cda6e42dc39bf49faeaf6f42309bf7bdb8488c4c33add0e784f0",
+      "executable": false,
+      "owner": "modules/user-ai/llama-cpp.nix"
+    },
+    {
+      "old": "modules/user-ai/opencode.nix",
+      "target": "modules/ai/opencode.home.nix",
+      "sha256": "b3e967f9a6cb6bfd4e6bfc2c4f3cb0a6439391573d758f75fdd091104b81c715",
+      "executable": false,
+      "owner": "modules/user-ai/opencode.nix"
+    },
+    {
+      "old": "modules/user-ai/orca.nix",
+      "target": "modules/ai/orca.home.nix",
+      "sha256": "994b7dc3b355f83f883f80cf8434993969188c557094645a903e4b4d88052319",
+      "executable": false,
+      "owner": "modules/user-ai/orca.nix"
+    },
+    {
+      "old": "modules/user-ai/skillshare.nix",
+      "target": "modules/ai/skillshare.home.nix",
+      "sha256": "4fdafdb2f60cd0be1788f7277b75b87e1247421a18945714cae50fb2ebdeaa1b",
+      "executable": false,
+      "owner": "modules/user-ai/skillshare.nix"
+    },
+    {
+      "old": "modules/user-apps/anki.nix",
+      "target": "modules/apps/anki.home.nix",
+      "sha256": "fd9f9d8fbfd56734bf9bcd69848126b1d1a79691c21dac9e3049eabc828e7b55",
+      "executable": false,
+      "owner": "modules/user-apps/anki.nix"
+    },
+    {
+      "old": "modules/user-apps/bruno.nix",
+      "target": "modules/apps/bruno.home.nix",
+      "sha256": "612a6c3c784906b33dc79ccc2338b77f64ad8483a5597f076f9e7d85509e2f69",
+      "executable": false,
+      "owner": "modules/user-apps/bruno.nix"
+    },
+    {
+      "old": "modules/user-apps/chrome.nix",
+      "target": "modules/apps/chrome.home.nix",
+      "sha256": "8938c6eb7c5bd57dba3cdedcf09bb5098344bfe0fba91ae17a19f7203876fde2",
+      "executable": false,
+      "owner": "modules/user-apps/chrome.nix"
+    },
+    {
+      "old": "modules/user-apps/krita.nix",
+      "target": "modules/apps/krita.home.nix",
+      "sha256": "42573cfcd1d1fd4b8520cf5df54f1bc2dd264ed66e2889662c56a23070717a96",
+      "executable": false,
+      "owner": "modules/user-apps/krita.nix"
+    },
+    {
+      "old": "modules/user-apps/mpv.nix",
+      "target": "modules/apps/mpv.home.nix",
+      "sha256": "e860e36a87da5ebe12cbbefb9421ee66510bd14aa945071b38a3ccaba880c292",
+      "executable": false,
+      "owner": "modules/user-apps/mpv.nix"
+    },
+    {
+      "old": "modules/user-apps/obsidian.nix",
+      "target": "modules/apps/obsidian.home.nix",
+      "sha256": "308a8cf4cc9a8a706f789181b46a24dd74968ed732c7987aab6802e73944b7f5",
+      "executable": false,
+      "owner": "modules/user-apps/obsidian.nix"
+    },
+    {
+      "old": "modules/user-apps/osu-lazer.nix",
+      "target": "modules/apps/osu-lazer.home.nix",
+      "sha256": "8d73c31fd6e285ed43d8b63f3fb639925a6b1167fa99d71068e17bcdfe10852c",
+      "executable": false,
+      "owner": "modules/user-apps/osu-lazer.nix"
+    },
+    {
+      "old": "modules/user-apps/prism-launcher.nix",
+      "target": "modules/apps/prism-launcher.home.nix",
+      "sha256": "f466bbb50b3f2107bed4ddc6b6845286c7624b20ef6d15b66dcd8cbfe2c47864",
+      "executable": false,
+      "owner": "modules/user-apps/prism-launcher.nix"
+    },
+    {
+      "old": "modules/user-apps/qimgv.nix",
+      "target": "modules/apps/qimgv.home.nix",
+      "sha256": "e873c9b755f8ca45851b4b4e58692951928e1aa399ee40c698bd43b6b8085f46",
+      "executable": false,
+      "owner": "modules/user-apps/qimgv.nix"
+    },
+    {
+      "old": "modules/user-apps/telegram.nix",
+      "target": "modules/apps/telegram.home.nix",
+      "sha256": "82e2078c05f3e361f407b235112c4636640074cfb11eceb6ffc49b5631a2d8fe",
+      "executable": false,
+      "owner": "modules/user-apps/telegram.nix"
+    },
+    {
+      "old": "modules/user-apps/voxtype.nix",
+      "target": "modules/apps/voxtype.home.nix",
+      "sha256": "68cb2cc1592dbe596019aaced53a61f563082cb61b6963d7beaf15f12aa98e3c",
+      "executable": false,
+      "owner": "modules/user-apps/voxtype.nix"
+    },
+    {
+      "old": "modules/user-apps/youtube-music.nix",
+      "target": "modules/apps/youtube-music.home.nix",
+      "sha256": "35529ad4ef2b870aca7c54fe6f0d43fba72a818c48012e6a68f3c106f21de093",
+      "executable": false,
+      "owner": "modules/user-apps/youtube-music.nix"
+    },
+    {
+      "old": "modules/user-apps/zen-browser.nix",
+      "target": "modules/apps/zen-browser.home.nix",
+      "sha256": "efa2e1c71cc1771c57131229ed21c120d2eccb5ce5a971614b8f919bf8326772",
+      "executable": false,
+      "owner": "modules/user-apps/zen-browser.nix"
+    },
+    {
+      "old": "modules/user-desktop/niri/config.nix",
+      "target": "modules/desktop/niri/home.nix",
+      "sha256": "1a80e581155125bbbb4393660ba2d2e81a1078463e3ea33df39e3087b46ed0e3",
+      "executable": false,
+      "owner": "modules/user-desktop/niri/config.nix"
+    },
+    {
+      "old": "modules/user-desktop/noctalia/config.nix",
+      "target": "modules/desktop/noctalia/config.nix",
+      "sha256": "121b16cae2c4d8b1a4ba1dd9557e2aa04485ae1f1c6384f185579ac8a8bd0166",
+      "executable": false,
+      "owner": "modules/user-desktop/noctalia"
+    },
+    {
+      "old": "modules/user-desktop/noctalia/default.nix",
+      "target": "modules/desktop/noctalia/home.nix",
+      "sha256": "3eca10075f48cc1efe85c8b48092ec612344388b28211268c6aa45c486aba96a",
+      "executable": false,
+      "owner": "modules/user-desktop/noctalia"
+    },
+    {
+      "old": "modules/user-desktop/screen-recorder.nix",
+      "target": "modules/desktop/screen-recorder.home.nix",
+      "sha256": "e24310a65e212fa82dc07fc4b4bf5025d063505e2e402726c97d0dec34e22455",
+      "executable": false,
+      "owner": "modules/user-desktop/screen-recorder.nix"
+    },
+    {
+      "old": "modules/user-dev/bb.nix",
+      "target": "modules/dev/bb.home.nix",
+      "sha256": "1ac2fe0276e37a4bc6db367ceeb2da1281b45ca5059c2eb99e46cdecf3350a32",
+      "executable": false,
+      "owner": "modules/user-dev/bb.nix"
+    },
+    {
+      "old": "modules/user-dev/bundles/terminal-workflow.nix",
+      "target": "modules/dev/bundles/terminal-workflow.home.nix",
+      "sha256": "d4b8584566708e8fb559cc1dde2f63af35226decb78a2a818ec9dea0ccdd0bd6",
+      "executable": false,
+      "owner": "modules/user-dev/bundles/terminal-workflow.nix"
+    },
+    {
+      "old": "modules/user-dev/bundles/toolchains.nix",
+      "target": "modules/dev/bundles/toolchains.home.nix",
+      "sha256": "354a26359183cfcf676fcd52027c460374ec55b5d2f5f40bc7121b566c546ccb",
+      "executable": false,
+      "owner": "modules/user-dev/bundles/toolchains.nix"
+    },
+    {
+      "old": "modules/user-dev/bundles/workstation.nix",
+      "target": "modules/dev/bundles/workstation.home.nix",
+      "sha256": "e758a2d3e07612de13b14f38993a913e555ace69956b4c938e92b97c7d342ffe",
+      "executable": false,
+      "owner": "modules/user-dev/bundles/workstation.nix"
+    },
+    {
+      "old": "modules/user-dev/ffmpeg.nix",
+      "target": "modules/dev/ffmpeg.home.nix",
+      "sha256": "ba786771963c016a464c8ff1acc95e226bafd876acb9bfa3369cdb1d3bb8fa10",
+      "executable": false,
+      "owner": "modules/user-dev/ffmpeg.nix"
+    },
+    {
+      "old": "modules/user-dev/fish/config.nix",
+      "target": "modules/dev/fish/home.nix",
+      "sha256": "e0452893abea48a5f54c4db6150e85757366be4a048ce94b329750dcdc9d70fd",
+      "executable": false,
+      "owner": "modules/user-dev/fish"
+    },
+    {
+      "old": "modules/user-dev/fish/default.nix",
+      "target": "modules/dev/fish/home.nix",
+      "sha256": "79ffe88bb340bc42f65df6bdbee873749bf4b7c950dfa01aa507c5f24947df15",
+      "executable": false,
+      "owner": "modules/user-dev/fish"
+    },
+    {
+      "old": "modules/user-dev/git.nix",
+      "target": "modules/dev/git.home.nix",
+      "sha256": "cbb497732fbde87b6d666ad1d7e67856c453381461300c5e3b7d13765e24472f",
+      "executable": false,
+      "owner": "modules/user-dev/git.nix"
+    },
+    {
+      "old": "modules/user-dev/github.nix",
+      "target": "modules/dev/github.home.nix",
+      "sha256": "31e4740e8613befdcbfe2a4f147f4a74f0798571b3c72dbb157bbdfcd95fdc31",
+      "executable": false,
+      "owner": "modules/user-dev/github.nix"
+    },
+    {
+      "old": "modules/user-dev/kitty/config.nix",
+      "target": "modules/dev/kitty.home.nix",
+      "sha256": "ca780923dd02c8a96219ee9cee3276847f617c268f0e88e3eaf44bb5266912c1",
+      "executable": false,
+      "owner": "modules/user-dev/kitty"
+    },
+    {
+      "old": "modules/user-dev/kitty/default.nix",
+      "target": "modules/dev/kitty.home.nix",
+      "sha256": "7cdc1b776f62008ec8af64eda1cc2b1b8db1b2e8c8e5397b737485a300026c7d",
+      "executable": false,
+      "owner": "modules/user-dev/kitty"
+    },
+    {
+      "old": "modules/user-dev/languages/cpp.nix",
+      "target": "modules/dev/languages/cpp.home.nix",
+      "sha256": "1599d1f7c50714ebfa48ae12df613a5cb76de0f39e57dcaeef816eb1ab4177bb",
+      "executable": false,
+      "owner": "modules/user-dev/languages/cpp.nix"
+    },
+    {
+      "old": "modules/user-dev/languages/godot.nix",
+      "target": "modules/dev/languages/godot.home.nix",
+      "sha256": "481ff75d77eb09d4f4065c3285ce5cefbb23767a2b662a785276f63d1de98cdf",
+      "executable": false,
+      "owner": "modules/user-dev/languages/godot.nix"
+    },
+    {
+      "old": "modules/user-dev/languages/java.nix",
+      "target": "modules/dev/languages/java.home.nix",
+      "sha256": "9f51c393cc75e1db3c45eccc87124eed6d51c844807440d4aea3d283890b7658",
+      "executable": false,
+      "owner": "modules/user-dev/languages/java.nix"
+    },
+    {
+      "old": "modules/user-dev/languages/python.nix",
+      "target": "modules/dev/languages/python.home.nix",
+      "sha256": "4dfc602704dc161feb91f2f9aa2dee05a4823d2a7bfc9395210df131e34f69eb",
+      "executable": false,
+      "owner": "modules/user-dev/languages/python.nix"
+    },
+    {
+      "old": "modules/user-dev/languages/rust.nix",
+      "target": "modules/dev/languages/rust.home.nix",
+      "sha256": "221d4c439c9169997cfda91308fee2ec5e1768e734d0d49c052b15ed22c31f2d",
+      "executable": false,
+      "owner": "modules/user-dev/languages/rust.nix"
+    },
+    {
+      "old": "modules/user-dev/languages/unity.nix",
+      "target": "modules/dev/languages/unity.home.nix",
+      "sha256": "ee265db224bdd1ad84a107a1415590349fe7745d3bd10a56c9f9f7e7546319d8",
+      "executable": false,
+      "owner": "modules/user-dev/languages/unity.nix"
+    },
+    {
+      "old": "modules/user-dev/neovim/config.nix",
+      "target": "modules/dev/neovim/config.nix",
+      "sha256": "a24c158310e5cea1801afbc4568827f2164cfac92e571665da7d88d85e65beb1",
+      "executable": false,
+      "owner": "modules/user-dev/neovim"
+    },
+    {
+      "old": "modules/user-dev/neovim/default.nix",
+      "target": "modules/dev/neovim/home.nix",
+      "sha256": "dcbc5549e6e26de7bedd4488f87546f4ad07b110f1b3b6c9dd963771ac421228",
+      "executable": false,
+      "owner": "modules/user-dev/neovim"
+    },
+    {
+      "old": "modules/user-dev/pycharm.nix",
+      "target": "modules/dev/pycharm.home.nix",
+      "sha256": "3e0fc2d17a78e54a2f62a9c5d35201e68e826cec1c29ee2671d8f02dfb916541",
+      "executable": false,
+      "owner": "modules/user-dev/pycharm.nix"
+    },
+    {
+      "old": "modules/user-dev/ssh.nix",
+      "target": "modules/dev/ssh.home.nix",
+      "sha256": "61a0b37ce4e7ef52b22065dd32aae4169f9a640ad11589172ee76c01c1d02601",
+      "executable": false,
+      "owner": "modules/user-dev/ssh.nix"
+    },
+    {
+      "old": "modules/user-dev/starship/default.nix",
+      "target": "modules/dev/starship.home.nix",
+      "sha256": "259b9e46e9bc1f0222cbb3ebdb9deeb652caf0ebc4849e9c691995f23bdce666",
+      "executable": false,
+      "owner": "modules/user-dev/starship"
+    },
+    {
+      "old": "modules/user-dev/tmux/default.nix",
+      "target": "modules/dev/tmux/home.nix",
+      "sha256": "57526a9564a79dd6984629f4312ad788db2dca13b58ca56f1ca6f89fb7ac457f",
+      "executable": false,
+      "owner": "modules/user-dev/tmux"
+    },
+    {
+      "old": "modules/user-dev/tmux/project-list.sh",
+      "target": "modules/dev/tmux/project-list.sh",
+      "sha256": "1763dd0bb09bbd8721a3e2588eaade999d2dcc391d05bdfb268bda55d90411cd",
+      "executable": false,
+      "owner": "modules/user-dev/tmux"
+    },
+    {
+      "old": "modules/user-dev/vscode.nix",
+      "target": "modules/dev/vscode.home.nix",
+      "sha256": "091869c1689824838fd71d41fb2dc22ec09a144fcbf5b36c2c9e883a9cd138a6",
+      "executable": false,
+      "owner": "modules/user-dev/vscode.nix"
+    },
+    {
+      "old": "modules/user-dev/zed.nix",
+      "target": "modules/dev/zed.home.nix",
+      "sha256": "6b0d5f2cd6f7855802864546301ca6eb373e34c5b269abe3f1eb14f3007a5e17",
+      "executable": false,
+      "owner": "modules/user-dev/zed.nix"
+    },
+    {
+      "old": "modules/user-dev/zoxide.nix",
+      "target": "modules/dev/zoxide.home.nix",
+      "sha256": "e94ad9c5186f0b0c541f5a5cf7fba3709eda4bc750524c19688836435c446c6b",
+      "executable": false,
+      "owner": "modules/user-dev/zoxide.nix"
+    },
+    {
+      "old": "modules/user-files/dolphin.nix",
+      "target": "modules/files/dolphin.home.nix",
+      "sha256": "e48eab6cc7916ffeee178a8b3acab97eace44c5841a65a4f4c47dfddd69faf04",
+      "executable": false,
+      "owner": "modules/user-files/dolphin.nix"
+    },
+    {
+      "old": "modules/user-files/yazi.nix",
+      "target": "modules/files/yazi.home.nix",
+      "sha256": "3b03016e6ee7eec818a90118055220d8d325cb4bc70c6d30247ff2844d381898",
+      "executable": false,
+      "owner": "modules/user-files/yazi.nix"
+    },
+    {
+      "old": "home/default.nix",
+      "target": "modules/core/primary-user.home.nix",
+      "sha256": "cb682d27f72ebde9d7661465d643e72dc3fc56cc6e0fba824095f3d20b389f1a",
+      "executable": false,
+      "owner": "explicit assembly"
+    },
+    {
+      "old": "hosts/common/desktop.nix",
+      "target": "hosts/common/desktop.nix",
+      "sha256": "2f76f3d74313059334a2492b22e238eb5674be7dbb5e5c898b8f9aa2d69b62d2",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "hosts/laptop/configuration.nix",
+      "target": "hosts/laptop/configuration.nix",
+      "sha256": "2d503a9ac59a36b254651ed62718eabef905be7fca6dd21e1b1f9e42bf92ea6b",
+      "executable": true,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "hosts/laptop/hardware-configuration.nix",
+      "target": "hosts/laptop/hardware-configuration.nix",
+      "sha256": "533b5290c92151febbf0c91fcf8c11c80c29a227cb3fc6849828d7385224b75e",
+      "executable": true,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "hosts/laptop/profile.nix",
+      "target": "hosts/laptop/profile.nix",
+      "sha256": "04dcb4df36a5b6ada079a75c1ac282ad6c3fa3a92d45dea0b8ca35989a35cd51",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "hosts/laptop/secrets.nix",
+      "target": "hosts/laptop/secrets.nix",
+      "sha256": "c56497e1676e0d57bb8d9a1da5b34c7955437e41198edcd630afdd90e9e105be",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "hosts/pc/configuration.nix",
+      "target": "hosts/pc/configuration.nix",
+      "sha256": "09d2eedbd026e8a5f2d3804914c18cf8fdb5909a34c4fc797e40aab4359fd023",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "hosts/pc/hardware-configuration.nix",
+      "target": "hosts/pc/hardware-configuration.nix",
+      "sha256": "2c4efcb93b9f473d1e28c9b96f48bdd352087ad08c380fdb7c830fb7bcac5d2f",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "hosts/pc/profile.nix",
+      "target": "hosts/pc/profile.nix",
+      "sha256": "36a58995088bdd07121161745f42062e8753bee43636e490b0ce6d4943b45f59",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "hosts/pc/secrets.nix",
+      "target": "hosts/pc/secrets.nix",
+      "sha256": "3ee8ff067f7d14bf62997aa9f46e5f2182e21380c2d5d6b6268d0e26c779d6b6",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "hosts/server/configuration.nix",
+      "target": "hosts/server/configuration.nix",
+      "sha256": "3d2ad087176d0625e7fc402c6cacf22ae774c10a84007583df4505654cb5fa0b",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "hosts/server/hardware-configuration.nix",
+      "target": "hosts/server/hardware-configuration.nix",
+      "sha256": "06c5e70d67a944bcbc35d86af506b7ce43bcea4cc2684bbe7e12ca3fa17cf3f2",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "hosts/server/profile.nix",
+      "target": "hosts/server/profile.nix",
+      "sha256": "e75f62b0c3ec15ae34f68259c8357fb4183b60ee05d0c11ed7bc7d342a0a5d1a",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "hosts/server/secrets.nix",
+      "target": "hosts/server/secrets.nix",
+      "sha256": "225fdc04f04385bf0c046788670ffd51538cccf306cfb31f57569986d8fb3fcd",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/fish/conf.d/nixos-hosts.fish",
+      "target": "config/fish/conf.d/nixos-hosts.fish",
+      "sha256": "b9de7b61fd008433eab855e4af07ed3e0fe3417298d9ec6c0524abf33277e863",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/fish/conf.d/openrouter.fish",
+      "target": "config/fish/conf.d/openrouter.fish",
+      "sha256": "2874a3e94bb3d47c8d4f3bfd6b36a0a84a8f27c0dfb55535eabaa076bcfb3297",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/fish/conf.d/tmux.extra.conf",
+      "target": "config/fish/conf.d/tmux.extra.conf",
+      "sha256": "5169deba266a14f36fa9750a9ebc1c734ffe19f97f6d0f7abc03e3044fd8c45b",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/fish/conf.d/tmux.fish",
+      "target": "config/fish/conf.d/tmux.fish",
+      "sha256": "c9612f70ee5535cb31480953aacdbfcdd825440e2868ec644d88daa9e322cffe",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/fish/conf.d/tmux.only.conf",
+      "target": "config/fish/conf.d/tmux.only.conf",
+      "sha256": "65a2ee1be1c2b9fe1426d5486136c000652d720132d07103b3cdd2f7afbab776",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/fish/conf.d/zoxide.fish",
+      "target": "config/fish/conf.d/zoxide.fish",
+      "sha256": "437ea04f121a7415df654c7598bea04c30cab0ce5e37f41cdce42bbb90a79519",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/fish/config.fish",
+      "target": "config/fish/config.fish",
+      "sha256": "7f9e11fef0e54bf40b02d214374b0e112f2a2ff809d6d67ac060c0aa4ccd76d9",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/fish/functions/fisher.fish",
+      "target": "config/fish/functions/fisher.fish",
+      "sha256": "59640d07bda182f2ad0fdfe9dc8a799fb79f46e6e5fc460354ffe2e21f759688",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/kitty/kitty.conf",
+      "target": "config/kitty/kitty.conf",
+      "sha256": "39f1bbebce8cc84c075533e76b15ef665119ad811d26aad99ec409d8aa67cb79",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/niri/config.kdl",
+      "target": "config/niri/config.kdl",
+      "sha256": "417097e7c601801704ecca12304754303bdff46059b54565472b652380fc6259",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/niri/scripts/focus-or-launch",
+      "target": "config/niri/scripts/focus-or-launch",
+      "sha256": "1237253bbee971f8bb79a465824957a81eb29c5a5194c430f936b7a9a3243dec",
+      "executable": true,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/niri/sub/binds.kdl",
+      "target": "config/niri/sub/binds.kdl",
+      "sha256": "6322f41615730f40425fe1aee3ffd46965182f5a4514be812f9ac5694fbc7dc1",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/niri/sub/input.kdl",
+      "target": "config/niri/sub/input.kdl",
+      "sha256": "5a4ff24445e2cb2c8e929cacadec9a95a63484faf5a6a86547768468cea2db3a",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/niri/sub/layout.kdl",
+      "target": "config/niri/sub/layout.kdl",
+      "sha256": "f4ea752015cf567ce2c62b2acb06d1281c2a778a603b39eea6a9a1ba10dbf61b",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/niri/sub/outputs.kdl",
+      "target": "config/niri/sub/outputs.kdl",
+      "sha256": "4ebcb3bbeb204e1a9f38c8bf8127de8197ce893ce5095b272199221a14ff815a",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/niri/sub/rules/apps/obs.kdl",
+      "target": "config/niri/sub/rules/apps/obs.kdl",
+      "sha256": "30392bf92d37eb331d28e69e8656c38967a3e575cab68b6267b3b46bb379127b",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/niri/sub/rules/apps/prism.kdl",
+      "target": "config/niri/sub/rules/apps/prism.kdl",
+      "sha256": "cd7c944c657718bac815641f4ac1cc79865b28f117c83afb9328e8f11c155142",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/niri/sub/rules/apps/steam.kdl",
+      "target": "config/niri/sub/rules/apps/steam.kdl",
+      "sha256": "d8c2fed47478283bbc49e3c5dd1d43e7253aaf4120601c364a900a0979ff09a2",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/niri/sub/rules/apps/telegram.kdl",
+      "target": "config/niri/sub/rules/apps/telegram.kdl",
+      "sha256": "fab813f32f18e41cef2b7f866910e4875b53339b7e39444b865b72302cfe0c9f",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/niri/sub/rules/apps/vesktop.kdl",
+      "target": "config/niri/sub/rules/apps/vesktop.kdl",
+      "sha256": "2881594bf5aa4b6386c3eb550979f145c29e8970d17a03974c7635b04d34c40f",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/niri/sub/rules/apps/zen.kdl",
+      "target": "config/niri/sub/rules/apps/zen.kdl",
+      "sha256": "bdd4b7a52bcc4528f793f96c24b2ddd1dd37b5bb73617017edf22e7efd320035",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/niri/sub/rules/apps.kdl",
+      "target": "config/niri/sub/rules/apps.kdl",
+      "sha256": "8f3a20323ca7f8f2dfc71965770f68882b407fdb57c64fa1fea4b32edb9376d1",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/niri/sub/rules/common.kdl",
+      "target": "config/niri/sub/rules/common.kdl",
+      "sha256": "36387ae7258b13b61bc416074e3ec0be7806f12c50fc67990d97312c9d8e3001",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/niri/sub/rules/obsidian.kdl",
+      "target": "config/niri/sub/rules/obsidian.kdl",
+      "sha256": "a653cca8997b8dad2235571684a687caae48b9eb97ae14777d706252bf1cc243",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/niri/sub/startup.kdl",
+      "target": "config/niri/sub/startup.kdl",
+      "sha256": "de0006d6650293ac99f76b4a02412b1d422b00391581539eb33402f29a919ae2",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/niri/sub/workspaces-laptop.kdl",
+      "target": "config/niri/sub/workspaces-laptop.kdl",
+      "sha256": "d9c0cfb880cfd73829132274c56485abf4649d67fce7044e1048aabac73caac4",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/niri/sub/workspaces-pc.kdl",
+      "target": "config/niri/sub/workspaces-pc.kdl",
+      "sha256": "cd0746c1c1519959e1b880ffbd2e4ea264fb73c1769ac5579b91bb80248c9acb",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/niri/sub/workspaces.kdl",
+      "target": "config/niri/sub/workspaces.kdl",
+      "sha256": "c8adbb168676adea413f70387d15d788fa75dcc27fe2a3b2d9719b2a9ddb36a6",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/noctalia/bar-common.toml",
+      "target": "config/noctalia/bar-common.toml",
+      "sha256": "240e45bed57d6c1155c514c9236f8d073fd076617799d862c2cd4f794a496888",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/noctalia/bar-laptop.toml",
+      "target": "config/noctalia/bar-laptop.toml",
+      "sha256": "0b377a281a92073094e393569c0d61838eea24c338694e8733b29161dad876d7",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/noctalia/bar-pc.toml",
+      "target": "config/noctalia/bar-pc.toml",
+      "sha256": "05c2670aba80737b952863ff48b37016af7eb39e66294b7759d019b77c990d61",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/noctalia/config.toml",
+      "target": "config/noctalia/config.toml",
+      "sha256": "3d915120e65accc3cbb714a430f70a21d2f687b082d648ab82051bf38ea9c4b4",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/noctalia/prune-stale-settings.py",
+      "target": "config/noctalia/prune-stale-settings.py",
+      "sha256": "33e8f6bf6ea1b7ca1cbfa0d92b4f4b253bd308d7da35f7cc0a1290d9c2ce81c2",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/noctalia/templates/niri-dropdown.kdl",
+      "target": "config/noctalia/templates/niri-dropdown.kdl",
+      "sha256": "f1d8479498c8ec0d0c5576b3f8f32031a042ef0e3970a3ab56487fe8b754da7d",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/noctalia/user-templates.toml",
+      "target": "config/noctalia/user-templates.toml",
+      "sha256": "85bf9b8342b773726c1ea41d71131f4a05a14767053360383f0dccccfd2677ae",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/noctalia/widgets-common.toml",
+      "target": "config/noctalia/widgets-common.toml",
+      "sha256": "820ab3dd7f035a420f41ce57bbdf1b809063d94f8a5587321c7f97049256e8b4",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/noctalia/widgets-laptop.toml",
+      "target": "config/noctalia/widgets-laptop.toml",
+      "sha256": "7d77d7aa7e35a57ac5db68a68b0ea91a98effd96959c4221b9974bd5da277ef2",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/noctalia/widgets-pc.toml",
+      "target": "config/noctalia/widgets-pc.toml",
+      "sha256": "5df528a47f85b06d848d249234bc1bfd8cc0efb679981992ab0f171cdb53dbbd",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/after/ftplugin/python.lua",
+      "target": "config/nvim/after/ftplugin/python.lua",
+      "sha256": "4ef1e418c24082324551ffa8d8dbb8eb54b880b66e6568ef758466a71bcdaf5b",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/init.lua",
+      "target": "config/nvim/init.lua",
+      "sha256": "d607f292659045c8a3b760c4af00ae31fc38a4886317a2aa23b7ae5983b6be71",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lazy-lock.json",
+      "target": "config/nvim/lazy-lock.json",
+      "sha256": "ae5ab9a942a2c0df5524a2b311f434937e172981de59848a5c7ad73148a9714d",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/core/autocmds.lua",
+      "target": "config/nvim/lua/core/autocmds.lua",
+      "sha256": "f1cd10908032961b0cbedc06a5180a94d605da26c085dba5eb755e0ba7ff50bd",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/core/health.lua",
+      "target": "config/nvim/lua/core/health.lua",
+      "sha256": "c4f6eb05a1290f7c573d7027d55f42419c9fe526c49293594d6199058997d13c",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/core/keymaps.lua",
+      "target": "config/nvim/lua/core/keymaps.lua",
+      "sha256": "ad3c1b3dba69383d23e28012a95ead5ae39b02b0a27e8cfc945139c0a871896b",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/core/options.lua",
+      "target": "config/nvim/lua/core/options.lua",
+      "sha256": "eafeb466bbd7a43a3503a93fd997f762ded179b194cb76e097e2ca64d838518e",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/integrations/hover.lua",
+      "target": "config/nvim/lua/integrations/hover.lua",
+      "sha256": "3de16f2559bb03b75cec430bcbd045af4334b467744be818d24ff15abed512f6",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/integrations/theme.lua",
+      "target": "config/nvim/lua/integrations/theme.lua",
+      "sha256": "501bad4b2881f78dfa2c8cc7485b7c80b13729a5666499f8e76cad8d104eed69",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/languages/python.lua",
+      "target": "config/nvim/lua/languages/python.lua",
+      "sha256": "961ba5e0877598719948bac9b03f08b8204987d874376f0cc9d08c1068da0aca",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/matugen-template.lua",
+      "target": "config/nvim/lua/matugen-template.lua",
+      "sha256": "5bf5a646822e5982459565a17f01137a870b0bed71146bee14e7f9a2a9f10884",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/optional/neo-tree.lua",
+      "target": "config/nvim/lua/optional/neo-tree.lua",
+      "sha256": "193721e77e9e99f49d10d2d902444b427d1d6f613ef1c836daa89622915a6a5d",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/plugins/autopairs.lua",
+      "target": "config/nvim/lua/plugins/autopairs.lua",
+      "sha256": "33a657f73a74517843d7d696a9973426e6b6f586604dc3a0f06243af1016272e",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/plugins/base16.lua",
+      "target": "config/nvim/lua/plugins/base16.lua",
+      "sha256": "fb05e6e39f099b864df332f1dd9acd0451d3ab58e48cd57b51f0fbd79038d89c",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/plugins/cmake-tools.lua",
+      "target": "config/nvim/lua/plugins/cmake-tools.lua",
+      "sha256": "27269ad713365e67244993afd5bff9f85ea1767536d04529e8618e0924b26e09",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/plugins/codediff.lua",
+      "target": "config/nvim/lua/plugins/codediff.lua",
+      "sha256": "2a3485eb16dcd0e2690a9351724e00ad0fc190b4b9ae397f775051310c03b143",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/plugins/colorschemes.lua",
+      "target": "config/nvim/lua/plugins/colorschemes.lua",
+      "sha256": "f94157b26a545a7b200bdadef4a86acacf32d8b6363c83c2c79c21e6fe2e4d5a",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/plugins/competitest.lua",
+      "target": "config/nvim/lua/plugins/competitest.lua",
+      "sha256": "3b57a74be702a5786585afe95585cb4f516392d3fc8bbf35a49b1eb66409a5a9",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/plugins/completion.lua",
+      "target": "config/nvim/lua/plugins/completion.lua",
+      "sha256": "2b36f3fc3c52a64e0b43f8d2e3e474dace52d9bbdec8a7c7e9fd8b0213f349df",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/plugins/conform.lua",
+      "target": "config/nvim/lua/plugins/conform.lua",
+      "sha256": "744a86dd92e76da2d805113153bb609f3ecc10e61f6dae6fb79eec3767f768b3",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/plugins/debug.lua",
+      "target": "config/nvim/lua/plugins/debug.lua",
+      "sha256": "df0c196296e41e2e1d19dfcf24948c58ef75177580cd3e6e2b5bf36d29be07cb",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/plugins/editor.lua",
+      "target": "config/nvim/lua/plugins/editor.lua",
+      "sha256": "48f40034d7945aecddf2d2c5a62229e6318fcc71d00f1db5105caf40657790e0",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/plugins/gitsigns.lua",
+      "target": "config/nvim/lua/plugins/gitsigns.lua",
+      "sha256": "13f3ca0f5392b9acb9162a9e572fd335a4c8a282b1579d4de197daa3d810d052",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/plugins/godot.lua",
+      "target": "config/nvim/lua/plugins/godot.lua",
+      "sha256": "76fb9b61da6edc7e2f35ffd5cc2cebe2404c9481b3b855e3a043e7ea7c66a0a4",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/plugins/grug-far.lua",
+      "target": "config/nvim/lua/plugins/grug-far.lua",
+      "sha256": "50c703ef99d2c8cc0fb1d3d400b74e2455134d32e7d24d288b234a86724bedf5",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/plugins/harpoon.lua",
+      "target": "config/nvim/lua/plugins/harpoon.lua",
+      "sha256": "5bd7310def3e6f5f8a28204c23d566e94df12a77d3577ca2ae32ca5cab76bf7b",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/plugins/indentscope.lua",
+      "target": "config/nvim/lua/plugins/indentscope.lua",
+      "sha256": "119742e569570acc3b73b54444368b888f0201d6cbcece76092e8cb9b0b99312",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/plugins/init.lua",
+      "target": "config/nvim/lua/plugins/init.lua",
+      "sha256": "2b66bcaa6a2bee48b5cbef4e1498fbcefa5f65e93fc46d32a674c6c015562749",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/plugins/java.lua",
+      "target": "config/nvim/lua/plugins/java.lua",
+      "sha256": "72717dc4f0d94e35f22f8283161c0f8cbb40badb6d7db91c2d26941cecc5c5ff",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/plugins/lazygit.lua",
+      "target": "config/nvim/lua/plugins/lazygit.lua",
+      "sha256": "d7f6692facec92f9299e01d1aed426b8f8e1887db6ef939e0a85a51e87e2dd92",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/plugins/linting.lua",
+      "target": "config/nvim/lua/plugins/linting.lua",
+      "sha256": "645ec57cfc24a888f61c857f794d07882cfa7fbcb7b3a8562dd7bc563c5d02f9",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/plugins/lsp.lua",
+      "target": "config/nvim/lua/plugins/lsp.lua",
+      "sha256": "14bc3991d05050b641da77895f4e9033017a50f199d845ccd41ad209c70dda64",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/plugins/markdown.lua",
+      "target": "config/nvim/lua/plugins/markdown.lua",
+      "sha256": "2b185fe78844ecedf45d27f882397399f977c8a487e62f74fd2df199baadad9c",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/plugins/molten-nvim.lua",
+      "target": "config/nvim/lua/plugins/molten-nvim.lua",
+      "sha256": "cff9300cbc2200f298808525cd3973e9f6a07ac7484d3429070fcbdbf8c51923",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/plugins/neotest.lua",
+      "target": "config/nvim/lua/plugins/neotest.lua",
+      "sha256": "1367441f25738fc2f933394a1207f0188a0a592e002ff48b03f60ec5cfdec2ea",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/plugins/notify.lua",
+      "target": "config/nvim/lua/plugins/notify.lua",
+      "sha256": "cb6f7a0dcd98288e3458e417db87e81d3a5a934dfac93cc0ccac54f77fbadb90",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/plugins/nvterm.lua",
+      "target": "config/nvim/lua/plugins/nvterm.lua",
+      "sha256": "8ce1f63efa8d839289d7037b06cdf7eaf65fa68430874ad552a86a165bc7175b",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/plugins/oil.lua",
+      "target": "config/nvim/lua/plugins/oil.lua",
+      "sha256": "3e672c3c1762bf380f96551b5363872afc5b749ea0eb4943a9b4545d6d793053",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/plugins/remote-sshfs.lua",
+      "target": "config/nvim/lua/plugins/remote-sshfs.lua",
+      "sha256": "062f1114fcc5f9d9e850086dd4e63e7a27bbfbe9f6db0df8c64b0687d671b2fb",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/plugins/rust.lua",
+      "target": "config/nvim/lua/plugins/rust.lua",
+      "sha256": "f2df514a14ee5addd0569d697407f926622870512f0a33ca42a74d11678da361",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/plugins/smart-splits.lua",
+      "target": "config/nvim/lua/plugins/smart-splits.lua",
+      "sha256": "b4392ed2c22e71419beafe17cd4df7f0750436ad4f6401051e666dff410efdcc",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/plugins/smear-cursor.lua",
+      "target": "config/nvim/lua/plugins/smear-cursor.lua",
+      "sha256": "740123a04b2bdf8c7a1abb2ba7637d526bfb6d09d7797e3105d09ef01a555ef5",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/plugins/telescope.lua",
+      "target": "config/nvim/lua/plugins/telescope.lua",
+      "sha256": "074cef1d124c57094227a3483da80d87af0261cafe4050540b8c731b5cf0a47d",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/plugins/treesitter-textobjects.lua",
+      "target": "config/nvim/lua/plugins/treesitter-textobjects.lua",
+      "sha256": "811c9d2abc4f45c9270b5964acd735b56ca4cd8746782628422635497c94114f",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/plugins/treesitter.lua",
+      "target": "config/nvim/lua/plugins/treesitter.lua",
+      "sha256": "6f95c7c01cfe12f4c468f5f10bad705612e8490527423ce4c98d3f7fec39ce32",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/plugins/undotree.lua",
+      "target": "config/nvim/lua/plugins/undotree.lua",
+      "sha256": "b9b4341638fd53fd439429e0ec3fa6b272765be33d739ed0689889e4d082ca83",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/nvim/lua/plugins/unity.lua",
+      "target": "config/nvim/lua/plugins/unity.lua",
+      "sha256": "9cab88908fb0aae20a5b6c5c017ae4822cc7df28c71ac36b48f77cbca58ed70c",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/sesh/sesh.toml",
+      "target": "config/sesh/sesh.toml",
+      "sha256": "a6e81996336493827c0bddb79c922adf8c19d235bf9bff24b13ef41cb3fbb7fa",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/starship/starship.toml",
+      "target": "config/starship/starship.toml",
+      "sha256": "1501f37d660472594b0a61f69f1e76277d49c3c632e9a0c0a0e55dc56c617005",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/zen/chatgpt-projects.nix",
+      "target": "config/zen/chatgpt-projects.nix",
+      "sha256": "122950feb586fa9df014320bd15a6fd5f3a50cca9aa0b99277120a882315ef1c",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "config/zen/profile.nix",
+      "target": "config/zen/profile.nix",
+      "sha256": "232219ebf6a0d31768d8e247e6cec406f42e801697b3d69cfc8121899ace5387",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "packages/hide-me/default.nix",
+      "target": "packages/hide-me/default.nix",
+      "sha256": "af17b7328e25cae9f34ac46f3d0430d772672076e9f5e028f7c356c6116bf3db",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "packages/namespace-launcher/client.c",
+      "target": "packages/namespace-launcher/client.c",
+      "sha256": "768e8512af737819778605ea41df4da63267c21370ddee4180c62c41270ec371",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "packages/namespace-launcher/default.nix",
+      "target": "packages/namespace-launcher/default.nix",
+      "sha256": "fefca030b8d2bcfa87e9c1b0d90293757c65d66d3de22e3cfb57d55be99cb682",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "packages/namespace-launcher/enter.c",
+      "target": "packages/namespace-launcher/enter.c",
+      "sha256": "ef464c1feff8018cd85173346e25ba2a616ca9bdc5ffdf19f5e105dc9a22ba93",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "pkgs/skillshare.nix",
+      "target": "pkgs/skillshare.nix",
+      "sha256": "4b4a33877b282e8778fd1efe947655db86d0f38131790189366f87e60d4f643a",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "lib/check-sops-source.py",
+      "target": "lib/check-sops-source.py",
+      "sha256": "f0ca3a24d856c32e107de9881c8176a94ede3c5fa862527aa896318aae71d0a0",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "lib/config-paths.nix",
+      "target": "lib/config-paths.nix",
+      "sha256": "5b92762bbbf2592f87992ebb24482604e785e4e9e5af35f185e69128d6925a47",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "lib/module-catalog.nix",
+      "target": "lib/module-catalog.nix",
+      "sha256": "3f5a63095563eacc2696755b0ef1bfa5e9312c54eda0d00a3baf69608dfacbdc",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "lib/module-discovery.nix",
+      "target": "lib/module-discovery.nix",
+      "sha256": "9f8ace5ec0c6d88e5908fd554fb0cd6e2165bf8f4c00d070f55bf36ea3ad5239",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "lib/nixos-command.sh",
+      "target": "lib/nixos-command.sh",
+      "sha256": "bb1dcc6167b26f304a7ba27335761ebd637717085a0400060c7ad6b2dc0b369c",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "lib/package-sources.nix",
+      "target": "lib/package-sources.nix",
+      "sha256": "fcc9fcf574a4397f4ace3ec19028e796675c0da414b0c30735f2ae5899cfe2d7",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "lib/secret-source.nix",
+      "target": "lib/secret-source.nix",
+      "sha256": "874a6ea7cd6e479d1f043414198a1c19e1f40bf41383c70fc6265100f3cdf4d0",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "flake/devshells.nix",
+      "target": "flake/devshells.nix",
+      "sha256": "215a0b0937aa114b1825f7fe8eea3a569eda3a53b4f3a7bf33c399c70bc43b24",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "flake/formatting.nix",
+      "target": "flake/formatting.nix",
+      "sha256": "d5d516dc6be58a246ab4b190d0a9d6d4218af49fd09eab346e23454aa27db656",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "flake/hosts.nix",
+      "target": "flake/hosts.nix",
+      "sha256": "bcd410b311d8687f86d8b186712d9b71bf946763bf32c18ece3a3dd00a4c7de3",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "flake/verification.nix",
+      "target": "flake/verification.nix",
+      "sha256": "f60e06a29b539a6bd885547c01b59f2ff8f25a8feab01581ae91706589debaee",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "templates/host/README.md",
+      "target": "templates/host/README.md",
+      "sha256": "731e2bdc3b37832760c10ef92075e069694620e0dc39e01ffa342e2363390d1d",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "templates/host/configuration.nix",
+      "target": "templates/host/configuration.nix",
+      "sha256": "717c80ce9391b251e2d10fcb449c44ccd86d047360497616c3ad7800fd0260c0",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "templates/host/profile.nix",
+      "target": "templates/host/profile.nix",
+      "sha256": "6099bba7350b0f2f0763571461a27887616d0481b9f4762cda3ad4d8573971bf",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "templates/private/README.md",
+      "target": "templates/private/README.md",
+      "sha256": "0300afccc6c801cfd5f8d030806ebbe0b22f98c8d553e72525c2607211446c8e",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "templates/private/flake.nix",
+      "target": "templates/private/flake.nix",
+      "sha256": "467a3f2ec0dd4f6cb6b1b1803c8aa6d5a01e6c3a1fa6634c4db14f7f48098ce6",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "templates/private/hosts/example.nix",
+      "target": "templates/private/hosts/example.nix",
+      "sha256": "b586e0b916b1912b1e06cf7a2e487b953f8ab631845883e2cf00e7cb53ff4bf5",
+      "executable": false,
+      "owner": "retained supporting source"
+    },
+    {
+      "old": "flake.nix",
+      "target": "flake.nix",
+      "sha256": "32de5970859ae647be59c23819655e3d45c41fdd65a8cd1010b8ddb6b84fc1bb",
+      "executable": false,
+      "owner": "retained build/deployment root"
+    },
+    {
+      "old": "flake.lock",
+      "target": "flake.lock",
+      "sha256": "7ec56d8e478e6afe5492f020a3ce20ee0523adf7d1498ad04bb40a2835d6442a",
+      "executable": false,
+      "owner": "retained build/deployment root"
+    },
+    {
+      "old": "justfile",
+      "target": "justfile",
+      "sha256": "1edb0070b319b2b8df2d1323c987530d23950fbe15a19a04eabf97ff7f93a355",
+      "executable": false,
+      "owner": "retained build/deployment root"
+    },
+    {
+      "old": "keys/README.md",
+      "target": "keys/README.md",
+      "sha256": "1a9034e4791613260609aa4f0a3423d66d6cb2ca3f8ef9451248b59849d93ae3",
+      "executable": false,
+      "owner": "retained public or encrypted source; no runtime reads"
+    },
+    {
+      "old": "keys/hosts/.gitkeep",
+      "target": "keys/hosts/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "executable": false,
+      "owner": "retained public or encrypted source; no runtime reads"
+    },
+    {
+      "old": "secrets/.gitkeep",
+      "target": "secrets/.gitkeep",
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "executable": false,
+      "owner": "retained public or encrypted source; no runtime reads"
+    },
+    {
+      "old": "secrets/README.md",
+      "target": "secrets/README.md",
+      "sha256": "ae9b0681e71d3834785e117d66d2139d0021488d2661548281adaa3c1076ae2e",
+      "executable": false,
+      "owner": "retained public or encrypted source; no runtime reads"
+    },
+    {
+      "old": "secrets/hosts/.gitkeep",
+      "target": "secrets/hosts/.gitkeep",
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "executable": false,
+      "owner": "retained public or encrypted source; no runtime reads"
+    }
+  ]
+}

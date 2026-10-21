@@ -33,7 +33,7 @@ until boot and first access work.
 
 | Goal | Module profile in `mkHost` | What to add later |
 | --- | --- | --- |
-| Small command-line host or server | `moduleProfiles.server` | Individual services from `modules/server/` and `modules/system-services/` |
+| Small command-line host or server | `moduleProfiles.server` | Individual services from `modules/server/` and `modules/services/` |
 | Desktop or laptop | `moduleProfiles.desktop` | Desktop/session, user applications, and development modules |
 
 The module profile makes options available; it doesn't turn them on. My PC and

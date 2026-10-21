@@ -40,7 +40,7 @@ git.userEmail = "person@example.invalid";
 ```
 
 Replace these example values before using Git. The adapter passes them to the
-Git module. Inspect `modules/user-dev/git.nix` for its other defaults before
+Git module. Inspect `modules/dev/git.home.nix` for its other defaults before
 turning it on. For system features, set their system option in the profile
 instead; for example `my.system.services.tailscale.enable = true` enables the
 Tailscale service, but enrollment remains a separate runtime task.
@@ -62,8 +62,8 @@ and user environment change only when you [activate it](maintenance.md#apply-a-r
 For desktop options, register your host with `moduleProfiles.desktop`. System
 session settings live under `my.desktop.*`; user integration lives under
 `my.primaryUser.home.settings.my.user.*`. Niri's session module is
-`modules/desktops/niri/default.nix`, while its dotfile adapter is
-`modules/user-desktop/niri/config.nix`. They have different jobs: installing a
+`modules/desktop/niri/nixos.nix`, while its dotfile adapter is
+`modules/desktop/niri/home.nix`. They have different jobs: installing a
 session doesn't select all my personal KDL files.
 
 My Niri files include Noctalia-generated files and host-specific workspaces.
@@ -84,8 +84,8 @@ it isn't needed for ordinary server or desktop use.
 
 ## Edit an application's configuration
 
-Find the owning module first. For example, `modules/user-dev/neovim/config.nix`
-deploys `config/nvim/`, and `modules/user-apps/zen-browser.nix` uses the Zen
+Find the owning module first. For example, `modules/dev/neovim/config.nix`
+deploys `config/nvim/`, and `modules/apps/zen-browser.home.nix` uses the Zen
 profile source. Check the module to see which source file actually reaches your
 host, then edit that file and build again.
 
