@@ -3,7 +3,8 @@ layout {
     center-focused-column "never"
     always-center-single-column
     default-column-display "tabbed"
-    background-color "#003300"
+    // Neutral fallback until Noctalia generates the workspace background.
+    background-color "#1e1e2e"
 
     preset-column-widths {
         proportion 0.33333
@@ -20,24 +21,20 @@ layout {
     }
 
     focus-ring {
-        // off
         on
         width 1
     }
 
     shadow {
         off
-        // on
         softness 30
         spread 5
         offset x=0 y=5
         draw-behind-window true
         color "#00000070"
-        // inactive-color "#00000054"
     }
 
     tab-indicator {
-        // off
         on
         hide-when-single-tab
         place-within-column
@@ -47,25 +44,11 @@ layout {
         position "right"
         gaps-between-tabs 2
         corner-radius 8
-        active-color "red"
-        inactive-color "gray"
-        urgent-color "blue"
-        // active-gradient from="#80c8ff" to="#bbddff" angle=45
-        // inactive-gradient from="#505050" to="#808080" angle=45 relative-to="workspace-view"
-        // urgent-gradient from="#800" to="#a33" angle=45
+        // Follow focus-ring colors until Noctalia supplies its tab colors.
     }
 
     insert-hint {
-        // off
         on
         color "#ffc87f80"
-        // gradient from="#ffbb6680" to="#ffc88080" angle=45 relative-to="workspace-view"
-    }
-
-    struts {
-        // left 64
-        // right 64
-        // top 64
-        // bottom 64
     }
 }

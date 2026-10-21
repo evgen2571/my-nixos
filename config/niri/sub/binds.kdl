@@ -3,7 +3,7 @@ binds {
 
     // Apps
     Mod+Return repeat=false hotkey-overlay-title="Terminal" { spawn "kitty"; }
-    Mod+Shift+Return repeat=false hotkey-overlay-title="Dropdown Terminal" { spawn-sh "$HOME/.config/niri/scripts/focus-or-launch '^kitty$' --title '^dropdown-term$' --toggle -- env DROPDOWN_TERM=1 kitty -T dropdown-term tmux new-session -A -s dropdown -e DROPDOWN_TERM=1"; }
+    Mod+Shift+Return repeat=false hotkey-overlay-title="Dropdown terminal (close / reopen tmux)" { spawn-sh "$HOME/.config/niri/scripts/focus-or-launch '^kitty$' --title '^dropdown-term$' --close-focused -- env DROPDOWN_TERM=1 kitty -T dropdown-term tmux new-session -A -s dropdown -e DROPDOWN_TERM=1"; }
     Mod+F repeat=false hotkey-overlay-title="Browser" { spawn-sh "$HOME/.config/niri/scripts/focus-or-launch '^(zen-beta|zen)$' -- zen-beta"; }
     Mod+E repeat=false hotkey-overlay-title="TUI File Manager" { spawn "kitty" "-T" "file-manager" "yazi"; }
     Mod+Shift+E repeat=false hotkey-overlay-title="GUI File Manager" { spawn-sh "$HOME/.config/niri/scripts/focus-or-launch '^org\\.kde\\.dolphin$' -- dolphin"; }
@@ -14,7 +14,7 @@ binds {
     Mod+O repeat=false hotkey-overlay-title="Notetaker" { spawn-sh "$HOME/.config/niri/scripts/focus-or-launch '^md\\.obsidian\\.Obsidian$' -- obsidian"; }
     Mod+A repeat=false hotkey-overlay-title="Anki" { spawn "anki"; }
     Mod+B repeat=false hotkey-overlay-title="API Client" { spawn "bruno"; }
-    Mod+M repeat=false hotkey-overlay-title="Music" { spawn-sh "$HOME/.config/niri/scripts/focus-or-launch '^(pear-desktop|Pear Desktop|youtube-music|YouTube Music|com\\.github\\.th_ch\\.youtube_music)$' --toggle -- pear-desktop"; }
+    Mod+M repeat=false hotkey-overlay-title="Music" { spawn-sh "$HOME/.config/niri/scripts/focus-or-launch '^(pear-desktop|Pear Desktop|youtube-music|YouTube Music|com\\.github\\.th_ch\\.youtube_music)$' -- pear-desktop"; }
     Mod+T repeat=false hotkey-overlay-title="Telegram" { spawn-sh "$HOME/.config/niri/scripts/focus-or-launch '^(org\\.telegram\\.desktop|telegram-desktop)$' -- telegram-desktop"; }
     Mod+D repeat=false hotkey-overlay-title="Vesktop" { spawn-sh "$HOME/.config/niri/scripts/focus-or-launch '^(vesktop|Vesktop)$' -- vesktop"; }
 
@@ -25,7 +25,7 @@ binds {
     Mod+V { spawn "noctalia" "msg" "panel-toggle" "clipboard"; }
     Mod+Y { spawn "noctalia" "msg" "panel-toggle" "wallpaper"; }
     Mod+P { spawn "noctalia" "msg" "panel-toggle" "session"; }
-    Mod+Alt+L { spawn "noctalia" "msg" "session" "lock-and-suspend"; }
+    Mod+Shift+P { spawn "noctalia" "msg" "session" "lock-and-suspend"; }
     Ctrl+Shift+Escape { spawn "noctalia" "msg" "panel-toggle" "control-center" "system"; }
 
     // System controls. Use direct Wayland-friendly tools instead of shell IPC so keys keep
@@ -54,24 +54,24 @@ binds {
     Mod+Shift+F { fullscreen-window; }
 
     // Focus navigation
-    Mod+Left { focus-column-left; }
-    Mod+Down { focus-window-down; }
-    Mod+Up { focus-window-up; }
-    Mod+Right { focus-column-right; }
-    Mod+H { focus-column-left; }
-    Mod+J { focus-window-down; }
-    Mod+K { focus-window-up; }
-    Mod+L { focus-column-right; }
+    Mod+Left { focus-column-or-monitor-left; }
+    Mod+Down { focus-window-or-workspace-down; }
+    Mod+Up { focus-window-or-workspace-up; }
+    Mod+Right { focus-column-or-monitor-right; }
+    Mod+H { focus-column-or-monitor-left; }
+    Mod+J { focus-window-or-workspace-down; }
+    Mod+K { focus-window-or-workspace-up; }
+    Mod+L { focus-column-or-monitor-right; }
 
     // Window movement
-    Mod+Shift+Left { move-column-left; }
-    Mod+Shift+Down { move-window-down; }
-    Mod+Shift+Up { move-window-up; }
-    Mod+Shift+Right { move-column-right; }
-    Mod+Shift+H { move-column-left; }
-    Mod+Shift+J { move-window-down; }
-    Mod+Shift+K { move-window-up; }
-    Mod+Shift+L { move-column-right; }
+    Mod+Shift+Left { move-column-left-or-to-monitor-left; }
+    Mod+Shift+Down { move-window-down-or-to-workspace-down; }
+    Mod+Shift+Up { move-window-up-or-to-workspace-up; }
+    Mod+Shift+Right { move-column-right-or-to-monitor-right; }
+    Mod+Shift+H { move-column-left-or-to-monitor-left; }
+    Mod+Shift+J { move-window-down-or-to-workspace-down; }
+    Mod+Shift+K { move-window-up-or-to-workspace-up; }
+    Mod+Shift+L { move-column-right-or-to-monitor-right; }
 
     // Column navigation
     Mod+Home { focus-column-first; }
@@ -79,37 +79,32 @@ binds {
     Mod+Ctrl+Home { move-column-to-first; }
     Mod+Ctrl+End { move-column-to-last; }
 
-    // Monitor navigation
-    Mod+Ctrl+Left { focus-monitor-left; }
-    Mod+Ctrl+Right { focus-monitor-right; }
-    Mod+Ctrl+H { focus-monitor-left; }
-    Mod+Ctrl+L { focus-monitor-right; }
+    // Direct monitor/workspace focus.
+    Mod+Alt+H { focus-monitor-left; }
+    Mod+Alt+L { focus-monitor-right; }
+    Mod+Alt+J { focus-workspace-down; }
+    Mod+Alt+K { focus-workspace-up; }
+    // Ctrl+Shift moves a whole column; avoid the Alt+Shift keyboard-layout chord.
+    Mod+Ctrl+Shift+H { move-column-to-monitor-left; }
+    Mod+Ctrl+Shift+L { move-column-to-monitor-right; }
+    Mod+Ctrl+Shift+J { move-column-to-workspace-down; }
+    Mod+Ctrl+Shift+K { move-column-to-workspace-up; }
 
-    // Move to monitor
-    Mod+Shift+Ctrl+Left { move-column-to-monitor-left; }
-    Mod+Shift+Ctrl+Right { move-column-to-monitor-right; }
-    Mod+Shift+Ctrl+Down { move-column-to-monitor-down; }
-    Mod+Shift+Ctrl+Up { move-column-to-monitor-up; }
-    Mod+Shift+Ctrl+H { move-column-to-monitor-left; }
-    Mod+Shift+Ctrl+L { move-column-to-monitor-right; }
-    Mod+Shift+Ctrl+J { move-column-to-monitor-down; }
-    Mod+Shift+Ctrl+K { move-column-to-monitor-up; }
+    // Fine sizing, with arrow alternatives.
+    Mod+Ctrl+H { set-column-width "-5%"; }
+    Mod+Ctrl+L { set-column-width "+5%"; }
+    Mod+Ctrl+J { set-window-height "-5%"; }
+    Mod+Ctrl+K { set-window-height "+5%"; }
+    Mod+Ctrl+Left { set-column-width "-5%"; }
+    Mod+Ctrl+Right { set-column-width "+5%"; }
+    Mod+Ctrl+Down { set-window-height "-5%"; }
+    Mod+Ctrl+Up { set-window-height "+5%"; }
 
-    // Workspace navigation
+    // Page keys retain direct workspace focus and workspace reordering.
     Mod+Page_Down { focus-workspace-down; }
     Mod+Page_Up { focus-workspace-up; }
-    Mod+U { focus-workspace-down; }
-    Mod+I { focus-workspace-up; }
-    Mod+Ctrl+Down { move-column-to-workspace-down; }
-    Mod+Ctrl+Up { move-column-to-workspace-up; }
-    Mod+Ctrl+U { move-column-to-workspace-down; }
-    Mod+Ctrl+I { move-column-to-workspace-up; }
-
-    // Move workspaces
     Mod+Shift+Page_Down { move-workspace-down; }
     Mod+Shift+Page_Up { move-workspace-up; }
-    Mod+Shift+U { move-workspace-down; }
-    Mod+Shift+I { move-workspace-up; }
 
     // Mouse wheel navigation
     Mod+WheelScrollDown cooldown-ms=150 { focus-workspace-down; }

@@ -41,7 +41,7 @@ window-rule {
 
 // A dropdown is a small centered window at the top of the current workspace.
 window-rule {
-    match app-id=r#"^kitty$"# title="dropdown-term"
+    match app-id=r#"^kitty$"# title="^dropdown-term$"
     draw-border-with-background false
     opacity 0.88
 	open-maximized-to-edges false
