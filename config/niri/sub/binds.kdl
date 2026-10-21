@@ -64,20 +64,14 @@ binds {
     Mod+L { focus-column-or-monitor-right; }
 
     // Move the focused window directly across monitors/workspaces, including floats.
-    Mod+Shift+Left { move-window-to-monitor-left; }
+    Mod+Shift+Left { move-column-left-or-to-monitor-left; }
     Mod+Shift+Down { move-window-to-workspace-down; }
     Mod+Shift+Up { move-window-to-workspace-up; }
-    Mod+Shift+Right { move-window-to-monitor-right; }
-    Mod+Shift+H { move-window-to-monitor-left; }
+    Mod+Shift+Right { move-column-right-or-to-monitor-right; }
+    Mod+Shift+H { move-column-left-or-to-monitor-left; }
     Mod+Shift+J { move-window-to-workspace-down; }
     Mod+Shift+K { move-window-to-workspace-up; }
-    Mod+Shift+L { move-window-to-monitor-right; }
-
-    // Basic movement within the current workspace; Alt+Mod is occupied by direct focus.
-    Mod+Ctrl+Alt+H { move-column-left; }
-    Mod+Ctrl+Alt+L { move-column-right; }
-    Mod+Ctrl+Alt+J { move-window-down; }
-    Mod+Ctrl+Alt+K { move-window-up; }
+    Mod+Shift+L { move-column-right-or-to-monitor-right; }
 
     // Column navigation
     Mod+Home { focus-column-first; }
@@ -85,26 +79,27 @@ binds {
     Mod+Ctrl+Home { move-column-to-first; }
     Mod+Ctrl+End { move-column-to-last; }
 
-    // Direct monitor/workspace focus.
-    Mod+Alt+H { focus-monitor-left; }
-    Mod+Alt+L { focus-monitor-right; }
-    Mod+Alt+J { focus-workspace-down; }
-    Mod+Alt+K { focus-workspace-up; }
+	// Fine sizing, with arrow alternatives.
+    Mod+Ctrl+H { focus-monitor-left; }
+    Mod+Ctrl+L { focus-monitor-right; }
+    Mod+Ctrl+J { focus-workspace-down; }
+    Mod+Ctrl+K { focus-workspace-up; }
+
     // Ctrl+Shift moves a whole column; avoid the Alt+Shift keyboard-layout chord.
     Mod+Ctrl+Shift+H { move-column-to-monitor-left; }
     Mod+Ctrl+Shift+L { move-column-to-monitor-right; }
     Mod+Ctrl+Shift+J { move-column-to-workspace-down; }
     Mod+Ctrl+Shift+K { move-column-to-workspace-up; }
 
-    // Fine sizing, with arrow alternatives.
-    Mod+Ctrl+H { set-column-width "-5%"; }
-    Mod+Ctrl+L { set-column-width "+5%"; }
-    Mod+Ctrl+J { set-window-height "-5%"; }
-    Mod+Ctrl+K { set-window-height "+5%"; }
-    Mod+Ctrl+Left { set-column-width "-5%"; }
-    Mod+Ctrl+Right { set-column-width "+5%"; }
-    Mod+Ctrl+Down { set-window-height "-5%"; }
-    Mod+Ctrl+Up { set-window-height "+5%"; }
+	// Direct monitor/workspace focus.
+    Mod+Alt+H { set-column-width "-5%"; }
+    Mod+Alt+L { set-column-width "+5%"; }
+    Mod+Alt+J { set-window-height "-5%"; }
+    Mod+Alt+K { set-window-height "+5%"; }
+    Mod+Alt+Left { set-column-width "-5%"; }
+    Mod+Alt+Right { set-column-width "+5%"; }
+    Mod+Alt+Down { set-window-height "-5%"; }
+    Mod+Alt+Up { set-window-height "+5%"; }
 
     // Page keys retain direct workspace focus and workspace reordering.
     Mod+Page_Down { focus-workspace-down; }

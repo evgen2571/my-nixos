@@ -13,6 +13,7 @@ in
 
   config = lib.mkIf cfg.enable {
     home.packages = with pkgs; [
+      just
       zip
       nil
       nix

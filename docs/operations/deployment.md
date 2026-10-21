@@ -16,9 +16,12 @@ Coding agents also follow the authorization requirements in [AGENTS.md](../../AG
 
 ## Everyday rebuilds with Just
 
-Install `just` separately (or enter `nix shell nixpkgs#just`). For a single
-invocation, use `nix run nixpkgs#just -- RECIPE`; recipes do not require `just`
-on `PATH`. In the public checkout, copy [.env.example](../../.env.example) to
+The desktop workstation bundle includes `just` through the generic developer
+tooling bundle (`my.user.dev.toolchains`). Before applying that configuration,
+or on another machine, use `nix shell nixpkgs#just`. For a single invocation,
+use `nix run nixpkgs#just -- RECIPE`; recipes do not require `just` on `PATH`.
+
+In the public checkout, copy [.env.example](../../.env.example) to
 `.env` if that local file does not already exist, then choose a private source:
 
 ```dotenv
