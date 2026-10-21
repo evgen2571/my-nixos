@@ -4,7 +4,7 @@ return {
 
   dependencies = {
     'nvim-lua/plenary.nvim',
-    'nvim-tree/nvim-web-devicons', -- not strictly required, but recommended
+    { 'nvim-mini/mini.icons', opts = {}, config = function() require('mini.icons').mock_nvim_web_devicons() end },
     'MunifTanjim/nui.nvim',
   },
 

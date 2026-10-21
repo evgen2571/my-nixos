@@ -7,8 +7,11 @@ shortcuts, `Space ?` to keep the guide open, or `Space s k` to search bindings.
 | --- | --- |
 | `Space s f` / `Space s g` | Find files / search content, including connected remote projects |
 | `Space Space` | Switch open buffers |
-| `Space b a` / `Space b m` | Bookmark a file / open bookmarks |
-| `Space b 1` through `Space b 4` | Jump to a bookmark |
+| `Space a` / `Space e` | Bookmark a file / open bookmarks |
+| `Space b 1` through `Space b 4` / `Alt-a/s/d/f` | Jump to a bookmark |
+| `Alt-i` | Toggle the persistent centered floating shell |
+| `Space g g` / `Space g l` | Lazygit / Git log |
+| `Space s N` | Notification history |
 | `K` / `gd` | Language-server documentation / definition |
 | `Space f` | Format buffer or selection |
 | `Space d f` / `Space d q` | Diagnostic popup / location list |
@@ -79,7 +82,18 @@ session-local; execute in JupyterLab to persist notebook outputs.
 
 For plots, execute `%matplotlib inline` first. Inline images require an attached
 UI, Kitty graphics, ImageMagick, and tmux `allow-passthrough on` when using tmux.
-Check with `tmux show-options -gv allow-passthrough` after reloading its config.
+The existing tmux module enables passthrough and focus events. Check the effective
+pane option with `tmux show -Apv allow-passthrough` and the attached terminal with
+`tmux display-message -p '#{client_termname}'` (expected `xterm-kitty`). Detection
+also accepts `TERM_PROGRAM=kitty` and inherited `KITTY_WINDOW_ID`; it does not rely
+on `TERM` remaining `xterm-kitty` inside tmux. A missing UI, Kitty terminal,
+ImageMagick `magick`, or passthrough produces a specific reason (visible sessions
+receive a warning). Image setup completes before Molten's first command snapshots
+its provider. After fixing a failed graphics setup, restart Neovim before
+initializing another kernel. Image dimensions follow window limits, overlapping
+floats clear images, and only the active tmux window displays them. Molten
+reserves virtual lines behind floating output, so source text does not show
+through plots with a transparent theme.
 `NVIM_RESEARCH_IMAGES=0` forces text mode. Use JupyterLab for rich widgets and large
 DataFrames; `:MoltenOpenInBrowser` can show HTML output.
 
@@ -95,7 +109,35 @@ C/C++, CMake and Rust use LLDB. `Space c m d` debugs a selected CMake target.
 For GoogleTest, build an executable and associate it with `:ConfigureGtest`.
 Unity setup is described below.
 
-Ctrl-Y accepts the selected Blink completion.
+Ctrl-Y accepts the selected Blink completion. Tab and Shift-Tab navigate native
+`vim.snippet` placeholders; LSP snippets and automatic completion documentation
+remain enabled. There are no custom LuaSnip snippets. Blink's Rust matcher was
+evaluated: it needs a library built for the locked plugin revision. The Lua matcher
+remains selected and binary downloads are disabled, so startup needs no downloaded
+native binary. A future Rust migration should package the plugin and matcher
+together through Nix.
+
+Search uses Snacks Picker, including previews and `vim.ui.select`. `Space s s`
+lists pickers, `Space s r` resumes, `Space s c` previews colorschemes, `Space /`
+searches the current buffer, and `Space s /` greps open buffers. LSP navigation
+keeps `gd`, `gr`, `gi`, `grt`, `gO`, and `gW`. SSHFS explicitly uses its Snacks
+backend: `Space r c/r d/r e` connect, disconnect, and edit SSH configuration;
+the `RemoteSSHFS*` commands remain available. Connected file/text searches use
+the SSHFS backend; disconnected searches use local Snacks pickers.
+
+Harpoon 2 stores marks by working directory. `Space a` adds a file and `Space e`
+opens its editable menu; `Space b a`, `Space b m`, and `Space b e` are removed.
+On first use in a project with no Harpoon 2 data, old marks from
+`stdpath('data')/harpoon.json` and `stdpath('config')/harpoon.json` are imported.
+Existing Harpoon 2 data takes precedence. Old files are preserved. The tabline
+uses the existing `Harpoon*` theme groups; Harpoon 2 has no built-in tabline API.
+
+`K` uses native LSP hover with a rounded border and screen-relative size limits
+(85% width, 65% height). Long lines wrap, including long identifiers, and Markdown
+is passed through without custom trimming. Press `K` again to focus the popup,
+then use Ctrl-F/Ctrl-B or Ctrl-D/Ctrl-U to scroll and `q` to close; Ctrl-W p returns
+to the source. Reopen after resizing to calculate fresh limits. Which-Key keeps
+its compact classic layout with plain text group names and no mapping icons.
 
 ## Unity projects
 
@@ -129,9 +171,9 @@ a check in a real project.
 | Provider packages and installation | [Neovim module](../../modules/dev/neovim) |
 
 Activation copies source into writable `~/.config/nvim` with `rsync --delete`,
-except generated `lua/matugen.lua`. Keep lasting edits in this repository;
+except generated `lua/matugen.lua` and legacy `harpoon.json` marks. Keep lasting edits in this repository;
 other local configuration files can be removed on the next activation. Preserve
-the generated palette and the explicit plugin order. `lua/optional` contains an
+the generated palette, legacy marks, and the explicit plugin order. `lua/optional` contains an
 inactive Neo-tree spec.
 
 ## Checks and remaining desktop verification
@@ -141,9 +183,25 @@ separate XDG config, data, cache and state directories, with copies of the sourc
 and installed plugins. It does not install missing dependencies. Headless tests
 cannot verify popup appearance, remote SSH sessions, or terminal graphics.
 
-Desktop checks still needed include plots directly in Kitty and through tmux,
-visual-selection execution, output focus, Ctrl-Y completion acceptance,
-and real Noctalia palette reload on both desktops. Real CMake/Rust debugging,
+The graphics acceptance check is a real Matplotlib PNG (`%matplotlib inline`,
+`import matplotlib.pyplot as plt; plt.plot([1, 2, 3]); plt.show()`) through Molten
+in Kitty, repeated inside tmux. Scroll, resize, enter/hide/close output, and repeat
+with `NVIM_RESEARCH_IMAGES=0` for text fallback. Headless capability simulations
+are not evidence of displayed pixels.
+
+Validation for this migration passed the 16 isolated smoke checks, native hovers
+from Pyright/gopls/clangd with long signatures and Markdown, Snacks file/grep
+pickers, notification history, persistent floating terminal, native snippet
+expansion/navigation, and SIGUSR1 theme reload/fallback. Real Matplotlib PNGs were
+visually checked in Kitty directly and in a separate tmux server (including
+without inherited Kitty variables). Output focus/scroll/close, hide/reopen,
+source scrolling, and window resize passed in both. Explicit image-disabled
+text output was checked separately. `nix flake check --no-build` evaluated all
+three hosts; the `module-style` and `config-paths` Nix checks were built.
+
+Remaining desktop checks include a real SSHFS connection and remote preview,
+visual-selection execution, Ctrl-Y completion acceptance,
+and real Noctalia palette generation/reload on both desktops. Real CMake/Rust debugging,
 GoogleTest execution, Go/Java/Unity/Godot runtime sessions and project
 JupyterLab/MLflow widgets also need their own checks. Scientific wheel libraries
 remain a project/dev-shell concern; there is no global ML environment.

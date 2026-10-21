@@ -22,6 +22,11 @@ check("Completion acceptance", function()
 	require("lazy").load({ plugins = { "blink.cmp" } })
 	local preset = require("blink.cmp.keymap.presets").get("default")
 	assert(preset["<C-y>"][1] == "select_and_accept")
+	local config = require("blink.cmp.config")
+	assert(config.snippets.preset == "default")
+	assert(config.fuzzy.prebuilt_binaries.download == false)
+	assert(preset["<Tab>"][1] == "snippet_forward")
+	assert(preset["<S-Tab>"][1] == "snippet_backward")
 	assert(vim.fn.maparg("<leader>ta", "n") == "")
 end)
 
@@ -143,57 +148,196 @@ check("Popup documentation and compact shortcut menu", function()
 
 	local opts = require("lazy.core.config").plugins["which-key.nvim"].opts
 	assert(opts.preset == "classic")
+	assert(opts.icons.mappings == false)
 	assert(opts.win.border == "none")
 	assert(opts.layout.width.max == 34)
 	assert(opts.layout.spacing == 2)
 	assert(opts.win.height.max == 12)
 end)
 
-check("Compact hover Markdown", function()
-	local hover = require("integrations.hover")
-	assert(hover.preview_options.max_width == 60)
-	assert(hover.preview_options.max_height == 12)
-
-	local compact = hover.compact({
-		"```go",
-		"func Error(msg string, args ...any)",
-		"```",
-		"",
-		"---",
-		"",
-		"Error calls [Logger.Error](https://pkg.go.dev/log/slog#Logger.Error).",
-		"",
-		"",
-		"Added in go1.21",
-	})
-
-	assert(vim.deep_equal(compact, {
-		"```go",
-		"func Error(msg string, args ...any)",
-		"```",
-		"Error calls [Logger.Error](https://pkg.go.dev/log/slog#Logger.Error).",
-		"",
-		"Added in go1.21",
-	}))
-
-	local fenced = hover.compact({ "```text", "---", "```" })
-	assert(fenced[2] == "---", "Fenced content must not be modified")
+check("Native adaptive hover", function()
+	local native, captured = vim.lsp.buf.hover, nil
+	vim.lsp.buf.hover = function(opts)
+		captured = opts
+	end
+	local columns, lines = vim.o.columns, vim.o.lines
+	local ok, err = pcall(function()
+		vim.o.columns, vim.o.lines = 160, 50
+		require("integrations.hover").show()
+		assert(captured.max_width > 60 and captured.max_height > 12)
+		assert(captured.wrap and captured.focusable and captured.border == "rounded")
+		local width, height = captured.max_width, captured.max_height
+		vim.o.columns, vim.o.lines = 80, 24
+		require("integrations.hover").show()
+		assert(captured.max_width < width and captured.max_height < height)
+	end)
+	vim.lsp.buf.hover = native
+	vim.o.columns, vim.o.lines = columns, lines
+	assert(ok, err)
 end)
 
-check("Telescope fallback for Neovim 0.12", function()
-	require("lazy").load({ plugins = { "telescope.nvim" } })
-	local utils = require("telescope.utils")
-	assert(type(utils.if_nil) == "function")
-	assert(utils.if_nil(nil, "fallback") == "fallback")
-	assert(utils.if_nil(false, true) == false)
+check("Snacks replacement and SSHFS routing", function()
+	local plugins = require("lazy.core.config").plugins
+	for _, name in ipairs({
+		"telescope.nvim",
+		"nvterm",
+		"nvim-notify",
+		"lazygit.nvim",
+		"LuaSnip",
+		"mini.indentscope",
+		"nvim-web-devicons",
+	}) do
+		assert(not plugins[name], "Obsolete dependency: " .. name)
+	end
+	assert(Snacks.config.notifier.enabled and Snacks.config.picker.enabled)
+	assert(not Snacks.config.dashboard.enabled and not Snacks.config.explorer.enabled)
+	local connections, api = package.loaded["remote-sshfs.connections"], package.loaded["remote-sshfs.api"]
+	local original = Snacks.picker.files
+	local called
+	Snacks.picker.files = function()
+		called = "local"
+	end
+	package.loaded["remote-sshfs.connections"] = {
+		is_connected = function()
+			return false
+		end,
+	}
+	package.loaded["remote-sshfs.api"] = {
+		find_files = function()
+			called = "remote"
+		end,
+	}
+	local ok, err = pcall(function()
+		local keys = plugins["snacks.nvim"].keys
+		for _, key in ipairs(keys) do
+			if key[1] == "<leader>sf" then
+				key[2]()
+				assert(called == "local")
+				package.loaded["remote-sshfs.connections"].is_connected = function()
+					return true
+				end
+				key[2]()
+				assert(called == "remote")
+			end
+		end
+	end)
+	Snacks.picker.files = original
+	package.loaded["remote-sshfs.connections"], package.loaded["remote-sshfs.api"] = connections, api
+	assert(ok, err)
+	require("lazy").load({ plugins = { "remote-sshfs.nvim" } })
+	assert(require("remote-sshfs").config.ui.picker == "snacks")
+	assert(type(require("remote-sshfs.pickers.snacks").live_grep) == "function")
+end)
+
+check("Harpoon 2 project marks and tabline", function()
+	local root = vim.fn.tempname()
+	vim.fn.mkdir(root, "p")
+	local cwd = vim.fn.getcwd()
+	vim.cmd.cd(root)
+	local other = root .. "/other"
+	vim.fn.mkdir(other, "p")
+	local old = vim.fn.stdpath("data") .. "/harpoon.json"
+	assert(vim.fn.filereadable(old) == 0, "Tests require disposable data")
+	vim.fn.writefile({
+		vim.json.encode({
+			projects = {
+				[root] = {
+					mark = {
+						marks = {
+							{ filename = "first.py", row = 1, col = 0 },
+							{ filename = "second.py", row = 1, col = 0 },
+						},
+					},
+				},
+			},
+		}),
+	}, old)
+	local legacy = vim.json.decode(table.concat(vim.fn.readfile(old), "\n"))
+	legacy.projects[other] = { mark = { marks = { { filename = "" }, { filename = "other.py", row = 1, col = 0 } } } }
+	vim.fn.writefile({ vim.json.encode(legacy) }, old)
+	require("lazy").load({ plugins = { "harpoon" } })
+	local harpoon = require("harpoon")
+	assert(harpoon:list():length() == 2, "Old marks must be imported")
+	harpoon:list():select(2)
+	assert(vim.api.nvim_buf_get_name(0) == root .. "/second.py")
+	assert(require("integrations.bookmarks").tabline():find("HarpoonActive", 1, true))
+	harpoon:list():add({ value = "third.py", context = { row = 1, col = 0 } })
+	harpoon:sync()
+	require("integrations.bookmarks").import()
+	assert(harpoon:list():length() == 3, "Import must not replace new data")
+	assert(vim.fn.filereadable(old) == 1, "Old marks must be preserved")
+	harpoon:list():remove_at(1)
+	assert(require("integrations.bookmarks").tabline():find("second.py", 1, true), "Tabline must survive sparse slots")
+	vim.cmd.cd(other)
+	assert(harpoon:list():length() == 2 and not harpoon:list():get(1))
+	assert(harpoon:list():get(2).value == "other.py", "Project changes must import without renumbering")
+	assert(require("integrations.bookmarks").tabline():find("2 ", 1, true))
+	vim.cmd.cd(root)
+	assert(harpoon:list():get(2).value == "second.py", "Project marks must persist across directory changes")
+	vim.fn.delete(old)
+	local path = vim.fn.stdpath("data") .. "/harpoon/" .. vim.fn.sha256(root) .. ".json"
+	local saved = vim.json.decode(table.concat(vim.fn.readfile(path), "\n"))
+	assert(#saved[root].__harpoon_files == 3)
+	vim.cmd.cd(cwd)
+	assert(harpoon:list():length() == 0, "Marks must be project-specific")
+end)
+
+check("Graphics requirements and tmux detection", function()
+	local uis, executable, system = vim.api.nvim_list_uis, vim.fn.executable, vim.system
+	local env = {
+		TMUX = vim.env.TMUX,
+		TERM = vim.env.TERM,
+		TERM_PROGRAM = vim.env.TERM_PROGRAM,
+		KITTY_WINDOW_ID = vim.env.KITTY_WINDOW_ID,
+		NVIM_RESEARCH_IMAGES = vim.env.NVIM_RESEARCH_IMAGES,
+	}
+	local passthrough, magick, client = "on", true, "xterm-kitty"
+	vim.api.nvim_list_uis = function()
+		return { {} }
+	end
+	vim.fn.executable = function(cmd)
+		return cmd == "magick" and (magick and 1 or 0) or 1
+	end
+	vim.system = function(cmd)
+		return {
+			wait = function()
+				return { code = 0, stdout = cmd[2] == "display-message" and client or passthrough }
+			end,
+		}
+	end
+	local ok, err = pcall(function()
+		vim.env.NVIM_RESEARCH_IMAGES, vim.env.KITTY_WINDOW_ID = nil, nil
+		vim.env.TERM_PROGRAM, vim.env.TERM, vim.env.TMUX = nil, "tmux-256color", "test"
+		local py = require("languages.python")
+		assert(py.graphics(), "Detect the attached Kitty client inside tmux")
+		passthrough = "all"
+		assert(py.graphics())
+		passthrough = "off"
+		local enabled, reason = py.graphics()
+		assert(not enabled and reason:find("allow-passthrough", 1, true))
+		passthrough, magick = "on", false
+		enabled, reason = py.graphics()
+		assert(not enabled and reason:find("ImageMagick", 1, true))
+		magick, client = true, "xterm-256color"
+		assert(not py.graphics())
+		vim.env.TMUX, vim.env.TERM = nil, "xterm-kitty"
+		assert(py.graphics())
+		vim.env.NVIM_RESEARCH_IMAGES = "0"
+		assert(not py.graphics())
+	end)
+	vim.api.nvim_list_uis, vim.fn.executable, vim.system = uis, executable, system
+	for _, name in ipairs({ "TMUX", "TERM", "TERM_PROGRAM", "KITTY_WINDOW_ID", "NVIM_RESEARCH_IMAGES" }) do
+		vim.env[name] = env[name]
+	end
+	assert(ok, err)
 end)
 
 check("Discoverable keymaps", function()
 	for _, lhs in ipairs({
 		"<leader>?",
 		"<leader>sk",
-		"<leader>ba",
-		"<leader>bm",
+		"<leader>a",
+		"<leader>e",
 		"<leader>b1",
 		"<leader>b2",
 		"<leader>b3",
@@ -202,17 +346,21 @@ check("Discoverable keymaps", function()
 		assert(vim.fn.maparg(lhs, "n") ~= "", "Missing shortcut: " .. lhs)
 	end
 
-	local spec = require("lazy.core.config").plugins["which-key.nvim"].opts.spec
+	local spec = require("plugins.editor")[2].opts.spec
 	local groups = {}
 
 	for _, entry in ipairs(spec) do
 		if entry.group then
+			assert(not entry.group:find("[^%z\1-\127]"), "Group names must be text-only")
 			groups[entry[1]] = entry.group
 		end
 	end
 
 	assert(groups["<leader>b"])
-	assert(groups["<leader>r"] == "🌐 Remote SSH")
+	for _, lhs in ipairs({ "<leader>ba", "<leader>bm", "<leader>be" }) do
+		assert(vim.fn.maparg(lhs, "n") == "")
+	end
+	assert(groups["<leader>r"] == "Remote SSH")
 	assert(groups["<leader>v"])
 end)
 

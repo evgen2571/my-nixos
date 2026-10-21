@@ -25,9 +25,12 @@ return {
       },
 
       icons = {
-        mappings = vim.g.have_nerd_font,
+        mappings = false,
 
-        keys = vim.g.have_nerd_font and {} or {
+        breadcrumb = '>',
+        separator = '->',
+        group = '+',
+        keys = {
           Up = '<Up> ',
           Down = '<Down> ',
           Left = '<Left> ',
@@ -64,28 +67,25 @@ return {
         {
           '<leader>?',
           function()
-            require('which-key').show { keys = '<leader>', loop = true }
+            require('which-key').show({ keys = '<leader>', loop = true })
           end,
           desc = 'Show all shortcut groups',
         },
 
-        { '<leader>b', group = '📌 Bookmarks (Harpoon)' },
-        { '<leader>c', group = '🧰 Code & build' },
+        { '<leader>b', group = 'Bookmarks' },
+        { '<leader>c', group = 'Code & Build' },
         { '<leader>cm', group = 'CMake' },
         { '<leader>cp', group = 'Competitive programming' },
         { '<leader>cr', group = 'Rust' },
-        { '<leader>d', group = '🐛 Debug & diagnostics' },
-        { '<leader>g', group = '🌿 Git' },
+        { '<leader>d', group = 'Debug & Diagnostics' },
+        { '<leader>g', group = 'Git' },
         { '<leader>gc', group = 'Git conflicts' },
         { '<leader>h', group = 'Git hunks', mode = { 'n', 'v' } },
-        { '<leader>m', group = '🧪 Notebooks / Molten' },
-        { '<leader>r', group = '🌐 Remote SSH' },
-        { '<leader>s', group = '🔎 Find & search' },
-        { '<leader>t', group = '🛠️ Tests & toggles' },
-        { '<leader>v', group = '📖 Markdown view' },
-        -- Preserve established Harpoon aliases without cluttering the guide.
-        { '<leader>a', hidden = true },
-        { '<leader>e', hidden = true },
+        { '<leader>m', group = 'Notebooks' },
+        { '<leader>r', group = 'Remote SSH' },
+        { '<leader>s', group = 'Search' },
+        { '<leader>t', group = 'Tests & Toggles' },
+        { '<leader>v', group = 'Markdown' },
       },
     },
   },
@@ -99,13 +99,72 @@ return {
 
   {
     'echasnovski/mini.nvim',
+    init = function()
+      vim.api.nvim_create_autocmd('FileType', {
+        pattern = {
+          'alpha',
+          'dashboard',
+          'fzf',
+          'help',
+          'lazy',
+          'mason',
+          'neo-tree',
+          'notify',
+          'snacks_dashboard',
+          'snacks_notif',
+          'snacks_terminal',
+          'toggleterm',
+          'Trouble',
+          'trouble',
+        },
+
+        callback = function()
+          vim.b.miniindentscope_disable = true
+        end,
+      })
+    end,
 
     config = function()
-      require('mini.ai').setup { n_lines = 500 }
+      local indentscope = require('mini.indentscope')
+
+      indentscope.setup({
+        symbol = '│',
+
+        draw = {
+          delay = 80,
+
+          animation = indentscope.gen_animation.quadratic({
+            easing = 'out',
+            duration = 180,
+            unit = 'total',
+          }),
+
+          priority = 50,
+        },
+
+        options = {
+          try_as_border = true,
+          indent_at_cursor = false,
+          n_lines = 500,
+        },
+
+        mappings = {
+          object_scope = 'ii',
+          object_scope_with_border = 'ai',
+          goto_top = '[i',
+          goto_bottom = ']i',
+        },
+      })
+
+      vim.api.nvim_set_hl(0, 'MiniIndentscopeSymbol', {
+        link = 'Comment',
+        default = true,
+      })
+      require('mini.ai').setup({ n_lines = 500 })
       require('mini.surround').setup()
 
-      local statusline = require 'mini.statusline'
-      statusline.setup { use_icons = vim.g.have_nerd_font }
+      local statusline = require('mini.statusline')
+      statusline.setup({ use_icons = vim.g.have_nerd_font })
 
       ---@diagnostic disable-next-line: duplicate-set-field
       statusline.section_location = function()
