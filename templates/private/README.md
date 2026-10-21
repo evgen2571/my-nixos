@@ -17,8 +17,16 @@ outputs = { self }: {
 
 Modules supply only reviewed sensitive declarations, using native NixOS options
 or `my.primaryUser.home.settings` for Home Manager. Keep feature selection,
-hardware, source dotfiles and host assembly in my-nixos. Never duplicate entire
+hardware layout, source dotfiles and host assembly in my-nixos. Never duplicate entire
 host definitions or dotfile trees. Do not export admin-only bootstrap documents.
+Keep real filesystem device identifiers and adopted browser IDs here too. Override
+individual `fileSystems."/".device` or
+`my.primaryUser.home.settings.programs.zen-browser.profiles.default.spaces.NAME.id`
+leaves with `lib.mkForce`; keep the shared layouts in public source. Override
+`my.server.storage.device` for server storage, and force the whole `swapDevices`
+list to replace the public example rather than append to it. Replace every
+`MY-NIXOS-*-REPLACE-ME` device before installing on your own hardware.
+
 Store only SOPS-encrypted credentials; input source files enter the Nix store,
 even when Git is private. Never store plaintext passwords, hashes, identities or
 tokens in either flake. Keep matching `.sops.yaml` recipient rules with ciphertext;

@@ -1,5 +1,10 @@
 # Feature-first refactor comparison contract
 
+Privacy cleanup removed original public commit pointers and replaced personal
+identifiers in the retained baseline fixture with examples. Historical validation
+still refers to the original source pairs; exact revisions and evidence remain
+in the protected local audit, outside the publication checkout.
+
 This records the pre-migration contract for [#50](https://github.com/evgen2571/my-nixos/issues/50)
 and the remaining [#49](https://github.com/evgen2571/my-nixos/issues/49) series.
 The exact functional baseline is `pre-cleanup-history`

@@ -53,8 +53,9 @@ The public repository remains the only build and deployment root. Private inputs
 export `nixosModules` and `secretFiles` maps keyed by host. They do not build a
 second set of hosts or duplicate application trees.
 
-Keep packages, layouts, feature choices, generic routing, and hardware configuration
-public. Private overrides supply personal account/Git settings, location and
+Keep packages, layouts, feature choices, generic routing, and hardware layout
+public. Filesystem device identifiers and existing browser space/pin IDs belong
+in private overrides; public values are installation examples. Private overrides supply personal account/Git settings, location and
 timezone, work aliases and CA trust, browser project associations, and SSH/VPN
 peer associations. Credentials belong in encrypted SOPS documents or protected
 runtime files. A private Git repository still enters the Nix store: never put

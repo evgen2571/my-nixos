@@ -36,7 +36,10 @@ profile unmanaged. To adopt an existing profile:
    cp -a ~/.config/zen ~/zen-backup-$(date +%Y%m%d-%H%M%S)
    ```
 
-3. Review existing space/pin UUIDs before enabling declarations. Set the actual
+3. The shared profile contains example UUIDs. Preserve existing space/pin IDs
+   through private `my.primaryUser.home.settings.programs.zen-browser.profiles.default`
+   overrides, using `lib.mkForce` on each `id` leaf. Changing an ID creates a new
+   browser item even when force flags are false. Set the actual
    directory name as `my.user.apps.zenBrowser.profilePath` in the host's private
    Home Manager settings.
 4. Follow [deployment](../operations/deployment.md), with Zen closed during

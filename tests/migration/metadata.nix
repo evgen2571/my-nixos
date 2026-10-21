@@ -22,9 +22,66 @@ let
 
   home = renamed.home-manager.users.fixture-user;
 
+  devices = lib.mapAttrs (
+    _: host:
+    (host.extendModules {
+      modules = [
+        (
+          { ... }:
+          {
+            fileSystems = lib.mapAttrs (_: _: {
+              device = lib.mkOverride 40 "/dev/disk/by-label/FIXTURE";
+            }) host.config.fileSystems;
+            swapDevices = lib.mkOverride 40 [ { device = "/dev/disk/by-label/FIXTURE-SWAP"; } ];
+          }
+          // lib.optionalAttrs (host.config.my ? server) {
+            my.server.storage.device = lib.mkOverride 40 "/dev/disk/by-label/FIXTURE";
+          }
+        )
+      ];
+    }).config
+  ) configurations;
+
+  adopted =
+    (desktop.extendModules {
+      modules = [
+        {
+          my.primaryUser.home.settings = {
+            my.user.apps.zenBrowser.profilePath = lib.mkOverride 40 "fixture.default";
+            programs.zen-browser.profiles.default = {
+              spaces.ChatGPT = {
+                id = lib.mkOverride 40 "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
+                pins.ChatGPT.id = lib.mkOverride 40 "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
+              };
+            };
+          };
+        }
+      ];
+    }).config;
+  browser =
+    adopted.home-manager.users.${adopted.my.primaryUser.name}.programs.zen-browser.profiles.default;
+
+  ids =
+    value:
+    if builtins.isAttrs value then
+      lib.concatLists (lib.mapAttrsToList (name: v: if name == "id" then [ v ] else ids v) value)
+    else
+      [ ];
+  exampleIds = ids (import ../../config/zen/profile.nix);
+
   partial =
     (desktop.extendModules {
       specialArgs.secretFile = ./fixtures/valid.yaml;
+    }).config;
+
+  exampleDevice =
+    (desktop.extendModules {
+      specialArgs.secretFile = ./fixtures/valid.yaml;
+      modules = [
+        {
+          fileSystems."/".device = lib.mkOverride 40 "/dev/disk/by-label/MY-NIXOS-PC-ROOT-REPLACE-ME";
+        }
+      ];
     }).config;
 
   missingPeer =
@@ -71,7 +128,28 @@ assert renamed.time.timeZone == "Etc/GMT+3";
 assert home.programs.ssh.settings.server.data.User == "fixture-remote";
 assert home.home.username == "fixture-user";
 assert home.home.homeDirectory == "/home/fixture-user";
+assert builtins.length exampleIds == 39 && builtins.length (lib.unique exampleIds) == 39;
+assert lib.all (
+  id: builtins.match "[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}" id != null
+) exampleIds;
 assert renamed.fileSystems ? "/home/fixture-user/drive";
+assert lib.all (
+  c: lib.all (fs: fs.device == "/dev/disk/by-label/FIXTURE") (builtins.attrValues c.fileSystems)
+) (builtins.attrValues devices);
+assert lib.all (c: map (s: s.device) c.swapDevices == [ "/dev/disk/by-label/FIXTURE-SWAP" ]) (
+  builtins.attrValues devices
+);
+assert devices.nixos-server.my.server.storage.device == "/dev/disk/by-label/FIXTURE";
+assert browser.path == "fixture.default";
+assert lib.any (s: s.uuid == "{aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa}") browser.sessionStore.spaces;
+assert lib.any (
+  p:
+  p.zenSyncId == "{bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb}"
+  && p.zenWorkspace == "{aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa}"
+) browser.sessionStore.tabs;
+assert
+  browser.spaceRouting.routes."spaces/ChatGPT/ChatGPT".openIn
+  == "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
 assert home.programs.noctalia.settings.location.address == "Example City";
 assert home.programs.noctalia.settings.shell.font_family == "Hurmit Nerd Font";
 assert home.programs.noctalia.settings.wallpaper.enabled;
@@ -79,6 +157,7 @@ assert rejects "Shared VPN" missingPeer;
 assert rejects "Production SSH server" missingKeys;
 assert !(builtins.tryEval conflicting.config.my.primaryUser.name).success;
 assert !public || rejects "Production private input" partial;
+assert rejects "Production private input must supply real filesystem devices" exampleDevice;
 assert lib.all (c: c.system.preSwitchChecks ? privateMaterial) (
   map (host: configurations.${host}.config) [
     "nixos-pc"

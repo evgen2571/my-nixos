@@ -229,6 +229,10 @@ services; it is never an automatic production fallback.
 
 ## Deployment guards
 
+Use a private revision that supplies the real filesystem devices and adopted
+browser IDs. An older private input without these overrides is incompatible:
+production evaluation refuses unresolved `MY-NIXOS-*-REPLACE-ME` devices.
+
 Existing outputs select `private` and retain `requirePrivate = true`, even when
 source selection is edited. Empty-default outputs/checks evaluate, but their
 production toplevel **cannot build, be installed or activate**. Accounts stay

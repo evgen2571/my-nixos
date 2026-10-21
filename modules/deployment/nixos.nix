@@ -33,6 +33,14 @@ in
   config = lib.mkIf requirePrivate {
     assertions = lib.optionals available [
       {
+        assertion = lib.all (device: !(lib.hasSuffix "-REPLACE-ME" device)) (
+          map (fs: fs.device) (builtins.attrValues config.fileSystems)
+          ++ map (swap: swap.device) config.swapDevices
+        );
+        message = "Production private input must supply real filesystem devices instead of public examples.";
+      }
+
+      {
         assertion = config.my.primaryUser.name != "operator";
         message = "Production private input must supply the existing primary account metadata.";
       }
