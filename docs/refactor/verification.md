@@ -329,7 +329,7 @@ unchanged in this stage; the legacy bridge remains for #55.
 | `python3 tests/network-namespaces/recovery.py` | 42 tests passed |
 | Original-baseline capture/comparison with approved mapping and cumulative ledger | All four ordered inventories and three complete public host/Home Manager projections matched |
 | Comparison with #53 public capture | Complete host projections byte-identical; no new package/derivation or generated-content differences |
-| Source/mode audit | All 230 mapped assets present with unchanged executable modes; 216 original hashes match; namespace's ten files and deployment entry byte-identical |
+| Source/mode audit | All 230 mapped assets present with unchanged executable modes; 216 original hashes match; namespace's nine files and deployment entry byte-identical |
 | `nixfmt --check`, `deadnix --fail`, namespace/migration `shellcheck`, `git diff --check` | Passed |
 | `nix flake check --no-write-lock-file` | Exit 0; four changed checks built, other valid outputs reused |
 | Explicit build of all 14 registered check outputs | Exit 0, including namespace standalone/shared/host/VM, source/deployment, catalog/equivalence, style and application checks |
@@ -343,7 +343,7 @@ The 14 source-byte differences against the original inventory consist of the
 already documented earlier-stage changes plus the relocated secrets module's
 two relative source references. `flake/hosts.nix` now explicitly selects the
 approved secrets/deployment paths; `flake/verification.nix` repairs namespace
-sandbox and script references. All ten namespace files, four deployment script/
+sandbox and script references. All nine namespace files, four deployment script/
 patch assets and the deployment module retain their bytes and executable modes.
 Namespace package calls retain their depth and targets. The full generated host
 projection has no new derivation differences needing content exceptions. Existing
@@ -387,3 +387,24 @@ because the host shell lacked `age-keygen`. Rerunning with pinned tools passed:
 nix shell --impure --expr 'let f = builtins.getFlake (toString ./.); p = f.inputs.nixpkgs.legacyPackages.x86_64-linux; in [ p.age p.sops ]' \
   --command bash tests/migration/standalone.sh
 ```
+
+## Infrastructure stage reviews
+
+### Standards
+
+Independent review of `4b23d57...3040f5f`: no documented-standard violations or
+actionable baseline smells. Typed owner/helper boundaries, explicit infrastructure
+assembly, ordering and source/runtime protections remain intact.
+
+### Spec
+
+Independent review against #54: no implementation gaps, scope creep or incorrect
+behavior found. The reviewer independently reran the original-baseline comparator
+successfully. One minor evidence finding was corrected: the namespace tree has
+nine files, not ten; the recorded mapping and byte comparisons were complete.
+
+Final integrated validation before the implementation commit passed again:
+full flake check, explicit build of all 14 check outputs, public capture/comparison,
+247 relative documentation links/anchors and `git diff --check`. The implementation
+commit is `3040f5f`. The public comparison still uses the original baseline and
+approved mappings; all original source/runtime guards remain unchanged.

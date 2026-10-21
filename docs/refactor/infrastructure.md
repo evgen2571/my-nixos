@@ -20,7 +20,7 @@ records exact original bytes, executable modes, scope and profile eligibility.
 | `modules/deployment/default.nix` | `modules/deployment/nixos.nix` |
 | Deployment `preflight.sh`, `install-preflight.patch`, `rebuild-preflight.patch`, `rebuild-tests.patch` | Unchanged, under `modules/deployment/` |
 
-All ten namespace files and the deployment entry move byte-for-byte. Secrets
+All nine namespace files and the deployment entry move byte-for-byte. Secrets
 changes only its two relative references to `lib/check-sops-source.py` and
 `.sops.yaml`, preserving their resolved sources. Namespace package calls retain
 their relative depth and original package implementations. Native configuration,
