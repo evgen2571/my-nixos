@@ -53,30 +53,32 @@ window-rule {
     opacity 0.92
 }
 
+// Development layout trial: editor windows tile; the project picker stays maximized.
 // Editor terminal
 window-rule {
-    match title=r"editor"
+    match app-id=r#"^(kitty|foot)$"# title=r#"^editor$"#
     opacity 0.94
-    open-maximized-to-edges true
+    open-maximized false
+    open-maximized-to-edges false
     open-on-workspace "code"
 }
 
-// GUI editors, if enabled later.
+// GUI editors use the same development layout.
 window-rule {
     match app-id=r#"^(code|Code|orca|codium|VSCodium|dev\.zed\.Zed|zed)$"#
-    open-maximized-to-edges true
+    open-maximized false
+    open-maximized-to-edges false
     open-on-workspace "code"
 }
 
-// Project session picker: the second workspace on the PC's HDMI-A-1 output,
-// and the second workspace on the laptop's eDP-1 output.
+// Keep the temporary project picker large; workspace order is host-specific.
 window-rule {
     match app-id=r#"^kitty$"# title=r#"^project-session$"#
     open-maximized-to-edges true
     open-on-workspace "code"
 }
 
-// Godot: the third workspace on HDMI-A-1 (PC) and the third laptop workspace.
+// Godot keeps its existing gaming workspace policy.
 window-rule {
     match app-id=r#"^(Godot|godot)$"#
     open-maximized-to-edges true
@@ -86,7 +88,7 @@ window-rule {
 
 // TUI file manager opened inside Kitty.
 window-rule {
-    match title="file-manager"
+    match app-id=r#"^kitty$"# title=r#"^file-manager$"#
     opacity 0.94
     open-floating true
     open-focused true
@@ -102,6 +104,7 @@ window-rule {
 // Anki main window
 window-rule {
     match app-id=r#"^(anki|net\.ankiweb\.Anki)$"#
+    exclude title=r#"^(Add|Add Note|Add Cards|Browse|Preferences|Sync|Добавить|Обзор|Настройки)(\b|$)"#
     draw-border-with-background false
     open-maximized-to-edges true
     open-on-workspace "anki"
@@ -110,14 +113,12 @@ window-rule {
 
 // Anki modal dialogs: add cards, sync, preferences, browser dialogs.
 window-rule {
-    match app-id=r#"^(anki|net\.ankiweb\.Anki)$"#
-    match title=r#"^(Add|Add Note|Add Cards|Browse|Preferences|Sync|Добавить|Обзор|Настройки).*$"#
+    match app-id=r#"^(anki|net\.ankiweb\.Anki)$"# title=r#"^(Add|Add Note|Add Cards|Browse|Preferences|Sync|Добавить|Обзор|Настройки)(\b|$)"#
     open-floating true
     open-maximized-to-edges false
     open-focused true
     default-column-width { proportion 0.58; }
     default-window-height { proportion 0.78; }
-    open-on-workspace "anki"
 }
 
 // API client
@@ -164,6 +165,18 @@ window-rule {
 }
 
 include "apps/obs.kdl"
+
+// Only the standalone Settings window; panels and overlays have other titles/roles.
+window-rule {
+    match app-id=r#"^dev\.noctalia\.Noctalia$"# title=r#"^Noctalia Settings$"#
+    open-floating true
+    open-focused true
+    open-maximized false
+    open-maximized-to-edges false
+    open-fullscreen false
+    default-column-width { proportion 0.52; }
+    default-window-height { proportion 0.65; }
+}
 
 // Noctalia/quickshell auxiliary windows.
 window-rule {

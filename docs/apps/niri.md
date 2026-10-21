@@ -1,36 +1,86 @@
 # Niri
 
 Niri arranges tiled windows in scrolling columns. `Mod` is the desktop modifier
-(Super in a normal session). Start with these bindings:
+(Super in a normal session).
 
 | Keys | Action |
 | --- | --- |
-| `Mod+Return` / `Mod+Shift+Return` | Kitty / toggle dropdown terminal |
-| `Mod+Space` / `Mod+S` | App launcher / control center |
-| `Mod+C` | Project-session picker |
-| `Mod+F` / `Mod+E` / `Mod+Shift+E` | Browser / Yazi / Dolphin |
-| `Mod+Tab` | Workspace overview |
-| `Mod+H/J/K/L` or arrows | Focus adjacent column/window |
-| Add Shift to focus bindings | Move column/window |
+| `Mod+H/L` | Focus column; cross to the adjacent monitor at the column boundary |
+| `Mod+J/K` | Focus window down/up; switch workspace at the column boundary |
+| `Mod+Shift+H/L` | Move the focused window directly to the adjacent monitor |
+| `Mod+Shift+J/K` | Move the focused window directly to the next/previous workspace |
+| `Mod+Ctrl+Alt+H/L` | Move a tiled column left/right; nudge floating windows horizontally |
+| `Mod+Ctrl+Alt+J/K` | Move a tiled window down/up; nudge floating windows vertically |
+| `Mod+Ctrl+H/L` | Decrease/increase column width by 5% |
+| `Mod+Ctrl+J/K` | Decrease/increase window height by 5% |
+| `Mod+Alt+H/L` | Focus adjacent monitor directly |
+| `Mod+Alt+J/K` | Focus next/previous workspace directly |
+| `Mod+Ctrl+Shift+H/L` | Move a whole column to the adjacent monitor directly |
+| `Mod+Ctrl+Shift+J/K` | Move a whole column to the next/previous workspace directly |
+| `Mod+Page_Down/Page_Up` | Focus next/previous workspace; add Shift to reorder workspaces |
 | `Mod+1` through `Mod+9` | Focus numbered workspace; add Shift to move a column there |
-| `Mod+U/I` | Next/previous workspace; add Ctrl to move a column there |
-| `Mod+R` / `Mod+Shift+R` | Cycle column widths / window heights |
+| `Mod+R` / `Mod+Shift+R` / `Mod+Ctrl+R` | Cycle column widths / window heights / reset height |
 | `Mod+Z` / `Mod+Shift+Z` | Maximize window to edges / maximize column |
 | `Mod+Alt+Space` / `Mod+Shift+V` | Toggle floating / focus floating versus tiled windows |
 | `Mod+Shift+F` / `Mod+Q` | Fullscreen / close window |
+
+Shift movement sends only the focused window, including floating windows, to
+the destination; a missing adjacent monitor leaves it in place. Alt+Mod+HJKL
+retains direct focus, so basic movement uses the free Ctrl+Alt+Mod group.
+Arrows mirror HJKL for focus, Shift movement, and Ctrl sizing. Direct column
+movement uses Ctrl+Shift rather than Alt+Shift, which switches keyboard layouts.
+The old U/I navigation groups and monitor arrow chords are removed. Home/End
+still focus the first/last column; Ctrl+Home/End move a column to those positions.
+The existing minus/equal bindings retain coarse 10% sizing.
+
+| Keys | Action |
+| --- | --- |
+| `Mod+Return` / `Mod+Shift+Return` | Kitty / dropdown terminal (close and reopen its tmux session) |
+| `Mod+Space` / `Mod+S` | App launcher / control center |
+| `Mod+Comma` | Noctalia Settings |
+| `Mod+Shift+P` | Lock and suspend (moved from `Mod+Alt+L`) |
+| `Mod+C` | Project-session picker |
+| `Mod+F` / `Mod+E` / `Mod+Shift+E` | Browser / Yazi / Dolphin |
+| `Mod+Tab` | Workspace overview |
 | `Alt+Tab` / `Alt+grave` | Cycle windows on this output / windows of the same app |
 | `Print` / `Ctrl+Print` / `Alt+Print` | Screenshot selection / screen / window |
 
 The full [binding file](../../config/niri/sub/binds.kdl) also covers media,
-brightness, monitor movement, app launchers and manual sizing. Niri screenshots
-use `~/screenshots`; Noctalia's screenshot directory is configured separately.
+brightness, mouse wheel navigation and app launchers. Niri screenshots use
+`~/screenshots`; Noctalia's screenshot directory is configured separately.
+
+## Focus-or-launch and the dropdown
+
+The [focus-or-launch helper](../../config/niri/scripts/focus-or-launch) is still
+needed to select an application by app ID/title or launch it. It uses native
+`focus-window` after selecting the focused matching window, or otherwise the most
+recently focused match (window ID breaks ties). An IPC error aborts without
+launching a duplicate. Browser, music, chat, notes, and file-manager shortcuts
+only focus or launch; pressing one while its application is focused never closes it.
+
+Niri 26.04 has no native hide/minimize action. The dropdown explicitly uses
+`--close-focused`: focus a matching terminal if present, close that Kitty window
+if it is focused, or launch it if absent. The named `dropdown` tmux session keeps
+its shell and programs running after the terminal closes; opening again attaches
+to that session. Kitty itself is recreated. `--toggle` is no longer accepted.
+This is not a hide operation and must not be used for persistent GUI applications.
+No scratch workspace or offscreen hiding mechanism is introduced.
 
 ## Changing the desktop
 
 [config/niri/config.kdl](../../config/niri/config.kdl) includes the files under
 [sub/](../../config/niri/sub). Edit `binds.kdl` for shortcuts, `layout.kdl` for
 sizing, `input.kdl` for input, and `rules/apps/` for application policies.
-`noctalia.kdl` and `noctalia-dropdown.kdl` are generated theme inputs.
+`noctalia.kdl`, `noctalia-layout.kdl`, and `noctalia-dropdown.kdl` are generated
+siblings, not repository-owned runtime state.
+
+The built-in Noctalia Niri template provides focus-ring, border, tab, and insert
+colors. A small [layout template](../../config/noctalia/templates/niri-layout.kdl)
+adds the workspace surface color; until it renders, the background is neutral
+and tab indicators follow focus-ring colors. The layout/dropdown includes are
+optional before first render; the existing built-in `noctalia.kdl` is required.
+The dropdown shadow uses a hex alpha suffix, supported by both Noctalia's
+renderer and Matugen. Native blur and the layer-shell rules remain enabled.
 
 PC and laptop have separate named-workspace files. The
 [Niri Home Manager module](../../modules/desktop/niri/home.nix) selects
@@ -39,37 +89,110 @@ one through `my.user.desktop.niriConfig.workspaceProfile` and installs it as
 The PC spreads workspaces across two outputs; the laptop uses its internal
 output. Numbered bindings follow each profile's workspace order.
 
-Validate a complete host configuration tree with `niri validate`; validating one
-isolated rule file does not check its includes or interactions. Configuration
-notifications are disabled, so check validation output explicitly.
+The `code` workspace has a separately reviewable layout trial on all profiles:
+new columns use `normal` display and a 50% default width. Editor terminals and
+GUI editors routed there opt out of automatic maximization, allowing two editor
+columns side by side. The temporary project picker remains maximized. Browser,
+notes, gaming and other application maximization policies are unchanged, as are
+the global width/height presets. Existing columns/windows may retain their prior
+mode/size: `Mod+W` toggles column display and `Mod+Z` toggles maximization.
+This trial is in its own commit so it can be omitted or reverted independently
+of the navigation, Settings, launcher, and authentication fixes. It has syntax
+and rule-policy coverage, but still needs visual acceptance on both desktops.
+
+`focus-follows-mouse`, `warp-mouse-to-focus`, and
+`honor-xdg-activation-with-invalid-serial` remain unchanged. Changing their
+interaction needs keyboard/mouse and tray/notification activation tests first;
+new upstream activation policies must also be supported by the packaged version.
 
 ## Application windows and known limits
 
-Main Telegram and Vesktop windows are intended to open on `chats`; their other
-windows float without a workspace target. Telegram media has its own larger
-size and initial-fullscreen override. Steam utilities, observed Prism dialogs,
-and OBS Settings are excluded from main-window workspace routing. Zen PiP has
-its own floating rule. Deliberate video/projector/game fullscreen remains allowed.
+Noctalia Settings matches both `^dev\.noctalia\.Noctalia$` and
+`^Noctalia Settings$`. It opens focused and floating at 52% width and 65% height,
+without a workspace/output target, maximization or fullscreen. New floating
+windows center on the current monitor by default. Niri remembers a window's last
+floating position after it moves: showing an existing Settings window again does
+not guarantee recentering. Close and create a new window for an opening-rule test.
+The rule does not match other Noctalia windows or layer-shell panels.
 
-Rules distinguish windows using app IDs and titles. Future titles, translations,
-or calls named like a main-window signature can change classification. Opening
-rules cannot correct placement after a title changes. Existing global title
-rules can also interfere: Anki-like prefixes can route unrelated dialogs to
-`anki`, and lowercase `editor` in a title can route a window to `code`. Preserve
-rule order while investigating these interactions.
+Main Telegram and Vesktop windows open on `chats`; their other windows float
+without a workspace target. Telegram media retains its larger size and explicit
+initial-fullscreen override. Steam utilities, observed Prism dialogs, and OBS
+Settings stay outside main-window workspace routing. Zen PiP floats. Deliberate
+game fullscreen and OBS projector fullscreen requests remain allowed.
 
-The auxiliary-window work remains incomplete. Steam localized utilities, Prism
-Edit Instance/Accounts/logs, OBS filters/properties/projectors, Zen independent
-auth/extension windows, and Telegram direct calls need targeted observations.
-Some UIs may be panels within a window. Do not invent title matches for them.
+Editor-terminal routing requires Kitty/Foot with the exact title `editor`;
+an unrelated application's title containing that word does not route to `code`.
+The file-manager title also requires Kitty. Anki's known dialog titles are
+excluded from the main-window rule, float only for Anki, and have no workspace
+target. Separate `match` lines are ORed in Niri; app ID and title belong on the
+same line when both are required.
 
-Run `python3 tests/niri/window-titles.py` for sanitized classification cases.
-Then check opening after moving a parent window, focus return, resizing, multiple
-outputs, deliberate fullscreen, and both desktop profiles in a real session.
-Static validation does not prove those behaviors or establish that draft rules
-are deployed. Read-only `niri msg --json windows` and `workspaces` can help;
-window dimensions alone do not establish fullscreen state. Keep private titles
-out of reports and fixtures.
+Outside the code-editor layout trial, observed application rules and main-window
+maximization remain in place.
+Steam localized utilities, Prism Edit Instance/Accounts/logs, OBS
+filters/properties/projectors, Zen independent auth/extension windows, Obsidian
+localized dialogs, and Telegram direct calls still need targeted observations.
+Some UIs are panels within a window. Do not invent title matches for them.
+The global Open/Save/authentication-title fallback is retained until prompt
+app IDs can be checked safely. Title changes after opening cannot retroactively
+undo initial workspace routing, and calls can share main-window title signatures.
+
+## Authentication
+
+The [Niri NixOS module](../../modules/desktop/niri/nixos.nix) starts the Polkit
+GNOME agent through the systemd user service, tied to `graphical-session.target`
+with failure restart. Compositor startup no longer spawns another agent;
+Noctalia's own Polkit agent stays disabled on both desktop profiles.
+
+Read-only checks:
+
+```sh
+systemctl --user status polkit-gnome-authentication-agent-1.service
+pgrep -af polkit-gnome-authentication-agent-1
+```
+
+The current PC service was active with a successful process status and one agent
+at inspection time. A real authentication prompt and a fresh-login startup check
+remain necessary; no service restart is part of source validation.
+
+## Verification
+
+The [upstream bindings](https://niri-wm.github.io/niri/Configuration%3A-Key-Bindings.html),
+[named workspace layouts](https://niri-wm.github.io/niri/Configuration%3A-Named-Workspaces.html#layout-config-overrides),
+and [floating position semantics](https://niri-wm.github.io/niri/Configuration%3A-Window-Rules.html#default-floating-position)
+were checked against the actions/configuration accepted by packaged Niri 26.04.
+No navigation script or new application dependency is needed.
+
+```sh
+python3 tests/niri/focus-or-launch.py
+python3 tests/niri/config.py
+python3 tests/niri/window-titles.py
+python3 tests/niri/validate.py --generated-dir "$HOME/.config/niri"
+nix build .#checks.x86_64-linux.niri-config .#checks.x86_64-linux.niri-host-profiles --no-link
+```
+
+The launcher tests mock IPC and never control the desktop. Classification tests
+cover scoped rules, preserved application policies, modifier conflicts, and
+binding actions. `validate.py` copies the complete default/PC/laptop trees into
+temporary directories, retains the current built-in Noctalia colors, renders the
+custom Niri templates in dark/light modes, and checks optional-include fallback.
+The Nix check instead renders the pinned Noctalia package's built-in template
+as well. Neither path activates or changes the running configuration.
+
+Desktop acceptance after an authorized deployment still needs:
+
+- HJKL focus at column/monitor/workspace boundaries, direct Shift window transfers,
+  Ctrl+Alt basic movement for tiled/floating windows, and 5% sizing.
+- Two physical PC monitors and the single laptop output, including mouse focus/warp interaction.
+- Noctalia Settings opening focused, centered, and floating, and reopening a moved window.
+- A Polkit prompt, focus-or-launch with several matching windows, and closing/reopening the tmux dropdown.
+- Dialog opening after moving its parent, focus return, PiP/media viewers, game/projector fullscreen, and tray/notification activation.
+
+Configuration notifications are disabled, so inspect `niri validate` output
+explicitly. Read-only `niri msg --json windows` and `workspaces` can help; dimensions
+alone do not establish fullscreen state. Keep private titles out of reports and
+fixtures. Evaluation and syntax checks do not establish desktop behavior.
 
 ## X11 applications and Steam
 

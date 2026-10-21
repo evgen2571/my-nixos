@@ -18,6 +18,7 @@ assert
   ];
 assert !(niri ? "niri/noctalia.kdl");
 assert !(niri ? "niri/noctalia-dropdown.kdl");
+assert !(niri ? "niri/noctalia-layout.kdl");
 assert !(niri ? "niri/sub/workspaces-pc.kdl");
 assert !(niri ? "niri/sub/workspaces-laptop.kdl");
 assert discovered."niri/sub/rules/new.kdl".source == ./niri/sub/rules/new.kdl;

@@ -113,6 +113,32 @@
           configurations = inputs.self.nixosConfigurations;
         };
 
+        niri-config =
+          pkgs.runCommand "niri-config-checks"
+            {
+              nativeBuildInputs = [
+                pkgs.bash
+                pkgs.jq
+                pkgs.matugen
+                pkgs.niri
+                pkgs.python3
+                pkgs.shellcheck
+              ];
+            }
+            ''
+              export HOME="$TMPDIR/home"
+              mkdir -p "$HOME"
+              shellcheck ${../config/niri/scripts/focus-or-launch}
+              python3 ${../.}/tests/niri/focus-or-launch.py
+              python3 ${../.}/tests/niri/config.py
+              python3 ${../.}/tests/niri/window-titles.py
+              python3 ${../.}/tests/niri/validate.py --noctalia-template \
+                ${
+                  inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default
+                }/share/noctalia/assets/templates/niri/niri.kdl
+              touch $out
+            '';
+
         config-paths =
           assert import ../tests/config-paths { inherit (pkgs) lib; };
           pkgs.runCommand "config-paths-checks" { } ''

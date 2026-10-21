@@ -11,6 +11,6 @@ window-rule {
         on
         spread 4
         softness 10
-        color "{{ colors.primary_container.default.hex | set_alpha 0.45 }}"
+        color "{{ colors.primary_container.default.hex }}73"
     }
 }

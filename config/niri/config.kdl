@@ -1,5 +1,5 @@
 // KDL syntax: https://kdl.dev. Use "/-" to disable the following node.
-// Niri settings: https://github.com/YaLTeR/niri/wiki/Configuration:-Introduction
+// Niri settings: https://niri-wm.github.io/niri/Configuration%3A-Introduction.html
 
 config-notification {
     disable-failed
@@ -95,6 +95,9 @@ include "sub/input.kdl"
 include "sub/startup.kdl"
 
 include "./noctalia.kdl"
+
+// Optional before the first render; layout.kdl supplies a neutral fallback.
+include optional=true "./noctalia-layout.kdl"
 
 // Noctalia-generated dropdown colors; optional before the first theme render.
 include optional=true "./noctalia-dropdown.kdl"
