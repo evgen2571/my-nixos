@@ -84,6 +84,17 @@ one through `my.user.desktop.niriConfig.workspaceProfile` and installs it as
 The PC spreads workspaces across two outputs; the laptop uses its internal
 output. Numbered bindings follow each profile's workspace order.
 
+The `code` workspace has a separately reviewable layout trial on all profiles:
+new columns use `normal` display and a 50% default width. Editor terminals and
+GUI editors routed there opt out of automatic maximization, allowing two editor
+columns side by side. The temporary project picker remains maximized. Browser,
+notes, gaming and other application maximization policies are unchanged, as are
+the global width/height presets. Existing columns/windows may retain their prior
+mode/size: `Mod+W` toggles column display and `Mod+Z` toggles maximization.
+This trial is in its own commit so it can be omitted or reverted independently
+of the navigation, Settings, launcher, and authentication fixes. It has syntax
+and rule-policy coverage, but still needs visual acceptance on both desktops.
+
 `focus-follows-mouse`, `warp-mouse-to-focus`, and
 `honor-xdg-activation-with-invalid-serial` remain unchanged. Changing their
 interaction needs keyboard/mouse and tray/notification activation tests first;
@@ -112,7 +123,8 @@ excluded from the main-window rule, float only for Anki, and have no workspace
 target. Separate `match` lines are ORed in Niri; app ID and title belong on the
 same line when both are required.
 
-Other observed application rules and main-window maximization remain in place.
+Outside the code-editor layout trial, observed application rules and main-window
+maximization remain in place.
 Steam localized utilities, Prism Edit Instance/Accounts/logs, OBS
 filters/properties/projectors, Zen independent auth/extension windows, Obsidian
 localized dialogs, and Telegram direct calls still need targeted observations.

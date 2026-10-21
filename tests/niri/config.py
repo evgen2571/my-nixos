@@ -149,6 +149,25 @@ class Configuration(unittest.TestCase):
         self.assertEqual(properties("Minecraft", "Example world")["open-fullscreen"], "true")
         self.assertNotIn("open-fullscreen", properties("com.obsproject.Studio", "Projector - Preview"))
 
+    def test_code_workspace_layout_trial(self):
+        for name, output in [("workspaces.kdl", "HDMI-A-1"),
+                             ("workspaces-pc.kdl", "HDMI-A-1"),
+                             ("workspaces-laptop.kdl", "eDP-1")]:
+            source = (CONFIG / "sub" / name).read_text()
+            code = re.search(r'workspace "code" \{\n(.*?)^\}', source, re.MULTILINE | re.DOTALL)[1]
+            self.assertIn(f'open-on-output "{output}"', code)
+            self.assertIn('default-column-display "normal"', code)
+            self.assertIn('default-column-width { proportion 0.5; }', code)
+            self.assertEqual(source.count('default-column-display'), 1)
+        for app, title in [("kitty", "editor"), ("orca", "Example project"),
+                           ("dev.zed.Zed", "Example project")]:
+            rule = properties(app, title)
+            self.assertEqual(rule["open-on-workspace"], '"code"')
+            self.assertEqual(rule["open-maximized"], "false")
+            self.assertEqual(rule["open-maximized-to-edges"], "false")
+        self.assertEqual(properties("kitty", "project-session")["open-maximized-to-edges"], "true")
+        self.assertIn('default-column-display "tabbed"', (CONFIG / "sub/layout.kdl").read_text())
+
     def test_polkit_owned_by_systemd(self):
         self.assertNotIn("polkit", (CONFIG / "sub/startup.kdl").read_text())
         self.assertIn("systemd.user.services.polkit-gnome-authentication-agent-1",

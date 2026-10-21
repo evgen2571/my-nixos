@@ -53,18 +53,21 @@ window-rule {
     opacity 0.92
 }
 
+// Development layout trial: editor windows tile; the project picker stays maximized.
 // Editor terminal
 window-rule {
     match app-id=r#"^(kitty|foot)$"# title=r#"^editor$"#
     opacity 0.94
-    open-maximized-to-edges true
+    open-maximized false
+    open-maximized-to-edges false
     open-on-workspace "code"
 }
 
-// GUI editors, if enabled later.
+// GUI editors use the same development layout.
 window-rule {
     match app-id=r#"^(code|Code|orca|codium|VSCodium|dev\.zed\.Zed|zed)$"#
-    open-maximized-to-edges true
+    open-maximized false
+    open-maximized-to-edges false
     open-on-workspace "code"
 }
 
