@@ -4,6 +4,8 @@
   inputs = {
     private.url = "path:./templates/private";
 
+    wallpapers.url = "github:evgen2571/wallpapers";
+
     flake-parts.url = "github:hercules-ci/flake-parts";
 
     nixpkgs.url = "nixpkgs/nixos-26.05";

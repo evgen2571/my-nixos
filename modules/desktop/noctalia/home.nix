@@ -30,6 +30,7 @@ in
 {
   imports = [
     inputs.noctalia.homeModules.default
+    inputs.wallpapers.homeManagerModules.default
     (lib.mkAliasOptionModule [ "programs" "noctalia-shell" ] [ "programs" "noctalia" ])
     ./config.nix
   ];
@@ -53,6 +54,8 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    wallpapers.directory = lib.mkDefault config.programs.noctalia.settings.wallpaper.directory;
+
     home.activation.pruneStaleNoctaliaSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
       ${pkgs.python3}/bin/python3 ${configPaths.wm.noctaliaConfigDir}/prune-stale-settings.py \
         "$HOME/.local/state/noctalia/settings.toml"

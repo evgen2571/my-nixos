@@ -16,6 +16,8 @@ let
 
           my.primaryUser.home.settings.programs.noctalia.settings.location.address =
             lib.mkForce "Example City";
+          my.primaryUser.home.settings.programs.noctalia.settings.wallpaper.directory =
+            lib.mkForce "/home/fixture-user/Collection";
         })
       ];
     }).config;
@@ -153,6 +155,9 @@ assert
 assert home.programs.noctalia.settings.location.address == "Example City";
 assert home.programs.noctalia.settings.shell.font_family == "Hurmit Nerd Font";
 assert home.programs.noctalia.settings.wallpaper.enabled;
+assert home.wallpapers.enable;
+assert home.wallpapers.directory == home.programs.noctalia.settings.wallpaper.directory;
+assert home.home.file.wallpapers.target == "Collection";
 assert rejects "Shared VPN" missingPeer;
 assert rejects "Production SSH server" missingKeys;
 assert !(builtins.tryEval conflicting.config.my.primaryUser.name).success;

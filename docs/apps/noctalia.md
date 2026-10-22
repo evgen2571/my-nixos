@@ -30,6 +30,10 @@ TOML defaults into `programs.noctalia.settings`. Private settings can override
 personal values there. Avatar, wallpaper and screenshot paths derive from the
 home directory by default.
 
+The shared desktop profile enables the `wallpapers` flake collection. Its Home
+Manager directory follows `programs.noctalia.settings.wallpaper.directory`, so a
+private override selects the same directory for the collection and picker.
+
 ```mermaid
 flowchart TD
     A[Repository defaults and private overrides] --> B[Home Manager configuration]

@@ -258,6 +258,7 @@
         "private": "private",
         "sops-nix": "sops-nix",
         "voxtype": "voxtype",
+        "wallpapers": "wallpapers",
         "zen-browser": "zen-browser"
       }
     },
@@ -351,6 +352,21 @@
         "owner": "peteonrails",
         "ref": "v0.7.5",
         "repo": "voxtype",
+        "type": "github"
+      }
+    },
+    "wallpapers": {
+      "locked": {
+        "lastModified": 1792684544,
+        "narHash": "sha256-KCDLBIb0zMDBSb26wtrRR+MEj9gZFyGCfX5Oep5P140=",
+        "owner": "evgen2571",
+        "repo": "wallpapers",
+        "rev": "76c1ce625993dbb86378e6ef5685c205e9bb9021",
+        "type": "github"
+      },
+      "original": {
+        "owner": "evgen2571",
+        "repo": "wallpapers",
         "type": "github"
       }
     },

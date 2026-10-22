@@ -30,6 +30,8 @@
     };
   };
 
+  my.primaryUser.home.settings.wallpapers.enable = true;
+
   my.primaryUser.home.settings.my.user = {
     ai = {
       opencode.enable = true;
