@@ -1,12 +1,8 @@
-# Optional private input
+# Private input
 
-This tracked, dependency-free flake is the safe default. It exports empty
-`nixosModules` and `secretFiles` maps, never hosts/builders/deployment outputs.
-No second repository is required for a standalone installation.
+This template is the empty private flake used when no personal input is selected. You can also copy it into **your own private repository**.
 
-For an optional private checkout, copy this directory into a repository whose
-visibility you have verified PRIVATE **before** copying sensitive material.
-Export narrow modules and encrypted files, keyed by public source host name:
+A private flake can provide host-specific overrides and SOPS ciphertext:
 
 ```nix
 outputs = { self }: {
@@ -15,37 +11,16 @@ outputs = { self }: {
 };
 ```
 
-Modules supply only reviewed sensitive declarations, using native NixOS options
-or `my.primaryUser.home.settings` for Home Manager. Keep feature selection,
-hardware layout, source dotfiles and host assembly in my-nixos. Never duplicate entire
-host definitions or dotfile trees. Do not export admin-only bootstrap documents.
-Keep real filesystem device identifiers and adopted browser IDs here too. Override
-individual `fileSystems."/".device` or
-`my.primaryUser.home.settings.programs.zen-browser.profiles.default.spaces.NAME.id`
-leaves with `lib.mkForce`; keep the shared layouts in public source. Override
-`my.server.storage.device` for server storage, and force the whole `swapDevices`
-list to replace the public example rather than append to it. Replace every
-`MY-NIXOS-*-REPLACE-ME` device before installing on your own hardware.
+Keep reusable modules and ordinary app settings in the public repo. Machine-specific IDs, accounts, private endpoints, and **Zen spaces/pins/routes** go in the private overrides. The public Zen module still installs the browser and shared defaults; your private Home Manager options can fill in `programs.zen-browser.profiles.default.spaces` and `.pins`.
 
-Store only SOPS-encrypted credentials; input source files enter the Nix store,
-even when Git is private. Never store plaintext passwords, hashes, identities or
-tokens in either flake. Keep matching `.sops.yaml` recipient rules with ciphertext;
-for example `path_regex: secrets/hosts/pc\.yaml$` with your admin and PC age
-public recipients. Generate real recipients; ship no fake production keys.
+For an existing Zen profile, preserve the full existing workspace/pin definitions and UUIDs during the move. Don't merge the public Zen cleanup before the matching private definitions exist and both desktop builds have been checked.
 
-Build/check from the **public** checkout, explicitly selecting the private input:
+Encrypted credentials belong in SOPS files. A private Nix module is still copied into the Nix store, so don't put plaintext secrets or private keys in it.
+
+Build from the **public** checkout:
 
 ```sh
-private_checkout=$(git -C ../my-nixos-private rev-parse --show-toplevel)
-nix flake check --override-input private "git+file://$private_checkout" --no-write-lock-file
-just build-pc --override-input private "git+file://$private_checkout" --no-write-lock-file
+nix flake check --override-input private "git+file:///absolute/path/to/private-checkout" --no-write-lock-file
 ```
 
-Stage new source/ciphertext files before evaluation. A Git input omits untracked
-files; avoid a broad `path:` override of private working directories. For a
-reproducible build, commit both repositories and append `?rev=COMMIT` to the
-private URL. Never write this personal override into the public lock.
-
-See [source selection and single-repository SOPS](../../docs/operations/secrets.md#source-selection)
-and [maintainer builds/deployment](../../docs/operations/deployment.md) for the
-corresponding workflows and production readiness checks.
+Check the private repo's visibility before copying any personal data. Never record the personal input URL in the public `flake.lock`.

@@ -1,66 +1,29 @@
 # my-nixos
 
-My NixOS configuration for a desktop PC, laptop, and server. The desktops use Niri
-and Noctalia; the server runs self-hosted services and a VPN gateway. This is my
-working infrastructure. You can borrow parts or adapt it to your own hardware.
+These are the NixOS configs I use on my PC, laptop, and home server. I've been moving more and more of my setup into Nix, and this is where it ended up.
 
-## Find what you need
+My desktops use **Niri + Noctalia**. I mostly work in **Kitty, tmux, and Neovim**, with Zen as my browser. The server handles storage, a few services, and a VPN gateway. There's a lot of personal stuff around the edges, so I wouldn't copy an entire host and expect it to work on another machine.
 
-| Task | Guide |
-| --- | --- |
-| Use or customize the desktop | [Niri](docs/apps/niri.md), [Noctalia](docs/apps/noctalia.md), [Kitty](docs/apps/kitty.md) |
-| Work in the editor | [Neovim](docs/apps/neovim.md), [competitive programming](docs/apps/competitive-programming.md) |
-| Configure the browser | [Zen](docs/apps/zen-browser.md) |
-| Manage agent tools | [Skillshare](docs/apps/skillshare.md), [CodeGraph](docs/apps/codegraph.md) |
-| Find the file to edit | [Configuration map](docs/reference/configuration.md), [customization](docs/operations/customization.md) |
-| Build, update, or recover a host | [Deployment](docs/operations/deployment.md), [maintenance](docs/operations/maintenance.md) |
-| Manage server data or VPN access | [Server](docs/operations/server.md), [VPN](docs/operations/vpn.md) |
-| Handle credentials and private settings | [Secrets and private inputs](docs/operations/secrets.md) |
+This isn't an installer or a polished starter kit. Feel free to borrow a module, copy some dotfiles, or make your own host with the same setup.
 
-[All guides](docs/README.md) include login/greeter and troubleshooting.
-[Architecture](docs/reference/architecture.md) explains how the pieces fit together;
-[module conventions](docs/reference/modules.md) cover adding or changing features.
+## Where things are
 
-## Setup and installation
+- [`hosts/`](hosts/README.md) — my machines and how to add yours
+- [`modules/`](modules/README.md) — packages, services, and Home Manager options
+- [`config/`](config/) — the actual app configs: [Niri](config/niri/README.md), [Noctalia](config/noctalia/README.md), [Neovim](config/nvim/README.md), [Zen](config/zen/README.md)
+- [`docs/`](docs/README.md) — a few notes on secrets, updates, and older refactor fixtures
 
-You need Nix with flakes enabled. Clone the repository and enter its development
-shell:
+## Trying it on your machine
+
+Start with [the host template](hosts/README.md), not one of my existing hosts. You can run without a private repository or any encrypted secrets; just leave services that need credentials disabled.
+
+You'll need Nix with flakes enabled. I use these for quick checks before touching a running machine:
 
 ```sh
-git clone https://github.com/evgen2571/my-nixos.git
-cd my-nixos
-nix develop
 nix flake check --no-build --no-write-lock-file
+nix flake check --no-write-lock-file
 ```
 
-The last command evaluates checks; it does not run their test programs. A clean
-clone can evaluate the three existing hosts, but building or deploying them
-requires the maintainer's private input. Their hardware and accounts describe
-real machines. To install on another machine, follow [installation](docs/operations/installation.md)
-and start from [the host template](templates/host/README.md).
+For the actual installation and partitioning, use the [NixOS manual](https://nixos.org/manual/nixos/stable/#sec-installation). I only document the parts specific to this repo.
 
-For a maintainer build, explicitly select the private checkout:
-
-```sh
-private_checkout=$(git -C ../my-nixos-private rev-parse --show-toplevel)
-nix build .#nixosConfigurations.nixos-pc.config.system.build.toplevel \
-  --override-input private "git+file://$private_checkout" --no-write-lock-file --no-link
-```
-
-Use `nixos-lp` or `nixos-server` for the other hosts. This builds without activating.
-Read [deployment](docs/operations/deployment.md) before switching a real host;
-networking, boot, credentials, and storage changes need a recovery path.
-
-## Hosts
-
-| Output | Machine | Feature selection |
-| --- | --- | --- |
-| `nixos-pc` | Desktop workstation | [PC profile](hosts/pc/profile.nix) |
-| `nixos-lp` | Laptop | [Laptop profile](hosts/laptop/profile.nix) |
-| `nixos-server` | Services and shared VPN gateway | [Server profile](hosts/server/profile.nix) |
-
-Select features in `hosts/<host>/profile.nix`, implement them in `modules/`, and
-edit application sources in `config/`. Some applications keep generated themes,
-logins, or other writable state; check their guide before changing deployment.
-
-For coding agents, [AGENTS.md](AGENTS.md) routes tasks to repository skills.
+The desktop and Neovim pages are also where I'll put short screen recordings of the real setup. I don't plan to make a separate showcase for my browser spaces.

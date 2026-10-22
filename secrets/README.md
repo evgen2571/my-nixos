@@ -1,10 +1,7 @@
-# Optional single-repository ciphertext
+# Local encrypted secrets
 
-In explicit `local` mode, put your own SOPS-encrypted `hosts/<host>.yaml` here and
-track matching `.sops.yaml` recipient policy at the repository root. No second
-repository is required. `none` and `private` modes ignore these files.
+If you choose `secretSource = "local"`, put your own SOPS-encrypted `hosts/<host>.yaml` here and keep its recipient rule in the root `.sops.yaml`.
 
-Maintainer host/recovery ciphertext lives in the optional private input. Bootstrap
-recovery documents remain admin-only and are not exported as host secret files.
-Never commit plaintext, decrypted working copies or private identities. See the
-[SOPS guide](../docs/operations/secrets.md) and [source selection](../docs/operations/installation.md).
+With `none` or `private`, these files aren't selected. Don't commit plaintext, age identities, password hashes, or decrypted editor backups.
+
+See [secrets](../docs/secrets.md) for the three modes and [sops-nix](https://github.com/Mic92/sops-nix) for the encryption workflow.
