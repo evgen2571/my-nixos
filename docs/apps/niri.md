@@ -142,6 +142,9 @@ changing the library path for the rest of the session. JPEG decoder warnings
 about `0x89 0x50` mean PNG data reached a JPEG reader; this may involve a file or
 an embedded preview/thumbnail and does not by itself establish image corruption.
 
+Personal sidebar pins can be [declared through the private input](dolphin.md),
+while the live Places file stays writable for Dolphin.
+
 qimgv opens focused and floating at 70% width and height, centered on the monitor
 for a new window. Close and reopen existing windows to test the rule.
 Open one image, then use Left/Right or the mouse wheel to browse its folder in

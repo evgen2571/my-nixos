@@ -15,6 +15,7 @@ profile. Application guides explain how the configured behavior works.
 | Neovim mappings or plugins | `config/nvim/lua/core/`, `lua/plugins/`; [Neovim](../apps/neovim.md) |
 | Niri shortcuts or layout | `config/niri/sub/binds.kdl`, `layout.kdl`, `input.kdl`; [Niri](../apps/niri.md) |
 | Niri window placement | `config/niri/sub/rules/`, host workspace sources |
+| Dolphin sidebar pins | `modules/files/dolphin.home.nix`; private `my.primaryUser.home.settings`; [Places](../apps/dolphin.md) |
 | Noctalia shell or themes | `config/noctalia/`, `modules/desktop/noctalia/`; [Noctalia](../apps/noctalia.md) |
 | Greeter or login | `modules/desktop/noctalia-greeter.nixos.nix`; [greeter](../operations/noctalia-greeter.md) |
 | Zen spaces and pins | `config/zen/`, `modules/apps/zen-browser.home.nix`; [Zen](../apps/zen-browser.md) |

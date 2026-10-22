@@ -113,6 +113,13 @@
           configurations = inputs.self.nixosConfigurations;
         };
 
+        dolphin-places =
+          pkgs.runCommand "dolphin-places-checks" { nativeBuildInputs = [ pkgs.python3 ]; }
+            ''
+              python3 ${../.}/tests/dolphin/places.py
+              touch $out
+            '';
+
         niri-host-profiles = import ../tests/niri/hosts.nix {
           inherit pkgs;
           configurations = inputs.self.nixosConfigurations;
