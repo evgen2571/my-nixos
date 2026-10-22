@@ -24,7 +24,7 @@ let
   netns = "netns-${name}";
   underlay = "${netns}-underlay";
   vpn = "hide-me-${name}";
-  client = pkgs.callPackage ../../../packages/hide-me { };
+  client = pkgs.callPackage ../../../pkgs/hide-me { };
 
   tools = with pkgs; [
     coreutils

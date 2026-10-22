@@ -35,7 +35,7 @@ let
     os.execve(sys.argv[5], sys.argv[5:], {"SUDO_UID": "1000", "SUDO_GID": "100"})
   '';
 in
-pkgs.callPackage ../../packages/namespace-launcher {
+pkgs.callPackage ../../pkgs/namespace-launcher {
   sudoPath = toString sudo;
 
   targets = [

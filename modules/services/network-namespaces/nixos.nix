@@ -156,7 +156,7 @@ in
 
     environment.systemPackages =
       lib.optional (lib.any (ns: ns.shared.role != "client") (lib.attrValues active)) (
-        pkgs.callPackage ../../../packages/hide-me { }
+        pkgs.callPackage ../../../pkgs/hide-me { }
       )
       ++ lib.concatMap (instance: instance.environment.systemPackages) (lib.attrValues instances);
 
