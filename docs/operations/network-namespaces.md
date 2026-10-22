@@ -46,7 +46,7 @@ Only when credential renewal is confirmed necessary, build the client from a
 private host terminal without activation:
 
 ```bash
-nix build --impure --no-link --print-out-paths --expr 'let f = builtins.getFlake (toString ./.); p = import f.inputs.nixpkgs { system = "x86_64-linux"; }; in p.callPackage ./packages/hide-me {}'
+nix build --impure --no-link --print-out-paths --expr 'let f = builtins.getFlake (toString ./.); p = import f.inputs.nixpkgs { system = "x86_64-linux"; }; in p.callPackage ./pkgs/hide-me {}'
 ```
 
 Replace `CLIENT_STORE_PATH` with the printed store path. Token-only login creates

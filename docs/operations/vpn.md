@@ -163,7 +163,7 @@ Never overwrite a valid refreshed token with an old SOPS seed.
 credentials and the restricted app registry. Host profiles select roles; private
 host overrides supply real endpoints and peer associations. Implementation lives
 in [namespace modules](../../modules/services/network-namespaces/), with
-[tests](../../tests/network-namespaces/) and [provider packaging](../../packages/hide-me/).
+[tests](../../tests/network-namespaces/) and [provider packaging](../../pkgs/hide-me/).
 
 Use the reviewed private input from [deployment](deployment.md) for affected-host
 builds and checks. The dedicated non-activating harness is:

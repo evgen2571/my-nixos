@@ -30,7 +30,7 @@ let
     check = "/etc/network-namespaces/${app.namespace}-check";
   }) apps;
 
-  launcher = pkgs.callPackage ../../../packages/namespace-launcher { inherit targets; };
+  launcher = pkgs.callPackage ../../../pkgs/namespace-launcher { inherit targets; };
 in
 {
   options.my.system.services.networkNamespaces = {

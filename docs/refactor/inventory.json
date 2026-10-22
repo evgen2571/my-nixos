@@ -3505,28 +3505,28 @@
     },
     {
       "old": "packages/hide-me/default.nix",
-      "target": "packages/hide-me/default.nix",
+      "target": "pkgs/hide-me/default.nix",
       "sha256": "af17b7328e25cae9f34ac46f3d0430d772672076e9f5e028f7c356c6116bf3db",
       "executable": false,
       "owner": "retained supporting source"
     },
     {
       "old": "packages/namespace-launcher/client.c",
-      "target": "packages/namespace-launcher/client.c",
+      "target": "pkgs/namespace-launcher/client.c",
       "sha256": "768e8512af737819778605ea41df4da63267c21370ddee4180c62c41270ec371",
       "executable": false,
       "owner": "retained supporting source"
     },
     {
       "old": "packages/namespace-launcher/default.nix",
-      "target": "packages/namespace-launcher/default.nix",
+      "target": "pkgs/namespace-launcher/default.nix",
       "sha256": "fefca030b8d2bcfa87e9c1b0d90293757c65d66d3de22e3cfb57d55be99cb682",
       "executable": false,
       "owner": "retained supporting source"
     },
     {
       "old": "packages/namespace-launcher/enter.c",
-      "target": "packages/namespace-launcher/enter.c",
+      "target": "pkgs/namespace-launcher/enter.c",
       "sha256": "ef464c1feff8018cd85173346e25ba2a616ca9bdc5ffdf19f5e105dc9a22ba93",
       "executable": false,
       "owner": "retained supporting source"
