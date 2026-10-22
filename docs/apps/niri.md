@@ -113,6 +113,42 @@ floating position after it moves: showing an existing Settings window again does
 not guarantee recentering. Close and create a new window for an opening-rule test.
 The rule does not match other Noctalia windows or layer-shell panels.
 
+Dolphin's main file browser opens floating at 62% width and 70% height.
+Configure, Configure Language, Configure Toolbars, and file Properties windows
+use 42% width and 55% height, without a workspace target or fixed position.
+These rules match the observed English titles and Dolphin's app ID; other
+dialog titles retain the file-browser defaults. Close and reopen dialogs to
+test the opening sizes. Applications can enforce a larger minimum size.
+
+The [mpv module](../../modules/apps/mpv.home.nix) sets audio/video MIME defaults;
+the [qimgv module](../../modules/apps/qimgv.home.nix) sets image defaults on both
+desktops. Associations list concrete MIME types because `audio/*`, `video/*`,
+and `image/*` are not wildcard defaults. Add new formats to the owning module.
+
+Dolphin also needs an XDG application menu for KDE's service index to discover
+the installed desktop entries. Its module supplies `menus/applications.menu`;
+without it, even valid MIME defaults can fall through to the application chooser.
+The KDE Qt platform theme calls the KDE portal's chooser directly, so Niri also
+installs that backend. The configured GTK file picker and GNOME screen-sharing
+backend keep their existing priority. A missing chooser can produce
+`Couldn't get reply` and `The name is not activatable` when opening files.
+After rebuilding, log out and back in, then reopen Dolphin and test file opening.
+The `dolphin-open-files` flake check exercises KDE's launcher with isolated
+desktop entries and MIME defaults, rather than only querying `xdg-mime`.
+
+Both desktops enable UDisks2 for Dolphin's device discovery. Dolphin's launcher
+also exposes the PipeWire library to Qt Multimedia's runtime loader, without
+changing the library path for the rest of the session. JPEG decoder warnings
+about `0x89 0x50` mean PNG data reached a JPEG reader; this may involve a file or
+an embedded preview/thumbnail and does not by itself establish image corruption.
+
+qimgv opens focused and floating at 70% width and height, centered on the monitor
+for a new window. Close and reopen existing windows to test the rule.
+Open one image, then use Left/Right or the mouse wheel to browse its folder in
+the same window; `qimgv ~/downloads` opens a folder directly. qimgv 1.0.3 has no
+single-instance option, tabs, or command-line collection of selected files.
+Opening more files from Dolphin still starts separate qimgv windows.
+
 Main Telegram and Vesktop windows open on `chats`; their other windows float
 without a workspace target. Telegram media retains its larger size and explicit
 initial-fullscreen override. Steam utilities, observed Prism dialogs, and OBS

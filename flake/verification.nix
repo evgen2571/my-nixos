@@ -108,6 +108,11 @@
               touch $out
             '';
 
+        dolphin-open-files = import ../tests/dolphin {
+          inherit pkgs;
+          configurations = inputs.self.nixosConfigurations;
+        };
+
         niri-host-profiles = import ../tests/niri/hosts.nix {
           inherit pkgs;
           configurations = inputs.self.nixosConfigurations;

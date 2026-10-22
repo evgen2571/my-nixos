@@ -38,10 +38,43 @@ def properties(app_id, title):
             matches(line, app_id, title) for line in excludes
         ):
             result.update(re.findall(r'^\s*(open-[\w-]+) (.+)$', body, re.MULTILINE))
+            result.update(re.findall(r'^\s*(default-(?:column-width|window-height)) \{ (.*?) \}',
+                                     body, re.MULTILINE))
     return result
 
 
 class Configuration(unittest.TestCase):
+    def test_qimgv_floats_without_a_fixed_position(self):
+        rule = properties("qimgv", "example.png - qimgv")
+        self.assertEqual(rule["open-floating"], "true")
+        self.assertEqual(rule["open-focused"], "true")
+        self.assertEqual(rule["open-fullscreen"], "false")
+        self.assertNotIn("open-on-workspace", rule)
+        self.assertEqual(rule["default-column-width"], "proportion 0.70;")
+        self.assertEqual(rule["default-window-height"], "proportion 0.70;")
+        body = next(body for body in re.findall(r'^window-rule \{\n(.*?)^\}',
+                    expand(CONFIG / "sub/rules/common.kdl"), re.MULTILINE | re.DOTALL)
+                    if 'app-id=r#"^qimgv$"#' in body)
+        self.assertNotIn("default-floating-position", body)
+        self.assertNotIn("open-floating", properties("other", "example.png - qimgv"))
+
+    def test_dolphin_dialog_sizes(self):
+        for title in ("Configure — Dolphin", "Configure Language — Dolphin",
+                      "Configure Toolbars — Dolphin", "Properties for example.jpg — Dolphin"):
+            with self.subTest(title=title):
+                rule = properties("org.kde.dolphin", title)
+                self.assertEqual(rule["open-floating"], "true")
+                self.assertEqual(rule["default-column-width"], "proportion 0.42;")
+                self.assertEqual(rule["default-window-height"], "proportion 0.55;")
+                self.assertNotIn("open-on-workspace", rule)
+                self.assertNotIn("default-column-width", properties("other", title))
+        for app, title in [("org.kde.dolphin", "Wallpapers — Dolphin"),
+                           ("org.kde.dolphin", "Configure — Dolphin — Dolphin"),
+                           ("thunar", "Configure — Dolphin")]:
+            rule = properties(app, title)
+            self.assertEqual(rule["default-column-width"], "proportion 0.62;")
+            self.assertEqual(rule["default-window-height"], "proportion 0.70;")
+
     def test_navigation_and_conflicts(self):
         bindings = {}
         for key, action in re.findall(r'^\s*(\S+) [^\n{]*\{ (.*?) \}$',

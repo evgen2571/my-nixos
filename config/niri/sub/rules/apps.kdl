@@ -12,12 +12,29 @@ window-rule {
 	}
 }
 
-// Dolphin is a convenient floating file browser. Dialogs stay with their parent.
+// File managers open as large floating browsers.
 window-rule {
     match app-id=r#"^(org\.kde\.dolphin|org\.gnome\.Nautilus|thunar|Thunar)$"#
     open-floating true
     open-focused true
     default-column-width { proportion 0.62; }
+    default-window-height { proportion 0.70; }
+}
+
+// These observed Dolphin dialogs need less space than the file browser.
+window-rule {
+    match app-id=r#"^org\.kde\.dolphin$"# title=r#"^(Configure( Language| Toolbars)?|Properties for .+) — Dolphin$"#
+    default-column-width { proportion 0.42; }
+    default-window-height { proportion 0.55; }
+}
+
+// New image-viewer windows float at the monitor's default centered position.
+window-rule {
+    match app-id=r#"^qimgv$"#
+    open-floating true
+    open-focused true
+    open-fullscreen false
+    default-column-width { proportion 0.70; }
     default-window-height { proportion 0.70; }
 }
 

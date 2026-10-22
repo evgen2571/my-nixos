@@ -88,6 +88,8 @@ in
       extraPortals = with pkgs; [
         xdg-desktop-portal-gnome
         xdg-desktop-portal-gtk
+        # The KDE Qt platform theme calls this chooser directly.
+        kdePackages.xdg-desktop-portal-kde
       ];
 
       config.niri = {

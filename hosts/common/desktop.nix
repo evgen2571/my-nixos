@@ -1,6 +1,8 @@
 { ... }:
 
 {
+  services.udisks2.enable = true;
+
   my = {
     desktop = {
       niri.enable = true;
