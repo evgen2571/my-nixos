@@ -1,6 +1,6 @@
 # Zen
 
-Nix installs Zen and applies a few shared browser defaults, the compact-mode shortcut (`Ctrl+`backtick`), and Sine integration.
+Nix installs Zen and applies a few shared browser defaults, the compact-mode shortcut (Ctrl + backtick), and Sine integration.
 
 My **spaces, pins, routes, and workspace IDs are personal**, so they belong in `my-nixos-private`, not in this directory. I don't ship a copy of my browser layout.
 
