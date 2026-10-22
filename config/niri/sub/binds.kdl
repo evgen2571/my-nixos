@@ -17,6 +17,7 @@ binds {
     Mod+M repeat=false hotkey-overlay-title="Music" { spawn-sh "$HOME/.config/niri/scripts/focus-or-launch '^(pear-desktop|Pear Desktop|youtube-music|YouTube Music|com\\.github\\.th_ch\\.youtube_music)$' -- pear-desktop"; }
     Mod+T repeat=false hotkey-overlay-title="Telegram" { spawn-sh "$HOME/.config/niri/scripts/focus-or-launch '^(org\\.telegram\\.desktop|telegram-desktop)$' -- telegram-desktop"; }
     Mod+D repeat=false hotkey-overlay-title="Vesktop" { spawn-sh "$HOME/.config/niri/scripts/focus-or-launch '^(vesktop|Vesktop)$' -- vesktop"; }
+    Mod+Shift+D repeat=false hotkey-overlay-title="Screen annotation" { spawn "wayscriber" "--daemon-toggle"; }
 
     // Noctalia v5 IPC
     Mod+Comma { spawn "noctalia" "msg" "settings-toggle"; }

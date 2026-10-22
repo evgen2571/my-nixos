@@ -44,6 +44,10 @@ def properties(app_id, title):
 
 
 class Configuration(unittest.TestCase):
+    def test_wayscriber_daemon_startup(self):
+        startup = (CONFIG / "sub/startup.kdl").read_text().splitlines()
+        self.assertEqual(startup.count('spawn-at-startup "wayscriber" "--daemon"'), 1)
+
     def test_qimgv_floats_without_a_fixed_position(self):
         rule = properties("qimgv", "example.png - qimgv")
         self.assertEqual(rule["open-floating"], "true")
@@ -84,6 +88,7 @@ class Configuration(unittest.TestCase):
             bindings[normalized] = action
 
         expected = {
+            "Mod+Shift+D": 'spawn "wayscriber" "--daemon-toggle";',
             "Mod+H": "focus-column-or-monitor-left;",
             "Mod+L": "focus-column-or-monitor-right;",
             "Mod+J": "focus-window-or-workspace-down;",

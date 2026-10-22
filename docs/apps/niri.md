@@ -39,6 +39,7 @@ The existing minus/equal bindings retain coarse 10% sizing.
 | `Mod+Shift+P` | Lock and suspend (moved from `Mod+Alt+L`) |
 | `Mod+C` | Project-session picker |
 | `Mod+F` / `Mod+E` / `Mod+Shift+E` | Browser / Yazi / Dolphin |
+| `Mod+Shift+D` | Toggle Wayscriber screen annotation |
 | `Mod+Tab` | Workspace overview |
 | `Alt+Tab` / `Alt+grave` | Cycle windows on this output / windows of the same app |
 | `Print` / `Ctrl+Print` / `Alt+Print` | Screenshot selection / screen / window |
@@ -46,6 +47,9 @@ The existing minus/equal bindings retain coarse 10% sizing.
 The full [binding file](../../config/niri/sub/binds.kdl) also covers media,
 brightness, mouse wheel navigation and app launchers. Niri screenshots use
 `~/screenshots`; Noctalia's screenshot directory is configured separately.
+
+[Wayscriber](https://github.com/devmobasa/wayscriber) starts in daemon mode with
+the Niri session on both desktops. `Mod+Shift+D` shows or hides its overlay.
 
 ## Focus-or-launch and the dropdown
 

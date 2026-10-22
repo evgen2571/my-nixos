@@ -22,6 +22,9 @@ in
       grim
       slurp
 
+      # Screen annotation for presentations and recordings.
+      wayscriber
+
       # PipeWire audio routing/inspection helpers for recording setups.
       pavucontrol
       qpwgraph

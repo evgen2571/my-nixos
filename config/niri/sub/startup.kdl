@@ -1,5 +1,6 @@
 spawn-at-startup  "noctalia"
 spawn-at-startup "lan-mouse" "daemon"
+spawn-at-startup "wayscriber" "--daemon"
 
 // Apps
 spawn-at-startup "zen-beta"

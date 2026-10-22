@@ -43,6 +43,9 @@ assert lib.all (
   && c.programs.steam.gamescopeSession.enable
   && c.security.polkit.enable
   && c.services.udisks2.enable
+  && lib.any (
+    p: (p.pname or "") == "wayscriber"
+  ) c.home-manager.users.${c.my.primaryUser.name}.home.packages
   && lib.any (p: (p.pname or "") == "xdg-desktop-portal-kde") c.xdg.portal.extraPortals
   && c.xdg.portal.config.niri."org.freedesktop.impl.portal.FileChooser" == "gtk"
   && c.home-manager.users.${c.my.primaryUser.name}.xdg.configFile ? "menus/applications.menu"
