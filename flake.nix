@@ -57,7 +57,6 @@
         ./flake/hosts.nix
         ./flake/devshells.nix
         ./flake/formatting.nix
-        ./flake/verification.nix
       ];
 
       systems = [ "x86_64-linux" ];

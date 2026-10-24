@@ -8,5 +8,3 @@ Most of the useful explanations sit next to the files they describe now:
 - [VPN setup](../modules/services/network-namespaces/README.md)
 
 The two general notes here are [secrets](secrets.md) and [updates/recovery](maintenance.md).
-
-`refactor/` contains frozen JSON fixtures used by module-equivalence tests. They're development/test data, not an installation guide.

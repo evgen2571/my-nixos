@@ -6,7 +6,7 @@ From the repo:
 
 ```sh
 git diff
-nix flake check --no-write-lock-file
+nix flake check --no-build --no-write-lock-file
 nix build --no-link .#nixosConfigurations.my-host.config.system.build.toplevel --no-write-lock-file
 ```
 

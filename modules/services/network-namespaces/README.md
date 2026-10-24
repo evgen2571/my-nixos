@@ -13,6 +13,6 @@ sudo /etc/network-namespaces/vpn-check
 
 Run those on the affected client. A client can't tell whether the provider account on the server needs attention; check the server separately. `AUTH_REJECTED` isn't proof of an expired account.
 
-The implementation and recovery scripts are in this directory; `tests/network-namespaces/` has the isolated checks. Before changing networking, credentials, DNS, or the recovery timer, understand the existing firewall and namespace boundaries. Never bypass a blocked launch by unmasking old local-provider units or routing it through host DNS.
+The implementation and recovery scripts are in this directory. Before changing networking, credentials, DNS, or the recovery timer, understand the existing firewall and namespace boundaries. Never bypass a blocked launch by unmasking old local-provider units or routing it through host DNS.
 
 Rebuilding doesn't recover lost credentials. Keep independent server access and a known-good generation before any live maintenance.

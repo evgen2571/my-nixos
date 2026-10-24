@@ -11,18 +11,19 @@ This isn't an installer or a polished starter kit. Feel free to borrow a module,
 - [`hosts/`](hosts/README.md) — my machines and how to add yours
 - [`modules/`](modules/README.md) — packages, services, and Home Manager options
 - [`config/`](config/) — the actual app configs: [Niri](config/niri/README.md), [Noctalia](config/noctalia/README.md), [Neovim](config/nvim/README.md), [Zen](config/zen/README.md)
-- [`docs/`](docs/README.md) — a few notes on secrets, updates, and older refactor fixtures
+- [`docs/`](docs/README.md) — notes on secrets, updates, and recovery
 
 ## Trying it on your machine
 
 Start with [the host template](hosts/README.md), not one of my existing hosts. You can run without a private repository or any encrypted secrets; just leave services that need credentials disabled.
 
-You'll need Nix with flakes enabled. I use these for quick checks before touching a running machine:
+You'll need Nix with flakes enabled. Check that the configurations evaluate before building your host:
 
 ```sh
 nix flake check --no-build --no-write-lock-file
-nix flake check --no-write-lock-file
 ```
+
+This repo has no test suite. Evaluation catches configuration errors; a host build checks its packages and deployment guards. See [updates and recovery](docs/maintenance.md) for build commands and manual checks.
 
 For the actual installation and partitioning, use the [NixOS manual](https://nixos.org/manual/nixos/stable/#sec-installation). I only document the parts specific to this repo.
 

@@ -9,6 +9,6 @@ Read the affected host profile and owning source before editing. Start with [hos
 
 Keep host selections in `hosts/`, reusable modules in `modules/`, and app-specific files in `config/`. Follow typed NixOS/Home Manager discovery. Preserve generated/writable state, private-input guards, fail-closed VPN routing, and existing feature behavior.
 
-Run focused tests, flake checks, and affected-host builds without live activation. Some checks need the original private input and runtime tests cannot be replaced by evaluation. Review changed links and document only what a reader needs; leave implementation evidence to tests/issues. Report the checks that actually ran and what wasn't verified.
+Use flake evaluation and affected-host builds without live activation. This repository keeps no test suite or generated verification artifacts; preserve NixOS assertions, deployment guards, and upstream package checks. Production builds need the original private input, and evaluation cannot replace runtime verification. Review changed links and document only what a reader needs; leave implementation evidence in Git/issues. Report the checks that actually ran and what wasn't verified.
 
 Never switch or restart a running host, rewrite history, change remote visibility, or handle secrets without explicit approval.

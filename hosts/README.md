@@ -37,7 +37,7 @@ Stage new files so flakes can see them, then check and build:
 
 ```sh
 git add hosts/my-host flake/hosts.nix
-nix flake check --no-write-lock-file
+nix flake check --no-build --no-write-lock-file
 nix build --no-link .#nixosConfigurations.my-host.config.system.build.toplevel --no-write-lock-file
 ```
 
