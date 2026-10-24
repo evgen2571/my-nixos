@@ -166,7 +166,6 @@
           # java.enable = true;
           # python.enable = true;
           # rust.enable = true;
-          # unity.enable = true;
         };
       };
 

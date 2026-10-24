@@ -62,8 +62,7 @@ return {
 
 	config = function()
 		local adapters = {}
-		-- neotest-gtest parses its query at import time. A missing C++ parser
-		-- must not prevent Python testing during first-time parser installation.
+		-- neotest-gtest needs the C++ parser at import time; let Python tests work without it.
 		local ok, gtest = pcall(require, "neotest-gtest")
 
 		if ok then

@@ -1,6 +1,6 @@
 local M = {}
 
--- Harpoon 2 has no built-in migration; never overwrite its data or the old files.
+-- Import old marks only if this project has no Harpoon 2 data; leave old files intact.
 function M.import()
 	local key = vim.fn.getcwd()
 	local target = vim.fn.stdpath("data") .. "/harpoon/" .. vim.fn.sha256(key) .. ".json"

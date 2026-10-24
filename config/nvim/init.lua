@@ -2,7 +2,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 vim.g.have_nerd_font = false
 
--- Compatibility for local integrations; the source tree uses responsibility names.
+-- Older local integrations still require custom.python.
 package.preload['custom.python'] = function()
   return require 'languages.python'
 end

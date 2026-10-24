@@ -5,7 +5,6 @@ workspace "browser" {
 workspace "code" {
 	open-on-output "eDP-1"
 
-	// Development layout trial: keep other workspaces on the global layout.
 	layout {
 		default-column-display "normal"
 		default-column-width { proportion 0.5; }

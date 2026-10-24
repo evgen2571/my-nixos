@@ -2,7 +2,7 @@ local M = {}
 
 function M.setup()
 	package.loaded.matugen = nil
-	-- Read directly so a theme generated after startup bypasses Lazy/module caches.
+	-- dofile picks up palettes generated after Neovim starts.
 	local ok, theme = pcall(dofile, vim.fn.stdpath("config") .. "/lua/matugen.lua")
 	ok = ok and type(theme) == "table" and type(theme.setup) == "function"
 

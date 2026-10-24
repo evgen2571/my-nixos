@@ -52,7 +52,7 @@ o.timeoutlen = 300
 o.splitright = true
 o.splitbelow = true
 
--- Sync clipboard after UI startup to avoid slowing startup.
+-- Clipboard probing can block startup, so defer it.
 vim.schedule(function()
 	o.clipboard = "unnamedplus"
 end)

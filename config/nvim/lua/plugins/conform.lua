@@ -19,6 +19,7 @@ return {
       notify_on_error = false,
 
       format_on_save = function(bufnr)
+        -- These filetypes use manual formatting via <leader>f.
         local disable_filetypes = { c = true, cpp = true, markdown = true }
 
         if disable_filetypes[vim.bo[bufnr].filetype] then

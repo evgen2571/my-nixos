@@ -63,7 +63,6 @@
   "modules/dev/languages/java.home.nix",
   "modules/dev/languages/python.home.nix",
   "modules/dev/languages/rust.home.nix",
-  "modules/dev/languages/unity.home.nix",
   "modules/dev/neovim/home.nix",
   "modules/dev/pycharm.home.nix",
   "modules/dev/ssh.home.nix",

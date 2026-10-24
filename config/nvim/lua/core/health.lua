@@ -1,10 +1,4 @@
-
---[[
---
--- This file is not required for your own configuration,
--- but helps people determine if their system is setup correctly.
---
---]]
+-- :checkhealth core checks the editor version and basic command-line tools.
 local check_version = function()
   local verstr = tostring(vim.version())
 
@@ -21,7 +15,6 @@ local check_version = function()
 end
 
 local check_external_reqs = function()
-  -- Basic utils: `git`, `make`, `unzip`
   for _, exe in ipairs { 'git', 'make', 'unzip', 'rg' } do
     local is_executable = vim.fn.executable(exe) == 1
 

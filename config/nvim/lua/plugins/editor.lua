@@ -7,8 +7,7 @@ return {
 
     opts = {
       delay = 180,
-      -- Classic is a borderless bottom-anchored multi-column menu.
-      -- Which-Key still implements it with a floating window internally.
+      -- Keep the shortcut menu at the bottom without borders.
       preset = 'classic',
       show_help = false,
 
@@ -108,7 +107,6 @@ return {
           'help',
           'lazy',
           'mason',
-          'neo-tree',
           'notify',
           'snacks_dashboard',
           'snacks_notif',

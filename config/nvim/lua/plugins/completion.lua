@@ -21,7 +21,6 @@ return {
         documentation = { auto_show = true, auto_show_delay_ms = 100 },
       },
 
-      -- Suggestions come from project tools, buffers, and snippets.
       sources = {
         default = { 'lsp', 'path', 'buffer', 'snippets', 'lazydev' },
 
@@ -31,7 +30,7 @@ return {
       },
 
       snippets = { preset = 'default' },
-      -- Keep the locked Lua plugin reproducible; Rust needs a matching Nix-built library.
+      -- The native matcher needs a matching build; use Lua to avoid binary downloads.
       fuzzy = { implementation = 'lua', prebuilt_binaries = { download = false } },
       signature = { enabled = true },
     },
