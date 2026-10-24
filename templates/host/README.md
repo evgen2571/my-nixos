@@ -1,13 +1,35 @@
 # New host template
 
-Copy this directory to `hosts/<your-host>/` and follow [the host guide](../../hosts/README.md).
+Follow [the host guide](../../hosts/README.md) to copy this template, add your
+machine to the flake, and build it. The guide also has a
+[small Niri desktop example](../../hosts/README.md#4-pick-your-features).
 
-`configuration.nix` is for your machine, login, networking, and boot setup. Generate your own `hardware-configuration.nix` from NixOS installation media. It also shows optional desktop/server baseline imports; choose at most one if you want those defaults.
+- `configuration.nix` holds your account, boot, and networking settings.
+- `hardware-configuration.nix` comes from your machine, using `nixos-generate-config`.
+- [`profile.nix`](profile.nix) lists the optional features. Uncomment the ones you
+  want and fill in the settings noted beside them.
 
-Use `profile = moduleProfiles.all;` in your `mkHost` entry in `flake/hosts.nix`. This makes every optional desktop, server, and Home Manager module available without enabling it. Existing desktop/server catalog profiles remain available for narrower configurations.
+Use `profile = moduleProfiles.all;` and `secretSource = "none"` in your `mkHost`
+entry. Optional features start disabled. The imported SSH client module still
+configures GitHub/server aliases; review its settings in `profile.nix`.
 
-[`profile.nix`](profile.nix) lists every optional feature. Uncomment an `enable = true;` line to select it. Blocks include required settings and dependency notes; edit them for your own hardware. For a Niri desktop, enable the Niri system session, Niri user config, Noctalia shell, and Noctalia greeter entries shown in the profile.
+## Before you install
 
-The workstation bundle enables common development tools by default. Uncomment individual switches with `false` to disable selected tools from that bundle. Choose either desktop Syncthing or server Syncthing; the server version needs storage enabled and a real storage device. Configure credentials before enabling the VPN, following [the secrets note](../../docs/secrets.md).
+The account password is locked by `hashedPassword = "!"`, and mutable users are
+disabled. An SSH public key lets you authenticate over SSH; it doesn't give you a
+password for sudo or the graphical login screen.
 
-The template has **no enabled optional features or secrets**. The imported SSH client module still manages GitHub/server aliases; its settings are shown in the profile. Password login is locked, and the template won't evaluate until you provide a hostname, public SSH key, and reachable SSH firewall policy. Configure a working sudo authentication method before installation, and console/password access if you need graphical login.
+- Check your disk UUIDs, mounts, and bootloader against the actual machine.
+- Replace the hostname and add your SSH public key to `my.primaryUser.authorizedKeys`.
+- Allow the SSH port on the interface or network you'll connect through. The
+  template requires an explicit firewall rule and keeps SSH password login off.
+- Configure persistent account authentication for console/graphical login if you
+  need it, and a working sudo authentication method. With mutable users disabled,
+  don't rely on a manual `passwd` change surviving a rebuild. Follow
+  [the secrets guide](../../docs/secrets.md) for protected credentials; keep
+  passwords and private keys out of Nix source and Git.
+- Keep a recovery path: installation media, a working console, or a known-good
+  generation for an existing installation. Back up writable data first.
+
+The template checks hostname, SSH key, and firewall settings during evaluation.
+You still need to verify that you can boot, log in, and use sudo on the machine.
