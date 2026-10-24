@@ -1,6 +1,9 @@
 # Browser defaults only. Spaces, pins, and routing rules are private.
 {
   settings = {
+    "browser.startup.page" = 3;
+    "zen.pinned-tab-manager.restore-pinned-tabs-to-pinned-url" = false;
+    "zen.pinned-tab-manager.close-shortcut-behavior" = "unload-switch";
     "zen.workspaces.continue-where-left-off" = true;
     "zen.window-sync.enabled" = true;
 

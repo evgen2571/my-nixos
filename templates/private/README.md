@@ -11,7 +11,7 @@ outputs = { self }: {
 };
 ```
 
-Keep reusable modules and ordinary app settings in the public repo. Machine-specific IDs, accounts, private endpoints, and **Zen spaces/pins/routes** go in the private overrides. The public Zen module still installs the browser and shared defaults; your private Home Manager options can fill in `programs.zen-browser.profiles.default.spaces` and `.pins`.
+Keep reusable modules and ordinary app settings in the public repo. Machine-specific IDs, accounts, private endpoints, **Zen spaces/Essentials/pins/routes**, and **Dolphin Places** go in the private overrides. The public Zen module still installs the browser and shared defaults; your private Home Manager options can fill in `programs.zen-browser.profiles.default.spaces` and `.pins` (with `isEssential = true` for Essentials). Dolphin sidebar pins use `my.user.files.dolphin.places`.
 
 For an existing Zen profile, preserve the full existing workspace/pin definitions and UUIDs during the move. Don't merge the public Zen cleanup before the matching private definitions exist and both desktop builds have been checked.
 

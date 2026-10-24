@@ -51,9 +51,13 @@ let
           my.primaryUser.home.settings = {
             my.user.apps.zenBrowser.profilePath = lib.mkOverride 40 "fixture.default";
             programs.zen-browser.profiles.default = {
-              spaces.ChatGPT = {
+              spaces.Fixture = {
                 id = lib.mkOverride 40 "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
-                pins.ChatGPT.id = lib.mkOverride 40 "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
+                pins.Example = {
+                  id = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
+                  url = "https://example.invalid/";
+                };
+                routes.Example.reference = "example.invalid";
               };
             };
           };
@@ -63,13 +67,7 @@ let
   browser =
     adopted.home-manager.users.${adopted.my.primaryUser.name}.programs.zen-browser.profiles.default;
 
-  ids =
-    value:
-    if builtins.isAttrs value then
-      lib.concatLists (lib.mapAttrsToList (name: v: if name == "id" then [ v ] else ids v) value)
-    else
-      [ ];
-  exampleIds = ids (import ../../config/zen/profile.nix);
+  sharedBrowser = import ../../config/zen/profile.nix;
 
   partial =
     (desktop.extendModules {
@@ -130,10 +128,11 @@ assert renamed.time.timeZone == "Etc/GMT+3";
 assert home.programs.ssh.settings.server.data.User == "fixture-remote";
 assert home.home.username == "fixture-user";
 assert home.home.homeDirectory == "/home/fixture-user";
-assert builtins.length exampleIds == 39 && builtins.length (lib.unique exampleIds) == 39;
-assert lib.all (
-  id: builtins.match "[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}" id != null
-) exampleIds;
+assert !(sharedBrowser ? spaces || sharedBrowser ? pins);
+assert browser.settings."browser.startup.page" == 3;
+assert !browser.settings."zen.pinned-tab-manager.restore-pinned-tabs-to-pinned-url";
+assert browser.settings."zen.pinned-tab-manager.close-shortcut-behavior" == "unload-switch";
+assert !browser.spacesForce && !browser.pinsForce && !browser.spaceRouting.force;
 assert renamed.fileSystems ? "/home/fixture-user/drive";
 assert lib.all (
   c: lib.all (fs: fs.device == "/dev/disk/by-label/FIXTURE") (builtins.attrValues c.fileSystems)
@@ -150,7 +149,7 @@ assert lib.any (
   && p.zenWorkspace == "{aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa}"
 ) browser.sessionStore.tabs;
 assert
-  browser.spaceRouting.routes."spaces/ChatGPT/ChatGPT".openIn
+  browser.spaceRouting.routes."spaces/Fixture/Example".openIn
   == "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
 assert home.programs.noctalia.settings.location.address == "Example City";
 assert home.programs.noctalia.settings.shell.font_family == "Hurmit Nerd Font";
