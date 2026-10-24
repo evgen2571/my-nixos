@@ -1,5 +1,7 @@
 # my-nixos
 
+https://github.com/user-attachments/assets/c9d99e2b-1268-4ea9-a44f-61b3f40b204a
+
 These are the NixOS configs I use on my PC, laptop, and home server. I've been moving more and more of my setup into Nix, and this is where it ended up.
 
 My desktops use **Niri + Noctalia**. I mostly work in **Kitty, tmux, and Neovim**, with Zen as my browser. The server handles storage, a few services, and a VPN gateway. There's a lot of personal stuff around the edges, so I wouldn't copy an entire host and expect it to work on another machine.
