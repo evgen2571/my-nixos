@@ -102,7 +102,7 @@ let
   pathsFor =
     profile: scope:
     map (module: module.path) (
-      filter (module: module.scope == scope && elem profile module.profiles) modules
+      filter (module: module.scope == scope && (profile == "all" || elem profile module.profiles)) modules
     );
   profile = name: {
     systemModules = pathsFor name "system";
@@ -112,6 +112,7 @@ in
 {
   inherit modules;
   profiles = {
+    all = profile "all";
     desktop = profile "desktop";
     server = profile "server";
   };

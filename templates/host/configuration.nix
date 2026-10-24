@@ -6,6 +6,9 @@
     ./hardware-configuration.nix
     ./profile.nix
     ../../modules/core/primary-user.nixos.nix
+    # Optional boot, locale, Nix and package defaults: choose at most one.
+    # ../../modules/core/desktop-baseline.nixos.nix
+    # ../../modules/core/server-baseline.nixos.nix
   ];
 
   networking.hostName = "replace-me";

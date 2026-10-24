@@ -4,6 +4,8 @@ Most things in this repo are optional NixOS or Home Manager modules. Each host p
 
 The naming is pretty literal: `*.nixos.nix` (or `nixos.nix`) is a system module; `*.home.nix` (or `home.nix`) is for Home Manager. The module catalog discovers those files in the supported directories. Just adding a file doesn't enable it.
 
+The [host template profile](../templates/host/profile.nix) lists every optional feature, with commented switches to enable it. Keep that list current when adding or removing features. New hosts can use `moduleProfiles.all` to make both desktop and server modules available; the `desktop` and `server` catalog profiles keep their existing narrower selections.
+
 For example, to install my Git setup for the primary user:
 
 ```nix

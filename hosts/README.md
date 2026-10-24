@@ -26,12 +26,12 @@ Then add an output in [`flake/hosts.nix`](../flake/hosts.nix), next to my existi
 my-host = mkHost {
   host = "my-host";
   hostModule = ../hosts/my-host/configuration.nix;
-  profile = moduleProfiles.desktop; # or moduleProfiles.server
+  profile = moduleProfiles.all;
   secretSource = "none";
 };
 ```
 
-Desktop/server profiles make the relevant modules *available*. They don't turn on everything. Pick what you want in `hosts/my-host/profile.nix`. See [modules](../modules/README.md) for examples.
+The `all` catalog profile makes every optional module *available*. It doesn't enable them. The copied `hosts/my-host/profile.nix` lists every feature: uncomment the ones you want and configure the settings noted beside them. The narrower `moduleProfiles.desktop` and `moduleProfiles.server` are still available if you remove template settings outside their scope. See [modules](../modules/README.md) for the option layout.
 
 Stage new files so flakes can see them, then check and build:
 
