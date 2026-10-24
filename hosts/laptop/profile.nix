@@ -20,6 +20,7 @@
 
     system = {
       apps = {
+        libreoffice.enable = true;
         steam.enable = true;
         obs.enable = true;
         vesktop.enable = true;

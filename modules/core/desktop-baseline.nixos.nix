@@ -55,7 +55,6 @@
   };
 
   environment.systemPackages = with pkgs; [
-    libreoffice-still
     microfetch
     xwayland
     wget

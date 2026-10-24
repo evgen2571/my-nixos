@@ -21,6 +21,7 @@
 
     system = {
       apps = {
+        # libreoffice.enable = true;
         # lutris.enable = true;
         # obs.enable = true;
         # steam.enable = true;
