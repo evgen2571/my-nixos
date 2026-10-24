@@ -2,9 +2,7 @@
 enable_overdrive = false
 enable_sounds = false
 
-notification_sound = ""
 sound_volume = 0.5
-volume_change_sound = ""
 
 [backdrop]
 blur_intensity = 0.5
@@ -80,7 +78,6 @@ main_axis_padding = 16
 margin_edge = 8
 margin_ends = 0
 
-monitors = []
 pinned = []
 position = "bottom"
 
@@ -413,7 +410,7 @@ wallpaper_scheme = "m3-content"
 
     [theme.templates]
     builtin_ids = [ "cava", "gtk3", "gtk4", "kcolorscheme", "kitty", "niri" ]
-    community_ids = [ "pear-desktop", "telegram", "libreoffice", "neovim", "obsidian", "lazygit", "yazi", "codex", "opencode", "bat", "obs", "prismlauncher" ]
+    community_ids = [ "sonora", "telegram", "libreoffice", "neovim", "obsidian", "lazygit", "yazi", "codex", "opencode", "bat", "obs", "prismlauncher" ]
 
     enable_builtin_templates = true
     enable_community_templates = true

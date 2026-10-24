@@ -111,6 +111,7 @@
         # osuLazer.enable = true;
         # prismLauncher.enable = true;
         # qimgv.enable = true;
+        # sonora.enable = true;
         # telegram.enable = true;
         # voxtype.enable = true;
         # youtubeMusic.enable = true;

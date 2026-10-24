@@ -1,7 +1,7 @@
 [desktop_widgets]
 enabled = true
 schema_version = 2
-widget_order = [ "desktop-widget-0000000000000001", "desktop-widget-0000000000000002", "desktop-widget-0000000000000003" ]
+widget_order = [ "desktop-widget-0000000000000001", "desktop-widget-0000000000000002" ]
 
     [desktop_widgets.grid]
     cell_size = 16
@@ -46,21 +46,6 @@ widget_order = [ "desktop-widget-0000000000000001", "desktop-widget-000000000000
         centered = true
         mirrored = true
         show_when_idle = true
-
-    [desktop_widgets.widget.desktop-widget-0000000000000003]
-    box_height = 288.0
-    box_width = 384.0
-
-    cx = 240.0
-    cy = 1264.0
-    enabled = true
-    output = "DP-1"
-    rotation = 0.0
-    type = "noctalia/timer:desktop"
-
-        [desktop_widgets.widget.desktop-widget-0000000000000003.settings]
-        background = false
-        duration = 2700
 
 [lockscreen_widgets]
 enabled = false

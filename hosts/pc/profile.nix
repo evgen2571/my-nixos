@@ -92,8 +92,9 @@
       osuLazer.enable = false;
       prismLauncher.enable = true;
       qimgv.enable = true;
+      sonora.enable = true;
       telegram.enable = true;
-      youtubeMusic.enable = true;
+      youtubeMusic.enable = false;
       voxtype.enable = true;
       zenBrowser.enable = true;
     };

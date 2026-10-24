@@ -55,14 +55,14 @@ window-rule {
     open-on-workspace "chats"
 }
 
-// Pear opens as a large floating panel on the active monitor and workspace.
+// Music players open as a large floating panel on the active monitor and workspace.
 window-rule {
-    match app-id=r#"^(pear-desktop|Pear Desktop|youtube-music|YouTube Music|com\.github\.th_ch\.youtube_music)$"#
+    match app-id=r#"^(sonora|pear-desktop|Pear Desktop|youtube-music|YouTube Music|com\.github\.th_ch\.youtube_music)$"#
     open-floating true
     open-maximized-to-edges false
     open-focused true
-    default-column-width { proportion 0.90; }
-    default-window-height { proportion 0.88; }
+    default-column-width { proportion 0.50; }
+    default-window-height { proportion 0.45; }
     default-floating-position x=0 y=12 relative-to="top"
 }
 

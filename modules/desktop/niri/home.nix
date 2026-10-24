@@ -2,6 +2,7 @@
   lib,
   configPaths,
   config,
+  pkgs,
   ...
 }:
 
@@ -24,8 +25,12 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    xdg.configFile = configPaths.dotfileAdapters.niri {
-      inherit (cfg) workspaceProfile;
+    xdg.configFile = (configPaths.dotfileAdapters.niri { inherit (cfg) workspaceProfile; }) // {
+      "niri/sub/binds.kdl".source = pkgs.replaceVars (configPaths.wm.niriConfigDir + "/sub/binds.kdl") {
+        musicPlayer = if config.my.user.apps.sonora.enable then "sonora" else "pear-desktop";
+        DEFAULT_AUDIO_SINK = null;
+        DEFAULT_AUDIO_SOURCE = null;
+      };
     };
   };
 }
