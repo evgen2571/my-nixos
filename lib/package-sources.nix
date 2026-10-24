@@ -51,7 +51,7 @@ in
 {
   # Ordinary packages use stable pkgs. These are the exceptions.
   inherit (upstream) codegraph lan-mouse noctalia-greeter;
-  inherit (unstable) godot_4 unityhub;
+  inherit (unstable) godot_4;
   inherit (seshPackages) sesh;
   inherit (vesktopPackages) vesktop;
 

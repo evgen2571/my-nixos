@@ -37,6 +37,7 @@ local transparent_groups = {
 	"LineNrAbove",
 }
 
+-- Colorschemes can reset backgrounds; clear them again after each change.
 autocmd("Colorscheme", {
 	desc = "Keep selected highlight groups transparent",
 
@@ -47,7 +48,6 @@ autocmd("Colorscheme", {
 	end,
 })
 
--- Keep prose readable without changing window options for source code.
 autocmd("FileType", {
 	pattern = "markdown",
 	desc = "Comfortable Markdown reading and editing",

@@ -19,7 +19,7 @@ local function slug(value)
 	return result ~= "" and result or "unknown"
 end
 
--- Use URL identifiers rather than the display name (which includes the title).
+-- URL IDs keep paths stable if a problem's display title changes.
 local function problem_location(task)
 	local host, path = (task.url or ""):match("^https?://([^/]+)(/[^?#]*)")
 
@@ -98,8 +98,7 @@ return {
 			end
 
 			vim.keymap.set("n", "<F6>", function()
-				-- Mirror the source directory in Neovim's XDG cache to avoid
-				-- collisions between A.cpp in different contests/projects.
+				-- Mirror the source path in the cache so two contests can both have A.cpp.
 				vim.fn.mkdir(cache_root() .. vim.fs.dirname(vim.api.nvim_buf_get_name(0)), "p")
 				vim.cmd("CompetiTest run")
 			end, { buffer = bufnr, desc = "CP: compile and run samples" })
@@ -118,7 +117,6 @@ return {
 		local binary = cache_root() .. "$(ABSDIR)/$(FNOEXT)"
 
 		return {
-			-- Receive contest problems into the matching judge and contest directory.
 			companion_port = 27121,
 			template_file = { cpp = "~/dev/cp/cf-template.cpp" },
 			evaluate_template_modifiers = false, -- copy the template byte for byte

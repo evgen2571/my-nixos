@@ -18,7 +18,6 @@ return {
 		notifier = { enabled = true, style = "minimal" },
 		picker = { enabled = true },
 		terminal = { win = { position = "float", width = 0.5, height = 0.4, border = "single" } },
-		lazygit = { configure = true },
 	},
 	keys = {
 		{
@@ -28,20 +27,6 @@ return {
 			end,
 			mode = { "n", "t" },
 			desc = "Toggle floating terminal",
-		},
-		{
-			"<leader>gg",
-			function()
-				Snacks.lazygit()
-			end,
-			desc = "Open LazyGit",
-		},
-		{
-			"<leader>gl",
-			function()
-				Snacks.lazygit.log()
-			end,
-			desc = "Open LazyGit log",
 		},
 		{
 			"<leader>sc",

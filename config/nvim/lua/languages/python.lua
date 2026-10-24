@@ -1,7 +1,6 @@
--- Resolve from the buffer, not Neovim's startup directory or a particular host.
+-- Share the project environment between LSP, tests, debugging, and notebooks.
 local M = { ready_kernels = {} }
 
--- Resolve the project and interpreter shared by LSP, tests, and debugging.
 function M.root(path)
 	path = path or vim.api.nvim_buf_get_name(0)
 	local start = path ~= "" and vim.fs.dirname(path) or vim.fn.getcwd()
@@ -29,7 +28,6 @@ function M.python(root)
 	return vim.fn.exepath("python3")
 end
 
--- Run project commands in a terminal split.
 function M.terminal(args, root)
 	root = root or M.root()
 
@@ -122,8 +120,8 @@ function M.move_cell(direction)
 end
 
 function M.prepare_runtime()
-	-- Molten's pinned release writes a connection file under data_dir/runtime
-	-- without creating that directory. Ask the provider for the actual Jupyter path.
+	-- Molten doesn't create data_dir/runtime before writing its connection file.
+	-- Use the provider's Jupyter path, which may differ from the project environment.
 	local provider = vim.g.python3_host_prog or vim.fn.exepath("python3")
 
 	local result = vim.system({
@@ -271,7 +269,7 @@ function M.notebook(sync)
 	end)
 end
 
--- Commands stay available in every buffer; project/kernel work runs on demand.
+-- Register notebook commands before any Python buffer or plugin has loaded.
 function M.setup_commands()
 	vim.api.nvim_create_user_command("NotebookPair", function()
 		M.notebook(false)

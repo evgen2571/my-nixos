@@ -122,7 +122,6 @@
         godot.enable = false;
         python.enable = true;
         rust.enable = true;
-        unity.enable = false;
       };
     };
 

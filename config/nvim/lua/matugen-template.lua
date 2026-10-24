@@ -1,3 +1,4 @@
+-- Noctalia renders this to lua/matugen.lua; edit the template, not the output.
 local M = {}
 
 function M.setup()
@@ -23,19 +24,19 @@ function M.setup()
 		base0F = "{{colors.error_container.default.hex}}", -- Deprecated, Embedded Tags
 	})
 
-	-- mini.indentscope — active indent line
+	-- Active indent scope
 	vim.api.nvim_set_hl(0, "MiniIndentscopeSymbol", {
 		fg = "{{colors.primary.default.hex}}",
 		nocombine = true,
 	})
 
-	-- mini.indentscope — off-shiftwidth indent line
+	-- Indent scopes that don't align with shiftwidth
 	vim.api.nvim_set_hl(0, "MiniIndentscopeSymbolOff", {
 		fg = "{{colors.outline.default.hex}}",
 		nocombine = true,
 	})
 
-	-- Harpoon tabline / buffer line
+	-- Harpoon bookmarks in the tab line
 	vim.api.nvim_set_hl(0, "HarpoonInactive", {
 		bg = "NONE",
 		fg = "{{colors.on_surface_variant.default.hex}}",
@@ -63,9 +64,7 @@ function M.setup()
 		fg = "{{colors.on_surface.default.hex}}",
 	})
 
-	-- render-markdown.nvim uses these groups for fenced code blocks.
-	-- Keep code block backgrounds neutral even when the generated palette has
-	-- a saturated diagnostic/error color.
+	-- Keep Markdown code blocks neutral; generated error colors can be too bright.
 	vim.api.nvim_set_hl(0, "RenderMarkdownCode", {
 		bg = "{{colors.surface_container.default.hex}}",
 	})
@@ -86,5 +85,4 @@ function M.setup()
 	})
 end
 
--- The configuration owns the SIGUSR1 watcher, including fallback recovery.
 return M

@@ -118,25 +118,6 @@ return {
       }
 
       local capabilities = require('blink.cmp').get_lsp_capabilities()
-      local lspconfig_util = require 'lspconfig.util'
-
-      local function unity_root(path)
-        path = vim.fs.dirname(path)
-
-        while path and path ~= '' do
-          if vim.fn.isdirectory(path .. '/Assets') == 1
-            and vim.fn.isdirectory(path .. '/Packages') == 1
-            and vim.fn.isdirectory(path .. '/ProjectSettings') == 1 then
-            return path
-          end
-
-          local parent = vim.fs.dirname(path)
-          if parent == path then
-            break
-          end
-          path = parent
-        end
-      end
 
       local servers = {
         pyright = {
@@ -160,56 +141,9 @@ return {
           cmd = { 'clangd', '--header-insertion=never', '--compile-commands-dir=.' },
         },
 
-        -- Godot exposes its LSP from the running editor over TCP on port 6005.
-        -- Do not start a second headless Godot process here: nvim-lspconfig's
-        -- gdscript config connects to the editor and starts no stdio process.
+        -- Connect to the open Godot editor on TCP 6005; don't launch another instance.
         gdscript = {
           filetypes = { 'gdscript' },
-        },
-
-        omnisharp = {
-          filetypes = { 'cs' },
-          single_file_support = false,
-
-          -- Unity generates several .csproj files. Prefer the solution, then
-          -- fall back to a project file when the solution is not present yet.
-          root_dir = function(bufnr, on_dir)
-            local path = vim.api.nvim_buf_get_name(bufnr)
-
-            local root = lspconfig_util.root_pattern('*.slnx')(path)
-              or lspconfig_util.root_pattern('*.sln')(path)
-              or lspconfig_util.root_pattern('*.csproj')(path)
-              or lspconfig_util.root_pattern('omnisharp.json', 'function.json')(path)
-              or unity_root(path)
-
-            if root then
-              on_dir(root)
-            end
-          end,
-
-          settings = {
-            FormattingOptions = {
-              -- Unity's generated projects contain editor-specific settings;
-              -- let OmniSharp use the generated project model directly.
-              EnableEditorConfigSupport = false,
-              OrganizeImports = true,
-            },
-
-            -- Loading on demand commonly leaves UnityEngine and package
-            -- assemblies unavailable to completion until another file opens.
-            MsBuild = {
-              LoadProjectsOnDemand = false,
-            },
-
-            RoslynExtensionsOptions = {
-              EnableAnalyzersSupport = true,
-              EnableImportCompletion = true,
-            },
-
-            Sdk = {
-              IncludePrereleases = true,
-            },
-          },
         },
 
         lua_ls = {

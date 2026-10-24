@@ -1,4 +1,3 @@
--- Explicit order preserves the original spec evaluation and Lazy import order.
 return {
   require 'plugins.editor',
   require 'plugins.snacks',
@@ -10,7 +9,6 @@ return {
   require 'plugins.gitsigns',
   require 'plugins.treesitter',
 
-  -- Feature specs keep their existing loading order.
   { import = 'plugins.base16' },
   { import = 'plugins.cmake-tools' },
   { import = 'plugins.codediff' },
@@ -31,5 +29,4 @@ return {
   { import = 'plugins.smear-cursor' },
   { import = 'plugins.treesitter-textobjects' },
   { import = 'plugins.undotree' },
-  { import = 'plugins.unity' },
 }

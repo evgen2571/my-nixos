@@ -3,13 +3,13 @@ return {
 	version = "^1.0.0",
 	ft = { "python" },
 
-	-- Remote commands are registered by rplugin.vim; cmd stubs would delete them.
+	-- Molten registers remote commands itself; Lazy cmd stubs would replace them.
 	build = ":UpdateRemotePlugins",
 
 	dependencies = {
 		{
 			"3rd/image.nvim",
-			build = false, -- CLI processor needs no LuaRocks/magick bindings.
+			build = false, -- Use the ImageMagick CLI instead of LuaRocks bindings.
 			lazy = true,
 
 			config = function()
@@ -35,7 +35,7 @@ return {
 				end)
 
 				if ok and require("image").is_enabled() then
-					-- Set before Molten's first command snapshots its options and creates the canvas.
+					-- Molten reads this once when its first command runs.
 					vim.g.molten_image_provider = "image.nvim"
 				else
 					vim.notify(

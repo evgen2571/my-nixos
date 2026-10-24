@@ -1,7 +1,7 @@
 return {
 	"nvim-treesitter/nvim-treesitter",
 	branch = "main",
-	lazy = false, -- The rewritten plugin does not support lazy loading.
+	lazy = false, -- Treesitter's main branch doesn't support lazy loading.
 	build = ":TSUpdate",
 
 	config = function()
@@ -35,7 +35,7 @@ return {
 			group = vim.api.nvim_create_augroup("research-treesitter", { clear = true }),
 
 			callback = function(ev)
-				-- Unsupported filetypes and parsers still downloading use syntax fallback.
+				-- Parsers may still be downloading when the first buffer opens.
 				pcall(vim.treesitter.start, ev.buf)
 			end,
 		})
