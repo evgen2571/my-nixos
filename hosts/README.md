@@ -31,7 +31,7 @@ my-host = mkHost {
 };
 ```
 
-Desktop/server profiles make the relevant modules *available*. They don't turn on everything. Pick what you want in `hosts/my-host/profile.nix`. See [modules](../modules/README.md) for examples; don't copy my shared desktop profile unless you really want all of my app choices.
+Desktop/server profiles make the relevant modules *available*. They don't turn on everything. Pick what you want in `hosts/my-host/profile.nix`. See [modules](../modules/README.md) for examples.
 
 Stage new files so flakes can see them, then check and build:
 

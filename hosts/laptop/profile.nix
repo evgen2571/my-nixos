@@ -1,14 +1,14 @@
 { config, ... }:
 
 {
-  imports = [
-    ../common/desktop.nix
-  ];
+  services.udisks2.enable = true;
 
   my = {
     desktop = {
       # Niri is the active session; keep the portal backend unambiguous.
       gnome.enable = true;
+      niri.enable = true;
+      noctaliaGreeter.enable = true;
       opentabletdriver.enable = false;
     };
 
@@ -20,10 +20,25 @@
 
     system = {
       apps = {
+        steam.enable = true;
+        obs.enable = true;
+        vesktop.enable = true;
         waydroid.enable = true;
       };
 
+      dev = {
+        docker.enable = true;
+        fish.enable = true;
+      };
+
+      files.thunar.enable = false;
+
       services = {
+        lanMouse.enable = true;
+        tailscale.enable = true;
+        blueman.enable = true;
+        syncthing.enable = true;
+
         networkNamespaces = {
           enable = true;
 
@@ -48,8 +63,14 @@
     };
   };
 
+  my.primaryUser.home.settings.wallpapers.enable = true;
+
   my.primaryUser.home.settings.my.user = {
     ai = {
+      opencode.enable = true;
+      skillshare.enable = true;
+      codegraph.enable = true;
+
       codex = {
         enable = true;
         networkNamespace = "vpn";
@@ -61,17 +82,38 @@
       };
     };
 
+    apps = {
+      anki.enable = true;
+      bruno.enable = false;
+      chrome.enable = false;
+      mpv.enable = true;
+      obsidian.enable = true;
+      osuLazer.enable = false;
+      prismLauncher.enable = true;
+      qimgv.enable = true;
+      telegram.enable = true;
+      youtubeMusic.enable = true;
+      voxtype.enable = true;
+      zenBrowser.enable = true;
+    };
+
     desktop = {
       niriConfig = {
+        enable = true;
         workspaceProfile = "laptop";
       };
 
       noctalia = {
+        enable = true;
         profile = "laptop";
       };
+
+      screenRecorder.enable = true;
     };
 
     dev = {
+      ffmpeg.enable = true;
+      workstation.enable = true;
       pycharm.enable = false;
       kitty.fontSize = "13.0";
 
@@ -81,6 +123,11 @@
         python.enable = true;
         rust.enable = true;
       };
+    };
+
+    files = {
+      dolphin.enable = true;
+      yazi.enable = true;
     };
   };
 }
