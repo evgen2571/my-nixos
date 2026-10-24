@@ -125,6 +125,18 @@ class Configuration(unittest.TestCase):
             self.assertEqual(rule["open-focused"], "false")
             self.assertNotIn("open-on-workspace", rule)
 
+    def test_zen_delete_space_dialog(self):
+        for app in ("zen-beta", "zen"):
+            with self.subTest(app=app):
+                rule = properties(app, "Delete Space?")
+                self.assertEqual(rule.get("open-floating"), "true")
+                self.assertEqual(rule.get("open-maximized-to-edges"), "false")
+                self.assertNotIn("open-on-workspace", rule)
+                # New floating windows are centered by default.
+                self.assertNotIn("default-floating-position", rule)
+        for app, title in (("other", "Delete Space?"), ("zen-beta", "Delete Space? — Zen Browser")):
+            self.assertNotIn("open-floating", properties(app, title))
+
     def test_steam_and_obs_existing_windows(self):
         for app in ("steam", "steamwebhelper"):
             for title in ("Steam Settings", "Friends List", "Chat", "Properties",

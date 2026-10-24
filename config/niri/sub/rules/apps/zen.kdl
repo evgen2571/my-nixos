@@ -2,6 +2,7 @@
 window-rule {
     match app-id=r#"^(zen-beta|zen)$"#
     exclude title=r#"^(Picture-in-Picture|Picture in picture)$"#
+    exclude title=r#"^Delete Space\?$"#
     open-maximized-to-edges true
     open-on-workspace "browser"
 
@@ -10,4 +11,11 @@ window-rule {
 		blur true
 		xray true
 	}
+}
+
+// Niri centers new floating windows when no position is specified.
+window-rule {
+    match app-id=r#"^(zen-beta|zen)$"# title=r#"^Delete Space\?$"#
+    open-floating true
+    open-maximized-to-edges false
 }
