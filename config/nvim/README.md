@@ -1,16 +1,15 @@
 # Neovim
 
-This started with [kickstart.nvim](https://github.com/nvim-lua/kickstart.nvim).
-Over time I split it into smaller files and added the tools I use for development,
-Python notebooks, and competitive programming. It's my everyday editor, so some
-paths and workflow choices are personal.
+I started with [kickstart.nvim](https://github.com/nvim-lua/kickstart.nvim) and
+split the config into smaller files as I added tools for Python notebooks and
+competitive programming.
 
 ## First run
 
-The [Nix module](../../modules/dev/neovim/home.nix) installs Neovim and its runtime
-tools. Language toolchains are separate host choices; language servers, formatters,
-and debuggers need to be available in your environment. lazy.nvim manages the Lua
-plugins, with versions pinned in [`lazy-lock.json`](lazy-lock.json).
+The [Nix module](../../modules/dev/neovim/home.nix) installs Neovim and runtime
+tools, including clipboard support, Node.js, and ImageMagick. Enable language
+toolchains separately in your host profile for their servers, formatters, and
+debuggers. lazy.nvim installs the plugins pinned in [`lazy-lock.json`](lazy-lock.json).
 
 After the first plugin installation, run `:Lazy restore`. For Python notebooks,
 also run `:Lazy load molten-nvim`, then `:UpdateRemotePlugins`, and restart Neovim.
@@ -56,18 +55,16 @@ by Noctalia. Without a generated palette, it falls back to `base16-default-dark`
 [Other installed themes](lua/plugins/colorschemes.lua) are Catppuccin, Kanagawa,
 Rose Pine, Everforest, Lackluster, OneDark, TokyoDark, and Moonfly.
 
-Shared dependencies such as Plenary, Nui, and nvim-nio support the plugins listed
-here.
+Plugins also pull in shared libraries such as Plenary, Nui, and nvim-nio.
 
 ## Keys worth knowing
 
 `Space` is both the leader and local leader. Press it and pause for which-key,
-or use `Space ?` to browse the leader menu. `Space s k` searches keybindings.
-Most feature shortcuts are discoverable there.
+or use `Space ?` to browse the leader menu. `Space s k` searches keybindings;
+`Space f` formats the buffer, including filetypes that skip format-on-save.
 
-The LSP mappings are easy to miss because many start with `g`. These are normal-mode
-sequences, typed without `Space`; they need an attached language server that
-supports the action.
+LSP shortcuts use normal-mode sequences without `Space`. They need an attached
+language server that supports the action.
 
 | Keys | Action |
 | --- | --- |
@@ -82,16 +79,21 @@ In Insert mode, `Ctrl-s` opens LSP signature help when supported. `-` opens the
 parent directory in Oil. In terminal mode, `Esc Esc` returns to Normal mode
 without closing the terminal.
 
-## Workflow details
+## Python notebooks
 
 Python tools share the project interpreter from [`languages/python.lua`](lua/languages/python.lua).
-I use `uv`; create the project environment before using the LSP, tests, or debugger.
-Molten needs `ipykernel` in that environment. `:NotebookPair` pairs an `.ipynb` with
-a `# %%` Python file; `:NotebookSync` syncs an existing pair. Save any open notebook
-or paired Python buffer before syncing.
+I use `uv`; run `uv sync` to create the environment before using the LSP, tests, or
+debugger. For notebooks, enable the Python toolchain for Jupytext and add
+`ipykernel` to the project with `uv add --dev ipykernel`.
+
+`:NotebookPair` pairs an `.ipynb` with a `# %%` Python file; `:NotebookSync` syncs
+an existing pair. Save both buffers before syncing. `Space m i` starts the project
+kernel; wait for it to report ready before running cells with `Space m c`.
 
 Image output needs Kitty graphics and ImageMagick, plus `allow-passthrough` in
 tmux. Set `NVIM_RESEARCH_IMAGES=0` to turn image support off.
+
+## Competitive programming
 
 CompetiTest uses `~/dev/cp` and `~/dev/cp/cf-template.cpp`; change those in its
 spec if your layout differs. The receiver starts when you enter that workspace.
@@ -100,6 +102,8 @@ Send problems with [Competitive Companion](https://addons.mozilla.org/en-US/fire
 kept in Neovim's cache.
 
 ## Where to change things
+
+Edit these files in the repo; rebuilds replace the installed copy.
 
 - [`init.lua`](init.lua) loads the core config and bootstraps lazy.nvim.
 - [`core/`](lua/core/) holds editor options, general keymaps, autocmds, and health checks.

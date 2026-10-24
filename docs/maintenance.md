@@ -1,27 +1,35 @@
 # Updates and recovery
 
-I build before I switch. It's easier to catch a broken expression or package build without changing the system I'm using.
-
-From the repo:
+I normally apply changes with `just switch <host>` from this checkout:
 
 ```sh
-git diff
-nix flake check --no-build --no-write-lock-file
-nix build --no-link .#nixosConfigurations.my-host.config.system.build.toplevel --no-write-lock-file
+just switch nixos-pc
 ```
 
-Replace `my-host` with your flake output. My existing PC/laptop/server builds need their matching private input. On those machines I normally use `just build-pc`, `just build-lp`, or `just build-server`, with `MY_NIXOS_PRIVATE` configured in a local `.env`. `just switch-*` activates a new generation; building alone doesn't.
+Use `nixos-lp` or `nixos-server` for the other machines. These commands act on the
+machine you're running them on.
 
-For your own host, after checking the build:
+My hosts require their private input. I set `MY_NIXOS_PRIVATE` in a local `.env`;
+a local private checkout must be clean and committed. See [secrets](secrets.md).
+
+When I want to check without activating anything:
 
 ```sh
-sudo nixos-rebuild switch --flake .#my-host --no-write-lock-file
+just check --no-build
+just build nixos-pc
 ```
 
-If you're changing boot, mounts, networking, SSH, login, secrets, or the VPN, have a working console or independent SSH path first. Keep a known-good generation and backups of anything writable. A successful build can't prove the machine will boot.
+The first evaluates the flake; the second builds the host. Neither tests boot or
+login. `just boot nixos-pc` prepares a generation for the next boot without
+switching the running system.
 
-If the previous generation really was working, `sudo nixos-rebuild switch --rollback` can restore it; otherwise pick a known-good generation from the boot menu. Rolling back NixOS **doesn't** restore browser data, databases, encryption keys, or other mutable state.
+Before changing boot, storage, networking, SSH, login, secrets, or the
+[VPN](../modules/services/network-namespaces/README.md), keep a working console or
+independent SSH path, a known-good generation, and data backups.
 
-I keep `system.stateVersion` and `home.stateVersion` stable during normal updates. To change inputs, update the lock deliberately, review the diff, and repeat the build/checks.
+To restore a working previous generation, run `sudo nixos-rebuild switch --rollback`,
+or choose a known-good generation from the boot menu. Rollback doesn't restore
+browser data, databases, or keys.
 
-For a new machine's first installation, see [hosts](../hosts/README.md). For the full NixOS process, see the [upstream manual](https://nixos.org/manual/nixos/stable/).
+I keep `system.stateVersion` and `home.stateVersion` unchanged during updates.
+When updating inputs, review the lock diff and check the result.

@@ -1,6 +1,7 @@
 # Private input
 
-This template is the empty private flake used when no personal input is selected. You can also copy it into **your own private repository**.
+This is the empty private flake used when no personal input is selected. Copy it
+into your own private repository if you want host overrides and encrypted secrets.
 
 A private flake can provide host-specific overrides and SOPS ciphertext:
 
@@ -11,16 +12,17 @@ outputs = { self }: {
 };
 ```
 
-Keep reusable modules and ordinary app settings in the public repo. Machine-specific IDs, accounts, private endpoints, **Zen spaces/Essentials/pins/routes**, and **Dolphin Places** go in the private overrides. The public Zen module still installs the browser and shared defaults; your private Home Manager options can fill in `programs.zen-browser.profiles.default.spaces` and `.pins` (with `isEssential = true` for Essentials). Dolphin sidebar pins use `my.user.files.dolphin.places`.
+I keep reusable modules and shared app settings in the public repo.
+Machine-specific IDs, accounts, private endpoints, Zen layouts, and Dolphin Places
+go in private overrides. Zen uses `programs.zen-browser.profiles.default.spaces`
+and `.pins` (`isEssential = true` for Essentials); Dolphin uses
+`my.user.files.dolphin.places`. See [Zen](../../config/zen/README.md) before
+managing an existing browser profile.
 
-For an existing Zen profile, preserve the full existing workspace/pin definitions and UUIDs during the move. Don't merge the public Zen cleanup before the matching private definitions exist and both desktop builds have been checked.
+Keep credentials in SOPS-encrypted files. Private Nix modules still enter the Nix
+store, so plaintext secrets and private keys don't belong in them.
 
-Encrypted credentials belong in SOPS files. A private Nix module is still copied into the Nix store, so don't put plaintext secrets or private keys in it.
-
-Build from the **public** checkout:
-
-```sh
-nix flake check --override-input private "git+file:///absolute/path/to/private-checkout" --no-write-lock-file
-```
-
-Check the private repo's visibility before copying any personal data. Never record the personal input URL in the public `flake.lock`.
+Check the repository's private visibility before copying personal data. Build from
+the public checkout and keep your private input URL out of the public `flake.lock`.
+See [secrets](../../docs/secrets.md) for setup and
+[maintenance](../../docs/maintenance.md) for the `just` commands.

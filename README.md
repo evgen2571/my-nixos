@@ -1,29 +1,21 @@
-# my-nixos
+# My NixOS
 
 https://github.com/user-attachments/assets/c9d99e2b-1268-4ea9-a44f-61b3f40b204a
 
 These are the NixOS configs I use on my PC, laptop, and home server. I've been moving more and more of my setup into Nix, and this is where it ended up.
 
-My desktops use **Niri + Noctalia**. I mostly work in **Kitty, tmux, and Neovim**, with Zen as my browser. The server handles storage, a few services, and a VPN gateway. There's a lot of personal stuff around the edges, so I wouldn't copy an entire host and expect it to work on another machine.
+My desktops run Niri + Noctalia, with Zen as my browser and Kitty as my terminal. I do most of my development in tmux and Neovim. The server handles storage, services, and a VPN gateway.
 
-This isn't an installer or a polished starter kit. Feel free to borrow a module, copy some dotfiles, or make your own host with the same setup.
+I keep my wallpapers in [a separate repo](https://github.com/evgen2571/wallpapers).
 
 ## Where things are
 
-- [`hosts/`](hosts/README.md) — my machines and how to add yours
-- [`modules/`](modules/README.md) — packages, services, and Home Manager options
-- [`config/`](config/) — the actual app configs: [Niri](config/niri/README.md), [Noctalia](config/noctalia/README.md), [Neovim](config/nvim/README.md), [Zen](config/zen/README.md)
-- [`docs/`](docs/README.md) — notes on secrets, updates, and recovery
+- [`hosts/`](hosts/README.md): my machines and how to add yours
+- [`modules/`](modules/README.md): optional features and their settings
+- [`config/`](config/README.md): app configs and my terminal workflow
 
-## Trying it on your machine
+For day-to-day changes, see [maintenance and recovery](docs/maintenance.md).
+Private inputs and encrypted credentials are covered in [secrets](docs/secrets.md).
 
-Follow [the host guide](hosts/README.md) to create your machine's configuration,
-pick features, and check the build before installing. It includes a small Niri
-desktop example. You'll need Nix with flakes enabled.
-
-You can start without a private repository or encrypted secrets. Leave services
-that need credentials disabled until you've set up your own.
-
-This repo has no test suite. Evaluation catches configuration errors; a host build checks its packages and deployment guards. See [updates and recovery](docs/maintenance.md) for build commands and manual checks.
-
-For the actual installation and partitioning, use the [NixOS manual](https://nixos.org/manual/nixos/stable/#sec-installation).
+To use this setup on your machine, start with [the host guide](hosts/README.md).
+You can choose your own features and start without a private repository.

@@ -1,17 +1,13 @@
 # Hosts
 
-Start with [the host template](../templates/host/README.md) for your machine.
-The PC, laptop, and server directories contain my hardware and private settings.
-The flake currently targets `x86_64-linux`.
+I use separate configurations for my PC, laptop, and server. To add your own,
+start with [the host template](../templates/host/README.md). The flake targets
+`x86_64-linux`.
 
-You'll need Git and Nix with flakes enabled. These steps use `my-host` as the
-machine name; replace it with yours throughout.
+You'll need Git, just, and Nix with flakes enabled. Replace `my-host` below with
+your machine's name.
 
-## 1. Prepare your hardware configuration
-
-For a fresh installation, boot the NixOS installer, then prepare and mount your
-disks at `/mnt` using the [NixOS installation manual](https://nixos.org/manual/nixos/stable/#sec-installation).
-Back up anything you need before changing partitions.
+## 1. Copy the template
 
 ```sh
 git clone https://github.com/evgen2571/my-nixos.git
@@ -19,7 +15,11 @@ cd my-nixos
 cp -r templates/host hosts/my-host
 ```
 
-Generate the hardware configuration from the mounted disks:
+## 2. Add your hardware configuration
+
+For a fresh installation, follow the [NixOS installation manual](https://nixos.org/manual/nixos/stable/#sec-installation)
+to boot the installer and prepare and mount your disks at `/mnt`. Back up your
+data before changing partitions, then generate the hardware configuration:
 
 ```sh
 sudo nixos-generate-config --root /mnt
@@ -27,25 +27,23 @@ sudo cp /mnt/etc/nixos/hardware-configuration.nix hosts/my-host/
 sudo chown "$(id -u):$(id -g)" hosts/my-host/hardware-configuration.nix
 ```
 
-If you're adapting an existing NixOS installation, copy its hardware configuration
-from `/etc/nixos/hardware-configuration.nix` instead. Keep its working boot, mount,
-access, and state-version settings while you get the new configuration running.
+On an existing NixOS installation, copy `/etc/nixos/hardware-configuration.nix`
+instead. Keep its working boot, mount, login, and state-version settings.
 
-## 2. Configure the machine and login
+## 3. Configure the machine and user
 
 In `hosts/my-host/configuration.nix`, set your hostname, username, bootloader,
-networking, timezone, and state versions. Review the
-[before-installation checklist](../templates/host/README.md#before-you-install),
-including SSH, sudo, and graphical login. The template locks the account password,
-so you need to choose how you'll authenticate before installing.
+networking, timezone, and state versions. The template locks the account password
+and disables mutable users: an SSH key alone won't let you use password-based
+sudo or graphical login. Set up persistent authentication and an explicit SSH
+firewall rule using the [installation checklist](../templates/host/README.md#before-you-install).
 
 The commented [desktop](../modules/core/desktop-baseline.nixos.nix) and
-[server](../modules/core/server-baseline.nixos.nix) baseline imports provide boot and other defaults.
-Read the one you want before uncommenting it: both assume systemd-boot, and the
-desktop baseline includes my keyboard layout and package choices. Choose at most
-one, or configure those settings yourself.
+[server](../modules/core/server-baseline.nixos.nix) baselines both assume
+systemd-boot. Read yours before enabling it; the desktop baseline also includes
+my keyboard layout and packages. Choose at most one, or set these options yourself.
 
-## 3. Add your flake output
+## 4. Register the host
 
 In [`flake/hosts.nix`](../flake/hosts.nix), add this entry inside
 `flake.nixosConfigurations`, alongside the existing hosts:
@@ -60,16 +58,13 @@ my-host = mkHost {
 ```
 
 `moduleProfiles.all` makes every optional module available without enabling it.
-`secretSource = "none"` lets you start without credentials or a private repository.
-Keep services that need credentials disabled; add your own later using
-[the secrets guide](../docs/secrets.md). My existing hosts still need their private
-input for production builds.
+`secretSource = "none"` lets you start without a private repository. Leave services
+that need credentials off until you've set up [your own secrets](../docs/secrets.md).
 
-## 4. Pick your features
+## 5. Pick your features
 
-In `hosts/my-host/profile.nix`, uncomment the features you want and read the
-settings beside them. The template lists every optional feature; [modules](../modules/README.md)
-explains the system and Home Manager option paths.
+Uncomment the features you want in `hosts/my-host/profile.nix`.
+[Modules](../modules/README.md) explains the option paths and individual switches.
 
 For a small Niri desktop, enable these settings in the existing blocks:
 
@@ -90,39 +85,35 @@ my.primaryUser.home.settings.my.user = {
 };
 ```
 
-This selects the session, login screen, user config, shell, and terminal. Edit the
-existing entries rather than pasting duplicate definitions. Noctalia offers `pc`
-and `laptop` layouts; choose the closer one and review its display settings.
-The shared Niri startup commands and shortcuts also reference optional apps.
-Adjust them for what you've installed using the [Niri guide](../config/niri/README.md).
+This enables Niri, the greeter, Noctalia, and Kitty.
+Edit the existing entries to avoid duplicate definitions. Noctalia has `pc` and
+`laptop` layouts; choose one and review its display settings. Adjust the shared
+[Niri startup commands and shortcuts](../config/niri/README.md) for the apps
+you've enabled.
 
-You can add a browser, editor, and other tools once the desktop works. The
-workstation bundle enables several tools at once; individual `false` settings
-override its defaults.
+The workstation bundle enables several development tools together; individual
+`false` settings override its defaults.
 
-## 5. Check and build
+## 6. Check and build
 
 Stage the new files so Git-backed flakes can see them, then evaluate and build:
 
 ```sh
 git add hosts/my-host flake/hosts.nix
-nix flake check --no-build --no-write-lock-file
-nix build --no-link .#nixosConfigurations.my-host.config.system.build.toplevel --no-write-lock-file
+just check --no-build
+just build my-host
 ```
 
-Evaluation catches configuration errors. The build checks packages and deployment
-guards without activating the system. Neither proves that boot or login works.
+These evaluate the flake and build your host without activating it. Boot and login
+still need checking on the machine.
 
-## 6. Install and check the real machine
+## 7. Install or apply
 
-Review your mounts, bootloader, and login checklist again. On the installer,
-install your host with `sudo nixos-install --flake .#my-host`, following the
-[NixOS installation manual](https://nixos.org/manual/nixos/stable/#sec-installation)
-for installation and reboot. If you're already running NixOS, follow
-[updates and recovery](../docs/maintenance.md) to activate the configuration.
+Review your mounts, bootloader, and login settings. From the installer, run
+`sudo nixos-install --flake .#my-host` and follow the manual for rebooting.
+On an existing NixOS system, use `just switch my-host`.
 
 After booting, check local login, sudo, networking, and SSH from another machine.
 For the desktop example, also check the greeter, Niri session, terminal, and audio.
-Keep the installer available, or a known-good generation on an existing system.
-The [recovery guide](../docs/maintenance.md) explains rollback and what it cannot
-restore.
+Keep the installer or a known-good generation available. See
+[maintenance and recovery](../docs/maintenance.md) for rollback.

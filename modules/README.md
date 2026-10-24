@@ -1,26 +1,26 @@
 # Modules
 
-Most things in this repo are optional NixOS or Home Manager modules. Each host picks what it needs in `hosts/<host>/profile.nix`.
+Hosts choose which features to enable in `hosts/<host>/profile.nix`. Modules define
+those features; application configs live in [`config/`](../config/README.md).
 
-The naming is pretty literal: `*.nixos.nix` (or `nixos.nix`) is a system module; `*.home.nix` (or `home.nix`) is for Home Manager. The module catalog discovers those files in the supported directories. Just adding a file doesn't enable it.
+Modules are discovered automatically: `*.nixos.nix` and `nixos.nix` are system
+modules; `*.home.nix` and `home.nix` are Home Manager modules for user settings.
+Adding one under the existing feature directories doesn't need a manual import
+and doesn't enable it.
 
-The [host template profile](../templates/host/profile.nix) lists every optional feature, with commented switches to enable it. Keep that list current when adding or removing features. New hosts can use `moduleProfiles.all` to make both desktop and server modules available; the `desktop` and `server` catalog profiles keep their existing narrower selections.
+The [host template profile](../templates/host/profile.nix) lists the optional
+switches. Apps can be enabled or disabled individually, including when a bundle
+such as `workstation` enables them by default.
 
-For example, to install my Git setup for the primary user:
+For example, to enable my Git setup:
 
 ```nix
 my.primaryUser.home.settings.my.user.dev.git.enable = true;
 ```
 
-System features generally live under `my.system.*` or `my.desktop.*`. User features are under `my.primaryUser.home.settings.my.user.*`. The nearest existing module is usually the best example if you're adding one.
+System options usually live under `my.system.*` or `my.desktop.*`; user options
+live under `my.primaryUser.home.settings.my.user.*`.
 
-A quick map:
-
-- `hosts/` chooses what each machine uses
-- `modules/` defines what those choices do
-- `config/` holds Niri, Neovim, and other app-native files
-- `lib/module-catalog.nix` and `lib/module-discovery.nix` handle module availability; ordinary additions don't need manual imports
-
-Core account wiring, secrets, and deployment guards are assembled separately. Don't move them into optional discovery or bypass the production private-input checks just to make an evaluation pass.
-
-For daily use, you probably don't need to touch the catalog at all.
+New hosts can use `moduleProfiles.all` to make every optional module available.
+My desktop and server profiles use smaller selections. If you're adding a feature,
+follow a nearby module and update the host template's switches.

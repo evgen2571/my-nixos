@@ -19,12 +19,14 @@ Most of my movement is on HJKL:
 
 The full list is in [`sub/binds.kdl`](sub/binds.kdl). I change keys there, layout in [`sub/layout.kdl`](sub/layout.kdl), and window behavior in [`sub/rules/`](sub/rules/).
 
-PC and laptop use different workspace layouts. Don't reuse my monitor names blindly. Noctalia also generates some Niri files at runtime, so not everything in the live config belongs in Git.
+I select the workspace layout with `my.user.desktop.niriConfig.workspaceProfile`:
+`pc`, `laptop`, or `default`. The PC splits workspaces across `DP-1` and `HDMI-A-1`;
+the laptop uses `eDP-1`. Adjust the names and modes in
+[`sub/outputs.kdl`](sub/outputs.kdl) and the workspace files for your monitors.
 
-Games matching `steam_app_<number>`, `gamescope`, `cs2`, `Minecraft`, `minecraft` or `osu!` open fullscreen on `gaming`: third on the PC's HDMI output, fifth on the laptop. Steam and Prism launcher windows stay maximized. Games with other app IDs need an explicit match; launching through Steam or Prism alone does not identify them to Niri.
+Games matched by the window rules open fullscreen on `gaming`, the third workspace
+on the PC's HDMI output and the fifth on the laptop. Add a rule for games with
+other app IDs; launching through Steam or Prism doesn't match them automatically.
 
-Zen login popups follow the normal browser rules. Their login title can arrive after opening, so title-based floating opening rules are unreliable.
-
-Orca's maximized `code` rule covers only the observed `Orca` title. Krita keeps its native tiling/dialog behavior: its observed main and auxiliary windows both report `krita` / `Krita`. Niri's `is-floating` matcher applies after opening, so it cannot safely select which one to maximize initially.
-
-A short real desktop clip will go here once I have one worth showing.
+Noctalia generates `noctalia*.kdl` files in the live config directory. Keep those
+out of Git; see [Noctalia](../noctalia/README.md) for theme settings.

@@ -2,7 +2,7 @@
 
 Follow [the host guide](../../hosts/README.md) to copy this template, add your
 machine to the flake, and build it. The guide also has a
-[small Niri desktop example](../../hosts/README.md#4-pick-your-features).
+[small Niri desktop example](../../hosts/README.md#5-pick-your-features).
 
 - `configuration.nix` holds your account, boot, and networking settings.
 - `hardware-configuration.nix` comes from your machine, using `nixos-generate-config`.
