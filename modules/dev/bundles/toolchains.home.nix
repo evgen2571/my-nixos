@@ -27,7 +27,6 @@ in
       luarocks
       direnv
       nix-direnv
-      nh
       nix-tree
       bat
       eza
