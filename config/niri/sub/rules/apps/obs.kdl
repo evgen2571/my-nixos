@@ -1,9 +1,27 @@
-// Settings is a separate observed window; preserve projector fullscreen requests.
+// Keep auxiliary windows off the main workspace; preserve projector fullscreen requests.
 window-rule {
     match app-id=r#"^(com\.obsproject\.Studio|obs)$"#
-    exclude title=r#"^Settings$"#
+    exclude title=r#"^(Settings|Add Scene|Plugin Manager)$"#
     open-maximized-to-edges true
     open-on-workspace "gaming"
+}
+
+window-rule {
+    match app-id=r#"^(com\.obsproject\.Studio|obs)$"# title=r#"^Add Scene$"#
+    open-floating true
+    open-maximized-to-edges false
+    open-focused true
+    default-column-width { proportion 0.35; }
+    default-window-height { proportion 0.30; }
+}
+
+window-rule {
+    match app-id=r#"^(com\.obsproject\.Studio|obs)$"# title=r#"^Plugin Manager$"#
+    open-floating true
+    open-maximized-to-edges false
+    open-focused true
+    default-column-width { proportion 0.65; }
+    default-window-height { proportion 0.70; }
 }
 
 window-rule {

@@ -28,6 +28,16 @@ window-rule {
     default-window-height { proportion 0.55; }
 }
 
+// Size only Ark's observed main window; leave extraction dialogs to the client.
+window-rule {
+    match app-id=r#"^org\.kde\.ark$"# title=r#"^Ark$"#
+    open-floating true
+    open-maximized-to-edges false
+    open-focused true
+    default-column-width { proportion 0.70; }
+    default-window-height { proportion 0.70; }
+}
+
 // New image-viewer windows float at the monitor's default centered position.
 window-rule {
     match app-id=r#"^qimgv$"#

@@ -65,9 +65,16 @@ window-rule {
 
 // GUI editors use the same development layout.
 window-rule {
-    match app-id=r#"^(code|Code|orca|codium|VSCodium|dev\.zed\.Zed|zed)$"#
+    match app-id=r#"^(code|Code|codium|VSCodium|dev\.zed\.Zed|zed)$"#
     open-maximized false
     open-maximized-to-edges false
+    open-on-workspace "code"
+}
+
+// Only the observed main window; secondary-window metadata is not yet known.
+window-rule {
+    match app-id=r#"^orca$"# title=r#"^Orca$"#
+    open-maximized-to-edges true
     open-on-workspace "code"
 }
 
@@ -160,6 +167,7 @@ window-rule {
 // Gamescope and actual game windows should take the whole output when they appear.
 window-rule {
     match app-id=r#"^(gamescope|cs2|Minecraft|minecraft|osu!)$"#
+    match app-id=r#"^steam_app_[0-9]+$"#
     open-fullscreen true
     open-on-workspace "gaming"
 }

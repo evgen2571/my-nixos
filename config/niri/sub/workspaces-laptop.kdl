@@ -20,10 +20,10 @@ workspace "chats" {
 	open-on-output "eDP-1"
 }
 
-workspace "anki" {
+workspace "gaming" {
 	open-on-output "eDP-1"
 }
 
-workspace "gaming" {
+workspace "anki" {
 	open-on-output "eDP-1"
 }

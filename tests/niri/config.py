@@ -38,12 +38,142 @@ def properties(app_id, title):
             matches(line, app_id, title) for line in excludes
         ):
             result.update(re.findall(r'^\s*(open-[\w-]+) (.+)$', body, re.MULTILINE))
+            result.update(re.findall(r'^\s*(default-floating-position) (.+)$', body, re.MULTILINE))
             result.update(re.findall(r'^\s*(default-(?:column-width|window-height)) \{ (.*?) \}',
                                      body, re.MULTILINE))
     return result
 
 
 class Configuration(unittest.TestCase):
+    def test_games_open_fullscreen_on_gaming_workspace(self):
+        for app in ("steam_app_730", "steam_app_570", "gamescope", "cs2",
+                    "Minecraft", "minecraft", "osu!"):
+            with self.subTest(app=app):
+                rule = properties(app, "Game")
+                self.assertEqual(rule.get("open-fullscreen"), "true")
+                self.assertEqual(rule.get("open-on-workspace"), '"gaming"')
+        for app in ("steam", "steamwebhelper", "org.prismlauncher.PrismLauncher",
+                    "PrismLauncher", "lutris"):
+            with self.subTest(app=app):
+                rule = properties(app, "Launcher")
+                self.assertEqual(rule["open-maximized-to-edges"], "true")
+                self.assertEqual(rule["open-on-workspace"], '"gaming"')
+                self.assertNotIn("open-fullscreen", rule)
+        for app in ("steam_app_", "steam_app_730extra", "other_steam_app_730", "other"):
+            with self.subTest(app=app):
+                rule = properties(app, "Minecraft")
+                self.assertNotIn("open-fullscreen", rule)
+                self.assertNotIn("open-on-workspace", rule)
+
+    def test_gaming_workspace_position(self):
+        for name, output, index in [("workspaces.kdl", "HDMI-A-1", 3),
+                                    ("workspaces-pc.kdl", "HDMI-A-1", 3),
+                                    ("workspaces-laptop.kdl", "eDP-1", 5)]:
+            with self.subTest(profile=name):
+                source = (CONFIG / "sub" / name).read_text()
+                workspaces = re.findall(r'workspace "([^"]+)" \{\n(.*?)^\}',
+                                        source, re.MULTILINE | re.DOTALL)
+                on_output = [workspace for workspace, body in workspaces
+                             if f'open-on-output "{output}"' in body]
+                self.assertEqual(on_output.index("gaming") + 1, index)
+
+    def test_observed_floating_windows(self):
+        for app, title, width, height in [
+            ("steam", "Sign in to Steam", "0.40", "0.55"),
+            ("com.obsproject.Studio", "Add Scene", "0.35", "0.30"),
+            ("com.obsproject.Studio", "Plugin Manager", "0.65", "0.70"),
+            ("org.kde.ark", "Ark", "0.70", "0.70"),
+        ]:
+            with self.subTest(app=app, title=title):
+                rule = properties(app, title)
+                self.assertEqual(rule.get("open-floating"), "true")
+                self.assertEqual(rule.get("open-focused"), "true")
+                self.assertEqual(rule.get("open-maximized-to-edges"), "false")
+                self.assertEqual(rule["default-column-width"], f"proportion {width};")
+                self.assertEqual(rule["default-window-height"], f"proportion {height};")
+                self.assertNotIn("open-on-workspace", rule)
+                self.assertNotIn("open-on-output", rule)
+                # Niri centers new floating windows when no position is specified.
+                self.assertNotIn("default-floating-position", rule)
+                self.assertNotIn("open-floating", properties("other", title))
+
+    def test_zen_windows_and_picture_in_picture(self):
+        google = "Sign in - Google Accounts — Zen Browser Private Browsing"
+        for app, title in [
+            ("zen-beta", google),
+            ("zen-beta", "Sign in to Apple\u00a0Account — Zen Browser Private Browsing"),
+            ("zen-beta", "Sign in to Apple Account — Zen Browser Private Browsing"),
+            ("zen-beta", "Example page — Zen Browser"),
+            ("zen-beta", "Example page — Zen Browser Private Browsing"),
+            ("zen-beta", "Zen Browser Private Browsing"),
+            ("zen-beta", "Sign in - Google Accounts — Zen Browser"),
+            ("zen-beta", "Sign in to Apple Account — Zen Browser"),
+            ("zen-beta", google + " extra"),
+            ("zen-beta", "Example - " + google),
+            ("zen", google),
+            ("firefox", google),
+            ("chromium", google),
+        ]:
+            with self.subTest(app=app, title=title):
+                rule = properties(app, title)
+                self.assertEqual(rule["open-on-workspace"], '"browser"')
+                self.assertEqual(rule["open-maximized-to-edges"], "true")
+                self.assertNotIn("open-floating", rule)
+        for title in ("Picture-in-Picture", "Picture in picture"):
+            rule = properties("zen-beta", title)
+            self.assertEqual(rule["open-floating"], "true")
+            self.assertEqual(rule["open-focused"], "false")
+            self.assertNotIn("open-on-workspace", rule)
+
+    def test_steam_and_obs_existing_windows(self):
+        for app in ("steam", "steamwebhelper"):
+            for title in ("Steam Settings", "Friends List", "Chat", "Properties",
+                          "Downloads", "Special Offers"):
+                with self.subTest(app=app, title=title):
+                    rule = properties(app, title)
+                    self.assertEqual(rule["open-floating"], "true")
+                    self.assertEqual(rule["default-column-width"], "proportion 0.58;")
+                    self.assertEqual(rule["default-window-height"], "proportion 0.65;")
+                    self.assertNotIn("open-on-workspace", rule)
+        for app in ("com.obsproject.Studio", "obs"):
+            rule = properties(app, "Settings")
+            self.assertEqual(rule["open-floating"], "true")
+            self.assertEqual(rule["default-column-width"], "proportion 0.60;")
+            self.assertEqual(rule["default-window-height"], "proportion 0.75;")
+            self.assertNotIn("open-on-workspace", rule)
+        for app, title in [("steam", "Sign in to Steam extra"),
+                           ("steamwebhelper", "Sign in to Steam"),
+                           ("com.obsproject.Studio", "Add Scene extra"),
+                           ("com.obsproject.Studio", "Plugin Manager extra"),
+                           ("com.obsproject.Studio", "Projector - Preview")]:
+            with self.subTest(app=app, title=title):
+                rule = properties(app, title)
+                self.assertEqual(rule["open-on-workspace"], '"gaming"')
+                self.assertEqual(rule["open-maximized-to-edges"], "true")
+                self.assertNotIn("open-floating", rule)
+                self.assertNotIn("open-fullscreen", rule)
+
+    def test_ark_and_krita_native_dialogs(self):
+        for app, title in [("org.kde.ark", "Extract — Ark"),
+                           ("org.kde.ark", "Ark extra"), ("krita", "Krita")]:
+            with self.subTest(app=app, title=title):
+                rule = properties(app, title)
+                for option in ("open-floating", "open-maximized", "open-maximized-to-edges",
+                               "open-on-workspace", "default-column-width", "default-window-height"):
+                    self.assertNotIn(option, rule)
+
+    def test_orca_observed_main_window_only(self):
+        rule = properties("orca", "Orca")
+        self.assertEqual(rule["open-on-workspace"], '"code"')
+        self.assertEqual(rule["open-maximized-to-edges"], "true")
+        self.assertNotIn("open-floating", rule)
+        for app, title in [("orca", "Settings"), ("orca", "Example project"),
+                           ("orca", "Orca extra"), ("other", "Orca")]:
+            with self.subTest(app=app, title=title):
+                rule = properties(app, title)
+                self.assertNotIn("open-on-workspace", rule)
+                self.assertNotIn("open-maximized-to-edges", rule)
+
     def test_wayscriber_daemon_startup(self):
         startup = (CONFIG / "sub/startup.kdl").read_text().splitlines()
         self.assertEqual(startup.count('spawn-at-startup "wayscriber" "--daemon"'), 1)
@@ -201,7 +331,7 @@ class Configuration(unittest.TestCase):
             self.assertIn('default-column-display "normal"', code)
             self.assertIn('default-column-width { proportion 0.5; }', code)
             self.assertEqual(source.count('default-column-display'), 1)
-        for app, title in [("kitty", "editor"), ("orca", "Example project"),
+        for app, title in [("kitty", "editor"), ("code", "Example project"),
                            ("dev.zed.Zed", "Example project")]:
             rule = properties(app, title)
             self.assertEqual(rule["open-on-workspace"], '"code"')

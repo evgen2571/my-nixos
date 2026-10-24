@@ -3,8 +3,18 @@
 window-rule {
     match app-id=r#"^(steam|steamwebhelper)$"#
     exclude title=r#"^(Steam Settings|Friends List|Chat|Properties|Downloads|Special Offers)$"#
+    exclude app-id=r#"^steam$"# title=r#"^Sign in to Steam$"#
     open-maximized-to-edges true
     open-on-workspace "gaming"
+}
+
+window-rule {
+    match app-id=r#"^steam$"# title=r#"^Sign in to Steam$"#
+    open-maximized-to-edges false
+    open-floating true
+    open-focused true
+    default-column-width { proportion 0.40; }
+    default-window-height { proportion 0.55; }
 }
 
 window-rule {
