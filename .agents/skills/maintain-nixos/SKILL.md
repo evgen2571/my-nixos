@@ -1,14 +1,27 @@
 ---
 name: maintain-nixos
-description: Change or troubleshoot NixOS hosts, modules, application configs, docs, or checks in this repository.
+description: Troubleshoot NixOS build, configuration, activation, or service failures; change deployment, VPN/network namespaces, boot, storage, networking, authentication, or secrets. Excludes routine app edits, documentation wording, and simple module additions.
 ---
 
 # Maintain my-nixos
 
-Read the affected host profile and owning source before editing. Start with [hosts](../../../hosts/README.md), [modules](../../../modules/README.md), or the closest `config/*/README.md`. For VPN changes, read [its note](../../../modules/services/network-namespaces/README.md) and the implementation, not just the summary. For credentials or activation, read [secrets](../../../docs/secrets.md) and [maintenance](../../../docs/maintenance.md).
+Inspect the affected host profile, owning sources, and direct callers. For a
+failure, read the error and relevant logs before changing the configuration.
 
-Keep host selections in `hosts/`, reusable modules in `modules/`, and app-specific files in `config/`. Follow typed NixOS/Home Manager discovery. Preserve generated/writable state, private-input guards, fail-closed VPN routing, and existing feature behavior.
+Read only the documentation needed for the task:
 
-Use flake evaluation and affected-host builds without live activation. This repository keeps no test suite or generated verification artifacts; preserve NixOS assertions, deployment guards, and upstream package checks. Production builds need the original private input, and evaluation cannot replace runtime verification. Review changed links and document only what a reader needs; leave implementation evidence in Git/issues. Report the checks that actually ran and what wasn't verified.
+- VPN/network namespaces: [VPN notes](../../../modules/services/network-namespaces/README.md)
+  and the implementation. Preserve fail-closed routing, DNS isolation, scoped
+  privileges, and recovery.
+- Secrets/private inputs: [secrets](../../../docs/secrets.md). Before copying
+  personal material, verify the destination repository is private; commit and
+  review private-repository changes separately.
+- Deployment, activation, or recovery: [maintenance](../../../docs/maintenance.md)
+  and the affected deployment code.
 
-Never switch or restart a running host, rewrite history, change remote visibility, or handle secrets without explicit approval.
+For boot, storage, networking, or authentication changes, establish a recovery
+path and identify writable data that needs backing up before live work.
+
+Use the existing `just` recipes for evaluation and affected-host builds. Production
+hosts require their matching private input. Check the failure that motivated the
+change and retain NixOS assertions and upstream package checks.
