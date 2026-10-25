@@ -51,3 +51,6 @@ dry-server *flags:
 
 switch-server *flags:
     bash lib/nixos-command.sh switch nixos-server "$@"
+
+update:
+    @token="$(gh auth token)" && NIX_CONFIG="access-tokens = github.com=$token" nix flake update
