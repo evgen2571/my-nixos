@@ -10,7 +10,7 @@
 @boot@
 
   networking.hostName = @hostname@;
-  networking.networkmanager.enable = true;
+@networking@
   time.timeZone = @timezone@;
   i18n.defaultLocale = @locale@;
   system.stateVersion = @system_state@;
@@ -20,13 +20,14 @@
     enable = true;
     name = lib.mkDefault @username@;
     description = lib.mkDefault @full_name@;
-    extraGroups = [ "wheel" "networkmanager" ];
+    extraGroups = @groups@;
     authorizedKeys = @authorized_keys@;
     home.settings.home.stateVersion = @home_state@;
 @git_identity@
   };
 
-  users.mutableUsers = false;
+@auth_comment@
+  users.mutableUsers = @mutable_users@;
   users.users.${config.my.primaryUser.name}.@password@;
   security.sudo.wheelNeedsPassword = @sudo_password@;
 

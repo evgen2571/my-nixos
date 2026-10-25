@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Exercise setup only in disposable copies; Nix integration is opt-in."""
+
 import importlib.util
 import json
 import os
@@ -18,9 +19,9 @@ class SetupTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory(prefix="my-nixos-setup-test-")
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name) / "repo"
-        tracked = subprocess.check_output(["git", "ls-files", "-z"], cwd=ROOT, text=True).split(
-            "\0"
-        )
+        tracked = subprocess.check_output(
+            ["git", "ls-files", "-z"], cwd=ROOT, text=True
+        ).split("\0")
         for name in set(tracked) | {
             "setup.sh",
             "lib/setup.py",
@@ -50,11 +51,15 @@ class SetupTests(unittest.TestCase):
             "fixture",
         )
         key = Path(self.temp.name) / "key"
-        subprocess.run(["ssh-keygen", "-qt", "ed25519", "-N", "", "-f", str(key)], check=True)
+        subprocess.run(
+            ["ssh-keygen", "-qt", "ed25519", "-N", "", "-f", str(key)], check=True
+        )
         self.key = key.with_suffix(".pub")
 
     def git(self, *args):
-        return subprocess.check_output(["git", "-C", str(self.root), *args], text=True).strip()
+        return subprocess.check_output(
+            ["git", "-C", str(self.root), *args], text=True
+        ).strip()
 
     def host_answers(self, **overrides):
         fields = {
@@ -62,15 +67,9 @@ class SetupTests(unittest.TestCase):
             "kind": "desktop",
             "username": "alice",
             "full_name": 'Alice @hostname@ ${literal} "Example"',
-            "git_name": "",
-            "git_email": "",
             "timezone": "UTC",
             "locale": "en_US.UTF-8",
-            "installation": "new",
-            "system_state": "26.05",
-            "home_state": "26.05",
-            "firmware": "uefi",
-            "boot_path": "/boot",
+            "git_identity": "no",
         }
         fields.update(overrides)
         return list(fields.values())
@@ -80,46 +79,52 @@ class SetupTests(unittest.TestCase):
         *,
         mode="none",
         private=None,
-        auth="ssh",
+        auth="password",
         password_file=None,
-        public_key=None,
+        public_key="",
         ciphertext=None,
         policy=None,
         accept_ssh="yes",
         confirm="yes",
-        cleanup="",
-        cleanup_confirm="no",
-        fresh="",
-        fresh_confirm="no",
+        installation="new",
+        system_state="26.05",
+        home_state="26.05",
+        firmware="uefi",
+        boot_path="/boot",
+        same_machine="yes",
         **host,
     ):
-        answers = [mode]
+        answers = self.host_answers(**host)
+        answers.append("no" if mode == "none" else "yes")
+        if mode != "none":
+            answers.append(mode)
         if mode == "external":
             answers.append(str(private))
-
-        answers.extend(self.host_answers(**host))
+        elif mode == "local":
+            answers.extend([str(policy), str(ciphertext)])
+        answers.append(installation)
+        if installation == "existing":
+            answers.extend([system_state, "yes", home_state])
         answers.append(auth)
         if auth == "password-file":
             answers.append(str(password_file))
-        answers.append(str(self.key) if public_key is None else public_key)
-        if auth == "ssh":
+        if auth in ("password", "ssh"):
             answers.append(accept_ssh)
-
-        if mode == "local":
-            answers.extend([str(ciphertext), str(policy)])
-
-        answers.extend([confirm, cleanup])
-        if cleanup == "yes":
-            answers.append(cleanup_confirm)
-        answers.append(fresh)
-        if fresh == "yes":
-            answers.append(fresh_confirm)
-
+        if auth != "ssh":
+            answers.append("yes" if public_key else "no")
+        if auth == "ssh" or public_key:
+            answers.append(str(self.key) if public_key is None else public_key)
+        answers.extend([same_machine, firmware])
+        if firmware != "manual":
+            answers.append(boot_path)
+        if installation == "existing":
+            answers.append("yes")
+        answers.extend(["generate", confirm])
         return answers
 
-    def setup(self, answers):
+    def setup(self, answers, *args):
         return subprocess.run(
-            [sys.executable, "lib/setup.py"],
+            [sys.executable, "lib/setup.py", *args],
             cwd=self.root,
             input="\n".join(answers) + "\n",
             text=True,
@@ -127,6 +132,47 @@ class SetupTests(unittest.TestCase):
             stderr=subprocess.STDOUT,
             env=self.env,
         )
+
+    def prepare_finish(self):
+        result = self.setup(self.answers())
+        self.assertEqual(result.returncode, 0, result.stdout)
+        self.git("add", "hosts/my-box", "flake/hosts.nix")
+        self.git(
+            "-c",
+            "user.name=Test",
+            "-c",
+            "user.email=test@example.invalid",
+            "commit",
+            "-qm",
+            "host",
+        )
+        # Only the destructive-flow tests substitute validation; integration builds are real.
+        tools = Path(self.temp.name) / "bin"
+        tools.mkdir(exist_ok=True)
+        just = tools / "just"
+        just.write_text(
+            '#!/bin/sh\nprintf "%s\\n" "$*" >> "$SETUP_TEST_CHECK_LOG"\nexit "${SETUP_TEST_CHECK_STATUS:-0}"\n'
+        )
+        just.chmod(0o755)
+        self.env["SETUP_TEST_CHECK_LOG"] = str(Path(self.temp.name) / "checks")
+        self.env["PATH"] = f"{tools}:{os.environ['PATH']}"
+
+    def finish(
+        self,
+        *,
+        cleanup="no",
+        cleanup_confirm="no",
+        fresh="no",
+        fresh_confirm="no",
+        verified="yes",
+    ):
+        answers = [verified, cleanup]
+        if cleanup == "yes":
+            answers.append(cleanup_confirm)
+        answers.append(fresh)
+        if fresh == "yes":
+            answers.append(fresh_confirm)
+        return self.setup(answers, "--finish", "my-box")
 
     def test_root_launcher_provides_python_through_nix(self):
         original_root = self.root
@@ -160,7 +206,9 @@ class SetupTests(unittest.TestCase):
         )
 
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertTrue(log.exists(), "The root launcher should obtain Python through Nix")
+        self.assertTrue(
+            log.exists(), "The root launcher should obtain Python through Nix"
+        )
         arguments = json.loads(log.read_text())
         self.assertIn("shell", arguments)
         self.assertIn("--impure", arguments)
@@ -168,7 +216,9 @@ class SetupTests(unittest.TestCase):
         self.assertIn("./flake.lock", expression)
         self.assertIn("builtins.fetchTree", expression)
         self.assertIn("pyyaml", expression)
-        self.assertEqual(arguments[arguments.index("--command") + 1 :], ["python3", "lib/setup.py"])
+        self.assertEqual(
+            arguments[arguments.index("--command") + 1 :], ["python3", "lib/setup.py"]
+        )
         self.assertTrue((self.root / "hosts/my-box/configuration.nix").is_file())
 
     def encrypted_source(self):
@@ -214,8 +264,12 @@ sops:
         self.assertEqual((self.root / ".sops.yaml").read_bytes(), policy.read_bytes())
         config = (self.root / "hosts/my-box/configuration.nix").read_text()
         self.assertIn("neededForUsers = true", config)
-        self.assertIn("hashedPasswordFile = config.sops.secrets.user-password.path", config)
-        self.assertIn('secretSource = "local"', (self.root / "flake/hosts.nix").read_text())
+        self.assertIn(
+            "hashedPasswordFile = config.sops.secrets.user-password.path", config
+        )
+        self.assertIn(
+            'secretSource = "local"', (self.root / "flake/hosts.nix").read_text()
+        )
         self.assertIn(".sops.yaml secrets/hosts/my-box.yaml", result.stdout)
         subprocess.run(
             ["nix-instantiate", "--parse", "hosts/my-box/configuration.nix"],
@@ -237,7 +291,11 @@ sops:
         )
         result = self.setup(
             self.answers(
-                mode="local", auth="sops", public_key="", ciphertext=ciphertext, policy=policy
+                mode="local",
+                auth="sops",
+                public_key="",
+                ciphertext=ciphertext,
+                policy=policy,
             )
         )
         self.assertNotEqual(result.returncode, 0, result.stdout)
@@ -271,7 +329,9 @@ sops:
         registration = (self.root / "flake/hosts.nix").read_text()
         self.assertIn('secretSource = "private"', registration)
         self.assertIn("requirePrivate = true", registration)
-        self.assertIn(".env", self.git("ls-files", "--others", "--ignored", "--exclude-standard"))
+        self.assertIn(
+            ".env", self.git("ls-files", "--others", "--ignored", "--exclude-standard")
+        )
         self.assertNotIn(str(private), self.git("diff"))
         dotenv = subprocess.run(
             [
@@ -293,7 +353,9 @@ sops:
     def test_external_private_git_must_be_clean(self):
         private = self.private_source()
         subprocess.run(["git", "init", "-q", str(private)], check=True)
-        dirty = self.setup(["external", str(private)])
+        dirty = self.setup(
+            self.host_answers() + ["yes", "external", str(private), ":cancel"]
+        )
         self.assertNotEqual(dirty.returncode, 0, dirty.stdout)
         self.assertEqual(self.git("status", "--porcelain"), "")
         subprocess.run(["git", "-C", str(private), "add", "."], check=True)
@@ -329,29 +391,35 @@ sops:
         self.assertNotEqual(result.returncode, 0, result.stdout)
         self.assertEqual(self.git("status", "--porcelain"), "")
         (self.root / ".env").write_text("KEEP=fixture\n")
-        conflict = self.setup(["external", str(private)])
+        conflict = self.setup(
+            self.host_answers() + ["yes", "external", str(private), ":cancel"]
+        )
         self.assertNotEqual(conflict.returncode, 0, conflict.stdout)
         self.assertEqual((self.root / ".env").read_text(), "KEEP=fixture\n")
 
     def test_fresh_git_failure_preserves_history(self):
+        self.prepare_finish()
         head = self.git("rev-parse", "HEAD")
         tools = Path(self.temp.name) / "bin"
-        tools.mkdir()
+        tools.mkdir(exist_ok=True)
         git = tools / "git"
         git.write_text("#!/bin/sh\nexit 1\n")
         git.chmod(0o755)
         self.env["PATH"] = f"{tools}:{os.environ['PATH']}"
-        result = self.setup(self.answers(fresh="yes", fresh_confirm="start fresh"))
+        result = self.finish(fresh="yes", fresh_confirm="start fresh")
         self.assertNotEqual(result.returncode, 0, result.stdout)
         self.assertEqual(self.git("rev-parse", "HEAD"), head)
-        self.assertFalse((self.root / ".git.setup-backup").exists())
+        self.assertFalse((self.root.parent / "repo.git-backup").exists())
 
     def test_bios_boot(self):
-        answers = self.answers(firmware="bios", boot_path="/dev/disk/by-id/setup-fixture")
+        answers = self.answers(
+            firmware="bios", boot_path="/dev/disk/by-id/setup-fixture"
+        )
         result = self.setup(answers)
         self.assertEqual(result.returncode, 0, result.stdout)
         self.assertIn(
-            "boot.loader.grub", (self.root / "hosts/my-box/configuration.nix").read_text()
+            "boot.loader.grub",
+            (self.root / "hosts/my-box/configuration.nix").read_text(),
         )
 
     def test_no_secrets_and_rerun(self):
@@ -364,11 +432,18 @@ sops:
             (self.root / "templates/host/profile.nix").read_bytes(),
         )
         config = (host / "configuration.nix").read_text()
-        self.assertIn('hashedPassword = "!"', config)
-        self.assertIn("wheelNeedsPassword = false", config)
+        self.assertIn('initialHashedPassword = "!"', config)
+        self.assertIn("wheelNeedsPassword = true", config)
+        self.assertIn("users.mutableUsers = true", config)
+        self.assertNotIn("services.openssh", config)
+        self.assertIn("LOGIN SETUP IS INCOMPLETE", result.stdout)
+        self.assertIn("sudo nixos-enter --root /mnt -c 'passwd alice'", result.stdout)
+        self.assertNotIn("just switch", result.stdout)
         self.assertIn(r"\${literal}", config)
         self.assertIn("@hostname@", config)
-        self.assertIn('secretSource = "none"', (self.root / "flake/hosts.nix").read_text())
+        self.assertIn(
+            'secretSource = "none"', (self.root / "flake/hosts.nix").read_text()
+        )
         self.assertIn("just build my-box", result.stdout)
         self.assertIn("hardware-configuration.nix", result.stdout)
         subprocess.run(
@@ -386,9 +461,9 @@ sops:
     def test_cancellation_and_invalid_names_leave_no_changes(self):
         for answers in (
             [],
-            ["none", "../bad"],
-            ["none", "pc"],
-            ["none", "ok", "server", "root"],
+            ["../bad", ":cancel"],
+            ["pc", ":cancel"],
+            ["ok", "server", "root", ":cancel"],
             self.answers(confirm="no"),
         ):
             with self.subTest(answers=answers[:4]):
@@ -401,9 +476,10 @@ sops:
             {"kind": "phone"},
             {"timezone": "/etc/passwd"},
             {"locale": "bad-locale"},
-            {"system_state": "27.05"},
+            {"installation": "existing", "system_state": "27.05"},
             {"boot_path": "relative"},
             {"accept_ssh": "no"},
+            {"auth": "ssh", "public_key": None, "accept_ssh": "no"},
         ):
             with self.subTest(changes=changes):
                 result = self.setup(self.answers(**changes))
@@ -421,37 +497,43 @@ sops:
             hosts.chmod(0o755)
 
     def test_destructive_choices_require_exact_confirmation(self):
+        self.prepare_finish()
         previous_head = self.git("rev-parse", "HEAD")
-        answers = self.answers(cleanup="yes", cleanup_confirm="no", fresh="yes", fresh_confirm="no")
-        result = self.setup(answers)
+        result = self.finish(
+            cleanup="yes", cleanup_confirm="no", fresh="yes", fresh_confirm="no"
+        )
         self.assertEqual(result.returncode, 0, result.stdout)
         self.assertTrue((self.root / "hosts/pc/configuration.nix").exists())
         self.assertEqual(self.git("rev-parse", "HEAD"), previous_head)
 
     def test_cleanup_failure_restores_files_and_registrations(self):
+        self.prepare_finish()
         original = self.root / "hosts/pc"
         original.chmod(0o555)
-        answers = self.answers(cleanup="yes", cleanup_confirm="remove original hosts")
         try:
-            result = self.setup(answers)
+            result = self.finish(cleanup="yes", cleanup_confirm="remove original hosts")
             self.assertNotEqual(result.returncode, 0, result.stdout)
             self.assertTrue((original / "configuration.nix").exists())
-            self.assertIn("nixos-pc = mkHost", (self.root / "flake/hosts.nix").read_text())
+            self.assertIn(
+                "nixos-pc = mkHost", (self.root / "flake/hosts.nix").read_text()
+            )
             self.assertEqual(
-                self.git("diff", "--", "hosts/pc", "hosts/laptop", "hosts/server", "justfile"), ""
+                self.git(
+                    "diff", "--", "hosts/pc", "hosts/laptop", "hosts/server", "justfile"
+                ),
+                "",
             )
         finally:
             original.chmod(0o755)
 
     def test_cleanup_and_fresh_git(self):
-        answers = self.answers(
-            kind="server",
+        self.prepare_finish()
+        result = self.finish(
             cleanup="yes",
             cleanup_confirm="remove original hosts",
             fresh="yes",
             fresh_confirm="start fresh",
         )
-        result = self.setup(answers)
         self.assertEqual(result.returncode, 0, result.stdout)
         for name in ("pc", "laptop", "server"):
             self.assertFalse((self.root / "hosts" / name).exists())
@@ -470,6 +552,32 @@ sops:
         )
         self.assertEqual(self.git("remote"), "")
         self.assertEqual(self.git("diff", "--cached"), "")
+        backup = self.root.parent / "repo.git-backup"
+        self.assertTrue((backup / "HEAD").is_file())
+        self.assertIn(str(backup), result.stdout)
+        history = subprocess.check_output(
+            ["git", f"--git-dir={backup}", "log", "-1", "--format=%s"], text=True
+        )
+        self.assertEqual(history.strip(), "host")
+        subprocess.run(
+            [
+                "git",
+                f"--git-dir={backup}",
+                "--work-tree=.",
+                "restore",
+                "--source=HEAD",
+                "--worktree",
+                "--",
+                "hosts/pc",
+                "hosts/laptop",
+                "hosts/server",
+                "flake/hosts.nix",
+                "justfile",
+            ],
+            cwd=self.root,
+            check=True,
+        )
+        self.assertTrue((self.root / "hosts/pc/configuration.nix").is_file())
 
     def test_reserved_hostname_is_valid_nix(self):
         result = self.setup(self.answers(host="if"))
@@ -487,7 +595,7 @@ sops:
         password_file.write_text("$6$fixture$not-a-real-password-hash\n")
         password_file.chmod(0o600)
         answers = self.answers(
-            kind="laptop",
+            kind="desktop",
             installation="existing",
             system_state="23.11",
             home_state="24.05",
@@ -509,29 +617,35 @@ sops:
         password_file = Path(self.temp.name) / "password-hash"
         password_file.write_text("fixture")
         password_file.chmod(0o644)
-        answers = self.answers(auth="password-file", password_file=password_file, public_key="")
+        answers = self.answers(
+            auth="password-file", password_file=password_file, public_key=""
+        )
         result = self.setup(answers)
         self.assertNotEqual(result.returncode, 0, result.stdout)
         self.assertEqual(self.git("status", "--porcelain"), "")
 
     def test_cleanup_declined_and_state_preserved(self):
+        self.prepare_finish()
         state = self.root / "hosts/pc/runtime.db"
         state.write_text("preserve this")
-        answers = self.answers(cleanup="yes")
-        result = self.setup(answers)
+        result = self.finish(cleanup="yes")
         self.assertNotEqual(result.returncode, 0, result.stdout)
         self.assertEqual(state.read_text(), "preserve this")
         self.assertTrue((self.root / "hosts/pc/configuration.nix").exists())
 
     def test_missing_sources(self):
-        result = self.setup(["external", "/does/not/exist"])
+        result = self.setup(
+            self.host_answers() + ["yes", "external", "/does/not/exist", ":cancel"]
+        )
         self.assertNotEqual(result.returncode, 0)
         self.assertEqual(self.git("status", "--porcelain"), "")
 
     def test_invalid_private_git_is_rejected(self):
         private = self.private_source()
         (private / ".git").write_text("gitdir: /does/not/exist\n")
-        result = self.setup(["external", str(private)])
+        result = self.setup(
+            self.host_answers() + ["yes", "external", str(private), ":cancel"]
+        )
         self.assertNotEqual(result.returncode, 0, result.stdout)
         self.assertIn("Cannot inspect the private Git checkout", result.stdout)
         self.assertEqual(self.git("status", "--porcelain"), "")
@@ -552,14 +666,21 @@ sops:
             capture_output=True,
         )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        (self.root / "hosts/my-box/hardware-configuration.nix").write_text(
-            """{
+        server = self.setup(self.answers(host="my-server", kind="server"))
+        self.assertEqual(server.returncode, 0, server.stdout)
+        for host in ("my-box", "my-server"):
+            (self.root / f"hosts/{host}/hardware-configuration.nix").write_text(
+                """{
   fileSystems."/" = { device = "/dev/disk/by-label/setup-test-root"; fsType = "ext4"; };
   fileSystems."/boot" = { device = "/dev/disk/by-label/setup-test-esp"; fsType = "vfat"; };
 }"""
-        )
-        self.git("add", "hosts/my-box", "flake/hosts.nix")
-        for command in (["just", "check", "--no-build"], ["just", "build", "my-box", "--no-link"]):
+            )
+        self.git("add", "hosts/my-box", "hosts/my-server", "flake/hosts.nix")
+        for command in (
+            ["just", "check", "--no-build"],
+            ["just", "build", "my-box", "--no-link"],
+            ["just", "build", "my-server", "--no-link"],
+        ):
             with self.subTest(command=command):
                 checked = subprocess.run(
                     command,
@@ -570,6 +691,35 @@ sops:
                     stderr=subprocess.STDOUT,
                 )
                 self.assertEqual(checked.returncode, 0, checked.stdout)
+        for host, network_manager in (("my-box", True), ("my-server", False)):
+            expression = f'''let c = (builtins.getFlake (toString ./.)).nixosConfigurations."{host}".config;
+                in {{
+                  mutable = c.users.mutableUsers;
+                  initial = c.users.users.alice.initialHashedPassword;
+                  password = c.users.users.alice.hashedPassword;
+                  passwordFile = c.users.users.alice.hashedPasswordFile;
+                  sudo = c.security.sudo.wheelNeedsPassword;
+                  networkManager = c.networking.networkmanager.enable;
+                }}'''
+            evaluated = subprocess.run(
+                ["nix", "eval", "--impure", "--json", "--expr", expression],
+                cwd=self.root,
+                env=environment,
+                text=True,
+                capture_output=True,
+            )
+            self.assertEqual(evaluated.returncode, 0, evaluated.stderr)
+            self.assertEqual(
+                json.loads(evaluated.stdout),
+                dict(
+                    mutable=True,
+                    initial="!",
+                    password=None,
+                    passwordFile=None,
+                    sudo=True,
+                    networkManager=network_manager,
+                ),
+            )
         for name in ("nixos-pc", "nixos-lp", "nixos-server"):
             guard = subprocess.run(
                 [
