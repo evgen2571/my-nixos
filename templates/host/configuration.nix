@@ -1,18 +1,25 @@
 # Copy to hosts/<name>/ and generate hardware-configuration.nix for that machine.
-{ config, lib, ... }:
+{ config, ... }:
 
 {
   imports = [
     ./hardware-configuration.nix
     ./profile.nix
     ../../modules/core/primary-user.nixos.nix
-    # Optional boot, locale, Nix and package defaults: choose at most one.
-    # ../../modules/core/desktop-baseline.nixos.nix
-    # ../../modules/core/server-baseline.nixos.nix
   ];
 
   networking.hostName = "replace-me";
-  # Choose bootloader/firmware, mounts, networking and timezone for YOUR machine.
+  # Copy your working bootloader settings here. For a fresh UEFI installation:
+  # boot.loader.systemd-boot.enable = true;
+  # boot.loader.efi.canTouchEfiVariables = true;
+  networking.networkmanager.enable = true;
+  time.timeZone = "UTC";
+  i18n.defaultLocale = "en_US.UTF-8";
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
+  # Existing installs: keep both state versions at their previous values.
   system.stateVersion = "26.05";
 
   my.primaryUser = {
@@ -22,40 +29,23 @@
     # git.userName = "Example Person";
     # git.userEmail = "person@example.invalid";
     # git.signingKey = "~/.ssh/id_ed25519_signing.pub";
-    extraGroups = [ "wheel" ];
+    extraGroups = [
+      "wheel"
+      "networkmanager"
+    ];
     home.settings.home.stateVersion = "26.05";
-    # Supply your own SSH PUBLIC key before evaluation/installation.
+    # Optional SSH PUBLIC keys; the SSH server stays off unless enabled.
     authorizedKeys = [ ];
   };
 
   users.mutableUsers = false;
-  users.users.${config.my.primaryUser.name}.hashedPassword = "!";
-
-  services.openssh = {
-    enable = true;
-    openFirewall = false;
-
-    settings = {
-      PasswordAuthentication = false;
-      KbdInteractiveAuthentication = false;
-      PermitRootLogin = "no";
-    };
-  };
+  # A root-owned runtime file, NOT a Nix path. Create it before activation.
+  users.users.${config.my.primaryUser.name}.hashedPasswordFile = "/var/lib/my-nixos/login-password";
 
   assertions = [
     {
-      assertion =
-        config.networking.hostName != "replace-me"
-        && config.my.primaryUser.authorizedKeys != [ ]
-        && lib.any (
-          port:
-          builtins.elem port config.networking.firewall.allowedTCPPorts
-          || lib.any (i: builtins.elem port i.allowedTCPPorts) (
-            builtins.attrValues config.networking.firewall.interfaces
-          )
-        ) config.services.openssh.ports;
-
-      message = "New host: choose a hostname, your SSH public key and explicit reachable SSH firewall policy before installation.";
+      assertion = config.networking.hostName != "replace-me";
+      message = "New host: set networking.hostName in configuration.nix before building.";
     }
   ];
 }

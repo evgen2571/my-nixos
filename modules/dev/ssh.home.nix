@@ -10,6 +10,8 @@ let
 in
 {
   options.my.user.dev.ssh = {
+    enable = lib.mkEnableOption "SSH client aliases for GitHub and the home server";
+
     serverHost = lib.mkOption {
       type = lib.types.str;
       default = "nixos-server";
@@ -28,7 +30,7 @@ in
     };
   };
 
-  config = {
+  config = lib.mkIf cfg.enable {
     home.packages = [
       pkgs.sshfs
     ];

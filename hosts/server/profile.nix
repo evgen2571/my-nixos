@@ -65,4 +65,5 @@
   };
 
   my.primaryUser.home.settings.my.user.dev.git.enable = true;
+  my.primaryUser.home.settings.my.user.dev.ssh.enable = true;
 }

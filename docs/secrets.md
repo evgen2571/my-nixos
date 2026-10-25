@@ -10,7 +10,12 @@ Each host in `flake/hosts.nix` chooses one source:
 | `local` | Your own SOPS-encrypted file in this repo |
 | `private` | A separate private flake with host overrides and encrypted files |
 
-For your first host, use `none`. A service that needs credentials must stay off until those credentials exist.
+For your first host, use `none`. The [host guide](../hosts/README.md#5-configure-the-machine-and-user)
+uses a protected runtime password hash file for login and sudo, so you can start
+without SOPS. Keep that file outside the checkout, even when Git would ignore it:
+path flakes can copy ignored files into the Nix store.
+
+A service that needs credentials must stay off until those credentials exist.
 
 With `local`, keep the host's encrypted document in `secrets/hosts/<host>.yaml` and recipient rules in `.sops.yaml`. The host's protected age identity lives at `/var/lib/sops-nix/key.txt`, **not in Git**. Keep a separate admin identity somewhere protected so you can edit and recover the encrypted file. See [sops-nix](https://github.com/Mic92/sops-nix) for key generation and the complete setup.
 

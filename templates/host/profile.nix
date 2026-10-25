@@ -6,7 +6,7 @@
   my = {
     desktop = {
       # gnome.enable = true;
-      # niri.enable = true;
+      # niri.enable = true; # See hosts/README.md for a minimal user config.
       # noctaliaGreeter.enable = true; # Defaults to the Niri session.
       # opentabletdriver.enable = true;
       # xserver.enable = true;
@@ -124,7 +124,7 @@
 
       desktop = {
         niriConfig = {
-          # enable = true; # Pair with my.desktop.niri above.
+          # enable = true; # My full config; includes personal app shortcuts/outputs.
           workspaceProfile = "default"; # Also available: pc, laptop.
         };
 
@@ -154,7 +154,7 @@
         # zed.enable = true;
         # zoxide.enable = true;
 
-        # SSH aliases are always configured by the imported SSH module.
+        # ssh.enable = true; # Optional GitHub/server client aliases.
         # ssh.serverHost = "your-server";
         # ssh.serverIdentityFile = "~/.ssh/id_ed25519";
 

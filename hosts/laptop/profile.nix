@@ -110,6 +110,7 @@
     };
 
     dev = {
+      ssh.enable = true;
       ffmpeg.enable = true;
       workstation.enable = true;
       pycharm.enable = false;
