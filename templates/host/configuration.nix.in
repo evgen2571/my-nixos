@@ -1,0 +1,36 @@
+{ @module_arguments@ }:
+
+{
+  imports = [
+    ./hardware-configuration.nix
+    ./profile.nix
+    ../../modules/core/primary-user.nixos.nix
+  ];
+
+@boot@
+
+  networking.hostName = @hostname@;
+  networking.networkmanager.enable = true;
+  time.timeZone = @timezone@;
+  i18n.defaultLocale = @locale@;
+  system.stateVersion = @system_state@;
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
+  my.primaryUser = {
+    enable = true;
+    name = lib.mkDefault @username@;
+    description = lib.mkDefault @full_name@;
+    extraGroups = [ "wheel" "networkmanager" ];
+    authorizedKeys = @authorized_keys@;
+    home.settings.home.stateVersion = @home_state@;
+@git_identity@
+  };
+
+  users.mutableUsers = false;
+  users.users.${config.my.primaryUser.name}.@password@;
+  security.sudo.wheelNeedsPassword = @sudo_password@;
+
+@sops@
+
+@ssh@
+}
