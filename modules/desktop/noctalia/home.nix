@@ -45,15 +45,20 @@ in
     };
 
     profile = lib.mkOption {
-      type = lib.types.enum [
-        "laptop"
-        "pc"
-      ];
-      description = "Host-specific Noctalia bar and widget configuration.";
+      type = lib.types.nullOr (
+        lib.types.enum [
+          "laptop"
+          "pc"
+        ]
+      );
+      default = null;
+      description = "Legacy optional widget placement: pc keeps the saved monitor positions; laptop uses the shared defaults. Prefer programs.noctalia.settings for new overrides.";
     };
   };
 
   config = lib.mkIf cfg.enable {
+    home.packages = [ pkgs.nerd-fonts.hurmit ];
+    fonts.fontconfig.enable = lib.mkDefault true;
     wallpapers.directory = lib.mkDefault config.programs.noctalia.settings.wallpaper.directory;
 
     home.activation.pruneStaleNoctaliaSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''

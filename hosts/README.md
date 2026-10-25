@@ -77,17 +77,13 @@ my.primaryUser.home.settings.my.user = {
     enable = true;
     workspaceProfile = "default";
   };
-  desktop.noctalia = {
-    enable = true;
-    profile = "pc";
-  };
+  desktop.noctalia.enable = true;
   dev.kitty.enable = true;
 };
 ```
 
 This enables Niri, the greeter, Noctalia, and Kitty.
-Edit the existing entries to avoid duplicate definitions. Noctalia has `pc` and
-`laptop` layouts; choose one and review its display settings. Adjust the shared
+Edit the existing entries to avoid duplicate definitions. Adjust the shared
 [Niri startup commands and shortcuts](../config/niri/README.md) for the apps
 you've enabled.
 

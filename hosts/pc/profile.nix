@@ -1,4 +1,9 @@
-{ config, ... }:
+{
+  config,
+  configPaths,
+  lib,
+  ...
+}:
 
 {
   services.udisks2.enable = true;
@@ -65,6 +70,10 @@
 
   my.primaryUser.home.settings.wallpapers.enable = true;
 
+  my.primaryUser.home.settings.programs.noctalia.settings.include.files = lib.mkDefault [
+    "${configPaths.wm.noctaliaConfigDir}/widgets-pc.toml"
+  ];
+
   my.primaryUser.home.settings.my.user = {
     ai = {
       opencode.enable = true;
@@ -105,10 +114,7 @@
         workspaceProfile = "pc";
       };
 
-      noctalia = {
-        enable = true;
-        profile = "pc";
-      };
+      noctalia.enable = true;
 
       screenRecorder.enable = true;
     };

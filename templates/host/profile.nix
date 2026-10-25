@@ -128,10 +128,7 @@
           workspaceProfile = "default"; # Also available: pc, laptop.
         };
 
-        noctalia = {
-          # enable = true;
-          profile = "pc"; # Bar/widget layout: pc or laptop; adjust for your displays.
-        };
+        # noctalia.enable = true;
 
         # screenRecorder.enable = true; # Pair with hardware.screenRecorder above.
       };

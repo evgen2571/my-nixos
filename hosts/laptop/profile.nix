@@ -104,10 +104,7 @@
         workspaceProfile = "laptop";
       };
 
-      noctalia = {
-        enable = true;
-        profile = "laptop";
-      };
+      noctalia.enable = true;
 
       screenRecorder.enable = true;
     };

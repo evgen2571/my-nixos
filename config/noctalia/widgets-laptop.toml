@@ -1,5 +1,0 @@
-[widget.battery]
-capsule = true
-capsule_opacity = 0.0
-
-type = "battery"
