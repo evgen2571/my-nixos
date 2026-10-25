@@ -10,6 +10,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -578,6 +579,245 @@ sops:
             check=True,
         )
         self.assertTrue((self.root / "hosts/pc/configuration.nix").is_file())
+
+    def test_beginner_defaults_and_help(self):
+        self.env["USER"] = "alice"
+        self.env.pop("SUDO_USER", None)
+        result = self.setup(
+            [
+                "?",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "new",
+                "",
+                "yes",
+                "",
+                "",
+                "uefi",
+                "",
+                "generate",
+                "yes",
+            ]
+        )
+        self.assertEqual(result.returncode, 0, result.stdout)
+        config = (self.root / "hosts/my-nixos/configuration.nix").read_text()
+        self.assertIn('name = lib.mkDefault "alice"', config)
+        self.assertIn("networkmanager.enable = true", config)
+        self.assertNotIn("SOPS", result.stdout)
+        self.assertNotIn("hash file", result.stdout)
+        self.assertNotIn("Remove original", result.stdout)
+        for step in range(1, 6):
+            self.assertIn(f"Step {step}/5", result.stdout)
+
+    def test_server_has_password_login_without_forced_ssh(self):
+        result = self.setup(self.answers(kind="server"))
+        self.assertEqual(result.returncode, 0, result.stdout)
+        config = (self.root / "hosts/my-box/configuration.nix").read_text()
+        self.assertIn("networking.useDHCP = lib.mkDefault true", config)
+        self.assertNotIn("networkmanager", config)
+        self.assertNotIn("services.openssh", config)
+        self.assertIn("wheelNeedsPassword = true", config)
+
+    def test_ssh_only_requires_key_and_explicit_consent(self):
+        result = self.setup(self.answers(auth="ssh", public_key=None))
+        self.assertEqual(result.returncode, 0, result.stdout)
+        config = (self.root / "hosts/my-box/configuration.nix").read_text()
+        self.assertIn('hashedPassword = "!"', config)
+        self.assertIn("mutableUsers = false", config)
+        self.assertIn("wheelNeedsPassword = false", config)
+        self.assertIn("PasswordAuthentication = false", config)
+        self.assertIn("openFirewall = true", config)
+
+    def test_ssh_key_validation_retries(self):
+        invalid = Path(self.temp.name) / "invalid.pub"
+        invalid.write_text("not an OpenSSH public key\n")
+        answers = self.answers(auth="ssh", public_key=None)
+        index = answers.index(str(self.key))
+        answers[index:index] = ["/does/not/exist", str(invalid)]
+        result = self.setup(answers)
+        self.assertEqual(result.returncode, 0, result.stdout)
+        self.assertEqual(result.stdout.count("Please try again:"), 2)
+
+    def test_existing_password_and_manual_boot_review(self):
+        answers = self.answers(
+            installation="existing",
+            system_state="23.11",
+            home_state="24.05",
+            firmware="manual",
+        )
+        result = self.setup(answers)
+        self.assertEqual(result.returncode, 0, result.stdout)
+        config = (self.root / "hosts/my-box/configuration.nix").read_text()
+        self.assertIn('system.stateVersion = "23.11"', config)
+        self.assertIn('home.stateVersion = "24.05"', config)
+        self.assertNotIn("boot.loader.systemd-boot.enable", config)
+        self.assertIn("REQUIRED before building", config)
+        self.assertIn("sudo passwd alice", result.stdout)
+        self.assertIn("just switch my-box", result.stdout)
+        self.assertNotIn("sudo nixos-install", result.stdout)
+
+    def test_existing_without_previous_home_manager(self):
+        answers = self.answers(installation="existing", system_state="24.11")
+        index = answers.index("24.11")
+        answers[index + 1 : index + 3] = ["no"]
+        result = self.setup(answers)
+        self.assertEqual(result.returncode, 0, result.stdout)
+        config = (self.root / "hosts/my-box/configuration.nix").read_text()
+        self.assertIn('system.stateVersion = "24.11"', config)
+        self.assertIn('home.stateVersion = "26.05"', config)
+
+    def test_invalid_answers_retry_in_place(self):
+        answers = self.answers()
+        answers[:1] = ["../bad", "pc", "my-box"]
+        answers[answers.index("alice") : answers.index("alice")] = ["root", "Alice"]
+        answers[answers.index("UTC") : answers.index("UTC")] = ["/etc/passwd"]
+        answers[answers.index("/boot") : answers.index("/boot")] = [
+            "/../boot",
+            "relative",
+        ]
+        result = self.setup(answers)
+        self.assertEqual(result.returncode, 0, result.stdout)
+        self.assertGreaterEqual(result.stdout.count("Please try again:"), 7)
+        self.assertEqual(result.stdout.count("Step 1/5"), 1)
+
+    def test_missing_source_can_be_corrected(self):
+        private = self.private_source()
+        answers = self.answers(mode="external", private=private)
+        answers.insert(answers.index(str(private)), "/does/not/exist")
+        result = self.setup(answers)
+        self.assertEqual(result.returncode, 0, result.stdout)
+        self.assertIn("Please try again:", result.stdout)
+
+    def test_back_changes_previous_answer_without_restarting(self):
+        answers = self.answers()
+        answers[3:3] = [":back", "bob"]
+        result = self.setup(answers)
+        self.assertEqual(result.returncode, 0, result.stdout)
+        config = (self.root / "hosts/my-box/configuration.nix").read_text()
+        self.assertIn('name = lib.mkDefault "bob"', config)
+        self.assertEqual(result.stdout.count("Hostname ["), 1)
+        self.assertIn("'passwd bob'", result.stdout)
+
+    def test_review_can_edit_a_stage(self):
+        answers = (
+            self.answers()[:-2]
+            + ["edit", "1"]
+            + self.answers(host="changed", kind="server")
+        )
+        result = self.setup(answers)
+        self.assertEqual(result.returncode, 0, result.stdout)
+        self.assertFalse((self.root / "hosts/my-box").exists())
+        self.assertTrue((self.root / "hosts/changed/profile.nix").is_file())
+        self.assertNotIn(
+            '"my-box" = mkHost', (self.root / "flake/hosts.nix").read_text()
+        )
+
+    def test_cancel_at_each_stage_never_writes(self):
+        answers = self.answers()
+        for offset in (0, 2, 7, 8, len(answers) - 2, len(answers) - 1):
+            with self.subTest(offset=offset):
+                result = self.setup(answers[:offset] + [":cancel"])
+                self.assertNotEqual(result.returncode, 0, result.stdout)
+                self.assertEqual(self.git("status", "--porcelain"), "")
+
+    def test_no_efi_guess_when_target_is_elsewhere(self):
+        answers = self.answers(same_machine="no", firmware="manual")
+        result = self.setup(answers)
+        self.assertEqual(result.returncode, 0, result.stdout)
+        self.assertIn("Boot setup (manual/uefi/bios) [manual]", result.stdout)
+
+    def test_existing_confirmation_is_required(self):
+        answers = self.answers(installation="existing")
+        # Decline the additional confirmation immediately before review.
+        answers[-3:] = ["no", ":cancel"]
+        result = self.setup(answers)
+        self.assertNotEqual(result.returncode, 0, result.stdout)
+        self.assertEqual(self.git("status", "--porcelain"), "")
+
+    def test_symlinked_destination_is_not_written(self):
+        outside = Path(self.temp.name) / "outside"
+        outside.mkdir()
+        (self.root / "hosts").rename(self.root / "original-hosts")
+        (self.root / "hosts").symlink_to(outside, target_is_directory=True)
+        result = self.setup(self.answers())
+        self.assertNotEqual(result.returncode, 0, result.stdout)
+        self.assertIn("symlinked directories", result.stdout)
+        self.assertEqual(list(outside.iterdir()), [])
+
+    def test_finish_build_failure_and_unverified_login_block_cleanup(self):
+        self.prepare_finish()
+        head = self.git("rev-parse", "HEAD")
+        self.env["SETUP_TEST_CHECK_STATUS"] = "1"
+        result = self.finish(
+            cleanup="yes",
+            cleanup_confirm="remove original hosts",
+            fresh="yes",
+            fresh_confirm="start fresh",
+        )
+        self.assertNotEqual(result.returncode, 0, result.stdout)
+        self.assertNotIn("Remove original", result.stdout)
+        self.assertEqual(self.git("rev-parse", "HEAD"), head)
+        self.env["SETUP_TEST_CHECK_STATUS"] = "0"
+        result = self.setup(["no", ":cancel"], "--finish", "my-box")
+        self.assertNotEqual(result.returncode, 0, result.stdout)
+        self.assertEqual(self.git("status", "--porcelain"), "")
+        self.assertTrue((self.root / "hosts/pc/configuration.nix").is_file())
+
+    def test_cleanup_preserves_modified_sources(self):
+        self.prepare_finish()
+        path = self.root / "hosts/pc/configuration.nix"
+        path.write_text(path.read_text() + "\n# user change\n")
+        result = self.finish(cleanup="yes", cleanup_confirm="remove original hosts")
+        self.assertNotEqual(result.returncode, 0, result.stdout)
+        self.assertIn("# user change", path.read_text())
+        self.assertIn("Commit or preserve", result.stdout)
+
+    def test_finish_requires_exact_host_and_git_backups_are_preserved(self):
+        self.prepare_finish()
+        unknown = self.setup([], "--finish", "../pc")
+        self.assertNotEqual(unknown.returncode, 0, unknown.stdout)
+        backup = self.root.parent / "repo.git-backup"
+        backup.mkdir()
+        (backup / "keep").write_text("previous backup")
+        head = self.git("rev-parse", "HEAD")
+        result = self.finish(fresh="yes", fresh_confirm="start fresh")
+        self.assertNotEqual(result.returncode, 0, result.stdout)
+        self.assertEqual(self.git("rev-parse", "HEAD"), head)
+        self.assertEqual((backup / "keep").read_text(), "previous backup")
+
+    def test_fresh_git_does_not_require_removing_hosts(self):
+        self.prepare_finish()
+        result = self.finish(fresh="yes", fresh_confirm="start fresh")
+        self.assertEqual(result.returncode, 0, result.stdout)
+        self.assertTrue((self.root / "hosts/pc/configuration.nix").is_file())
+        self.assertTrue((self.root.parent / "repo.git-backup/HEAD").is_file())
+        self.assertEqual(
+            Path(self.env["SETUP_TEST_CHECK_LOG"]).read_text().splitlines(),
+            ["check --no-build", "build my-box --no-link"],
+        )
+
+    def test_cleanup_directory_failure_rolls_back_everything(self):
+        spec = importlib.util.spec_from_file_location(
+            "setup_test", self.root / "lib/setup.py"
+        )
+        setup = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(setup)
+        folder = Path(self.temp.name) / "transaction"
+        folder.mkdir()
+        path = folder / "configuration.nix"
+        path.write_text("preserve")
+        with patch.object(
+            Path, "rmdir", side_effect=OSError("injected directory removal failure")
+        ):
+            with self.assertRaises(OSError):
+                setup.write_files({path: None}, remove_directories=[folder])
+        self.assertEqual(path.read_text(), "preserve")
 
     def test_reserved_hostname_is_valid_nix(self):
         result = self.setup(self.answers(host="if"))
