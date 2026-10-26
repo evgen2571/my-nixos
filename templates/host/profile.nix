@@ -39,6 +39,7 @@
       };
 
       services = {
+        # browserVpnProxy.enable = true; # Requires an existing client VPN namespace.
         # blueman.enable = true; # Also enable hardware.bluetooth above.
         # lanMouse.enable = true;
         # sunshine.enable = true;
@@ -119,6 +120,8 @@
         zenBrowser = {
           # enable = true;
           # profilePath = "abcdefgh.Default Profile"; # Check about:profiles first.
+          # vpnProxy.enable = true; # Requires system browserVpnProxy and profilePath.
+          # vpnProxy.domains = [ "example.com" ]; # Includes subdomains.
         };
       };
 
