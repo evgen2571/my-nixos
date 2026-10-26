@@ -7,7 +7,8 @@
     desktop = {
       # gnome.enable = true;
       # niri.enable = true; # See hosts/README.md for a minimal user config.
-      # noctaliaGreeter.enable = true; # Defaults to the Niri session.
+      # umbriel.enable = true;
+      # noctaliaGreeter.enable = true; # Defaults to Umbriel when enabled, otherwise Niri.
       # opentabletdriver.enable = true;
       # xserver.enable = true;
     };
@@ -132,6 +133,7 @@
         };
 
         # noctalia.enable = true;
+        # umbrielConfig.enable = true; # Personal PC outputs, rules, and scratchpads.
 
         # screenRecorder.enable = true; # Pair with hardware.screenRecorder above.
       };

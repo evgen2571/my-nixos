@@ -1,0 +1,32 @@
+[[scratchpad]]
+name = "terminal"
+spawn_when_empty = "env DROPDOWN_TERM=1 kitty -T dropdown-term tmux new-session -A -s dropdown -e DROPDOWN_TERM=1"
+
+[[scratchpad]]
+name = "music"
+spawn_when_empty = "@musicPlayer@"
+
+[[scratchpad]]
+name = "files"
+spawn_when_empty = "kitty -T file-manager yazi"
+
+[[scratchpad]]
+name = "stash"
+
+# Assign ordinary launches too, so toggling never creates a second music player.
+[[window_rule]]
+match.app_id = '^(sonora|pear-desktop|Pear Desktop|youtube-music|YouTube Music|com\.github\.th_ch\.youtube_music)$'
+default_scratchpad = "music"
+default_focused = true
+
+[[window_rule]]
+match.app_id = '^kitty$'
+match.title = '^dropdown-term$'
+default_scratchpad = "terminal"
+default_focused = true
+
+[[window_rule]]
+match.app_id = '^kitty$'
+match.title = '^file-manager$'
+default_scratchpad = "files"
+default_focused = true

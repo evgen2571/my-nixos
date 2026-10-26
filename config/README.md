@@ -1,6 +1,6 @@
 # App configs
 
-My desktop and editor notes are in [Niri](niri/README.md),
+My desktop and editor notes are in [Umbriel](umbriel/README.md), [Niri](niri/README.md),
 [Noctalia](noctalia/README.md), [Neovim](nvim/README.md), and [Zen](zen/README.md).
 The [modules](../modules/README.md) enable these configs for each host.
 

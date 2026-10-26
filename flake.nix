@@ -32,6 +32,11 @@
 
     noctalia.url = "github:noctalia-dev/noctalia/cachix";
 
+    umbriel = {
+      url = "github:noctalia-dev/umbriel";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+
     sonora = {
       url = "github:sonorahq/sonora";
       inputs.nixpkgs.follows = "nixpkgs-unstable";

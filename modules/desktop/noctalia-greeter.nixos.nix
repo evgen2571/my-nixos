@@ -24,7 +24,7 @@ in
       package = greeterPackage;
 
       settings = {
-        session.default = "niri";
+        session.default = if config.my.desktop.umbriel.enable then "umbriel" else "niri";
         user.default = config.my.primaryUser.name;
 
         cursor = {

@@ -18,6 +18,7 @@ let
 
     wm = {
       niriConfigDir = root + "/config/niri";
+      umbrielConfigDir = root + "/config/umbriel";
       noctaliaConfigDir = root + "/config/noctalia";
     };
 

@@ -11,7 +11,8 @@
   my = {
     desktop = {
       gnome.enable = false;
-      niri.enable = true;
+      niri.enable = false;
+      umbriel.enable = true;
       noctaliaGreeter.enable = true;
       opentabletdriver.enable = true;
     };
@@ -111,9 +112,11 @@
 
     desktop = {
       niriConfig = {
-        enable = true;
+        enable = false;
         workspaceProfile = "pc";
       };
+
+      umbrielConfig.enable = true;
 
       noctalia.enable = true;
 

@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+"""Focus an existing app window or launch it, without closing its state."""
+
+import json
+import os
+import re
+import subprocess
+import sys
+
+
+def main():
+    if len(sys.argv) < 4 or sys.argv[2] != "--":
+        sys.exit("Usage: focus-or-launch APP_ID_REGEX -- COMMAND [ARGS...]")
+    pattern = re.compile(sys.argv[1])
+    windows = json.loads(subprocess.check_output(["umbriel", "windows", "--json"]))
+    matches = [w for w in windows if pattern.search(w.get("app_id") or "")]
+    if matches:
+        window = max(matches, key=lambda w: (bool(w.get("active")), bool(w.get("visible"))))
+        subprocess.run(["umbriel", "msg", f"window-focus-warp:{window['id']}"], check=True)
+    else:
+        os.execvp(sys.argv[3], sys.argv[3:])
+
+
+if __name__ == "__main__":
+    main()
