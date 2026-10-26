@@ -38,6 +38,7 @@
       files.thunar.enable = false;
 
       services = {
+        browserVpnProxy.enable = true;
         lanMouse.enable = true;
         tailscale.enable = true;
         blueman.enable = true;
