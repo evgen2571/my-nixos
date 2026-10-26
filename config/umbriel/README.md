@@ -39,6 +39,18 @@ sharing uses `xdg-desktop-portal-umbriel`; file pickers stay on GTK and the logi
 keyring remains available. Browser, notes, Dolphin, and chat shortcuts reuse an
 existing window through Umbriel IPC before launching another.
 
+The PC enables `my.user.desktop.skwdWall.enable` for Skwd-wall's picker and renderer.
+`Mod+Y` and the wallpaper bar button run `skwd-wall-v2`; its daemon starts with
+the graphical session and restores the last selected wallpaper. Images and videos
+use the existing `~/Pictures/Wallpapers` directory (`wallpapers.directory`).
+Home Manager seeds `~/.config/skwd-wall-v2/config.json` once and leaves GUI settings,
+caches, and saved wallpapers writable. Noctalia's wallpaper renderer is disabled;
+existing GUI overrides in `~/.local/state/noctalia/settings.toml` still take priority.
+Skwd's built-in Noctalia theme bridge keeps the shell and existing app templates
+following the selected wallpaper.
+The lock screen uses Noctalia's solid background unless a lock-screen image is set,
+and greeter appearance sync no longer carries a desktop wallpaper.
+
 ## Differences from Niri
 
 - Scratchpads replace music and dropdown focus-or-close behavior; Yazi also gets a
@@ -67,6 +79,7 @@ trying the new session; the branch itself does not activate anything.
 ```sh
 python3 -B config/umbriel/test-config.py
 nix-build config/umbriel/test-module.nix --no-out-link
+nix-build config/skwd-wall/test-module.nix --no-out-link
 just check --no-build
 just build nixos-pc
 ```

@@ -119,6 +119,7 @@
       umbrielConfig.enable = true;
 
       noctalia.enable = true;
+      skwdWall.enable = true;
 
       screenRecorder.enable = true;
     };

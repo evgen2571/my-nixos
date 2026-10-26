@@ -32,6 +32,11 @@
 
     noctalia.url = "github:noctalia-dev/noctalia/cachix";
 
+    skwd-wall = {
+      url = "github:liixini/skwd-wall/nix";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+
     umbriel = {
       url = "github:noctalia-dev/umbriel";
       inputs.nixpkgs.follows = "nixpkgs-unstable";

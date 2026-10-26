@@ -10,6 +10,9 @@ Noctalia 5.2.1 uses pixel centers for desktop and lockscreen widgets. It support
 
 The wallpaper directory defaults to `~/Pictures/Wallpapers`. It's configurable through `programs.noctalia.settings.wallpaper.directory`; my wallpaper flake uses the same setting. Hurmit is installed with the shell. The custom Niri and Neovim theme templates run when their corresponding modules are enabled.
 
+The PC uses [Skwd-wall](../umbriel/README.md) for wallpaper selection and rendering,
+with the same directory. The laptop keeps Noctalia's wallpaper picker and renderer.
+
 Theme colors are generated, including the files Niri, Kitty, and Neovim read. If a color change isn't showing up, check Noctalia's generated files instead of editing them by hand.
 
 Settings changed in the GUI stay in `~/.local/state/noctalia/settings.toml` and override repo defaults. I keep that state writable. Activation removes obsolete GUI overrides, including the unsupported timer desktop widget, after backing up the settings. The Sonora community theme needs the app to be launched once before Noctalia can apply it.

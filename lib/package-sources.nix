@@ -58,6 +58,7 @@ in
   inherit (agents) codex opencode orca;
   bb = agents.bb-app;
   noctalia = inputs.noctalia.packages.${system}.default;
+  skwd-wall = inputs.skwd-wall.packages.${system}.default;
   sonora = inputs.sonora.packages.${system}.default;
   voxtype = inputs.voxtype.packages.${system}.vulkan;
 }

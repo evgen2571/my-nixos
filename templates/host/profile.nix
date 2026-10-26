@@ -133,6 +133,7 @@
         };
 
         # noctalia.enable = true;
+        # skwdWall.enable = true; # Replaces Noctalia's wallpaper renderer and picker.
         # umbrielConfig.enable = true; # Personal PC outputs, rules, and scratchpads.
 
         # screenRecorder.enable = true; # Pair with hardware.screenRecorder above.
