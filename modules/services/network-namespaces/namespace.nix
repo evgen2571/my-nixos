@@ -372,7 +372,12 @@ in
 
   systemd.services."${netns}-health" = {
     description = "Verify external HTTPS egress through VPN ${name}";
-    after = [ "${if isClient then "netns-${name}-shared" else vpn}.service" ];
+    requires = [ "${netns}.service" ];
+
+    after = [
+      "${netns}.service"
+      "${if isClient then "netns-${name}-shared" else vpn}.service"
+    ];
 
     serviceConfig = {
       Type = "oneshot";

@@ -49,7 +49,3 @@ only the listed domains and their subdomains use the VPN.
 
 The PAC is an immutable local file, so loading it needs no network. Browser
 settings or extensions that override proxy routing can still defeat this policy.
-
-Run the focused checks with `nix-build config/zen/test-vpn-proxy.nix --no-out-link`
-and `nix-build lib/test-browser-vpn-proxy.nix --no-out-link`. The VM tests DNS,
-isolation, outages, and recovery without touching the working gateway.
