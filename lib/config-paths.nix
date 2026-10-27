@@ -27,8 +27,6 @@ let
           configDir ? dev.fish.configDir,
         }:
         {
-          "fish/config.fish".source = configDir + "/config.fish";
-
           "fish/conf.d" = {
             source = configDir + "/conf.d";
             recursive = true;
