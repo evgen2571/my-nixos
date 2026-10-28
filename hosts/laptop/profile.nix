@@ -73,15 +73,9 @@
       skillshare.enable = true;
       codegraph.enable = true;
 
-      codex = {
-        enable = true;
-        networkNamespace = "vpn";
-      };
-
-      orca = {
-        enable = true;
-        networkNamespace = "vpn";
-      };
+      chatgpt.enable = true;
+      codex.enable = true;
+      orca.enable = true;
     };
 
     apps = {
