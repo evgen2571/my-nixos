@@ -25,34 +25,6 @@
   boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [ ];
 
-  fileSystems."/" = {
-    device = "/dev/disk/by-label/MY-NIXOS-PC-ROOT-REPLACE-ME";
-    fsType = "ext4";
-  };
-
-  fileSystems."/efi" = {
-    device = "/dev/disk/by-label/MY-NIXOS-PC-EFI-REPLACE-ME";
-    fsType = "vfat";
-    options = [
-      "fmask=0077"
-      "dmask=0077"
-    ];
-  };
-
-  fileSystems."/boot" = {
-    device = "/dev/disk/by-label/MY-NIXOS-PC-BOOT-REPLACE-ME";
-    fsType = "vfat";
-    options = [
-      "fmask=0077"
-      "dmask=0077"
-    ];
-  };
-
-  fileSystems."/home" = {
-    device = "/dev/disk/by-label/MY-NIXOS-PC-HOME-REPLACE-ME";
-    fsType = "ext4";
-  };
-
   fileSystems."/home/${config.my.primaryUser.name}/drive" = {
     device = "/dev/disk/by-label/MY-NIXOS-PC-DRIVE-REPLACE-ME";
     fsType = "ext4";

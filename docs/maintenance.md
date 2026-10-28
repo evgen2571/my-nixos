@@ -31,5 +31,9 @@ To restore a working previous generation, run `sudo nixos-rebuild switch --rollb
 or choose a known-good generation from the boot menu. Rollback doesn't restore
 browser data, databases, or keys.
 
+For the planned PC ext4-to-Btrfs clean installation, see the
+[Disko migration guide](pc-btrfs-migration.md). Do not activate that layout on the
+existing ext4 installation.
+
 I keep `system.stateVersion` and `home.stateVersion` unchanged during updates.
 When updating inputs, review the lock diff and check the result.

@@ -77,6 +77,7 @@ in
   flake.nixosConfigurations = {
     nixos-pc = mkHost {
       hostModule = ../hosts/pc/configuration.nix;
+      extraModules = [ inputs.disko.nixosModules.disko ];
       host = "pc";
       secretSource = "private";
       requirePrivate = true;

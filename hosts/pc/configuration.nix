@@ -3,16 +3,21 @@
 {
   imports = [
     ./hardware-configuration.nix
+    ./disko.nix
     ./profile.nix
     ./secrets.nix
     ../../modules/core/desktop-baseline.nixos.nix
     ../../modules/core/primary-user.nixos.nix
   ];
 
-  # This machine uses a separate EFI System Partition and XBOOTLDR partition.
-  boot.loader = {
-    efi.efiSysMountPoint = "/efi";
-    systemd-boot.xbootldrMountPoint = "/boot";
+  boot.loader.efi.efiSysMountPoint = "/boot";
+
+  services.fstrim.enable = true;
+  services.fstrim.interval = "weekly";
+  services.btrfs.autoScrub = {
+    enable = true;
+    interval = "monthly";
+    fileSystems = [ "/" ];
   };
 
   networking.hostName = "nixos-pc";
@@ -38,13 +43,6 @@
       "uinput"
     ];
   };
-
-  swapDevices = [
-    {
-      device = "/swapfile";
-      size = 16384;
-    }
-  ];
 
   environment.systemPackages = with pkgs; [
     xwayland-satellite
