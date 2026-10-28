@@ -81,15 +81,11 @@
       skillshare.enable = true;
       codegraph.enable = true;
 
-      codex = {
-        enable = true;
-        networkNamespace = "vpn";
-      };
-
-      orca = {
-        enable = true;
-        networkNamespace = "vpn";
-      };
+      antigravityCli.enable = true;
+      chatgpt.enable = true;
+      claudeCode.enable = true;
+      codex.enable = true;
+      orca.enable = true;
     };
 
     apps = {
@@ -127,7 +123,7 @@
 
       languages = {
         cpp.enable = true;
-        java.enable = false;
+        java.enable = true;
         godot.enable = false;
         python.enable = true;
         rust.enable = true;

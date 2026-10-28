@@ -12,7 +12,8 @@ outputs = { self }: {
 };
 ```
 
-I keep reusable modules and shared app settings in the public repo.
+I keep reusable modules, app enable switches, and shared app settings in the public repo.
+Private host overrides select which apps use VPN network namespaces.
 Machine-specific IDs, accounts, private endpoints, Zen layouts, and Dolphin Places
 go in private overrides. Zen uses `programs.zen-browser.profiles.default.spaces`
 and `.pins` (`isEssential = true` for Essentials); Dolphin uses

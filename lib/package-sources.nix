@@ -55,7 +55,14 @@ in
   inherit (seshPackages) sesh;
   inherit (vesktopPackages) vesktop;
 
-  inherit (agents) codex opencode orca;
+  inherit (agents)
+    antigravity-cli
+    chatgpt
+    claude-code
+    codex
+    opencode
+    orca
+    ;
   bb = agents.bb-app;
   noctalia = inputs.noctalia.packages.${system}.default;
   sonora = inputs.sonora.packages.${system}.default;

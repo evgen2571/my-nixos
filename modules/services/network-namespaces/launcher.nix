@@ -9,19 +9,37 @@ let
   cfg = config.my.system.services.networkNamespaces;
   apps = cfg.applications;
 
-  codexUsers = lib.filterAttrs (
-    _: hm:
-    (hm.my.user.ai.codex.enable or false) && (hm.my.user.ai.codex.networkNamespace or null) != null
-  ) (config.home-manager.users or { });
-
-  codexApps = lib.mapAttrs' (
-    user: hm:
-    lib.nameValuePair "codex-${user}" {
-      inherit user;
-      namespace = hm.my.user.ai.codex.networkNamespace;
-      package = hm.my.user.ai.codex.unwrappedPackage;
-    }
-  ) codexUsers;
+  aiApps =
+    lib.foldlAttrs
+      (
+        registrations: id: option:
+        registrations
+        //
+          lib.mapAttrs'
+            (
+              user: hm:
+              lib.nameValuePair "${id}-${user}" {
+                inherit user;
+                namespace = hm.my.user.ai.${option}.networkNamespace;
+                package = hm.my.user.ai.${option}.unwrappedPackage;
+              }
+            )
+            (
+              lib.filterAttrs (
+                _: hm:
+                (hm.my.user.ai.${option}.enable or false)
+                && (hm.my.user.ai.${option}.networkNamespace or null) != null
+              ) (config.home-manager.users or { })
+            )
+      )
+      { }
+      {
+        antigravity-cli = "antigravityCli";
+        chatgpt = "chatgpt";
+        claude-code = "claudeCode";
+        codex = "codex";
+        orca = "orca";
+      };
 
   targets = lib.mapAttrsToList (id: app: {
     inherit id;
@@ -68,23 +86,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    my.system.services.networkNamespaces.applications =
-      codexApps
-      //
-        lib.mapAttrs'
-          (
-            user: hm:
-            lib.nameValuePair "orca-${user}" {
-              inherit user;
-              namespace = hm.my.user.ai.orca.networkNamespace;
-              package = hm.my.user.ai.orca.unwrappedPackage;
-            }
-          )
-          (
-            lib.filterAttrs (
-              _: hm: (hm.my.user.ai.orca.enable or false) && (hm.my.user.ai.orca.networkNamespace or null) != null
-            ) (config.home-manager.users or { })
-          );
+    my.system.services.networkNamespaces.applications = aiApps;
 
     assertions = lib.mapAttrsToList (id: app: {
       assertion =

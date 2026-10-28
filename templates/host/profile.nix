@@ -91,6 +91,21 @@
         # opencode.enable = true;
         # skillshare.enable = true;
 
+        antigravityCli = {
+          # enable = true;
+          # networkNamespace = "vpn"; # Requires the enabled system namespace.
+        };
+
+        chatgpt = {
+          # enable = true;
+          # networkNamespace = "vpn"; # Requires the enabled system namespace.
+        };
+
+        claudeCode = {
+          # enable = true;
+          # networkNamespace = "vpn"; # Requires the enabled system namespace.
+        };
+
         codex = {
           # enable = true;
           # networkNamespace = "vpn"; # Requires the enabled system namespace.
