@@ -74,6 +74,13 @@ in
       programs.zen-browser = {
         enable = true;
 
+        policies =
+          lib.optionalAttrs
+            (config.xdg.userDirs.enable && config.xdg.userDirs.download != config.home.homeDirectory)
+            {
+              DefaultDownloadDirectory = config.xdg.userDirs.download;
+            };
+
         profiles = lib.mkIf (cfg.profilePath != null) {
           default = defaults // {
             path = cfg.profilePath;

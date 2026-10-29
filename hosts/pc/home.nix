@@ -15,13 +15,13 @@ in
     download = "${home}/downloads";
     pictures = "${home}/pictures";
     projects = "${home}/dev";
+    videos = "${home}/videos";
     # XDG disables an unused directory by pointing it at the home itself.
     desktop = home;
     documents = home;
     music = home;
     publicShare = home;
     templates = home;
-    videos = home;
   };
 
   home.file = {
