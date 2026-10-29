@@ -122,6 +122,7 @@
         # anki.enable = true;
         # bruno.enable = true;
         # chrome.enable = true;
+        # ciscoPacketTracer.enable = true; # Requires the installer from Cisco's download page.
         # krita.enable = true;
         # mpv.enable = true;
         # obsidian.enable = true;
