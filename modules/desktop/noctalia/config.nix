@@ -15,7 +15,7 @@ in
         {
           shell = {
             avatar_path = "${config.home.homeDirectory}/.face";
-            screenshot.directory = "${config.home.homeDirectory}/Pictures/Screenshots";
+            screenshot.directory = "${config.home.homeDirectory}/pictures/screenshots";
           };
 
           wallpaper.directory = "${config.home.homeDirectory}/pictures/wallpapers";
