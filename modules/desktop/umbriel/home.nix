@@ -38,13 +38,16 @@ in
 
     programs.noctalia.settings.theme.templates.builtin_ids =
       lib.mkIf config.my.user.desktop.noctalia.enable
-        [
-          "cava"
-          "gtk3"
-          "gtk4"
-          "kcolorscheme"
-          "kitty"
-          "umbriel"
-        ];
+        (
+          [
+            "cava"
+            "gtk3"
+            "gtk4"
+            "kcolorscheme"
+            "kitty"
+            "umbriel"
+          ]
+          ++ lib.optional (lib.attrByPath [ "my" "user" "desktop" "niriConfig" "enable" ] false config) "niri"
+        );
   };
 }

@@ -11,7 +11,7 @@
   my = {
     desktop = {
       gnome.enable = false;
-      niri.enable = false;
+      niri.enable = true;
       umbriel.enable = true;
       noctaliaGreeter.enable = true;
       opentabletdriver.enable = true;
@@ -27,7 +27,7 @@
       apps = {
         libreoffice.enable = true;
         steam.enable = true;
-        obs.enable = true;
+        obs.enable = false;
         vesktop.enable = true;
       };
 
@@ -105,13 +105,13 @@
       sonora.enable = true;
       telegram.enable = true;
       youtubeMusic.enable = false;
-      voxtype.enable = true;
+      voxtype.enable = false;
       zenBrowser.enable = true;
     };
 
     desktop = {
       niriConfig = {
-        enable = false;
+        enable = true;
         workspaceProfile = "pc";
       };
 

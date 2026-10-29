@@ -33,11 +33,5 @@ if [[ -f $cfg ]]; then
     [[ $instances == instances || $instances == "$data/PrismLauncher/instances" || $instances == "$games/minecraft/instances" ]] \
         || fail "custom Prism InstanceDir; restore instances and reset this setting manually"
 fi
-if [[ -d $pictures/wallpapers ]]; then
-    [[ -z $(find "$pictures/wallpapers" -type f -print -quit) ]] \
-        || fail "unmanaged wallpaper files; restore personal wallpapers separately"
-    while IFS= read -r -d '' path; do
-        [[ $(readlink "$path") == /nix/store/*-home-manager-files/* ]] \
-            || fail "unmanaged wallpaper link at $path"
-    done < <(find "$pictures/wallpapers" -type l -print0)
-fi
+# Regular wallpapers and local additions are safe. The wallpaper module
+# only replaces its own managed files during activation.

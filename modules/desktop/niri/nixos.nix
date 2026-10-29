@@ -111,6 +111,7 @@ in
     # the screen in OBS or Chromium. Restart them once the session is ready.
     systemd.user.services.niri-portal-init = {
       description = "Initialize Niri screen-sharing portals";
+      unitConfig.ConditionEnvironment = "XDG_CURRENT_DESKTOP=niri";
       wantedBy = [ "graphical-session.target" ];
 
       wants = [

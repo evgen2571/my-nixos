@@ -1,6 +1,7 @@
 # Umbriel
 
-The PC uses Umbriel with a scrolling layout and Noctalia. Enable the system session
+The PC offers Umbriel and Niri, with Umbriel selected by default in the greeter.
+Umbriel uses a scrolling layout and Noctalia. Enable the system session
 with `my.desktop.umbriel.enable` and this personal config with
 `my.primaryUser.home.settings.my.user.desktop.umbrielConfig.enable`.
 The modules are discovered automatically. Noctalia Greeter selects Umbriel when
@@ -42,7 +43,7 @@ existing window through Umbriel IPC before launching another.
 The PC enables `my.user.desktop.skwdWall.enable` for Skwd-wall's picker and renderer.
 `Mod+Y` and the wallpaper bar button run `skwd-wall-v2`; its daemon starts with
 the graphical session and restores the last selected wallpaper. Images and videos
-use the existing `~/Pictures/Wallpapers` directory (`wallpapers.directory`).
+use `wallpapers.directory` (`~/pictures/wallpapers` on the PC).
 Home Manager seeds `~/.config/skwd-wall-v2/config.json` once and leaves GUI settings,
 caches, and saved wallpapers writable. Noctalia's wallpaper renderer is disabled;
 existing GUI overrides in `~/.local/state/noctalia/settings.toml` still take priority.
@@ -69,23 +70,17 @@ and greeter appearance sync no longer carries a desktop wallpaper.
   Niri-only layer placement, overview shadow, notification, and screenshot UI
   animation settings have no direct equivalent and are omitted.
 
-The laptop keeps its Niri modules and config. To return the PC to Niri in a future
-configuration, disable both Umbriel options and re-enable both Niri options in
-`hosts/pc/profile.nix`. Keep a known-good generation and console access when first
+The laptop keeps its Niri modules and config. Select Niri in the PC greeter to use
+it, or disable both Umbriel options in `hosts/pc/profile.nix` to make Niri the
+default again. Keep a known-good generation and console access when first
 trying the new session; the branch itself does not activate anything.
 
 ## Checks
 
 ```sh
-python3 -B config/umbriel/test-config.py
-nix-build config/umbriel/test-module.nix --no-out-link
-nix-build config/skwd-wall/test-module.nix --no-out-link
 just check --no-build
 just build nixos-pc
 ```
 
-The module test evaluates enabled/disabled system and home settings, then validates
-the installed TOML with the pinned Umbriel binary. The Python tests cover app and
-dialog routing, scratchpads, shortcut coverage, app reuse, and IPC failure handling.
-Builds and config validation do not test NVIDIA rendering, monitor placement,
+Evaluation and builds do not test NVIDIA rendering, monitor placement,
 login, lock/unlock, live scratchpads, screenshots, or screen sharing.
