@@ -38,6 +38,7 @@ assert builtins.all (
     "noatime"
   ]
 ) (builtins.attrNames mounts);
+assert config.fileSystems."/var/lib".neededForBoot;
 assert config.fileSystems."/boot".device == partitions.ESP.content.device;
 assert config.fileSystems."/boot".fsType == "vfat";
 assert !(config.fileSystems ? "/efi");

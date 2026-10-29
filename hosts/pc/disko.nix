@@ -1,6 +1,9 @@
 { lib, ... }:
 
 {
+  # The age identity is needed by SOPS before user/password activation.
+  fileSystems."/var/lib".neededForBoot = true;
+
   disko.devices.disk.nvme = {
     type = "disk";
     # Set the verified whole-disk by-id path in the private PC module.

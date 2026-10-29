@@ -4,6 +4,8 @@
   imports = [
     ./hardware-configuration.nix
     ./disko.nix
+    ./game-storage.nix
+    ./recovery.nix
     ./profile.nix
     ./secrets.nix
     ../../modules/core/desktop-baseline.nixos.nix

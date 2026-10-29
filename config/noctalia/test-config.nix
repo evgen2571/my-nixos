@@ -31,6 +31,7 @@ let
       ++ modules;
     }).config;
   portable = home [ ];
+  collection = home [ { wallpapers.enable = true; } ];
   disabled = home [ { my.user.desktop.noctalia.enable = false; } ];
   legacyPC = home [ { my.user.desktop.noctalia.profile = "pc"; } ];
   legacyLaptop = home [ { my.user.desktop.noctalia.profile = "laptop"; } ];
@@ -80,7 +81,11 @@ assert !portable.programs.noctalia.settings.theme.templates.user.nvim-base16.ena
 assert !portable.programs.noctalia.settings.theme.templates.user.niri-layout.enabled;
 assert portable.fonts.fontconfig.enable;
 assert builtins.elem pkgs.nerd-fonts.hurmit portable.home.packages;
-assert portable.wallpapers.directory == "/home/test-user/Pictures/Wallpapers";
+assert portable.wallpapers.directory == "/home/test-user/pictures/wallpapers";
+assert collection.home.file.wallpapers.target == "pictures/wallpapers";
+assert collection.home.file.wallpapers.recursive && !collection.home.file.wallpapers.force;
+assert collection.programs.noctalia.settings.wallpaper.directory == collection.wallpapers.directory;
+assert portable.programs.noctalia.settings.theme.source == "wallpaper";
 assert !(disabled.xdg.configFile ? "noctalia/config.toml");
 assert !(disabled.home.activation ? pruneStaleNoctaliaSettings);
 assert legacyPC.programs.noctalia.settings.desktop_widgets.enabled;

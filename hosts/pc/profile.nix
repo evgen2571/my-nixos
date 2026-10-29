@@ -70,7 +70,10 @@
     };
   };
 
-  my.primaryUser.home.settings.wallpapers.enable = true;
+  my.primaryUser.home.settings = {
+    imports = [ ./home.nix ];
+    wallpapers.enable = true;
+  };
 
   my.primaryUser.home.settings.programs.noctalia.settings.include.files = lib.mkDefault [
     "${configPaths.wm.noctaliaConfigDir}/widgets-pc.toml"

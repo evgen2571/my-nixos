@@ -18,7 +18,7 @@ in
             screenshot.directory = "${config.home.homeDirectory}/Pictures/Screenshots";
           };
 
-          wallpaper.directory = "${config.home.homeDirectory}/Pictures/Wallpapers";
+          wallpaper.directory = "${config.home.homeDirectory}/pictures/wallpapers";
 
           theme.templates.user = {
             nvim-base16.enabled = lib.attrByPath [ "my" "user" "dev" "neovim" "enable" ] false config;
