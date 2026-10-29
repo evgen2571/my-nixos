@@ -17,3 +17,148 @@
      if not os.environ.get(
          "NIXOS_REBUILD_I_UNDERSTAND_THE_CONSEQUENCES_PLEASE_BREAK_MY_SYSTEM"
      ):
+--- a/tests/test_main.py
++++ b/tests/test_main.py
+@@ -187,7 +187,7 @@
+
+     nr.execute(["nixos-rebuild", "boot", "--no-flake", "-vvv", "--no-reexec"])
+
+-    assert mock_run.call_count == 8
++    assert mock_run.call_count == 9
+     mock_run.assert_has_calls(
+         [
+             call(
+@@ -224,6 +224,11 @@
+                 ],
+                 check=True,
+                 stdout=PIPE,
++                **DEFAULT_RUN_KWARGS,
++            ),
++            call(
++                ["sh", "-c", 'if test -x "$1/bin/deployment-preflight"; then exec "$1/bin/deployment-preflight"; fi', "sh", config_path],
++                check=True,
+                 **DEFAULT_RUN_KWARGS,
+             ),
+             call(
+@@ -493,7 +498,7 @@
+         ]
+     )
+
+-    assert mock_run.call_count == 5
++    assert mock_run.call_count == 6
+     mock_run.assert_has_calls(
+         [
+             call(
+@@ -518,6 +523,11 @@
+                 ],
+                 check=True,
+                 stdout=PIPE,
++                **DEFAULT_RUN_KWARGS,
++            ),
++            call(
++                ["sudo", "sh", "-c", 'if test -x "$1/bin/deployment-preflight"; then exec "$1/bin/deployment-preflight"; fi', "sh", config_path],
++                check=True,
+                 **DEFAULT_RUN_KWARGS,
+             ),
+             call(
+@@ -610,7 +620,7 @@
+         ]
+     )
+
+-    assert mock_run.call_count == 12
++    assert mock_run.call_count == 13
+     mock_run.assert_has_calls(
+         [
+             call(
+@@ -741,6 +751,11 @@
+                     "ssh://user@target-host",
+                     config_path,
+                 ],
++                check=True,
++                **DEFAULT_RUN_KWARGS,
++            ),
++            call(
++                ["ssh", *nr.process.SSH_DEFAULT_OPTS, "user@target-host", "--", "sudo", "/bin/sh", "-c", """'exec env -i PATH="${PATH-}" "$@"'""", "sh", "sh", "-c", '\'if test -x "$1/bin/deployment-preflight"; then exec "$1/bin/deployment-preflight"; fi\'', "sh", str(config_path)],
+                 check=True,
+                 **DEFAULT_RUN_KWARGS,
+             ),
+@@ -842,7 +857,7 @@
+         ]
+     )
+
+-    assert mock_run.call_count == 6
++    assert mock_run.call_count == 7
+     mock_run.assert_has_calls(
+         [
+             call(
+@@ -867,6 +882,11 @@
+             ),
+             call(
+                 ["nix-copy-closure", "--to", "user@localhost", config_path],
++                check=True,
++                **DEFAULT_RUN_KWARGS,
++            ),
++            call(
++                ["ssh", *nr.process.SSH_DEFAULT_OPTS, "user@localhost", "--", "sudo", "/bin/sh", "-c", """'exec env -i PATH="${PATH-}" "$@"'""", "sh", "sh", "-c", '\'if test -x "$1/bin/deployment-preflight"; then exec "$1/bin/deployment-preflight"; fi\'', "sh", str(config_path)],
+                 check=True,
+                 **DEFAULT_RUN_KWARGS,
+             ),
+@@ -969,7 +989,7 @@
+         ]
+     )
+
+-    assert mock_run.call_count == 8
++    assert mock_run.call_count == 9
+     mock_run.assert_has_calls(
+         [
+             call(
+@@ -1025,6 +1045,11 @@
+                     "user@localhost",
+                     config_path,
+                 ],
++                check=True,
++                **DEFAULT_RUN_KWARGS,
++            ),
++            call(
++                ["sh", "-c", 'if test -x "$1/bin/deployment-preflight"; then exec "$1/bin/deployment-preflight"; fi', "sh", config_path],
+                 check=True,
+                 **DEFAULT_RUN_KWARGS,
+             ),
+@@ -1409,13 +1434,18 @@
+     )
+
+     # --store-path skips build and write_version_suffix, so only activation calls
+-    assert mock_run.call_count == 4
++    assert mock_run.call_count == 5
+     mock_run.assert_has_calls(
+         [
+             call(
+                 ["nix-instantiate", "--find-file", "nixos-system"],
+                 capture_output=True,
+                 check=False,
++                **DEFAULT_RUN_KWARGS,
++            ),
++            call(
++                ["sh", "-c", 'if test -x "$1/bin/deployment-preflight"; then exec "$1/bin/deployment-preflight"; fi', "sh", config_path],
++                check=True,
+                 **DEFAULT_RUN_KWARGS,
+             ),
+             call(
+@@ -1482,11 +1512,16 @@
+     )
+
+     # --store-path skips build and write_version_suffix, so only copy/activation calls
+-    assert mock_run.call_count == 6
++    assert mock_run.call_count == 7
+     mock_run.assert_has_calls(
+         [
+             call(
+                 ["nix-copy-closure", "--to", "user@remote-host", config_path],
++                check=True,
++                **DEFAULT_RUN_KWARGS,
++            ),
++            call(
++                ["ssh", *nr.process.SSH_DEFAULT_OPTS, "user@remote-host", "--", "sudo", "/bin/sh", "-c", """'exec env -i PATH="${PATH-}" "$@"'""", "sh", "sh", "-c", '\'if test -x "$1/bin/deployment-preflight"; then exec "$1/bin/deployment-preflight"; fi\'', "sh", str(config_path)],
+                 check=True,
+                 **DEFAULT_RUN_KWARGS,
+             ),

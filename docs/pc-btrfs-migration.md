@@ -119,24 +119,10 @@ PRIVATE_REV=$(git -C ../my-nixos-private rev-parse HEAD)
 PRIVATE="git+file://$(realpath ../my-nixos-private)?rev=$PRIVATE_REV"
 just check --no-build --override-input private "$PRIVATE"
 just build nixos-pc --override-input private "$PRIVATE"
-nix eval --impure .#nixosConfigurations.nixos-pc \
-  --override-input private "$PRIVATE" --no-write-lock-file \
-  --apply 'import ./lib/test-pc-disko.nix'
-nix eval --impure .#nixosConfigurations.nixos-pc \
-  --override-input private "$PRIVATE" --no-write-lock-file \
-  --apply 'import ./lib/test-pc-home.nix'
-python3 lib/test-pc-home-layout.py
-python3 config/noctalia/test-prune-stale-settings.py
-nix build --impure --expr 'import ./config/noctalia/test-config.nix {}' --no-link -L
-nix build --impure --expr 'import ./lib/test-pc-disko-vm.nix {}' --no-link -L
 ```
 
-The last command formats only a disposable QEMU virtual disk. It checks the
-layout and root replacement preserving data, then boots a minimal UEFI system
-using the same storage, recovery and home modules. It tests SOPS failure with an
-upstream encrypted fixture lacking its identity, recovery hash installation,
-managed links, directory ownership, idempotence and unmounted tmpfiles safety.
-It does not boot the full NVIDIA desktop or run the graphical game clients. These commands do not activate anything on the host.
+These commands evaluate and build the configuration without activating it. They
+do not verify boot, runtime behavior, or the installation procedure below.
 
 ## Installer preparation: no target disk writes yet
 
@@ -451,8 +437,7 @@ Restore needed `/etc/ssh` files to the new root, verify the retained SOPS identi
 at `/mnt/var/lib/sops-nix/key.txt`. Verify or restore the protected recovery hash
 and inspect the home conflicts above,
 then run the same patched installer with the newly built `SYSTEM`. Do not restore
-home or game backups over the retained links. The root-only replacement test
-covers this path, including retaining `/var/lib` recovery data.
+home or game backups over the retained links.
 Preserving `@var-lib` also preserves databases and container state; confirm their
 compatibility with the configuration being installed. No partitioning or mkfs is
 needed. Keeping subvolumes on one disk does not protect them from disk failure or

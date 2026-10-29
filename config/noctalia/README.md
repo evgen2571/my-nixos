@@ -18,5 +18,3 @@ Theme colors are generated, including the files Niri, Kitty, and Neovim read. If
 Settings changed in the GUI stay in `~/.local/state/noctalia/settings.toml` and override repo defaults. I keep that state writable. Activation removes obsolete GUI overrides, including the unsupported timer desktop widget, after backing up the settings. The Sonora community theme needs the app to be launched once before Noctalia can apply it.
 
 In Niri, `Mod+Space` opens the launcher, `Mod+S` the control center, and `Mod+Comma` the settings.
-
-Config checks: `nix-build config/noctalia/test-config.nix --no-out-link` and `python3 config/noctalia/test-prune-stale-settings.py`.
