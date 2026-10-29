@@ -22,11 +22,23 @@ let
       pkgs.zoxide
     ];
 
-    text = builtins.readFile ./project-list.sh;
+    text =
+      builtins.replaceStrings
+        [ "@PROJECTS_DIR@" ]
+        [
+          (lib.escapeShellArg config.xdg.userDirs.projects)
+        ]
+        (builtins.readFile ./project-list.sh);
   };
 
   seshConfig =
-    builtins.replaceStrings [ "@SESH_PROJECT_LIST@" ] [ "${seshProjectList}/bin/sesh-project-list" ]
+    builtins.replaceStrings
+      [ "@SESH_PROJECT_LIST@" "@CP_PATH@" "@PROJECT_PATTERN@" ]
+      [
+        "${seshProjectList}/bin/sesh-project-list"
+        (builtins.toJSON "${config.xdg.userDirs.projects}/cp")
+        (builtins.toJSON "${config.xdg.userDirs.projects}/*")
+      ]
       (builtins.readFile ../../../config/sesh/sesh.toml);
 in
 {

@@ -31,6 +31,8 @@ let
       ++ modules;
     }).config;
   portable = home [ ];
+  relocated = home [ { xdg.userDirs.pictures = "/home/test-user/media/Pictures"; } ];
+  pcLayout = home [ ../../hosts/pc/home.nix ];
   collection = home [ { wallpapers.enable = true; } ];
   disabled = home [ { my.user.desktop.noctalia.enable = false; } ];
   legacyPC = home [ { my.user.desktop.noctalia.profile = "pc"; } ];
@@ -55,6 +57,7 @@ let
         widget.clock.scale = 1.3;
         widget.battery.enabled = false;
         wallpaper.directory = "/home/test-user/wallpapers";
+        shell.screenshot.directory = "/home/test-user/captures";
         theme.templates.user.nvim-base16.enabled = true;
       };
     }
@@ -81,8 +84,22 @@ assert !portable.programs.noctalia.settings.theme.templates.user.nvim-base16.ena
 assert !portable.programs.noctalia.settings.theme.templates.user.niri-layout.enabled;
 assert portable.fonts.fontconfig.enable;
 assert builtins.elem pkgs.nerd-fonts.hurmit portable.home.packages;
-assert portable.wallpapers.directory == "/home/test-user/pictures/wallpapers";
-assert collection.home.file.wallpapers.target == "pictures/wallpapers";
+assert portable.wallpapers.directory == "/home/test-user/Pictures/wallpapers";
+assert
+  portable.programs.noctalia.settings.shell.screenshot.directory
+  == "/home/test-user/Pictures/screenshots";
+assert relocated.wallpapers.directory == "/home/test-user/media/Pictures/wallpapers";
+assert
+  relocated.programs.noctalia.settings.shell.screenshot.directory
+  == "/home/test-user/media/Pictures/screenshots";
+assert pcLayout.wallpapers.directory == "/home/test-user/pictures/wallpapers";
+assert
+  pcLayout.programs.noctalia.settings.shell.screenshot.directory
+  == "/home/test-user/pictures/screenshots";
+assert pcLayout.xdg.userDirs.download == "/home/test-user/downloads";
+assert pcLayout.xdg.userDirs.projects == "/home/test-user/dev";
+assert !(pcLayout.home.file ? dev);
+assert collection.home.file.wallpapers.target == "Pictures/wallpapers";
 assert collection.home.file.wallpapers.recursive && !collection.home.file.wallpapers.force;
 assert collection.programs.noctalia.settings.wallpaper.directory == collection.wallpapers.directory;
 assert portable.programs.noctalia.settings.theme.source == "wallpaper";
@@ -100,6 +117,8 @@ assert overrides.programs.noctalia.settings.widget.clock.scale == 1.3;
 assert !overrides.programs.noctalia.settings.widget.battery.enabled;
 assert !overrides.programs.noctalia.settings.widget.volume.enabled;
 assert overrides.wallpapers.directory == "/home/test-user/wallpapers";
+assert
+  overrides.programs.noctalia.settings.shell.screenshot.directory == "/home/test-user/captures";
 assert overrides.programs.noctalia.settings.theme.templates.user.nvim-base16.enabled;
 assert custom.programs.noctalia.settings.bar.default.thickness == 30;
 assert custom.programs.noctalia.settings.theme.mode == "light";

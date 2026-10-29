@@ -1,18 +1,18 @@
 #:schema https://github.com/joshmedeski/sesh/raw/main/sesh.schema.json
 
-# Only discover project roots under ~/dev; live tmux and configured sessions
+# Only discover roots under xdg.userDirs.projects; live tmux and configured sessions
 # remain available independently of zoxide's history.
 [frecency]
 list_command = "@SESH_PROJECT_LIST@"
 
 [[session]]
 name = "cp"
-path = "~/dev/cp"
+path = @CP_PATH@
 startup_command = "tmux rename-window nvim; nvim ."
 windows = [ "term" ]
 
 [[wildcard]]
-pattern = "~/dev/*"
+pattern = @PROJECT_PATTERN@
 startup_command = "tmux rename-window nvim; nvim ."
 windows = [ "term" ]
 
