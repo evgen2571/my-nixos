@@ -117,6 +117,7 @@
       };
 
       umbrielConfig.enable = true;
+      cursors.enable = true;
 
       noctalia.enable = true;
       skwdWall.enable = true;
