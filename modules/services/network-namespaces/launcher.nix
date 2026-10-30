@@ -9,36 +9,60 @@ let
   cfg = config.my.system.services.networkNamespaces;
   apps = cfg.applications;
 
-  aiApps =
+  userApps =
     lib.foldlAttrs
       (
-        registrations: id: option:
+        registrations: id: path:
         registrations
         //
           lib.mapAttrs'
             (
               user: hm:
+              let
+                app = lib.getAttrFromPath path hm.my.user;
+              in
               lib.nameValuePair "${id}-${user}" {
                 inherit user;
-                namespace = hm.my.user.ai.${option}.networkNamespace;
-                package = hm.my.user.ai.${option}.unwrappedPackage;
+                namespace = app.networkNamespace;
+                package = app.unwrappedPackage;
               }
             )
             (
               lib.filterAttrs (
                 _: hm:
-                (hm.my.user.ai.${option}.enable or false)
-                && (hm.my.user.ai.${option}.networkNamespace or null) != null
+                let
+                  app = lib.attrByPath path { } hm.my.user;
+                in
+                (app.enable or false) && (app.networkNamespace or null) != null
               ) (config.home-manager.users or { })
             )
       )
       { }
       {
-        antigravity-cli = "antigravityCli";
-        chatgpt = "chatgpt";
-        claude-code = "claudeCode";
-        codex = "codex";
-        orca = "orca";
+        antigravity-cli = [
+          "ai"
+          "antigravityCli"
+        ];
+        chatgpt = [
+          "ai"
+          "chatgpt"
+        ];
+        claude-code = [
+          "ai"
+          "claudeCode"
+        ];
+        codex = [
+          "ai"
+          "codex"
+        ];
+        orca = [
+          "ai"
+          "orca"
+        ];
+        cisco-packet-tracer = [
+          "apps"
+          "ciscoPacketTracer"
+        ];
       };
 
   targets = lib.mapAttrsToList (id: app: {
@@ -86,7 +110,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    my.system.services.networkNamespaces.applications = aiApps;
+    my.system.services.networkNamespaces.applications = userApps;
 
     assertions = lib.mapAttrsToList (id: app: {
       assertion =

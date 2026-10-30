@@ -198,7 +198,6 @@ default_floating_size = { width = 0.60, height = 0.70 }
 match.app_id = '^(zen-beta|zen)$'
 match.title = '^(?!^(Picture-in-Picture|Picture in picture)$)(?!^Delete Space\?$).*$'
 default_maximize_to_edges = true
-default_fullscreen = true
 default_workspace = "web"
 blur = true
 
@@ -287,6 +286,11 @@ default_floating_size = { width = 0.58, height = 0.78 }
 
 [[window_rule]]
 match.app_id = '^(bruno|Bruno|com\.usebruno\.Bruno)$'
+default_maximize_to_edges = true
+default_workspace = "code"
+
+[[window_rule]]
+match.app_id = '^PacketTracer$'
 default_maximize_to_edges = true
 default_workspace = "code"
 
@@ -385,5 +389,5 @@ default_workspace = "code"
 
 [[window_rule]]
 match.app_id = '^chatgpt$'
-default_fullscreen = true
+default_maximize_to_edges = true
 default_workspace = "ai"

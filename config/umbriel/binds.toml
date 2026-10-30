@@ -18,7 +18,7 @@
 "Mod+M" = { action = "scratchpad-toggle:music", repeat = false }
 "Mod+T" = { action = "spawn:$HOME/.config/umbriel/scripts/focus-or-launch '^(org\\.telegram\\.desktop|telegram-desktop)$' -- Telegram", repeat = false }
 "Mod+D" = { action = "spawn:$HOME/.config/umbriel/scripts/focus-or-launch '^(vesktop|Vesktop)$' -- vesktop", repeat = false }
-"Mod+Shift+O" = { action = "spawn:$HOME/.config/umbriel/scripts/focus-or-launch '^orca$' -- orca", repeat = false }
+"Mod+Shift+O" = { action = "spawn:orca open", repeat = false }
 "Mod+Shift+D" = { action = "spawn:wayscriber --daemon-toggle", repeat = false }
 
 # Noctalia v5 IPC
