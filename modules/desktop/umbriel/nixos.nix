@@ -75,5 +75,21 @@ in
         "org.freedesktop.impl.portal.Secret" = [ "gnome-keyring" ];
       };
     };
+
+    # A portal activated before login keeps its old display environment.
+    systemd.user.services.umbriel-portal-init = {
+      description = "Initialize Umbriel desktop portal";
+      wantedBy = [ "umbriel-session.target" ];
+      wants = [ "xdg-desktop-portal.service" ];
+      after = [
+        "umbriel.service"
+        "xdg-desktop-portal.service"
+      ];
+
+      serviceConfig = {
+        Type = "oneshot";
+        ExecStart = "${pkgs.systemd}/bin/systemctl --user restart xdg-desktop-portal.service";
+      };
+    };
   };
 }
