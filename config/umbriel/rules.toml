@@ -16,7 +16,7 @@ match.app_id = '^md\.obsidian\.Obsidian$'
 match.title = '^(?!^(Settings|Community themes|Community plugins|Properties|About|Open vault|Manage vaults)).*$'
 default_floating = false
 default_maximize_to_edges = true
-default_workspace = "notes"
+default_workspace = "study"
 
 [[window_rule]]
 match.app_id = '^md\.obsidian\.Obsidian$'
@@ -76,7 +76,7 @@ default_position = { x = 20, y = 32, anchor = "top_right" }
 match.app_id = '^(firefox|google-chrome|chromium-browser|chromium)$'
 match.title = '^(?!^(Picture-in-Picture|Picture in picture)$).*$'
 default_maximize_to_edges = true
-default_workspace = "browser"
+default_workspace = "web"
 blur = true
 
 [[window_rule]]
@@ -198,7 +198,8 @@ default_floating_size = { width = 0.60, height = 0.70 }
 match.app_id = '^(zen-beta|zen)$'
 match.title = '^(?!^(Picture-in-Picture|Picture in picture)$)(?!^Delete Space\?$).*$'
 default_maximize_to_edges = true
-default_workspace = "browser"
+default_fullscreen = true
+default_workspace = "web"
 blur = true
 
 [[window_rule]]
@@ -269,15 +270,15 @@ opacity = 0.94
 default_floating_size = { width = 0.60, height = 0.60 }
 
 [[window_rule]]
-match.app_id = '^(anki|net\.ankiweb\.Anki)$'
+match.app_id = '^(anki|Anki|net\.ankiweb\.Anki)$'
 # std::regex word boundaries are ASCII; whitespace also terminates Russian titles.
 match.title = '^(?!^(Add|Add Note|Add Cards|Browse|Preferences|Sync|Добавить|Обзор|Настройки)(\b|$|(?=\s))).*$'
 default_maximize_to_edges = true
-default_workspace = "anki"
+default_workspace = "study"
 opacity = 0.98
 
 [[window_rule]]
-match.app_id = '^(anki|net\.ankiweb\.Anki)$'
+match.app_id = '^(anki|Anki|net\.ankiweb\.Anki)$'
 match.title = '^(Add|Add Note|Add Cards|Browse|Preferences|Sync|Добавить|Обзор|Настройки)(\b|$|(?=\s))'
 default_floating = true
 default_focused = true
@@ -381,3 +382,8 @@ default_floating_size = { width = 0.50, height = 0.50 }
 match.app_id = '^(virt-manager|virt-viewer|remote-viewer)$'
 default_maximize_to_edges = true
 default_workspace = "code"
+
+[[window_rule]]
+match.app_id = '^chatgpt$'
+default_fullscreen = true
+default_workspace = "ai"

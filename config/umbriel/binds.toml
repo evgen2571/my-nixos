@@ -5,25 +5,26 @@
 # Apps
 "Mod+Return" = { action = "spawn:kitty", repeat = false }
 "Mod+Shift+Return" = { action = "scratchpad-toggle:terminal", repeat = false }
-"Mod+F" = { action = "spawn:$HOME/.config/umbriel/scripts/focus-or-launch '^(zen-beta|zen)$' -- zen-beta", repeat = false }
+"Mod+W" = { action = "spawn:$HOME/.config/umbriel/scripts/focus-or-launch '^(zen-beta|zen)$' -- zen-beta", repeat = false }
 "Mod+E" = { action = "scratchpad-toggle:files", repeat = false }
 "Mod+Shift+E" = { action = "spawn:$HOME/.config/umbriel/scripts/focus-or-launch '^org\\.kde\\.dolphin$' -- dolphin", repeat = false }
 "Mod+X" = { action = "spawn:voxtype record toggle", repeat = false }
 
 # Maximize the temporary Kitty UI for sesh's project picker.
-"Mod+C" = { action = "spawn:kitty --title project-session sesh picker -i", repeat = false }
+"Mod+Shift+C" = { action = "spawn:kitty --title project-session sesh picker -i", repeat = false }
 "Mod+O" = { action = "spawn:$HOME/.config/umbriel/scripts/focus-or-launch '^md\\.obsidian\\.Obsidian$' -- obsidian", repeat = false }
-"Mod+A" = { action = "spawn:anki", repeat = false }
+"Mod+Shift+A" = { action = "spawn:$HOME/.config/umbriel/scripts/focus-or-launch '^(anki|Anki)$' -- anki", repeat = false }
 "Mod+B" = { action = "spawn:bruno", repeat = false }
 "Mod+M" = { action = "scratchpad-toggle:music", repeat = false }
-"Mod+T" = { action = "spawn:$HOME/.config/umbriel/scripts/focus-or-launch '^(org\\.telegram\\.desktop|telegram-desktop)$' -- telegram-desktop", repeat = false }
+"Mod+T" = { action = "spawn:$HOME/.config/umbriel/scripts/focus-or-launch '^(org\\.telegram\\.desktop|telegram-desktop)$' -- Telegram", repeat = false }
 "Mod+D" = { action = "spawn:$HOME/.config/umbriel/scripts/focus-or-launch '^(vesktop|Vesktop)$' -- vesktop", repeat = false }
+"Mod+Shift+O" = { action = "spawn:$HOME/.config/umbriel/scripts/focus-or-launch '^orca$' -- orca", repeat = false }
 "Mod+Shift+D" = { action = "spawn:wayscriber --daemon-toggle", repeat = false }
 
 # Noctalia v5 IPC
 "Mod+Comma" = "spawn:noctalia msg settings-toggle"
 "Mod+Space" = "spawn:noctalia msg panel-toggle launcher"
-"Mod+S" = "spawn:noctalia msg panel-toggle control-center"
+"Mod+Ctrl+S" = "spawn:noctalia msg panel-toggle control-center"
 "Mod+V" = "spawn:noctalia msg panel-toggle clipboard"
 "Mod+Y" = "spawn:skwd-wall-v2"
 "Mod+P" = "spawn:noctalia msg panel-toggle session"
@@ -49,7 +50,7 @@
 "Mod+Shift+Z" = "window-toggle-maximize"
 "Mod+Alt+Space" = "window-toggle-floating"
 "Mod+Shift+V" = "window-focus-switch-floating"
-"Mod+W" = "column-toggle-tabbed"
+"Mod+Shift+W" = "column-toggle-tabbed"
 "Mod+Shift+F" = "window-toggle-fullscreen"
 
 # Focus navigation
@@ -119,6 +120,13 @@
 "Mod+Shift+WheelUp" = "window-focus-left"
 "Mod+Ctrl+Shift+WheelDown" = "column-move-right"
 "Mod+Ctrl+Shift+WheelUp" = "column-move-left"
+
+# Named workspaces
+"Mod+N" = "workspace-switch:study"
+"Mod+S" = "workspace-switch:study"
+"Mod+A" = "workspace-switch:ai"
+"Mod+C" = "workspace-switch:code"
+"Mod+G" = "workspace-switch:gaming"
 
 # Numbered workspaces
 "Mod+1" = "workspace-switch:1"

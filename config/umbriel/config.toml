@@ -6,7 +6,7 @@ files = ["binds.toml", "rules.toml", "scratchpads.toml"]
 files = ["noctalia.toml"]
 
 [general]
-autostart = ["lan-mouse daemon", "wayscriber --daemon", "zen-beta"]
+autostart = ["lan-mouse daemon", "wayscriber --daemon", "zen-beta", "anki"]
 show_cheatsheet = false
 focus_on_activate = true
 # Preserve the independently positioned dialog rules inherited from Niri.
@@ -39,7 +39,7 @@ position = [2560, 0]
 scale = 1.0
 
 [[workspace]]
-name = "browser"
+name = "web"
 output = "DP-1"
 
 [[workspace]]
@@ -47,15 +47,11 @@ name = "chats"
 output = "DP-1"
 
 [[workspace]]
-name = "music"
+name = "ai"
 output = "DP-1"
 
 [[workspace]]
-name = "anki"
-output = "DP-1"
-
-[[workspace]]
-name = "notes"
+name = "study"
 output = "HDMI-A-1"
 
 [[workspace]]
