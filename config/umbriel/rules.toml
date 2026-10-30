@@ -274,7 +274,7 @@ match.app_id = '^(anki|Anki|net\.ankiweb\.Anki)$'
 match.title = '^(?!^(Add|Add Note|Add Cards|Browse|Preferences|Sync|Добавить|Обзор|Настройки)(\b|$|(?=\s))).*$'
 default_maximize_to_edges = true
 default_workspace = "study"
-opacity = 0.98
+opacity = 1.00
 
 [[window_rule]]
 match.app_id = '^(anki|Anki|net\.ankiweb\.Anki)$'
