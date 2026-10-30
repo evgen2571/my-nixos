@@ -1,0 +1,389 @@
+# Ported from config/niri/sub/rules; later matching fields take precedence.
+# Negative title lookaheads preserve Niri exclusions before workspace placement.
+
+# Fallbacks precede Noctalia's optional theme include.
+[colors]
+background = "#1e1e2e"
+insert_hint = "#ffc87f80"
+
+[[window_rule]]
+match.app_id = '^md\.obsidian\.Obsidian$'
+default_floating = false
+opacity = 1.0
+
+[[window_rule]]
+match.app_id = '^md\.obsidian\.Obsidian$'
+match.title = '^(?!^(Settings|Community themes|Community plugins|Properties|About|Open vault|Manage vaults)).*$'
+default_floating = false
+default_maximize_to_edges = true
+default_workspace = "study"
+
+[[window_rule]]
+match.app_id = '^md\.obsidian\.Obsidian$'
+match.title = '^Settings - '
+default_floating = true
+default_focused = true
+default_maximize_to_edges = false
+default_floating_size = { width = 0.44, height = 0.76 }
+default_position = { x = 20, y = 32, anchor = "top_left" }
+
+[[window_rule]]
+match.app_id = '^md\.obsidian\.Obsidian$'
+match.title = '^Properties'
+default_floating = true
+default_focused = true
+default_maximize_to_edges = false
+default_floating_size = { width = 0.36, height = 0.62 }
+default_position = { x = 20, y = 48, anchor = "top_left" }
+
+[[window_rule]]
+match.app_id = '^md\.obsidian\.Obsidian$'
+match.title = '^(Open vault|Manage vaults)'
+default_floating = true
+default_focused = true
+default_maximize_to_edges = false
+default_floating_size = { width = 0.40, height = 0.60 }
+default_position = { x = 20, y = 56, anchor = "top_left" }
+
+[[window_rule]]
+match.app_id = '^md\.obsidian\.Obsidian$'
+match.title = '^About'
+default_floating = true
+default_focused = true
+default_maximize_to_edges = false
+default_floating_size = { width = 0.32, height = 0.46 }
+default_position = { x = 20, y = 64, anchor = "top_left" }
+
+[[window_rule]]
+match.app_id = '^md\.obsidian\.Obsidian$'
+match.title = '^Community themes - '
+default_floating = true
+default_focused = true
+default_maximize_to_edges = false
+default_floating_size = { width = 0.44, height = 0.76 }
+default_position = { x = 20, y = 32, anchor = "top_right" }
+
+[[window_rule]]
+match.app_id = '^md\.obsidian\.Obsidian$'
+match.title = '^Community plugins - '
+default_floating = true
+default_focused = true
+default_maximize_to_edges = false
+default_floating_size = { width = 0.44, height = 0.76 }
+default_position = { x = 20, y = 32, anchor = "top_right" }
+
+[[window_rule]]
+match.app_id = '^(firefox|google-chrome|chromium-browser|chromium)$'
+match.title = '^(?!^(Picture-in-Picture|Picture in picture)$).*$'
+default_maximize_to_edges = true
+default_workspace = "web"
+blur = true
+
+[[window_rule]]
+match.app_id = '^(org\.kde\.dolphin|org\.gnome\.Nautilus|thunar|Thunar)$'
+default_floating = true
+default_focused = true
+default_floating_size = { width = 0.62, height = 0.70 }
+
+[[window_rule]]
+match.app_id = '^org\.kde\.dolphin$'
+match.title = '^(Configure( Language| Toolbars)?|Properties for .+) — Dolphin$'
+default_floating_size = { width = 0.42, height = 0.55 }
+default_scrolling_extent = 0.42
+
+[[window_rule]]
+match.app_id = '^org\.kde\.ark$'
+match.title = '^Ark$'
+default_floating = true
+default_focused = true
+default_maximize_to_edges = false
+default_floating_size = { width = 0.70, height = 0.70 }
+
+[[window_rule]]
+match.app_id = '^qimgv$'
+default_floating = true
+default_focused = true
+default_fullscreen = false
+default_floating_size = { width = 0.70, height = 0.70 }
+
+[[window_rule]]
+match.app_id = '^(discord|Discord)$'
+default_maximize_to_edges = true
+default_workspace = "chats"
+
+[[window_rule]]
+match.app_id = '^(sonora|pear-desktop|Pear Desktop|youtube-music|YouTube Music|com\.github\.th_ch\.youtube_music)$'
+default_floating = true
+default_focused = true
+default_maximize_to_edges = false
+default_floating_size = { width = 0.50, height = 0.45 }
+default_position = { x = 0, y = 12, anchor = "top" }
+
+[[window_rule]]
+match.app_id = '^kitty$'
+match.title = '^dropdown-term$'
+default_floating = true
+default_focused = true
+default_maximize_to_edges = false
+opacity = 0.88
+default_floating_size = { width = 0.70, height = 0.42 }
+default_position = { x = 0, y = 12, anchor = "top" }
+
+[[window_rule]]
+match.app_id = '^(org\.telegram\.desktop|telegram-desktop)$'
+match.title = "^(Telegram( \\([0-9]+\\))?|(\\([0-9]+\\) )?\u200e\u2068.+\u2069.*)$"
+default_maximize_to_edges = true
+default_workspace = "chats"
+
+[[window_rule]]
+match.app_id = '^(org\.telegram\.desktop|telegram-desktop)$'
+match.title = "^(?!^(Telegram( \\([0-9]+\\))?|(\\([0-9]+\\) )?\u200e\u2068.+\u2069.*)$).*$"
+default_floating = true
+default_focused = true
+default_maximize_to_edges = false
+default_floating_size = { width = 0.60, height = 0.70 }
+
+[[window_rule]]
+match.app_id = '^(org\.telegram\.desktop|telegram-desktop)$'
+match.title = '^Media viewer$'
+default_floating = true
+default_focused = true
+default_maximize_to_edges = false
+default_fullscreen = false
+default_floating_size = { width = 0.80, height = 0.80 }
+
+[[window_rule]]
+match.app_id = '^steam$'
+match.title = '^(?!^(Steam Settings|Friends List|Chat|Properties|Downloads|Special Offers)$)(?!^Sign in to Steam$).*$'
+default_maximize_to_edges = true
+default_workspace = "gaming"
+
+[[window_rule]]
+match.app_id = '^steamwebhelper$'
+match.title = '^(?!^(Steam Settings|Friends List|Chat|Properties|Downloads|Special Offers)$).*$'
+default_maximize_to_edges = true
+default_workspace = "gaming"
+
+[[window_rule]]
+match.app_id = '^steam$'
+match.title = '^Sign in to Steam$'
+default_floating = true
+default_focused = true
+default_maximize_to_edges = false
+default_floating_size = { width = 0.40, height = 0.55 }
+
+[[window_rule]]
+match.app_id = '^(steam|steamwebhelper)$'
+match.title = '^(Steam Settings|Friends List|Chat|Properties|Downloads|Special Offers)$'
+default_floating = true
+default_focused = true
+default_maximize_to_edges = false
+default_floating_size = { width = 0.58, height = 0.65 }
+
+[[window_rule]]
+match.app_id = '^(vesktop|Vesktop)$'
+match.title = '^((\([0-9]+\) )?Discord( \| .*)?|vesktop|Vesktop)$'
+default_maximize_to_edges = true
+default_workspace = "chats"
+
+[[window_rule]]
+match.app_id = '^(vesktop|Vesktop)$'
+match.title = '^(?!^((\([0-9]+\) )?Discord( \| .*)?|vesktop|Vesktop)$).*$'
+default_floating = true
+default_focused = true
+default_maximize_to_edges = false
+default_floating_size = { width = 0.60, height = 0.70 }
+
+[[window_rule]]
+match.app_id = '^(zen-beta|zen)$'
+match.title = '^(?!^(Picture-in-Picture|Picture in picture)$)(?!^Delete Space\?$).*$'
+default_maximize_to_edges = true
+default_fullscreen = true
+default_workspace = "web"
+blur = true
+
+[[window_rule]]
+match.app_id = '^(zen-beta|zen)$'
+match.title = '^Delete Space\?$'
+default_floating = true
+default_maximize_to_edges = false
+
+[[window_rule]]
+match.app_id = '^(gnome-control-center|pavucontrol|nm-connection-editor|blueman-manager|org\.gnome\.Calculator|gnome-calculator|galculator)$'
+default_floating = true
+default_focused = true
+default_floating_size = { width = 0.45, height = 0.55 }
+
+[[window_rule]]
+match.app_id = '^(xdg-desktop-portal|org\.freedesktop\.impl\.portal\.desktop\..*)$'
+default_floating = true
+default_focused = true
+default_floating_size = { width = 0.50, height = 0.60 }
+
+[[window_rule]]
+match.title = '^(Open|Save|Choose|Authenticate|Authentication Required|Password Required).*$'
+default_floating = true
+default_focused = true
+default_floating_size = { width = 0.50, height = 0.60 }
+
+[[window_rule]]
+match.app_id = '^(kitty|foot)$'
+opacity = 0.92
+
+[[window_rule]]
+match.app_id = '^(kitty|foot)$'
+match.title = '^editor$'
+default_maximize = false
+default_maximize_to_edges = false
+default_workspace = "code"
+opacity = 0.94
+
+[[window_rule]]
+match.app_id = '^(code|Code|codium|VSCodium|dev\.zed\.Zed|zed)$'
+default_maximize = false
+default_maximize_to_edges = false
+default_workspace = "code"
+
+[[window_rule]]
+match.app_id = '^orca$'
+match.title = '^Orca$'
+default_maximize_to_edges = true
+default_workspace = "code"
+
+[[window_rule]]
+match.app_id = '^kitty$'
+match.title = '^project-session$'
+default_maximize_to_edges = true
+default_workspace = "code"
+
+[[window_rule]]
+match.app_id = '^(Godot|godot)$'
+default_maximize_to_edges = true
+default_workspace = "gaming"
+
+[[window_rule]]
+match.app_id = '^kitty$'
+match.title = '^file-manager$'
+default_floating = true
+default_focused = true
+opacity = 0.94
+default_floating_size = { width = 0.60, height = 0.60 }
+
+[[window_rule]]
+match.app_id = '^(anki|Anki|net\.ankiweb\.Anki)$'
+# std::regex word boundaries are ASCII; whitespace also terminates Russian titles.
+match.title = '^(?!^(Add|Add Note|Add Cards|Browse|Preferences|Sync|Добавить|Обзор|Настройки)(\b|$|(?=\s))).*$'
+default_maximize_to_edges = true
+default_workspace = "study"
+opacity = 0.98
+
+[[window_rule]]
+match.app_id = '^(anki|Anki|net\.ankiweb\.Anki)$'
+match.title = '^(Add|Add Note|Add Cards|Browse|Preferences|Sync|Добавить|Обзор|Настройки)(\b|$|(?=\s))'
+default_floating = true
+default_focused = true
+default_maximize_to_edges = false
+default_floating_size = { width = 0.58, height = 0.78 }
+
+[[window_rule]]
+match.app_id = '^(bruno|Bruno|com\.usebruno\.Bruno)$'
+default_maximize_to_edges = true
+default_workspace = "code"
+
+[[window_rule]]
+match.app_id = '^(mpv|io\.mpv\.Mpv)$'
+default_floating = true
+default_focused = true
+default_floating_size = { width = 0.70, height = 0.70 }
+
+[[window_rule]]
+match.title = '^(Picture-in-Picture|Picture in picture)$'
+default_floating = true
+default_focused = false
+default_floating_size = { width = 0.30, height = 0.30 }
+default_position = { x = 12, y = 12, anchor = "bottom_right" }
+
+[[window_rule]]
+match.app_id = '^(org\.prismlauncher\.PrismLauncher|PrismLauncher)$'
+match.title = '^(?!^(New Instance|Settings) — Prism Launcher [0-9]+\.[0-9]+\.[0-9]+$).*$'
+default_maximize_to_edges = true
+default_workspace = "gaming"
+
+[[window_rule]]
+match.app_id = '^(org\.prismlauncher\.PrismLauncher|PrismLauncher)$'
+match.title = '^(New Instance|Settings) — Prism Launcher [0-9]+\.[0-9]+\.[0-9]+$'
+default_floating = true
+default_focused = true
+default_maximize_to_edges = false
+default_floating_size = { width = 0.60, height = 0.70 }
+
+[[window_rule]]
+match.app_id = '^(net\.lutris\.Lutris|lutris|sh\.ppy\.osu|osu!)$'
+default_maximize_to_edges = true
+default_workspace = "gaming"
+
+[[window_rule]]
+match.app_id = '^(gamescope|cs2|Minecraft|minecraft|osu!)$'
+default_fullscreen = true
+default_workspace = "gaming"
+
+[[window_rule]]
+match.app_id = '^steam_app_[0-9]+$'
+default_fullscreen = true
+default_workspace = "gaming"
+
+[[window_rule]]
+match.app_id = '^(com\.obsproject\.Studio|obs)$'
+match.title = '^(?!^(Settings|Add Scene|Plugin Manager)$).*$'
+default_maximize_to_edges = true
+default_workspace = "gaming"
+
+[[window_rule]]
+match.app_id = '^(com\.obsproject\.Studio|obs)$'
+match.title = '^Add Scene$'
+default_floating = true
+default_focused = true
+default_maximize_to_edges = false
+default_floating_size = { width = 0.35, height = 0.30 }
+
+[[window_rule]]
+match.app_id = '^(com\.obsproject\.Studio|obs)$'
+match.title = '^Plugin Manager$'
+default_floating = true
+default_focused = true
+default_maximize_to_edges = false
+default_floating_size = { width = 0.65, height = 0.70 }
+
+[[window_rule]]
+match.app_id = '^(com\.obsproject\.Studio|obs)$'
+match.title = '^Settings$'
+default_floating = true
+default_focused = true
+default_maximize_to_edges = false
+default_floating_size = { width = 0.60, height = 0.75 }
+
+[[window_rule]]
+match.app_id = '^dev\.noctalia\.Noctalia$'
+match.title = '^Noctalia Settings$'
+default_floating = true
+default_focused = true
+default_maximize = false
+default_maximize_to_edges = false
+default_fullscreen = false
+default_floating_size = { width = 0.52, height = 0.65 }
+
+[[window_rule]]
+match.app_id = '^(org\.quickshell|quickshell)$'
+default_floating = true
+default_focused = true
+default_floating_size = { width = 0.50, height = 0.50 }
+
+[[window_rule]]
+match.app_id = '^(virt-manager|virt-viewer|remote-viewer)$'
+default_maximize_to_edges = true
+default_workspace = "code"
+
+[[window_rule]]
+match.app_id = '^chatgpt$'
+default_fullscreen = true
+default_workspace = "ai"

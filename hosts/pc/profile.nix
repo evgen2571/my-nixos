@@ -12,6 +12,7 @@
     desktop = {
       gnome.enable = false;
       niri.enable = true;
+      umbriel.enable = true;
       noctaliaGreeter.enable = true;
       opentabletdriver.enable = true;
     };
@@ -26,7 +27,7 @@
       apps = {
         libreoffice.enable = true;
         steam.enable = true;
-        obs.enable = true;
+        obs.enable = false;
         vesktop.enable = true;
       };
 
@@ -69,7 +70,10 @@
     };
   };
 
-  my.primaryUser.home.settings.wallpapers.enable = true;
+  my.primaryUser.home.settings = {
+    imports = [ ./home.nix ];
+    wallpapers.enable = true;
+  };
 
   my.primaryUser.home.settings.programs.noctalia.settings.include.files = lib.mkDefault [
     "${configPaths.wm.noctaliaConfigDir}/widgets-pc.toml"
@@ -92,6 +96,7 @@
       anki.enable = true;
       bruno.enable = false;
       chrome.enable = false;
+      ciscoPacketTracer.enable = true;
       krita.enable = true;
       mpv.enable = true;
       obsidian.enable = true;
@@ -101,7 +106,7 @@
       sonora.enable = true;
       telegram.enable = true;
       youtubeMusic.enable = false;
-      voxtype.enable = true;
+      voxtype.enable = false;
       zenBrowser.enable = true;
     };
 
@@ -111,7 +116,11 @@
         workspaceProfile = "pc";
       };
 
+      umbrielConfig.enable = true;
+      cursors.enable = true;
+
       noctalia.enable = true;
+      skwdWall.enable = true;
 
       screenRecorder.enable = true;
     };

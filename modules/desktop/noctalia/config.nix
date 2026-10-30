@@ -15,10 +15,10 @@ in
         {
           shell = {
             avatar_path = "${config.home.homeDirectory}/.face";
-            screenshot.directory = "${config.home.homeDirectory}/Pictures/Screenshots";
+            screenshot.directory = "${config.xdg.userDirs.pictures}/screenshots";
           };
 
-          wallpaper.directory = "${config.home.homeDirectory}/Pictures/Wallpapers";
+          wallpaper.directory = "${config.xdg.userDirs.pictures}/wallpapers";
 
           theme.templates.user = {
             nvim-base16.enabled = lib.attrByPath [ "my" "user" "dev" "neovim" "enable" ] false config;

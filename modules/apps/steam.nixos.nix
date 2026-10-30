@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }:
 
@@ -16,6 +17,7 @@ in
     programs.steam = {
       enable = true;
       gamescopeSession.enable = true;
+      extraCompatPackages = [ pkgs.proton-ge-bin ];
     };
 
     nixpkgs.config.allowUnfreePredicate =

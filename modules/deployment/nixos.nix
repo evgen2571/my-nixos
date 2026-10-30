@@ -89,7 +89,6 @@ in
       (pkgs.nixos-rebuild-ng.override { nix = config.nix.package; }).overrideAttrs (old: {
         patches = (old.patches or [ ]) ++ [
           ./rebuild-preflight.patch
-          ./rebuild-tests.patch
         ];
       })
     );

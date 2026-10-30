@@ -5,32 +5,51 @@ enable_sounds = false
 background_opacity = 0.67
 capsule = true
 capsule_opacity = 0.0
-center = [ "clock", "workspaces" ]
+center = ["clock", "workspaces"]
 contact_shadow = true
 end = [
-    "tray", "notifications", "clipboard", "network", "bluetooth", "volume",
-    "brightness", "battery", "control-center", "session"
+    "tray",
+    "notifications",
+    "clipboard",
+    "network",
+    "bluetooth",
+    "volume",
+    "brightness",
+    "battery",
+    "control-center",
+    "session",
 ]
 margin_ends = 0
 margin_opposite_edge = 1
 radius = 0
-start = [ "launcher", "wallpaper", "media" ]
+start = ["launcher", "wallpaper", "media"]
 thickness = 23
-
-[widget.clock]
-capsule_padding = 10.0
-scale = 1.1
 
 [calendar]
 enabled = true
 refresh_minutes = 5
 
+[calendar.account.personal_google]
+calendars = []
+color = ""
+name = "evgen2571"
+provider = ""
+server_url = ""
+type = "google"
+username = ""
+
 [dock]
 background_opacity = 0.0
 margin_edge = 8
 
+[include]
+files = ["/nix/store/lrrxjrv8sa3hxs3gf7jha8lxll8r5rjv-noctalia/widgets-pc.toml"]
+
 [keybinds]
-validate = [ "Return", "KP_Enter" ]
+validate = ["Return", "KP_Enter"]
+
+[location]
+address = "Minsk, Belarus"
 
 [notification]
 background_opacity = 1.0
@@ -40,9 +59,10 @@ background_opacity = 1.0
 
 [plugins]
 auto_update = "none"
-enabled = [ "noctalia/example", "noctalia/bongocat", "noctalia/timer" ]
+enabled = ["noctalia/example", "noctalia/bongocat", "noctalia/timer"]
 
 [shell]
+avatar_path = "/home/evgen2571/Pictures/Avatars/Untitled5.jpg"
 clipboard_history_max_entries = 1000
 date_format = "%I, %M %p"
 font_family = "Hurmit Nerd Font"
@@ -61,6 +81,9 @@ open_near_click_launcher = true
 open_near_click_wallpaper = true
 transparency_mode = "glass"
 
+[shell.screenshot]
+directory = "/home/evgen2571/screenshots"
+
 [shell.shadow]
 direction = "center"
 
@@ -73,24 +96,57 @@ community_palette = "ADW"
 source = "wallpaper"
 
 [theme.templates]
-builtin_ids = [ "cava", "gtk3", "gtk4", "kcolorscheme", "kitty", "niri" ]
-community_ids = [ "sonora", "telegram", "libreoffice", "neovim", "obsidian", "lazygit", "yazi", "codex", "opencode", "bat", "obs", "prismlauncher" ]
+builtin_ids = [
+    "cava",
+    "gtk3",
+    "gtk4",
+    "kcolorscheme",
+    "kitty",
+    "umbriel",
+    "niri",
+]
+community_ids = [
+    "sonora",
+    "telegram",
+    "libreoffice",
+    "neovim",
+    "obsidian",
+    "lazygit",
+    "yazi",
+    "codex",
+    "opencode",
+    "bat",
+    "obs",
+    "prismlauncher",
+]
+
+[theme.templates.user.niri-dropdown]
+enabled = true
+input_path = "$XDG_CONFIG_HOME/noctalia/templates/niri-dropdown.kdl"
+output_path = "$XDG_CONFIG_HOME/niri/noctalia-dropdown.kdl"
+
+[theme.templates.user.niri-layout]
+enabled = true
+input_path = "$XDG_CONFIG_HOME/noctalia/templates/niri-layout.kdl"
+output_path = "$XDG_CONFIG_HOME/niri/noctalia-layout.kdl"
 
 [theme.templates.user.nvim-base16]
+enabled = true
 input_path = "$XDG_CONFIG_HOME/nvim/lua/matugen-template.lua"
 output_path = "$XDG_CONFIG_HOME/nvim/lua/matugen.lua"
 post_hook = "pkill -SIGUSR1 nvim"
 
-[theme.templates.user.niri-layout]
-input_path = "$XDG_CONFIG_HOME/noctalia/templates/niri-layout.kdl"
-output_path = "$XDG_CONFIG_HOME/niri/noctalia-layout.kdl"
-
-[theme.templates.user.niri-dropdown]
-input_path = "$XDG_CONFIG_HOME/noctalia/templates/niri-dropdown.kdl"
-output_path = "$XDG_CONFIG_HOME/niri/noctalia-dropdown.kdl"
-
 [wallpaper]
+directory = "/home/evgen2571/pictures/wallpapers"
+enabled = false
 transition_on_startup = true
 
 [wallpaper.automation]
 recursive = true
+
+[widget.clock]
+capsule_padding = 10.0
+scale = 1.1
+
+[widget.wallpaper.actions]
+left = "exec /nix/store/5gcj5fq1rxq936sy16j5b971yi4g99kg-skwd-suite-binary-1.0.0-beta.26/bin/skwd-wall-v2"

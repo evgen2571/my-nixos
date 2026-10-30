@@ -1,0 +1,187 @@
+# Niri chords translated to native Umbriel actions.
+[keybinds]
+"Mod+Tab" = { action = "overview-toggle", repeat = false }
+
+# Apps
+"Mod+Return" = { action = "spawn:kitty", repeat = false }
+"Mod+Shift+Return" = { action = "scratchpad-toggle:terminal", repeat = false }
+"Mod+W" = { action = "spawn:$HOME/.config/umbriel/scripts/focus-or-launch '^(zen-beta|zen)$' -- zen-beta", repeat = false }
+"Mod+E" = { action = "scratchpad-toggle:files", repeat = false }
+"Mod+Shift+E" = { action = "spawn:$HOME/.config/umbriel/scripts/focus-or-launch '^org\\.kde\\.dolphin$' -- dolphin", repeat = false }
+"Mod+X" = { action = "spawn:voxtype record toggle", repeat = false }
+
+# Maximize the temporary Kitty UI for sesh's project picker.
+"Mod+Shift+C" = { action = "spawn:kitty --title project-session sesh picker -i", repeat = false }
+"Mod+O" = { action = "spawn:$HOME/.config/umbriel/scripts/focus-or-launch '^md\\.obsidian\\.Obsidian$' -- obsidian", repeat = false }
+"Mod+Shift+A" = { action = "spawn:$HOME/.config/umbriel/scripts/focus-or-launch '^(anki|Anki)$' -- anki", repeat = false }
+"Mod+B" = { action = "spawn:bruno", repeat = false }
+"Mod+M" = { action = "scratchpad-toggle:music", repeat = false }
+"Mod+T" = { action = "spawn:$HOME/.config/umbriel/scripts/focus-or-launch '^(org\\.telegram\\.desktop|telegram-desktop)$' -- Telegram", repeat = false }
+"Mod+D" = { action = "spawn:$HOME/.config/umbriel/scripts/focus-or-launch '^(vesktop|Vesktop)$' -- vesktop", repeat = false }
+"Mod+Shift+O" = { action = "spawn:$HOME/.config/umbriel/scripts/focus-or-launch '^orca$' -- orca", repeat = false }
+"Mod+Shift+D" = { action = "spawn:wayscriber --daemon-toggle", repeat = false }
+
+# Noctalia v5 IPC
+"Mod+Comma" = "spawn:noctalia msg settings-toggle"
+"Mod+Space" = "spawn:noctalia msg panel-toggle launcher"
+"Mod+Ctrl+S" = "spawn:noctalia msg panel-toggle control-center"
+"Mod+V" = "spawn:noctalia msg panel-toggle clipboard"
+"Mod+Y" = "spawn:skwd-wall-v2"
+"Mod+P" = "spawn:noctalia msg panel-toggle session"
+"Mod+Shift+P" = "spawn:noctalia msg session lock-and-suspend"
+"Ctrl+Shift+Escape" = "spawn:noctalia msg panel-toggle control-center system"
+
+# Direct controls also work before Noctalia starts.
+"XF86AudioRaiseVolume" = { action = "spawn:wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+ --limit 1.5", allow_when_locked = true }
+"XF86AudioLowerVolume" = { action = "spawn:wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-", allow_when_locked = true }
+"XF86AudioMute" = { action = "spawn:wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle", allow_when_locked = true }
+"XF86AudioMicMute" = { action = "spawn:wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle", allow_when_locked = true }
+"XF86AudioPause" = { action = "spawn:playerctl play-pause", allow_when_locked = true }
+"XF86AudioPlay" = { action = "spawn:playerctl play-pause", allow_when_locked = true }
+"XF86AudioPrev" = { action = "spawn:playerctl previous", allow_when_locked = true }
+"XF86AudioNext" = { action = "spawn:playerctl next", allow_when_locked = true }
+"XF86AudioStop" = { action = "spawn:playerctl stop", allow_when_locked = true }
+"XF86MonBrightnessUp" = { action = "spawn:brightnessctl set 5%+", allow_when_locked = true }
+"XF86MonBrightnessDown" = { action = "spawn:brightnessctl set 5%-", allow_when_locked = true }
+
+# Window management
+"Mod+Q" = { action = "window-close", repeat = false }
+"Mod+Z" = "window-toggle-maximize-to-edges"
+"Mod+Shift+Z" = "window-toggle-maximize"
+"Mod+Alt+Space" = "window-toggle-floating"
+"Mod+Shift+V" = "window-focus-switch-floating"
+"Mod+Shift+W" = "column-toggle-tabbed"
+"Mod+Shift+F" = "window-toggle-fullscreen"
+
+# Focus navigation
+"Mod+Left" = "window-focus-or-output-left"
+"Mod+Down" = "window-focus-or-workspace-down"
+"Mod+Up" = "window-focus-or-workspace-up"
+"Mod+Right" = "window-focus-or-output-right"
+"Mod+H" = "window-focus-or-output-left"
+"Mod+J" = "window-focus-or-workspace-down"
+"Mod+K" = "window-focus-or-workspace-up"
+"Mod+L" = "window-focus-or-output-right"
+
+# Move the focused window directly across monitors/workspaces, including floats.
+"Mod+Shift+Left" = "window-move-or-output-left"
+"Mod+Shift+Down" = "window-move-to-workspace-next"
+"Mod+Shift+Up" = "window-move-to-workspace-previous"
+"Mod+Shift+Right" = "window-move-or-output-right"
+"Mod+Shift+H" = "window-move-or-output-left"
+"Mod+Shift+J" = "window-move-to-workspace-next"
+"Mod+Shift+K" = "window-move-to-workspace-previous"
+"Mod+Shift+L" = "window-move-or-output-right"
+
+# Column navigation
+"Mod+Home" = "column-focus-first"
+"Mod+End" = "column-focus-last"
+"Mod+Ctrl+Home" = "column-move-to-first"
+"Mod+Ctrl+End" = "column-move-to-last"
+
+# Fine sizing, with arrow alternatives.
+"Mod+Ctrl+H" = "output-focus-left"
+"Mod+Ctrl+L" = "output-focus-right"
+"Mod+Ctrl+J" = "workspace-next"
+"Mod+Ctrl+K" = "workspace-previous"
+
+# Ctrl+Shift moves a whole column; avoid the Alt+Shift keyboard-layout chord.
+"Mod+Ctrl+Shift+H" = "column-move-to-output-left"
+"Mod+Ctrl+Shift+L" = "column-move-to-output-right"
+"Mod+Ctrl+Shift+J" = "column-move-to-workspace-next"
+"Mod+Ctrl+Shift+K" = "column-move-to-workspace-previous"
+
+# Direct monitor/workspace focus.
+"Mod+Alt+H" = "window-modify-primary-extent:-0.05"
+"Mod+Alt+L" = "window-modify-primary-extent:0.05"
+"Mod+Alt+J" = "window-modify-secondary-extent:-0.05"
+"Mod+Alt+K" = "window-modify-secondary-extent:0.05"
+"Mod+Alt+Left" = "window-modify-primary-extent:-0.05"
+"Mod+Alt+Right" = "window-modify-primary-extent:0.05"
+"Mod+Alt+Down" = "window-modify-secondary-extent:-0.05"
+"Mod+Alt+Up" = "window-modify-secondary-extent:0.05"
+
+# Page keys retain direct workspace focus and workspace reordering.
+"Mod+Page_Down" = "workspace-next"
+"Mod+Page_Up" = "workspace-previous"
+"Mod+Shift+Page_Down" = "workspace-move-down"
+"Mod+Shift+Page_Up" = "workspace-move-up"
+
+# Mouse wheel navigation
+"Mod+WheelDown" = { action = "workspace-next", cooldown_ms = 150 }
+"Mod+WheelUp" = { action = "workspace-previous", cooldown_ms = 150 }
+"Mod+Ctrl+WheelDown" = { action = "column-move-to-workspace-next", cooldown_ms = 150 }
+"Mod+Ctrl+WheelUp" = { action = "column-move-to-workspace-previous", cooldown_ms = 150 }
+"Mod+WheelRight" = "window-focus-right"
+"Mod+WheelLeft" = "window-focus-left"
+"Mod+Ctrl+WheelRight" = "column-move-right"
+"Mod+Ctrl+WheelLeft" = "column-move-left"
+"Mod+Shift+WheelDown" = "window-focus-right"
+"Mod+Shift+WheelUp" = "window-focus-left"
+"Mod+Ctrl+Shift+WheelDown" = "column-move-right"
+"Mod+Ctrl+Shift+WheelUp" = "column-move-left"
+
+# Named workspaces
+"Mod+N" = "workspace-switch:study"
+"Mod+S" = "workspace-switch:study"
+"Mod+A" = "workspace-switch:ai"
+"Mod+C" = "workspace-switch:code"
+"Mod+G" = "workspace-switch:gaming"
+
+# Numbered workspaces
+"Mod+1" = "workspace-switch:1"
+"Mod+2" = "workspace-switch:2"
+"Mod+3" = "workspace-switch:3"
+"Mod+4" = "workspace-switch:4"
+"Mod+5" = "workspace-switch:5"
+"Mod+6" = "workspace-switch:6"
+"Mod+7" = "workspace-switch:7"
+"Mod+8" = "workspace-switch:8"
+"Mod+9" = "workspace-switch:9"
+
+# Move to numbered workspaces
+"Mod+Shift+1" = "column-move-to-workspace:1"
+"Mod+Shift+2" = "column-move-to-workspace:2"
+"Mod+Shift+3" = "column-move-to-workspace:3"
+"Mod+Shift+4" = "column-move-to-workspace:4"
+"Mod+Shift+5" = "column-move-to-workspace:5"
+"Mod+Shift+6" = "column-move-to-workspace:6"
+"Mod+Shift+7" = "column-move-to-workspace:7"
+"Mod+Shift+8" = "column-move-to-workspace:8"
+"Mod+Shift+9" = "column-move-to-workspace:9"
+
+# Column management
+"Mod+BracketLeft" = "window-consume-or-expel-left"
+"Mod+BracketRight" = "window-consume-or-expel-right"
+# shortcut: Umbriel combines consume/expel, use this on a stacked window to split it out.
+"Mod+Period" = "window-consume-or-expel-right"
+
+# Sizing and layout
+"Mod+R" = "window-cycle-primary-extent"
+"Mod+Shift+R" = "window-cycle-secondary-extent"
+"Mod+Ctrl+R" = "window-set-secondary-extent:0.5"
+"Mod+Ctrl+F" = "window-set-primary-extent:1.0"
+"Mod+Ctrl+C" = "column-center"
+
+# Manual sizing
+"Mod+Minus" = "window-modify-primary-extent:-0.1"
+"Mod+Equal" = "window-modify-primary-extent:0.1"
+"Mod+Shift+Minus" = "window-modify-secondary-extent:-0.1"
+"Mod+Shift+Equal" = "window-modify-secondary-extent:0.1"
+
+# Screenshots
+"Mod+Shift+S" = "spawn:noctalia msg screenshot-region"
+"Ctrl+XF86Launch1" = "spawn:noctalia msg screenshot-fullscreen"
+"Alt+XF86Launch1" = "spawn:noctalia msg screenshot-window"
+"Print" = "spawn:noctalia msg screenshot-region"
+"Ctrl+Print" = "spawn:noctalia msg screenshot-fullscreen"
+"Alt+Print" = "spawn:noctalia msg screenshot-window"
+
+# Recent focus; app-specific cycling is not available in Umbriel.
+"Alt+Tab" = "window-focus-last"
+"Alt+Shift+Tab" = "window-focus-previous"
+
+# A spare pad for temporarily parking any window.
+"Mod+Shift+Space" = "window-move-to-scratchpad:stash"
+"Mod+Ctrl+Space" = "scratchpad-toggle:stash"
+"Mod+Ctrl+Shift+Space" = "window-restore-from-scratchpad:stash"

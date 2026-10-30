@@ -1,0 +1,144 @@
+# Personal PC configuration; see README.md for differences from Niri.
+[include]
+files = ["binds.toml", "rules.toml", "scratchpads.toml"]
+
+[include.optional]
+files = ["noctalia.toml"]
+
+[general]
+autostart = ["lan-mouse daemon", "wayscriber --daemon", "zen-beta", "anki"]
+show_cheatsheet = false
+focus_on_activate = true
+# Preserve the independently positioned dialog rules inherited from Niri.
+attach_modal_dialogs = false
+
+[layout]
+mode = "scrolling"
+gap = 6
+extent_presets = [0.33333, 0.5, 0.66667]
+
+[layout.scrolling]
+default_extent_fraction = 0.5
+center_focused = "never"
+center_underfull_strip = true
+
+[layout.tabs]
+default_display = "tabbed"
+
+[workspaces]
+back_and_forth = true
+
+[output.DP-1]
+mode = "2560x1440@59.951"
+position = [0, 0]
+scale = 1.0
+
+[output.HDMI-A-1]
+mode = "2560x1440@99.946"
+position = [2560, 0]
+scale = 1.0
+
+[[workspace]]
+name = "web"
+output = "DP-1"
+
+[[workspace]]
+name = "chats"
+output = "DP-1"
+
+[[workspace]]
+name = "ai"
+output = "DP-1"
+
+[[workspace]]
+name = "study"
+output = "HDMI-A-1"
+
+[[workspace]]
+name = "code"
+output = "HDMI-A-1"
+layout.tabs.default_display = "normal"
+
+[[workspace]]
+name = "gaming"
+output = "HDMI-A-1"
+
+[input.keyboard]
+layout = "us,ru"
+variant = ",phonetic"
+options = "grp:alt_shift_toggle,caps:swapescape"
+repeat_delay = 250
+repeat_rate = 35
+
+[input.focus]
+follows_mouse = true
+
+[input.cursor]
+follows_focus = true
+
+[input.touchpad]
+tap = true
+natural_scroll = true
+scroll_method = "two_finger"
+scroll_factor = 0.4
+
+[appearance]
+prefer_no_csd = true
+border_width = 1
+outer_border_width = 0
+corner_radius = 10
+
+[appearance.shadow]
+enabled = false
+
+[appearance.blur]
+enabled = true
+passes = 3
+radius = 4
+noise = 0.02
+saturation = 1.4
+
+[appearance.tab_bar]
+style = "indicator"
+position = "right"
+height = 4
+hide_when_single = true
+tab_gap = 2
+gap = 5
+corner_radius = 8
+
+[animation.windows_in]
+duration_ms = 150
+curve = "0.16,1,0.3,1"
+
+[animation.windows_out]
+duration_ms = 150
+curve = "0.25,0.46,0.45,0.94"
+
+[animation.windows_move]
+curve = "spring:0.75,323"
+
+[animation.windows_resize]
+curve = "spring:0.85,423"
+
+[animation.workspaces]
+curve = "spring:0.8,523"
+
+[animation.overview]
+curve = "spring:0.85,800"
+
+[animation.scratchpad]
+dim = 0.15
+blur = false
+
+[hot_corners.top_left]
+enabled = false
+
+[hot_corners.top_right]
+enabled = false
+
+[hot_corners.bottom_left]
+enabled = false
+
+[hot_corners.bottom_right]
+enabled = false

@@ -71,8 +71,28 @@ in
       };
     }
     (lib.mkIf cfg.enable {
+      xdg.mimeApps = rec {
+        enable = true;
+        defaultApplications = lib.genAttrs [
+          "text/html"
+          "text/xml"
+          "application/xhtml+xml"
+          "application/vnd.mozilla.xul+xml"
+          "x-scheme-handler/http"
+          "x-scheme-handler/https"
+        ] (_: [ "zen-beta.desktop" ]);
+        associations.added = defaultApplications;
+      };
+
       programs.zen-browser = {
         enable = true;
+
+        policies =
+          lib.optionalAttrs
+            (config.xdg.userDirs.enable && config.xdg.userDirs.download != config.home.homeDirectory)
+            {
+              DefaultDownloadDirectory = config.xdg.userDirs.download;
+            };
 
         profiles = lib.mkIf (cfg.profilePath != null) {
           default = defaults // {

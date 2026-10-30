@@ -15,5 +15,15 @@ in
     home.packages = with pkgs; [
       anki-bin
     ];
+
+    xdg.mimeApps = rec {
+      enable = true;
+      defaultApplications = lib.genAttrs [
+        "application/x-apkg"
+        "application/x-anki"
+        "application/x-ankiaddon"
+      ] (_: [ "anki.desktop" ]);
+      associations.added = defaultApplications;
+    };
   };
 }

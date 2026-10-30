@@ -7,7 +7,8 @@
     desktop = {
       # gnome.enable = true;
       # niri.enable = true; # See hosts/README.md for a minimal user config.
-      # noctaliaGreeter.enable = true; # Defaults to the Niri session.
+      # umbriel.enable = true;
+      # noctaliaGreeter.enable = true; # Defaults to Umbriel when enabled, otherwise Niri.
       # opentabletdriver.enable = true;
       # xserver.enable = true;
     };
@@ -121,6 +122,7 @@
         # anki.enable = true;
         # bruno.enable = true;
         # chrome.enable = true;
+        # ciscoPacketTracer.enable = true; # Requires the installer from Cisco's download page.
         # krita.enable = true;
         # mpv.enable = true;
         # obsidian.enable = true;
@@ -147,6 +149,9 @@
         };
 
         # noctalia.enable = true;
+        # skwdWall.enable = true; # Replaces Noctalia's wallpaper renderer and picker.
+        # umbrielConfig.enable = true; # Personal PC outputs, rules, and scratchpads.
+        # cursors.enable = true; # Phinger dark cursor theme.
 
         # screenRecorder.enable = true; # Pair with hardware.screenRecorder above.
       };
