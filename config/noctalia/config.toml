@@ -2,27 +2,17 @@
 enable_sounds = false
 
 [bar.default]
-background_opacity = 0.67
+background_opacity = 0.74
 capsule = true
+capsule_radius = 0
 capsule_opacity = 0.0
 center = ["clock", "workspaces"]
 contact_shadow = true
-end = [
-    "tray",
-    "notifications",
-    "clipboard",
-    "network",
-    "bluetooth",
-    "volume",
-    "brightness",
-    "battery",
-    "control-center",
-    "session",
-]
+end = [ "notifications", "network", "bluetooth", "volume", "brightness", "battery", "session" ]
 margin_ends = 0
 margin_opposite_edge = 1
 radius = 0
-start = ["launcher", "wallpaper", "media"]
+start = [ "tray", "media" ]
 thickness = 23
 
 [calendar]
@@ -62,11 +52,13 @@ auto_update = "none"
 enabled = ["noctalia/example", "noctalia/bongocat", "noctalia/timer"]
 
 [shell]
-avatar_path = "/home/evgen2571/Pictures/Avatars/Untitled5.jpg"
+corner_radius_scale = 0.0
 clipboard_history_max_entries = 1000
-date_format = "%I, %M %p"
+date_format = "%a %I:%M %p"
 font_family = "Hurmit Nerd Font"
 niri_overview_type_to_launch_enabled = true
+umbriel_audio_provider_enabled = true
+umbriel_overview_type_to_launch_enabled = true
 
 [shell.greeter_sync]
 auto_sync = true
@@ -106,18 +98,18 @@ builtin_ids = [
     "niri",
 ]
 community_ids = [
+    "codex",
+    "opencode",
     "sonora",
     "telegram",
     "libreoffice",
     "neovim",
     "obsidian",
-    "lazygit",
-    "yazi",
-    "codex",
-    "opencode",
-    "bat",
-    "obs",
     "prismlauncher",
+    "bat",
+    "lazygit",
+    "starship",
+    "yazi"
 ]
 
 [theme.templates.user.niri-dropdown]
@@ -137,9 +129,7 @@ output_path = "$XDG_CONFIG_HOME/nvim/lua/matugen.lua"
 post_hook = "pkill -SIGUSR1 nvim"
 
 [wallpaper]
-directory = "/home/evgen2571/pictures/wallpapers"
 enabled = false
-transition_on_startup = true
 
 [wallpaper.automation]
 recursive = true
@@ -147,6 +137,35 @@ recursive = true
 [widget.clock]
 capsule_padding = 10.0
 scale = 1.1
+font_scale = 0.85
+format = "{:%I:%M %p}"
+capsule_radius = "auto"
+
+[widget.clipboard]
+enabled = false
+
+[widget.media]
+capsule_padding = 14
+hide_when_no_media = true
+max_length = 500
+
+[widget.network]
+show_label = false
+
+[widget.tray]
+drawer = true
+enabled = true
+scale = 0.9
+
+[widget.volume]
+show_label = false
+
+[widget.workspaces]
+anchor = true
+hide_when_empty = true
+max_label_chars = 8
+show_all_outputs = true
+style = "minimal"
 
 [widget.wallpaper.actions]
 left = "exec /nix/store/5gcj5fq1rxq936sy16j5b971yi4g99kg-skwd-suite-binary-1.0.0-beta.26/bin/skwd-wall-v2"
