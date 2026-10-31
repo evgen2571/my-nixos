@@ -3,6 +3,12 @@
 I keep shared browser defaults in [`profile.nix`](profile.nix), including Sine
 integration and Ctrl + backtick for compact mode.
 
+User styling is enabled for the managed profile. Home Manager symlinks
+[`userChrome.css`](userChrome.css) to
+`~/.config/zen/<profile>/chrome/userChrome.css`. It hides the tabs toolbar and
+sidebar panel header, removes the sidebar's leading padding, and squares corners.
+Restart Zen after applying stylesheet changes.
+
 The managed profile restores the previous session and keeps pinned tabs on their
 last visited pages. Closing a pin unloads it and switches tabs without resetting
 the page.
