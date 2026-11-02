@@ -8,13 +8,12 @@
 
 stdenvNoCC.mkDerivation (finalAttrs: {
   pname = "skillshare";
-  version = "0.25.8";
+  version = "0.28.2";
 
-  # SHA-256 published in runkids/homebrew-tap's official Skillshare formula.
-  # This is the upstream static (CGO_ENABLED=0) Linux x86_64 CLI release.
+  # Official Linux x86_64 release archive.
   src = fetchurl {
     url = "https://github.com/runkids/skillshare/releases/download/v${finalAttrs.version}/skillshare_${finalAttrs.version}_linux_amd64.tar.gz";
-    sha256 = "61bfa1ec40ad9714027eab7b76d42ff35515d1ff87fd7f08d73a53507b1f30b3";
+    sha256 = "f5a1695b5fdd2b2def44aa6dfb6a3df6ac8bd907770fa6090dc8a37835a7f19b";
   };
 
   nativeBuildInputs = [
