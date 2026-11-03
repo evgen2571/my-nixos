@@ -61,10 +61,10 @@ in
     claude-code
     codegraph
     codex
-    opencode
     orca
     ;
   bb = agents.bb-app;
+  opencode = agents.opencode2;
   noctalia = inputs.noctalia.packages.${system}.default;
   skwd-wall = inputs.skwd-wall.packages.${system}.default;
   sonora = inputs.sonora.packages.${system}.default;

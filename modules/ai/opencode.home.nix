@@ -13,5 +13,6 @@ in
 
   config = lib.mkIf cfg.enable {
     home.packages = [ packageSources.opencode ];
+    programs.fish.shellAliases.opencode = "opencode2";
   };
 }
