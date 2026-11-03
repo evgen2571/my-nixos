@@ -108,28 +108,38 @@ gap = 5
 corner_radius = 8
 
 [animation.windows_in]
-duration_ms = 150
+duration_ms = 140
 curve = "0.16,1,0.3,1"
+style = "popin"
+scale = 0.98
 
 [animation.windows_out]
-duration_ms = 150
-curve = "0.25,0.46,0.45,0.94"
+duration_ms = 90
+curve = "0.4,0,1,1"
+style = "fade"
 
 [animation.windows_move]
-curve = "spring:0.75,323"
+curve = "spring:1,1600"
 
 [animation.windows_resize]
-curve = "spring:0.85,423"
+curve = "spring:1,1600"
 
 [animation.workspaces]
-curve = "spring:0.8,523"
+curve = "spring:1,1600"
 
 [animation.overview]
-curve = "spring:0.85,800"
+curve = "spring:1,1600"
+workspace_curve = "spring:1,1800"
 
 [animation.scratchpad]
+duration_ms = 140
+curve = "easeout"
 dim = 0.15
 blur = false
+
+[animation.border]
+duration_ms = 100
+curve = "easeout"
 
 [hot_corners.top_left]
 enabled = false

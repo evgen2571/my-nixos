@@ -12,6 +12,11 @@ its system module is enabled; otherwise it keeps Niri as its default.
 dialog rules, including exclusions that keep dialogs on their current workspace.
 `scratchpads.toml` assigns the floating utilities below.
 
+Animations use a subtle 98% window entrance over 140 ms and a 90 ms closing fade.
+Movement, resizing, workspace switching, and overview use fast springs without
+overshoot; moves and resizes share a curve to settle together. Scratchpads fade
+over 140 ms, and focus borders change over 100 ms.
+
 | Shortcut | Behavior |
 | --- | --- |
 | `Mod+Shift+Return` | Show/hide dropdown Kitty with the persistent `dropdown` tmux session |
