@@ -50,7 +50,7 @@ let
 in
 {
   # Ordinary packages use stable pkgs. These are the exceptions.
-  inherit (upstream) codegraph lan-mouse noctalia-greeter;
+  inherit (upstream) lan-mouse noctalia-greeter;
   inherit (unstable) godot_4;
   inherit (seshPackages) sesh;
   inherit (vesktopPackages) vesktop;
@@ -59,6 +59,7 @@ in
     antigravity-cli
     chatgpt
     claude-code
+    codegraph
     codex
     opencode
     orca
