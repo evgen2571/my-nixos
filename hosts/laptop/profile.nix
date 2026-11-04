@@ -5,9 +5,10 @@
 
   my = {
     desktop = {
-      # Niri is the active session; keep the portal backend unambiguous.
+      # Keep Niri and GNOME available alongside Umbriel.
       gnome.enable = true;
       niri.enable = true;
+      umbriel.enable = true;
       noctaliaGreeter.enable = true;
       opentabletdriver.enable = false;
     };
@@ -65,7 +66,13 @@
     };
   };
 
-  my.primaryUser.home.settings.wallpapers.enable = true;
+  my.primaryUser.home.settings = {
+    wallpapers.enable = true;
+    programs.noctalia.settings.desktop_widgets = {
+      enabled = false;
+      widget_order = [ ];
+    };
+  };
 
   my.primaryUser.home.settings.my.user = {
     ai = {
@@ -100,7 +107,14 @@
         workspaceProfile = "laptop";
       };
 
+      umbrielConfig = {
+        enable = true;
+        profile = "laptop";
+      };
+      cursors.enable = true;
+
       noctalia.enable = true;
+      skwdWall.enable = true;
 
       screenRecorder.enable = true;
     };

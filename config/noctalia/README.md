@@ -1,17 +1,18 @@
 # Noctalia
 
-Noctalia is the shell I use with Niri: bar, launcher, notifications, clipboard, and wallpaper picker.
+Noctalia is the shell I use with Umbriel and Niri: bar, launcher, notifications, clipboard, and lock screen.
 
 Enable `my.user.desktop.noctalia.enable` for the shared setup. [`config.toml`](config.toml) keeps my appearance and behavior choices; everything else uses Noctalia's defaults. Battery and brightness widgets hide when their hardware is unavailable.
 
 Override any setting through `programs.noctalia.settings`, including individual widgets and `bar.default.start`, `center`, and `end`. `my.user.desktop.noctalia.configFile` can replace the shared TOML. The old optional `profile` setting still accepts `pc` and `laptop` for compatibility.
 
-Noctalia 5.2.1 uses pixel centers for desktop and lockscreen widgets. It supports resolution remapping, but has no edge anchors; an empty `output` selects the first available monitor. The PC includes [`widgets-pc.toml`](widgets-pc.toml) through `programs.noctalia.settings.include.files` to keep its clock, audio visualizer, and saved login-box placement. Other hosts use Noctalia's defaults and can place widgets in the GUI.
+Noctalia 5.2.1 uses pixel centers for desktop and lockscreen widgets. It supports resolution remapping, but has no edge anchors; an empty `output` selects the first available monitor. Only the PC includes [`widgets-pc.toml`](widgets-pc.toml) through `programs.noctalia.settings.include.files` for its saved widget settings and login-box placement. The laptop disables desktop widgets and starts with an empty widget order; its lock screen uses Noctalia's defaults.
 
 Screenshots and wallpapers default to `screenshots` and `wallpapers` under `xdg.userDirs.pictures`. Each host chooses its pictures directory; the PC uses `~/pictures`. Override either default through `programs.noctalia.settings.shell.screenshot.directory` or `programs.noctalia.settings.wallpaper.directory`; my wallpaper flake uses the latter too. Hurmit is installed with the shell. The custom Niri and Neovim theme templates run when their corresponding modules are enabled.
 
-The PC uses [Skwd-wall](../umbriel/README.md) for wallpaper selection and rendering,
-with the same directory. The laptop keeps Noctalia's wallpaper picker and renderer.
+Both desktop hosts use [Skwd-wall](../umbriel/README.md) for wallpaper selection
+and rendering, with the same directory. Its module supplies the wallpaper action
+using the current package path.
 
 Theme colors are generated, including the files Niri, Kitty, and Neovim read. If a color change isn't showing up, check Noctalia's generated files instead of editing them by hand.
 

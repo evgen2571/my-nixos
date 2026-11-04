@@ -32,9 +32,6 @@ username = ""
 background_opacity = 0.0
 margin_edge = 8
 
-[include]
-files = ["/nix/store/lrrxjrv8sa3hxs3gf7jha8lxll8r5rjv-noctalia/widgets-pc.toml"]
-
 [keybinds]
 validate = ["Return", "KP_Enter"]
 
@@ -166,6 +163,3 @@ hide_when_empty = true
 max_label_chars = 8
 show_all_outputs = true
 style = "minimal"
-
-[widget.wallpaper.actions]
-left = "exec /nix/store/5gcj5fq1rxq936sy16j5b971yi4g99kg-skwd-suite-binary-1.0.0-beta.26/bin/skwd-wall-v2"

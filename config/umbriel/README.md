@@ -1,13 +1,16 @@
 # Umbriel
 
-The PC offers Umbriel and Niri, with Umbriel selected by default in the greeter.
+The PC and laptop offer Umbriel and Niri, with Umbriel selected by default in the greeter.
 Umbriel uses a scrolling layout and Noctalia. Enable the system session
 with `my.desktop.umbriel.enable` and this personal config with
 `my.primaryUser.home.settings.my.user.desktop.umbrielConfig.enable`.
 The modules are discovered automatically. Noctalia Greeter selects Umbriel when
 its system module is enabled; otherwise it keeps Niri as its default.
 
-`config.toml` owns outputs, workspaces, input, layout, and animations.
+`config.toml` owns shared input, layout, and animations. Set
+`my.user.desktop.umbrielConfig.profile` to `pc` (the default) or `laptop`.
+Home Manager installs the selected `profiles/<profile>.toml` as `profile.toml`;
+it owns outputs, named workspace order, and startup applications.
 `binds.toml` carries the Niri shortcuts; `rules.toml` carries its application and
 dialog rules, including exclusions that keep dialogs on their current workspace.
 `scratchpads.toml` assigns the floating utilities below.
@@ -47,6 +50,11 @@ normal columns; the others default to tabs. Named workspaces persist alongside
 Umbriel's dynamic empty workspaces. Number keys select positions on the current
 output, as in Niri.
 
+The laptop uses `web`, `code`, `study`, `chats`, `ai`, and `gaming` on `eDP-1`,
+in that order, at 1920×1080 and 120 Hz. Both profiles start Lan Mouse, Wayscriber,
+and Zen; only the PC starts Anki. Anki stays available through `Mod+Shift+A` on
+both hosts. Shortcuts, application rules, scratchpads, and animations are shared.
+
 Noctalia runs through its existing systemd service. Its built-in Umbriel template
 writes `noctalia.toml`, which is optional until the first theme render. Home Manager
 owns individual config files so generated theme files remain writable. Screen
@@ -54,7 +62,7 @@ sharing uses `xdg-desktop-portal-umbriel`; file pickers stay on GTK and the logi
 keyring remains available. Web, study, Dolphin, and chat shortcuts reuse an
 existing window through Umbriel IPC before launching another.
 
-The PC enables `my.user.desktop.skwdWall.enable` for Skwd-wall's picker and renderer.
+Both hosts enable `my.user.desktop.skwdWall.enable` for Skwd-wall's picker and renderer.
 `Mod+Y` and the wallpaper bar button run `skwd-wall-v2`; its daemon starts with
 the graphical session and restores the last selected wallpaper. Images and videos
 use `wallpapers.directory` (`~/pictures/wallpapers` on the PC).
@@ -84,9 +92,11 @@ and greeter appearance sync no longer carries a desktop wallpaper.
   Niri-only layer placement, overview shadow, notification, and screenshot UI
   animation settings have no direct equivalent and are omitted.
 
-The laptop keeps its Niri modules and config. Select Niri in the PC greeter to use
-it, or disable both Umbriel options in `hosts/pc/profile.nix` to make Niri the
-default again. Keep a known-good generation and console access when first
+Both hosts keep their Niri modules and config. Select Niri in the greeter to use
+it, or disable both Umbriel options in the host's `profile.nix` to make Niri the
+default again. The laptop disables Noctalia desktop widgets; existing GUI
+overrides in `~/.local/state/noctalia/settings.toml` still take priority.
+Keep a known-good generation and console access when first
 trying the new session; the branch itself does not activate anything.
 
 ## Checks
@@ -94,6 +104,7 @@ trying the new session; the branch itself does not activate anything.
 ```sh
 just check --no-build
 just build nixos-pc
+just build nixos-lp
 ```
 
 Evaluation and builds do not test NVIDIA rendering, monitor placement,
