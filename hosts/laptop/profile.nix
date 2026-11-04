@@ -23,7 +23,7 @@
       apps = {
         libreoffice.enable = true;
         steam.enable = true;
-        obs.enable = true;
+        obs.enable = false;
         vesktop.enable = true;
         waydroid.enable = true;
       };
@@ -97,7 +97,7 @@
       telegram.enable = true;
       sonora.enable = true;
       youtubeMusic.enable = false;
-      voxtype.enable = true;
+      voxtype.enable = false;
       zenBrowser.enable = true;
     };
 
