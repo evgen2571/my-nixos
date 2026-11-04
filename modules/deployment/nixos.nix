@@ -24,7 +24,9 @@ let
         [ "@available@" "@ciphertext@" ]
         [
           (lib.boolToString available)
-          (lib.escapeShellArg (if secretFile == null then "/dev/null" else toString secretFile))
+          # Interpolation copies the ciphertext into the store and retains its
+          # runtime dependency; toString would leave an unrooted source path.
+          (lib.escapeShellArg (if secretFile == null then "/dev/null" else "${secretFile}"))
         ]
         (builtins.readFile ./preflight.sh);
   };
