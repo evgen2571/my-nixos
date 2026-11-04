@@ -1,12 +1,11 @@
-# Personal PC configuration; see README.md for differences from Niri.
+# Shared configuration; Home Manager selects profile.toml for each host.
 [include]
-files = ["binds.toml", "rules.toml", "scratchpads.toml"]
+files = ["profile.toml", "binds.toml", "rules.toml", "scratchpads.toml"]
 
 [include.optional]
 files = ["noctalia.toml"]
 
 [general]
-autostart = ["lan-mouse daemon", "wayscriber --daemon", "zen-beta", "anki"]
 show_cheatsheet = false
 focus_on_activate = true
 # Preserve the independently positioned dialog rules inherited from Niri.
@@ -27,41 +26,6 @@ default_display = "tabbed"
 
 [workspaces]
 back_and_forth = true
-
-[output.DP-1]
-mode = "2560x1440@59.951"
-position = [0, 0]
-scale = 1.0
-
-[output.HDMI-A-1]
-mode = "2560x1440@99.946"
-position = [2560, 0]
-scale = 1.0
-
-[[workspace]]
-name = "web"
-output = "DP-1"
-
-[[workspace]]
-name = "chats"
-output = "DP-1"
-
-[[workspace]]
-name = "ai"
-output = "DP-1"
-
-[[workspace]]
-name = "study"
-output = "HDMI-A-1"
-
-[[workspace]]
-name = "code"
-output = "HDMI-A-1"
-layout.tabs.default_display = "normal"
-
-[[workspace]]
-name = "gaming"
-output = "HDMI-A-1"
 
 [input.keyboard]
 layout = "us,ru"

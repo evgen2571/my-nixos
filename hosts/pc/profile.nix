@@ -116,7 +116,10 @@
         workspaceProfile = "pc";
       };
 
-      umbrielConfig.enable = true;
+      umbrielConfig = {
+        enable = true;
+        profile = "pc";
+      };
       cursors.enable = true;
 
       noctalia.enable = true;

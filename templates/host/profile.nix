@@ -153,7 +153,10 @@
 
         # noctalia.enable = true;
         # skwdWall.enable = true; # Replaces Noctalia's wallpaper renderer and picker.
-        # umbrielConfig.enable = true; # Personal PC outputs, rules, and scratchpads.
+        umbrielConfig = {
+          # enable = true; # Personal rules and scratchpads with host-specific outputs.
+          profile = "pc"; # Also available: laptop.
+        };
         # cursors.enable = true; # Phinger dark cursor theme.
 
         # screenRecorder.enable = true; # Pair with hardware.screenRecorder above.

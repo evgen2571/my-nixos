@@ -10,7 +10,18 @@ let
   cfg = config.my.user.desktop.umbrielConfig;
 in
 {
-  options.my.user.desktop.umbrielConfig.enable = lib.mkEnableOption "Umbriel user configuration";
+  options.my.user.desktop.umbrielConfig = {
+    enable = lib.mkEnableOption "Umbriel user configuration";
+
+    profile = lib.mkOption {
+      type = lib.types.enum [
+        "pc"
+        "laptop"
+      ];
+      default = "pc";
+      description = "Umbriel outputs, named workspace order, and startup applications.";
+    };
+  };
 
   config = lib.mkIf cfg.enable {
     # Own leaves so Noctalia can write its generated theme beside them.
@@ -25,6 +36,7 @@ in
           source = configPaths.wm.umbrielConfigDir + "/${lib.removePrefix "umbriel/" name}";
         })
       // {
+        "umbriel/profile.toml".source = configPaths.wm.umbrielConfigDir + "/profiles/${cfg.profile}.toml";
         "umbriel/scratchpads.toml".source = pkgs.replaceVars (
           configPaths.wm.umbrielConfigDir + "/scratchpads.toml"
         ) { musicPlayer = if config.my.user.apps.sonora.enable then "sonora" else "pear-desktop"; };

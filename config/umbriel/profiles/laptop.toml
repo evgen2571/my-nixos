@@ -1,0 +1,32 @@
+[general]
+autostart = ["lan-mouse daemon", "wayscriber --daemon", "zen-beta"]
+
+[output.eDP-1]
+mode = "1920x1080@120.030"
+position = [0, 0]
+scale = 1.0
+
+[[workspace]]
+name = "web"
+output = "eDP-1"
+
+[[workspace]]
+name = "code"
+output = "eDP-1"
+layout.tabs.default_display = "normal"
+
+[[workspace]]
+name = "study"
+output = "eDP-1"
+
+[[workspace]]
+name = "chats"
+output = "eDP-1"
+
+[[workspace]]
+name = "ai"
+output = "eDP-1"
+
+[[workspace]]
+name = "gaming"
+output = "eDP-1"

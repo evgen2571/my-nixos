@@ -1,0 +1,37 @@
+[general]
+autostart = ["lan-mouse daemon", "wayscriber --daemon", "zen-beta", "anki"]
+
+[output.DP-1]
+mode = "2560x1440@59.951"
+position = [0, 0]
+scale = 1.0
+
+[output.HDMI-A-1]
+mode = "2560x1440@99.946"
+position = [2560, 0]
+scale = 1.0
+
+[[workspace]]
+name = "web"
+output = "DP-1"
+
+[[workspace]]
+name = "chats"
+output = "DP-1"
+
+[[workspace]]
+name = "ai"
+output = "DP-1"
+
+[[workspace]]
+name = "study"
+output = "HDMI-A-1"
+
+[[workspace]]
+name = "code"
+output = "HDMI-A-1"
+layout.tabs.default_display = "normal"
+
+[[workspace]]
+name = "gaming"
+output = "HDMI-A-1"
