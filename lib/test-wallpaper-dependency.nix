@@ -7,7 +7,7 @@ let
     pkgs = { };
     packageSources = { };
     # Use a harmless directory to check retention, without fetching wallpapers.
-    inputs.wallpapers.outPath = toString ../templates/private;
+    inputs.wallpapers.outPath = "${../templates/private}";
   };
   dependencies = desktop.config.home.extraDependencies or [ ];
 in
