@@ -57,6 +57,9 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    # The pinned wallpaper module uses toString in its copy activation script.
+    # Retain the original source path so its wallpapers survive garbage collection.
+    home.extraDependencies = [ "${/. + inputs.wallpapers.outPath}" ];
     home.packages = [ pkgs.nerd-fonts.hurmit ];
     fonts.fontconfig.enable = lib.mkDefault true;
     wallpapers.directory = lib.mkDefault config.programs.noctalia.settings.wallpaper.directory;
