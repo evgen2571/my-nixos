@@ -67,6 +67,7 @@
   };
 
   my.primaryUser.home.settings = {
+    xdg.userDirs.projects = "/home/${config.my.primaryUser.name}/dev";
     wallpapers.enable = true;
     programs.noctalia.settings.desktop_widgets = {
       enabled = false;
