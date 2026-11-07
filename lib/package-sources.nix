@@ -50,7 +50,7 @@ let
 in
 {
   # Ordinary packages use stable pkgs. These are the exceptions.
-  inherit (upstream) lan-mouse noctalia-greeter;
+  inherit (upstream) hydralauncher lan-mouse noctalia-greeter;
   inherit (unstable) godot_4;
   inherit (seshPackages) sesh;
   inherit (vesktopPackages) vesktop;

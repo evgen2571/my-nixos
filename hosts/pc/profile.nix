@@ -25,6 +25,7 @@
 
     system = {
       apps = {
+        hydraLauncher.enable = true;
         libreoffice.enable = true;
         steam.enable = true;
         obs.enable = false;

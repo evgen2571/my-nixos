@@ -41,7 +41,8 @@ layout below; laptop and server storage stays unchanged.
 └── .ssh/
 /games/
 ├── steam/steamapps/              all Steam games, manifests, Proton prefixes
-└── minecraft/instances/         Minecraft worlds, mods and resource packs
+├── minecraft/instances/         Minecraft worlds, mods and resource packs
+└── hydra/{downloads,installed,prefixes}/
 ```
 
 Home Manager sets XDG downloads/pictures/projects to lowercase directories.
@@ -74,6 +75,19 @@ Noctalia and the existing wallpaper flake module share `~/pictures/wallpapers`.
 The private HDD wallpaper override is removed for both desktops; dynamic colors,
 templates and wallpaper automation stay enabled. No second wallpaper declaration
 or download script is added.
+
+Hydra Launcher is enabled on the PC. On first launch, set its download directory
+to `/games/hydra/downloads` and its default Wine prefix directory to
+`/games/hydra/prefixes` in Settings. When an installer asks where to install a
+game, choose `/games/hydra/installed/<game>` (available as `Z:\games\hydra\installed`
+in Wine). These are writable preferences in Hydra's database, not managed config
+files; existing preferences and installations are left intact.
+
+Keep Hydra's Proton selection on Auto to use the same Nix-managed Proton GE
+package as Steam's `extraCompatPackages`. The Hydra FHS environment supplies
+Python for its bundled UMU and sets `PROTONPATH` to that package; choosing a
+Proton version in Hydra overrides this default. Prefixes remain separate from
+Steam's per-game prefixes. UMU may download its Steam runtime on first use.
 
 ## Required private change and backups
 
