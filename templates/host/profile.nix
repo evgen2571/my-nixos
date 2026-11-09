@@ -22,6 +22,7 @@
 
     system = {
       apps = {
+        # animeGameLauncher.enable = true;
         # hydraLauncher.enable = true;
         # libreoffice.enable = true;
         # lutris.enable = true;
