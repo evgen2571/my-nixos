@@ -50,7 +50,11 @@ let
 in
 {
   # Ordinary packages use stable pkgs. These are the exceptions.
-  inherit (upstream) hydralauncher lan-mouse noctalia-greeter;
+  inherit (upstream) hydralauncher noctalia-greeter;
+
+  lan-mouse = upstream.lan-mouse.overrideAttrs (old: {
+    buildInputs = (old.buildInputs or [ ]) ++ [ upstream.libgit2 ];
+  });
   inherit (unstable) godot_4;
   inherit (seshPackages) sesh;
   inherit (vesktopPackages) vesktop;
