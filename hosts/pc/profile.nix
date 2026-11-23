@@ -99,6 +99,7 @@
       bruno.enable = false;
       chrome.enable = false;
       ciscoPacketTracer.enable = true;
+      helium.enable = true;
       krita.enable = true;
       mpv.enable = true;
       obsidian.enable = true;

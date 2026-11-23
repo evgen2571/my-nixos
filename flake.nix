@@ -31,6 +31,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    helium = {
+      url = "github:oxcl/nix-flake-helium-browser";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+
     zen-browser = {
       url = "github:0xc000022070/zen-browser-flake";
 

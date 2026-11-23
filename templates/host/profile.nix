@@ -128,6 +128,7 @@
           # enable = true; # Requires the installer from Cisco's download page.
           # networkNamespace = "vpn"; # Requires the enabled system namespace.
         };
+        # helium.enable = true;
         # krita.enable = true;
         # mpv.enable = true;
         # obsidian.enable = true;
