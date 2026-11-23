@@ -98,7 +98,6 @@
       anki.enable = true;
       bruno.enable = false;
       chrome.enable = false;
-      ciscoPacketTracer.enable = true;
       helium.enable = true;
       krita.enable = true;
       mangohud.enable = true;

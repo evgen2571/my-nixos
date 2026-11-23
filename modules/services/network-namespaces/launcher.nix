@@ -59,10 +59,6 @@ let
           "ai"
           "orca"
         ];
-        cisco-packet-tracer = [
-          "apps"
-          "ciscoPacketTracer"
-        ];
       };
 
   targets = lib.mapAttrsToList (id: app: {

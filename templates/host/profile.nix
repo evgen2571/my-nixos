@@ -124,10 +124,6 @@
         # anki.enable = true;
         # bruno.enable = true;
         # chrome.enable = true;
-        ciscoPacketTracer = {
-          # enable = true; # Requires the installer from Cisco's download page.
-          # networkNamespace = "vpn"; # Requires the enabled system namespace.
-        };
         # helium.enable = true;
         # krita.enable = true;
         # mangohud.enable = true;
