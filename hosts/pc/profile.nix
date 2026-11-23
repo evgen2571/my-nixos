@@ -101,6 +101,7 @@
       ciscoPacketTracer.enable = true;
       helium.enable = true;
       krita.enable = true;
+      mangohud.enable = true;
       mpv.enable = true;
       obsidian.enable = true;
       osuLazer.enable = false;
