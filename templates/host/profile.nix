@@ -89,7 +89,6 @@
 
     my.user = {
       ai = {
-        # codegraph.enable = true;
         # llamaCpp.enable = true;
         # opencode.enable = true;
         # skillshare.enable = true;

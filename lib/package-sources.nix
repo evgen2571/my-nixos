@@ -63,7 +63,6 @@ in
     antigravity-cli
     chatgpt
     claude-code
-    codegraph
     codex
     orca
     ;

@@ -85,7 +85,6 @@
     ai = {
       opencode.enable = true;
       skillshare.enable = true;
-      codegraph.enable = true;
 
       antigravityCli.enable = true;
       chatgpt.enable = true;

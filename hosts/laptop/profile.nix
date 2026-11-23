@@ -79,7 +79,6 @@
     ai = {
       opencode.enable = true;
       skillshare.enable = true;
-      codegraph.enable = true;
 
       chatgpt.enable = true;
       codex.enable = true;

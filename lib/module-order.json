@@ -27,7 +27,6 @@
   "modules/dev/docker.nixos.nix",
   "modules/dev/fish/nixos.nix",
   "modules/files/thunar.nixos.nix",
-  "modules/ai/codegraph.home.nix",
   "modules/ai/codex.home.nix",
   "modules/ai/llama-cpp.home.nix",
   "modules/ai/opencode.home.nix",
