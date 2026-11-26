@@ -32,6 +32,17 @@
 
   services.pipewire = {
     enable = true;
+    # Backport the X11 bell crash fix from PipeWire 1.6.10.
+    package = lib.mkIf (lib.versionOlder pkgs.pipewire.version "1.6.10") (
+      pkgs.pipewire.overrideAttrs (old: {
+        patches = old.patches ++ [
+          (pkgs.fetchurl {
+            url = "https://github.com/PipeWire/pipewire/commit/dc117ab7ea0711334b5fe4c3f7db409b3a962985.patch";
+            hash = "sha256-R3FuQULUKBBvPO9PO0ZBpR3XGyvZyiHdWILAVmlowPM=";
+          })
+        ];
+      })
+    );
     pulse.enable = true;
     alsa.enable = true;
     alsa.support32Bit = true;

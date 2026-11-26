@@ -35,7 +35,7 @@ repeat_delay = 250
 repeat_rate = 35
 
 [input.focus]
-follows_mouse = true
+follows_mouse = "sloppy"
 
 [input.cursor]
 follows_focus = true
