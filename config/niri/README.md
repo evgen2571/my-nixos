@@ -12,6 +12,7 @@ Most of my movement is on HJKL:
 | `Mod+Alt+H/J/K/L` | Resize |
 | `Mod+Return` | Kitty |
 | `Mod+Shift+Return` | Dropdown terminal with a persistent tmux session |
+| `Mod+E` | Focus or launch Luciole |
 | `Mod+M` | Focus or launch Sonora on the PC, Pear Desktop on the laptop |
 | `Mod+Space` / `Mod+S` | Launcher / control center |
 | `Mod+Comma` | Noctalia settings |

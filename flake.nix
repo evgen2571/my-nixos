@@ -47,6 +47,11 @@
 
     noctalia.url = "github:noctalia-dev/noctalia/cachix";
 
+    luciole = {
+      url = "github:noctalia-dev/luciole";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+
     skwd-wall = {
       url = "github:liixini/skwd-wall/nix";
       inputs.nixpkgs.follows = "nixpkgs-unstable";

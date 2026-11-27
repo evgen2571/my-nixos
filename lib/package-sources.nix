@@ -69,6 +69,7 @@ in
   bb = agents.bb-app;
   opencode = agents.opencode2;
   helium = inputs.helium.packages.${system}.helium;
+  luciole = inputs.luciole.packages.${system}.default;
   noctalia = inputs.noctalia.packages.${system}.default;
   skwd-wall = inputs.skwd-wall.packages.${system}.default;
   sonora = inputs.sonora.packages.${system}.default;

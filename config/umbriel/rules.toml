@@ -80,16 +80,10 @@ default_workspace = "web"
 blur = true
 
 [[window_rule]]
-match.app_id = '^(org\.kde\.dolphin|org\.gnome\.Nautilus|thunar|Thunar)$'
+match.app_id = '^(dev\.noctalia\.luciole|org\.gnome\.Nautilus|thunar|Thunar)$'
 default_floating = true
 default_focused = true
 default_floating_size = { width = 0.62, height = 0.70 }
-
-[[window_rule]]
-match.app_id = '^org\.kde\.dolphin$'
-match.title = '^(Configure( Language| Toolbars)?|Properties for .+) — Dolphin$'
-default_floating_size = { width = 0.42, height = 0.55 }
-default_scrolling_extent = 0.42
 
 [[window_rule]]
 match.app_id = '^org\.kde\.ark$'
@@ -259,14 +253,6 @@ default_workspace = "code"
 match.app_id = '^(Godot|godot)$'
 default_maximize_to_edges = true
 default_workspace = "gaming"
-
-[[window_rule]]
-match.app_id = '^kitty$'
-match.title = '^file-manager$'
-default_floating = true
-default_focused = true
-opacity = 0.94
-default_floating_size = { width = 0.60, height = 0.60 }
 
 [[window_rule]]
 match.app_id = '^(anki|Anki|net\.ankiweb\.Anki)$'

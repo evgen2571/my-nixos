@@ -198,6 +198,7 @@
       files = {
         # dolphin.enable = true;
         # dolphin.places = [ ]; # null (the default) leaves bookmarks unmanaged.
+        # luciole.enable = true; # Set services.gvfs.enable for Trash and remote folders.
         # yazi.enable = true;
       };
     };

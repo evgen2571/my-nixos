@@ -14,18 +14,11 @@ window-rule {
 
 // File managers open as large floating browsers.
 window-rule {
-    match app-id=r#"^(org\.kde\.dolphin|org\.gnome\.Nautilus|thunar|Thunar)$"#
+    match app-id=r#"^(dev\.noctalia\.luciole|org\.gnome\.Nautilus|thunar|Thunar)$"#
     open-floating true
     open-focused true
     default-column-width { proportion 0.62; }
     default-window-height { proportion 0.70; }
-}
-
-// These observed Dolphin dialogs need less space than the file browser.
-window-rule {
-    match app-id=r#"^org\.kde\.dolphin$"# title=r#"^(Configure( Language| Toolbars)?|Properties for .+) — Dolphin$"#
-    default-column-width { proportion 0.42; }
-    default-window-height { proportion 0.55; }
 }
 
 // Size only Ark's observed main window; leave extraction dialogs to the client.

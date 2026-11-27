@@ -93,17 +93,6 @@ window-rule {
 }
 
 
-// TUI file manager opened inside Kitty.
-window-rule {
-    match app-id=r#"^kitty$"# title=r#"^file-manager$"#
-    opacity 0.94
-    open-floating true
-    open-focused true
-    default-column-width { proportion 0.60; }
-    default-window-height { proportion 0.60; }
-}
-
-
 // ---------------------------------------------------------------------------
 // Other application-specific rules
 // ---------------------------------------------------------------------------

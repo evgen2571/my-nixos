@@ -6,8 +6,7 @@
 "Mod+Return" = { action = "spawn kitty", repeat = false }
 "Mod+Shift+Return" = { action = "scratchpad-toggle terminal", repeat = false }
 "Mod+W" = { action = "spawn $HOME/.config/umbriel/scripts/focus-or-launch '^(zen-beta|zen)$' -- zen-beta", repeat = false }
-"Mod+E" = { action = "scratchpad-toggle files", repeat = false }
-"Mod+Shift+E" = { action = "spawn $HOME/.config/umbriel/scripts/focus-or-launch '^org\\.kde\\.dolphin$' -- dolphin", repeat = false }
+"Mod+E" = { action = "spawn $HOME/.config/umbriel/scripts/focus-or-launch '^dev\\.noctalia\\.luciole$' -- luciole", repeat = false }
 "Mod+X" = { action = "spawn voxtype record toggle", repeat = false }
 
 # Maximize the temporary Kitty UI for sesh's project picker.

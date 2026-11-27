@@ -91,6 +91,7 @@ builtin_ids = [
     "gtk4",
     "kcolorscheme",
     "kitty",
+    "luciole",
     "umbriel",
     "niri",
 ]
@@ -106,7 +107,6 @@ community_ids = [
     "bat",
     "lazygit",
     "starship",
-    "yazi"
 ]
 
 [theme.templates.user.niri-dropdown]
@@ -161,5 +161,5 @@ show_label = false
 anchor = true
 hide_when_empty = true
 max_label_chars = 8
-show_all_outputs = true
+monitors = ["*"]
 style = "minimal"
