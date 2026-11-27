@@ -24,7 +24,7 @@ over 140 ms, and focus borders change over 100 ms.
 | --- | --- |
 | `Mod+Shift+Return` | Show/hide dropdown Kitty with the persistent `dropdown` tmux session |
 | `Mod+M` | Show/hide music; launch Sonora when enabled, otherwise Pear Desktop |
-| `Mod+E` | Show/hide Yazi in Kitty |
+| `Mod+E` | Focus or launch Luciole |
 | `Mod+W` | Focus or launch Zen Browser on the `web` workspace |
 | `Mod+N` | Focus the `study` workspace (legacy notes shortcut) |
 | `Mod+S` | Focus the `study` workspace |
@@ -40,7 +40,7 @@ over 140 ms, and focus borders change over 100 ms.
 
 Scratchpads launch on demand, retain their windows while hidden, and appear on the
 pointer's monitor. Toggling a visible pad on another monitor brings it there.
-Music, dropdown, and Yazi windows launched normally join their corresponding pad.
+Music and dropdown windows launched normally join their corresponding pad.
 Closing a dropdown window keeps tmux alive; hiding it also keeps Kitty alive.
 
 The PC uses `web`, `chats`, and `ai` on `DP-1`, and `study`, `code`, and `gaming`
@@ -59,7 +59,7 @@ Noctalia runs through its existing systemd service. Its built-in Umbriel templat
 writes `noctalia.toml`, which is optional until the first theme render. Home Manager
 owns individual config files so generated theme files remain writable. Screen
 sharing uses `xdg-desktop-portal-umbriel`; file pickers stay on GTK and the login
-keyring remains available. Web, study, Dolphin, and chat shortcuts reuse an
+keyring remains available. Web, study, Luciole, and chat shortcuts reuse an
 existing window through Umbriel IPC before launching another.
 
 Both hosts enable `my.user.desktop.skwdWall.enable` for Skwd-wall's picker and renderer.
@@ -76,8 +76,8 @@ and greeter appearance sync no longer carries a desktop wallpaper.
 
 ## Differences from Niri
 
-- Scratchpads replace music and dropdown focus-or-close behavior; Yazi also gets a
-  scratchpad. Only one pad can be visible per output.
+- Scratchpads replace music and dropdown focus-or-close behavior. Only one pad
+  can be visible per output.
 - `Alt+Tab` returns to the last focused window; `Alt+Shift+Tab` uses previous
   layout order. Umbriel has no matching per-application recent-window cycle for
   Niri's `Alt+grave` bindings.

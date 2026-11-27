@@ -6,6 +6,7 @@
 }:
 
 {
+  services.gvfs.enable = true;
   services.udisks2.enable = true;
 
   my = {
@@ -145,8 +146,7 @@
     };
 
     files = {
-      dolphin.enable = true;
-      yazi.enable = true;
+      luciole.enable = true;
     };
   };
 }

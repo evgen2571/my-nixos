@@ -57,6 +57,7 @@ in
             "gtk4"
             "kcolorscheme"
             "kitty"
+            "luciole"
             "umbriel"
           ]
           ++ lib.optional (lib.attrByPath [ "my" "user" "desktop" "niriConfig" "enable" ] false config) "niri"

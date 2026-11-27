@@ -228,6 +228,26 @@
         "type": "github"
       }
     },
+    "luciole": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs-unstable"
+        ]
+      },
+      "locked": {
+        "lastModified": 1795747531,
+        "narHash": "sha256-LeMhoQtV2J74MH+QiqPZ5Ng9XU+lTkyjfDTCcM48//U=",
+        "owner": "noctalia-dev",
+        "repo": "luciole",
+        "rev": "179bc55ced1cf69acfcb58e0dd287c3e2c4e4ffe",
+        "type": "github"
+      },
+      "original": {
+        "owner": "noctalia-dev",
+        "repo": "luciole",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1795249095,
@@ -360,6 +380,7 @@
         "helium": "helium",
         "home-manager": "home-manager",
         "llm-agents": "llm-agents",
+        "luciole": "luciole",
         "nixpkgs": "nixpkgs_2",
         "nixpkgs-unstable": "nixpkgs-unstable",
         "noctalia": "noctalia",

@@ -5,8 +5,7 @@ binds {
     Mod+Return repeat=false hotkey-overlay-title="Terminal" { spawn "kitty"; }
     Mod+Shift+Return repeat=false hotkey-overlay-title="Dropdown terminal (close / reopen tmux)" { spawn-sh "$HOME/.config/niri/scripts/focus-or-launch '^kitty$' --title '^dropdown-term$' --close-focused -- env DROPDOWN_TERM=1 kitty -T dropdown-term tmux new-session -A -s dropdown -e DROPDOWN_TERM=1"; }
     Mod+F repeat=false hotkey-overlay-title="Browser" { spawn-sh "$HOME/.config/niri/scripts/focus-or-launch '^(zen-beta|zen)$' -- zen-beta"; }
-    Mod+E repeat=false hotkey-overlay-title="TUI File Manager" { spawn "kitty" "-T" "file-manager" "yazi"; }
-    Mod+Shift+E repeat=false hotkey-overlay-title="GUI File Manager" { spawn-sh "$HOME/.config/niri/scripts/focus-or-launch '^org\\.kde\\.dolphin$' -- dolphin"; }
+    Mod+E repeat=false hotkey-overlay-title="Luciole File Manager" { spawn-sh "$HOME/.config/niri/scripts/focus-or-launch '^dev\\.noctalia\\.luciole$' -- luciole"; }
     Mod+X repeat=false hotkey-overlay-title="Voice Dictation" { spawn "voxtype" "record" "toggle"; }
 
     // Maximize the temporary Kitty UI for sesh's project picker.
