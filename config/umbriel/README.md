@@ -70,9 +70,13 @@ Home Manager seeds `~/.config/skwd-wall-v2/config.json` once and leaves GUI sett
 caches, and saved wallpapers writable. Noctalia's wallpaper renderer is disabled;
 existing GUI overrides in `~/.local/state/noctalia/settings.toml` still take priority.
 Skwd's built-in Noctalia theme bridge keeps the shell and existing app templates
-following the selected wallpaper.
-The lock screen uses Noctalia's solid background unless a lock-screen image is set,
-and greeter appearance sync no longer carries a desktop wallpaper.
+following the selected wallpaper. Noctalia's appearance sync passes that palette
+to the greeter. A user service publishes the selected Skwd image, or a still frame
+for a video, for the next greeter session. Wallpaper Engine scenes keep the
+previous image. The greeter puts the clock above the login panel and pins to
+`HDMI-A-1` on the PC and the built-in `eDP-1` on the laptop. If the pinned
+connector is disconnected, Noctalia Greeter falls back to the connected displays.
+The lock screen uses Noctalia's solid background unless a lock-screen image is set.
 
 ## Differences from Niri
 

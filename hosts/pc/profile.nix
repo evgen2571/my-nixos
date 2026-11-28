@@ -14,7 +14,10 @@
       gnome.enable = false;
       niri.enable = true;
       umbriel.enable = true;
-      noctaliaGreeter.enable = true;
+      noctaliaGreeter = {
+        enable = true;
+        output = "HDMI-A-1";
+      };
       opentabletdriver.enable = true;
     };
 

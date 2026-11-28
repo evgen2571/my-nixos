@@ -10,7 +10,10 @@
       gnome.enable = true;
       niri.enable = true;
       umbriel.enable = true;
-      noctaliaGreeter.enable = true;
+      noctaliaGreeter = {
+        enable = true;
+        output = "eDP-1";
+      };
       opentabletdriver.enable = false;
     };
 
