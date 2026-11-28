@@ -129,6 +129,7 @@
         # mpv.enable = true;
         # obsidian.enable = true;
         # osuLazer.enable = true;
+        # pdfcraft.enable = true;
         # prismLauncher.enable = true;
         # qimgv.enable = true;
         # sonora.enable = true;

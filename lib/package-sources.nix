@@ -50,7 +50,7 @@ let
 in
 {
   # Ordinary packages use stable pkgs. These are the exceptions.
-  inherit (upstream) hydralauncher noctalia-greeter;
+  inherit (upstream) hydralauncher noctalia-greeter pdfcraft;
 
   lan-mouse = upstream.lan-mouse.overrideAttrs (old: {
     buildInputs = (old.buildInputs or [ ]) ++ [ upstream.libgit2 ];
