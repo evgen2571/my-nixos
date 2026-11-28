@@ -26,7 +26,10 @@ in
   options.my.user.desktop.skwdWall.enable = lib.mkEnableOption "Skwd wallpaper picker and renderer";
 
   config = lib.mkIf cfg.enable {
-    home.packages = [ package ];
+    home.packages = [
+      package
+      pkgs.zenity
+    ];
     fonts.fontconfig.enable = lib.mkDefault true;
 
     # Skwd saves GUI settings here; seed a writable file without replacing it.
@@ -48,6 +51,9 @@ in
       };
       Service = {
         ExecStart = "${package}/bin/skwd-walld";
+        Environment = [
+          "SKWD_DRAWING_HOME=${packageSources.skwd-drawing-model}/share/skwd-deck/models/drawing"
+        ];
         Restart = "on-failure";
         RestartSec = 2;
       };

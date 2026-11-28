@@ -72,6 +72,7 @@ in
   luciole = inputs.luciole.packages.${system}.default;
   noctalia = inputs.noctalia.packages.${system}.default;
   skwd-wall = inputs.skwd-wall.packages.${system}.default;
+  inherit (inputs.skwd-wall.packages.${system}) skwd-drawing-model;
   sonora = inputs.sonora.packages.${system}.default;
   voxtype = inputs.voxtype.packages.${system}.vulkan;
 }

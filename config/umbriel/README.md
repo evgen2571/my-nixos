@@ -66,6 +66,8 @@ Both hosts enable `my.user.desktop.skwdWall.enable` for Skwd-wall's picker and r
 `Mod+Y` and the wallpaper bar button run `skwd-wall-v2`; its daemon starts with
 the graphical session and restores the last selected wallpaper. Images and videos
 use `wallpapers.directory` (`~/pictures/wallpapers` on the PC).
+Home Manager installs Zenity for Skwd's file picker and configures the daemon to
+use the drawing model pack from the pinned Skwd release.
 Home Manager seeds `~/.config/skwd-wall-v2/config.json` once and leaves GUI settings,
 caches, and saved wallpapers writable. Noctalia's wallpaper renderer is disabled;
 existing GUI overrides in `~/.local/state/noctalia/settings.toml` still take priority.
